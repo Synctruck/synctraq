@@ -25,6 +25,7 @@ class AssignedController extends Controller
         return view('package.assigned');
     }
 
+    //@Listar paquetes asignados
     public function List(Request $request, $dataView, $idTeam)
     {        
         $roleUser = '';
