@@ -1,0 +1,1795 @@
+import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
+import { Modal } from 'react'
+import Pagination from "react-js-pagination"
+import swal from 'sweetalert'
+import Select from 'react-select'
+
+let count = 1;
+
+function PackageDispatch() {
+
+    const [listPackageDispatch, setListPackageDispatch] = useState([]);
+    const [listTeam, setListTeam]                       = useState([]);
+    const [listDriver, setListDriver]                   = useState([]);
+    const [roleUser, setRoleUser]                       = useState([]);
+    const [listRoute, setListRoute]                     = useState([]);
+    const [listRole, setListRole]                       = useState([]);
+    const [listState , setListState]                    = useState([]);
+
+    const [id, setId]                                 = useState(0);
+    const [idRole, setIdRole]                         = useState(0);
+    const [name, setName]                             = useState('');
+    const [nameOfOwner, setNameOfOwner]               = useState('');
+    const [address, setAddress]                       = useState('');
+    const [phone, setPhone]                           = useState('');
+    const [email, setEmail]                           = useState('');
+    const [idsRoutes, setIdsRoutes]                   = useState('');
+    const [permissionDispatch, setPermissionDispatch] = useState(0);
+    const [dayNight, setDayNight]                     = useState('');
+
+    const [readOnly, setReadOnly] = useState(false);
+    const [checkAll, setCheckAll] = useState(0);
+
+    const [quantityDispatch, setQuantityDispatch] = useState(0);
+
+    const [dataView, setDataView] = useState('today');
+
+    const [Reference_Number_1, setNumberPackage] = useState('');
+    const [idTeam, setIdTeam] = useState(0);
+    const [idDriver, setIdDriver] = useState(0);
+    const [idDriverAsing, setIdDriverAsing] = useState(0);
+    
+    const [textMessage, setTextMessage]                 = useState('');
+    const [textMessageDate, setTextMessageDate]         = useState('');
+    const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
+
+    const [typeMessage, setTypeMessage] = useState(''); 
+
+    const [file, setFile]             = useState('');
+
+    const [page, setPage]                 = useState(1);
+    const [totalPage, setTotalPage]       = useState(0);
+    const [totalPackage, setTotalPackage] = useState(0);
+
+    const [RouteSearchList, setRouteSearchList] = useState('all');
+    const [StateSearch, setStateSearch]         = useState('all');
+
+    const inputFileRef  = React.useRef();
+
+    const [viewButtonSave, setViewButtonSave] = useState('none');
+
+    document.getElementById('bodyAdmin').style.backgroundColor = '#d1e7dd';
+
+    useEffect(() => {
+
+        listAllRoute();
+
+        document.getElementById('Reference_Number_1').focus();
+
+    }, []);
+
+    useEffect(() => { 
+
+    }, [Reference_Number_1])
+
+    useEffect(() => {
+
+        setPage(1);
+
+        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+    }, [idTeam, idDriver, dataView]);
+
+    useEffect(() => {
+
+        if(String(file) == 'undefined' || file == '')
+        {
+            setViewButtonSave('none');
+        }
+        else
+        {
+            setViewButtonSave('block');
+        }
+
+    }, [file]);
+
+    const listAllPackageDispatch = (pageNumber, dataView, StateSearch, RouteSearchList) => {
+
+        fetch(url_general +'package-dispatch/list/'+ dataView +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListPackageDispatch(response.packageDispatchList.data);
+            setTotalPackage(response.packageDispatchList.total);
+            setTotalPage(response.packageDispatchList.per_page);
+            setPage(response.packageDispatchList.current_page);
+            setQuantityDispatch(response.quantityDispatch)
+            setRoleUser(response.roleUser);
+            setListState(response.listState);
+
+            if(listState.length == 0)
+            {
+                listOptionState(response.listState);
+            }
+
+            if(response.roleUser == 'Administrador')
+            {
+                listAllTeam();
+            }
+            else
+            {
+                listAllDriverByTeam(idUserGeneral);
+                setIdTeam(idUserGeneral);
+            }
+        });
+    }
+
+    const handlerChangePage = (pageNumber) => {
+
+        listAllPackageDispatch(pageNumber, dataView, StateSearch, RouteSearchList);
+    }
+
+    const listAllRoute = (pageNumber) => {
+
+        setListRoute([]);
+
+        fetch(url_general +'routes/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRoute(response.routeList);
+            listOptionRoute(response.routeList);
+        });
+    }
+
+    const [Reference_Number_1_Edit, setReference_Number_1] = useState('');
+    const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
+    const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
+    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
+    const [Dropoff_Address_Line_2, setDropoff_Address_Line_2] = useState('');
+    const [Dropoff_City, setDropoff_City] = useState('');
+    const [Dropoff_Province, setDropoff_Province] = useState('');
+    const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
+    const [Weight, setWeight] = useState('');
+    const [Route, setRoute] = useState('');
+
+    const [readOnlyInput, setReadOnlyInput]   = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
+
+    const [textButtonSave, setTextButtonSave] = useState('Guardar');
+
+    const optionsRole = listRoute.map( (route, i) => {
+
+        return (
+
+            <option key={ i } value={ route.name } selected={ Route == route.name ? true : false }> {route.name}</option>
+        );
+    });
+
+    const handlerOpenModalEditPackage = (PACKAGE_ID) => {
+
+        fetch(url_general +'package-dispatch/get/'+ PACKAGE_ID)
+        .then(res => res.json())
+        .then((response) => {
+
+            setReference_Number_1(PACKAGE_ID);
+            setDropoff_Contact_Name(response.package.Dropoff_Contact_Name);
+            setDropoff_Contact_Phone_Number(response.package.Dropoff_Contact_Phone_Number);
+            setDropoff_Address_Line_1(response.package.Dropoff_Address_Line_1);
+            setDropoff_Address_Line_2((response.package.Dropoff_Address_Line_2 ? response.package.Dropoff_Address_Line_2 : ''));
+            setDropoff_City(response.package.Dropoff_City);
+            setDropoff_Province(response.package.Dropoff_Province);
+            setDropoff_Postal_Code(response.package.Dropoff_Postal_Code);
+            setWeight(response.package.Weight);
+            setRoute(response.package.Route);
+        });
+
+        //clearValidation();
+
+        setReadOnlyInput(true);
+        
+        let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const handlerUpdatePackage = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1_Edit);
+        formData.append('Dropoff_Contact_Name', Dropoff_Contact_Name);
+        formData.append('Dropoff_Contact_Phone_Number', Dropoff_Contact_Phone_Number);
+        formData.append('Dropoff_Address_Line_1', Dropoff_Address_Line_1);
+        formData.append('Dropoff_Address_Line_2', Dropoff_Address_Line_2);
+        formData.append('Dropoff_City', Dropoff_City);
+        formData.append('Dropoff_Province', Dropoff_Province);
+        formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
+        formData.append('Weight', Weight);
+        formData.append('Route', Route);
+        formData.append('status', true);
+
+        clearValidationEdit();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setDisabledButton(true);
+        setTextButtonSave('Loading...');
+
+        let url = 'package-dispatch/update'
+
+        fetch(url_general + url, {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                setTextButtonSave('Guardar');
+                setDisabledButton(false);
+
+                if(response.stateAction)
+                {
+                    swal('Se actualizó el Package!', {
+
+                        icon: "success",
+                    });
+
+                    listAllPackageDispatch(page, dataView, StateSearch, RouteSearchList);
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
+                }
+            },
+        );
+    }
+
+    const clearValidationEdit = () => {
+
+        document.getElementById('Reference_Number_1_Edit').style.display = 'none';
+        document.getElementById('Reference_Number_1_Edit').innerHTML     = '';
+
+        document.getElementById('Dropoff_Contact_Name').style.display = 'none';
+        document.getElementById('Dropoff_Contact_Name').innerHTML     = '';
+
+        document.getElementById('Dropoff_Contact_Phone_Number').style.display = 'none';
+        document.getElementById('Dropoff_Contact_Phone_Number').innerHTML     = '';
+
+        document.getElementById('Dropoff_Address_Line_1').style.display = 'none';
+        document.getElementById('Dropoff_Address_Line_1').innerHTML     = '';
+
+        document.getElementById('Dropoff_City').style.display = 'none';
+        document.getElementById('Dropoff_City').innerHTML     = '';
+
+        document.getElementById('Dropoff_Province').style.display = 'none';
+        document.getElementById('Dropoff_Province').innerHTML     = '';
+
+        document.getElementById('Dropoff_Postal_Code').style.display = 'none';
+        document.getElementById('Dropoff_Postal_Code').innerHTML     = '';
+
+        document.getElementById('Weight').style.display = 'none';
+        document.getElementById('Weight').innerHTML     = '';
+
+        document.getElementById('Route').style.display = 'none';
+        document.getElementById('Route').innerHTML     = '';
+    }
+
+    const modalPackageEdit = <React.Fragment>
+                                    <div className="modal fade" id="modalPackageEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerUpdatePackage }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Update Package</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>PACKAGE ID</label>
+                                                                    <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="15" readOnly={ readOnlyInput } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>CLIENT</label>
+                                                                    <div id="Dropoff_Contact_Name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Contact_Name } className="form-control" onChange={ (e) => setDropoff_Contact_Name(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>CONTACT</label>
+                                                                    <div id="Dropoff_Contact_Phone_Number" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Contact_Phone_Number } className="form-control" onChange={ (e) => setDropoff_Contact_Phone_Number(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>ADDRESS 1</label>
+                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Address_Line_1 } className="form-control" onChange={ (e) => setDropoff_Address_Line_1(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>ADDRESS 2</label>
+                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) }/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>CITY</label>
+                                                                    <div id="Dropoff_City" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_City } className="form-control" onChange={ (e) => setDropoff_City(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>STATE</label>
+                                                                    <div id="Dropoff_Province" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Province } className="form-control" onChange={ (e) => setDropoff_Province(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>ZIP C</label>
+                                                                    <div id="Dropoff_Postal_Code" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Dropoff_Postal_Code } className="form-control" onChange={ (e) => setDropoff_Postal_Code(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>WEIGHT</label>
+                                                                    <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>ROUTE</label>
+                                                                    <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setRoute(e.target.value) } required>
+                                                                        <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
+                                                                        { optionsRole }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button className="btn btn-primary" disabled={ disabledButton }>Actualizar</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
+    const listAllTeam = () => {
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listAllDriverByTeam = (idTeam) => {
+
+        if(idTeam)
+        {
+            setIdTeam(idTeam);
+            setIdDriver(0);
+            setListDriver([]);
+            
+            fetch(url_general +'driver/team/list/'+ idTeam)
+            .then(res => res.json())
+            .then((response) => {
+
+                setListDriver(response.listDriver);
+            });
+        }
+        else
+        {
+            setIdTeam(0);
+            setListDriver([]);
+        }
+    }
+
+    const handlerValidation = (e) => {
+
+        e.preventDefault();
+
+        setReadOnly(true);
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idTeam', idTeam);
+        formData.append('idDriver', idDriver);
+        formData.append('RouteSearch', RouteSearch);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'package-dispatch/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == 'notInbound')
+                {
+                    setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notRoute')
+                {
+                    setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'repairPackage')
+                {
+                    setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                    setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'notInland')
+                {
+                    setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    setTextMessage("NO EXISTS #"+ Reference_Number_1);
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'notValidatedRoute')
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'validated')
+                {
+                    let packageDispatch = response.packageDispatch;
+
+                    let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
+                    let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
+
+                    let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+ 
+                                    packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
+                                    team +' / '+ driver;
+
+                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
+                    setTextMessageDate(textDate);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage(''); 
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'returCompany')
+                {
+                    setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'packageExist')
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'delivery')
+                {
+                    setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'assigned')
+                {
+                    setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction)
+                {
+                    setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
+                    setTextMessageDate('');
+                    setTypeMessageDispatch('success');
+                    setNumberPackage('');
+                    
+                    listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+                }
+                else
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+
+                setReadOnly(false);
+            },
+        );
+    }
+
+    const handlerImport = (e) => {
+
+        e.preventDefault();
+
+        if(idTeam != 0 || idDriver != 0)
+        {
+            const formData = new FormData();
+
+            formData.append('idDriver', idDriver);
+            formData.append('idTeam', idTeam);
+            formData.append('file', file);
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShow();
+
+            fetch(url_general +'package-dispatch/import', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Se importó el archivo!", {
+
+                            icon: "success",
+                        });
+
+                        document.getElementById('fileImport').value = '';
+
+                        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+                        setViewButtonSave('none');
+                    }
+
+                    LoadingHide();
+                },
+            );
+        }
+        else
+        {
+            swal('Atención!', 'Debe seleccionar mínimo un Team para importar', 'warning');
+        }
+    }
+
+    const changeReference = (e) => {
+
+        e.preventDefault();
+        
+        /*if(idDriverAsing == 0)
+        {
+            swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
+
+            return 0;
+        }*/
+
+        let formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idTeam', idTeam);
+        formData.append('idDriver', idDriverAsing);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let url = 'package-dispatch/change'
+
+        fetch(url_general + url, {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    setTextMessage("RE-ASSIGN PACKAGE DISPATCHED #"+ Reference_Number_1);
+                    setTypeMessageDispatch('success');
+                    setNumberPackage('');
+                    
+                    listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    setTextButtonSave('Guardar');
+                    setDisabledButton(false);
+                }
+                
+            },
+        );
+
+        /*swal({
+            title: "Esta seguro?",
+            text: "Se asignará el paquete al Driver!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                
+            } 
+        });*/
+    }
+
+    const listPackageDispatchTable = listPackageDispatch.map( (packageDispatch, i) => {
+
+        return (
+
+            <tr key={i}>
+                <td>
+                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageDispatch.Reference_Number_1 } name="checkDispatch" value={ packageDispatch.Reference_Number_1 }/>
+                </td>
+                <td>{(quantityDispatch - i) - (20 * (page - 1))}</td>
+
+                <td style={ { width: '100px'} }>
+                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                </td>
+                <td>
+                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                </td>
+                {
+                    roleUser == 'Administrador' 
+                    ?
+                        packageDispatch.driver ? parseInt(packageDispatch.driver.idTeam) == 0 || packageDispatch.driver.idTeam == null ? <><td><b>{ packageDispatch.driver.name }</b></td><td><b></b></td></> : <><td><b>{ packageDispatch.driver.nameTeam }</b></td><td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td></> : ''
+                    :
+                        ''
+                }
+                {
+                    roleUser == 'Team' 
+                    ?
+                        packageDispatch.driver.idTeam ? <td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td> : <td></td>
+                    :
+                        ''
+                }
+                <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.Dropoff_Contact_Name }</td>
+                <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDispatch.Dropoff_City }</td>
+                <td>{ packageDispatch.Dropoff_Province }</td>
+                <td>{ packageDispatch.Dropoff_Postal_Code }</td>
+                <td>{ packageDispatch.Weight }</td>
+                <td>{ packageDispatch.Route }</td>
+                <td>{ packageDispatch.taskOnfleet }</td>
+                <td style={ {textAlign: 'center'} }>
+                    { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
+                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(packageDispatch.Reference_Number_1) }>
+                        <i className="bx bx-edit-alt"></i> 
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id }>{ team.name }</option>
+        );
+    });
+
+    const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
+    const handlerReturn = (idPackage) => {
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', idPackage);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setReadOnly(true);
+ 
+        fetch(url_general +'package/return/dispatch', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == 'notUser')
+                {
+                    setTextMessage("El paquete N° "+ idPackage +" fue validado por otro Driver!");
+                    setTypeMessage('error');
+                    setReturnNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'notDispatch')
+                {
+                    setTextMessage("El paquete N° "+ idPackage +" no fue validado como Dispatch!");
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+                }
+                else if(response.stateAction)
+                {
+                    setTextMessage("Paquete N° "+ idPackage +" fue retornado!");
+                    setTypeMessage('success');
+                    setNumberPackage('');
+                    
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    listAllPackageDispatch();
+                }
+                else
+                {
+                    setTextMessage("Hubo un problema, intente nuevamente realizar la misma acción.");
+                    setTypeMessage('error');
+                    setNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+
+                setReadOnly(false);
+            },
+        );
+    }
+
+    const handlerDownloadOnFleet = () => {
+
+        if(dayNight)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            let countCheck = 0;
+
+            let valuesCheck = '';
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                if(checkboxes[i].checked)
+                {
+                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
+
+                    countCheck++;
+                }
+            }
+
+            let type = 'all';
+
+            if(countCheck)
+            {
+                type = 'check'
+            }
+
+            if(valuesCheck == '')
+            {
+                valuesCheck = 'all';
+            }
+
+            location.href = url_general +'package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
+        }
+        else
+        {
+            swal('Attention!', 'Select a time', 'warning')
+        }
+    }
+
+    const handlerDownloadRoadWarrior = () => {
+
+        if(dayNight)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            let countCheck = 0;
+
+            let valuesCheck = '';
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                if(checkboxes[i].checked)
+                {
+                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
+
+                    countCheck++;
+                }
+            }
+
+            let type = 'all';
+
+            if(countCheck)
+            {
+                type = 'check'
+            }
+
+            if(valuesCheck == '')
+            {
+                valuesCheck = 'all';
+            }
+
+            location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
+        }
+        else
+        {
+            swal('Attention!', 'Select a time', 'warning');
+        }
+    }
+
+    const clearForm = () => {
+
+        setReturnNumberPackage('');
+        setDescriptionReturn('');
+    }
+
+    const clearValidation = () => {
+
+        document.getElementById('returnReference_Number_1').style.display = 'none';
+        document.getElementById('returnReference_Number_1').innerHTML     = '';
+
+        document.getElementById('descriptionReturn').style.display = 'none';
+        document.getElementById('descriptionReturn').innerHTML     = '';
+    }
+
+    const onBtnClickFile = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRef.current.click();
+    }
+
+    const hanldlerCheckAll = () => {
+
+        if(checkAll == 0)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                checkboxes[i].checked = 1;
+            }
+
+            setCheckAll(1);
+        }
+        else
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                checkboxes[i].checked = 0;
+            }
+
+            setCheckAll(0);
+        }
+    }
+
+    const handlerRedirectReturns = () => {
+
+        location.href = 'package/return';
+    }
+
+    const listAllRole = () => {
+
+        fetch(url_general +'role/list')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRole(response.roleList);
+        });
+    }
+
+    const handlerOpenModalTeam = (id) => {
+
+        //clearValidationTeam();
+
+        /*if(id)
+        {
+            setTitleModal('Update Team')
+            setTextButtonSave('Update');
+        }
+        else
+        {
+            listAllRole();
+            listAllRoute();
+
+            //clearForm();
+            setTitleModal('Add Team');
+            setTextButtonSave('Save');
+        }*/
+
+        listAllRole();
+        clearFormTeam();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalTeamInsert'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const handlerSaveTeam = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idRole', idRole);
+        formData.append('name', name);
+        formData.append('nameOfOwner', nameOfOwner);
+        formData.append('address', address);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('idsRoutes', idsRoutes);
+        formData.append('permissionDispatch', permissionDispatch);
+
+        //clearValidationTeam();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'team/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("Team was registered!", {
+
+                        icon: "success",
+                    });
+
+                    listAllTeam();
+                    clearFormTeam();
+                    listAllRoute();
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const listRoleSelect = listRole.map( (role, i) => {
+
+        return (
+
+            (
+                role.name == 'Team'
+                ?
+                    <option value={ role.id }>{ role.name }</option>
+
+                :
+                    ''
+            )
+        );
+    });
+
+    const optionsCheckRoute = listRoute.map( (route, i) => {
+
+        return (
+
+            <div className="col-lg-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ route.id } value={ route.id } onChange={ () => handleChange() }/>
+                    <label class="form-check-label" for="gridCheck1">
+                        { route.name }
+                    </label>
+                </div>
+            </div>
+        );
+    });
+
+    const handleChange = () => {
+
+        let routesIds = '';
+
+        listRoute.forEach( route => {
+
+            if(document.getElementById('idCheck'+ route.id).checked)
+            {
+                routesIds = (routesIds == '' ? route.id : route.id +','+ routesIds);
+            }
+        });
+
+        setIdsRoutes(routesIds);
+    };
+
+    const clearValidationTeam = () => {
+
+        document.getElementById('idRole').style.display = 'none';
+        document.getElementById('idRole').innerHTML     = '';
+
+        document.getElementById('name').style.display = 'none';
+        document.getElementById('name').innerHTML     = '';
+
+        document.getElementById('nameOfOwner').style.display = 'none';
+        document.getElementById('nameOfOwner').innerHTML     = '';
+
+        document.getElementById('address').style.display = 'none';
+        document.getElementById('address').innerHTML     = '';
+
+        document.getElementById('phone').style.display = 'none';
+        document.getElementById('phone').innerHTML     = '';
+
+        document.getElementById('email').style.display = 'none';
+        document.getElementById('email').innerHTML     = '';
+    }
+
+    const clearFormTeam = () => {
+
+        setId(0);
+        setIdRole(0);
+        setName('');
+        setNameOfOwner('');
+        setAddress('');
+        setPhone('');
+        setEmail('');
+    }
+
+    const modalTeamInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalTeamInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerSaveTeam }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Team</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Role</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
+                                                                        { listRoleSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Team Name</label>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Name of owner</label>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Phone</label>
+                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Email</label>
+                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Permission Dispatch</label>
+                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
+                                                                        <option value="0">No</option>
+                                                                        <option value="1">Yes</option>
+                                                                    </select>
+                                                                </div> 
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Routes</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                </div>
+                                                                <div className="row form-group">
+                                                                    { optionsCheckRoute }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">{ textButtonSave }</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
+    const handlerOpenModalDriver = (id) => {
+
+        listAllRole();
+        clearFormTeam();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalDriverInsert'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const handlerSaveUser = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idRole', idRole);
+        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('name', name);
+        formData.append('nameOfOwner', nameOfOwner);
+        formData.append('address', address);
+        formData.append('phone', phone);
+        formData.append('email', email);
+
+        //clearValidation();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'driver/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("Driver was registered!", {
+
+                        icon: "success",
+                    });
+
+                    listAllUser(1);
+                    clearForm();
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const listRoleDriverSelect = listRole.map( (role, i) => {
+
+        return (
+
+            (
+                role.name == 'Driver'
+                ?
+                    <option value={ role.id }>{ role.name }</option>
+                :
+                    ''
+            )
+            
+        );
+    });
+
+    const modalDriverInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalDriverInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerSaveUser }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Driver</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Role</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
+                                                                        { listRoleDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {
+                                                            roleUser == 'Administrador'
+                                                            ?
+                                                                <>
+                                                                    <div className="col-lg-12">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="">TEAM</label>
+                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                                <option value="">All</option>
+                                                                                { listTeamSelect }
+                                                                            </select> 
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            :
+                                                                ''
+                                                        }
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>First Name</label>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Last Name</label>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Address</label>
+                                                                    <div id="address" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ address } className="form-control" onChange={ (e) => setAddress(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Phone</label>
+                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Email</label>
+                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">{ textButtonSave }</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
+    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+
+    const listOptionRoute = (listRoutes) => {
+
+        setOptionsRoleSearch([]);
+
+        listRoutes.map( (route, i) => {
+
+            optionsRoleSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRoleSearch(optionsRoleSearch);
+        });
+    }
+
+    const [RouteSearch, setRouteSearch] = useState('');
+
+    const handlerChangeRoute = (routes) => {
+
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
+
+            routes.map( (route) => {
+
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+
+            setRouteSearch(routesSearch);
+
+            //listAllPackageInbound(page, dataView, routesSearch, StateSearch);
+        }
+        else
+        {
+            //setRouteSearch('all');
+
+            //listAllPackageInbound(page, dataView, 'all', StateSearch);
+        }
+    };
+
+    const handlerChangeRouteList = (routes) => {
+
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
+
+            routes.map( (route) => {
+
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+
+            setRouteSearchList(routesSearch);
+
+            listAllPackageDispatch(1, dataView, StateSearch, routesSearch);
+        }
+        else
+        {
+            setRouteSearchList('all');
+
+            listAllPackageDispatch(1, dataView, StateSearch, 'all');
+        }
+    };
+
+    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+
+    const listOptionState = (listState) => {
+
+        setOptionsStateSearch([]);
+
+        listState.map( (state, i) => {
+
+            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+
+            setOptionsStateSearch(optionsStateSearch);
+        });
+    }
+
+    const handlerChangeState = (states) => {
+
+        setPage(1);
+
+        if(states.length != 0)
+        {
+            let statesSearch = '';
+
+            states.map( (state) => {
+
+                statesSearch = statesSearch == '' ? state.value : statesSearch +','+ state.value;
+            });
+
+            setStateSearch(statesSearch);
+
+            listAllPackageDispatch(1, dataView, statesSearch, RouteSearchList);
+        }
+        else
+        {
+            setStateSearch('all');
+
+            listAllPackageDispatch(1, dataView, 'all', RouteSearchList);
+        }
+    }
+
+    return ( 
+
+        <section className="section">
+            { modalTeamInsert }
+            { modalDriverInsert }
+            { modalPackageEdit }
+            <div className="row">
+                <div className="col-lg-12">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">
+                                <div className="row form-group">
+                                    
+                                    <div className="col-lg-12 form-group">
+                                        <div className="row form-group">
+                                            <div className="col-lg-1">
+                                                <div className="form-group">
+                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-1">
+                                                <div className="form-group">
+                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2" style={ {display: 'none'} }>
+                                                <div className="row">
+                                                    <div className="col-lg-4" style={ {display: 'none'} }>
+                                                        <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
+                                                    </div>
+                                                    <div className="col-lg-4" style={ {display: 'none'} }>
+                                                        <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <label class="form-check-label text-dark" for="gridRadios1">D</label>&nbsp;
+                                                                <input class="form-check-input form-check-input-success border-success" type="radio" name="gridRadios" value="Day" checked={ dayNight == 'Day' } onChange={ (e) => setDayNight(e.target.value) }/>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <label class="form-check-label text-dark" for="gridRadios1">N</label>&nbsp;
+                                                                <input class="form-check-input form-check-input-dark border-dark" type="radio" name="gridRadios" value="Night" checked={ dayNight == 'Night' } onChange={ (e) => setDayNight(e.target.value) }/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-warning btn-sm form-control" onClick={ () => handlerRedirectReturns() }>RETURNS</button>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerRedirectReturns() }>EXPORT</button>
+                                                </div>
+                                            </div>
+
+                                            {
+                                                roleUser == 'Administrador'
+                                                ?
+                                                    <div className="col-lg-2">
+                                                        <form onSubmit={ handlerImport }>
+                                                            <div className="form-group">
+                                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                                    IMPORT CSV
+                                                                </button>
+                                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                                            </div>
+                                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                                <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerImport() }>
+                                                                    <i className="bx  bxs-save"></i> Save
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div> 
+                                                :
+                                                    ''       
+                                            }
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div className="row">
+                                    <div className="col-lg-10">
+                                        <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
+                                            <div className="row form-group">
+                                                <div className={ roleUser == 'Administrador' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
+                                                    <div className="form-group">
+                                                        <label htmlFor="">PACKAGE ID</label>
+                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="15" required readOnly={ readOnly }/>
+                                                    </div>
+                                                </div>
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">TEAM</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select> 
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
+                                                                        <option value="0">All</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
+
+                                                {
+                                                    roleUser == 'Team'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) } required>
+                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option> 
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
+                                                
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-lg-12 text-center">
+                                                    {
+                                                        typeMessageDispatch == 'success'
+                                                        ?
+                                                            <h2 className="text-success">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        typeMessageDispatch == 'error'
+                                                        ?
+                                                            <h2 className="text-danger">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        typeMessageDispatch == 'warning'
+                                                        ?
+                                                            <h2 className="text-warning">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        textMessageDate != ''
+                                                        ?
+                                                            <h2 className="text-warning">{ textMessageDate }</h2>
+                                                        :
+                                                            ''
+                                                    }
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div className="col-lg-2 form-group">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <label htmlFor="">ROUTES</label>
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 form-group">
+                                        <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                    </div>
+                                </div>
+
+                                
+                                <hr/><br/>
+                                
+                                <div className="row">
+                                    <div className="col-lg-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b> 
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-5">
+                                                <div className="form-group">
+                                                    View :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-7">
+                                                <select className="form-control" onChange={ (e) => setDataView(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="today" selected>Today</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <div className="row">
+                                            <div className="col-lg-5">
+                                                <div className="form-group">
+                                                    States :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-7">
+                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="row">
+                                            <div className="col-lg-5">
+                                                <div className="form-group">
+                                                    Routes :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-7">
+                                                <Select isMulti onChange={ (e) => handlerChangeRouteList(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h5>
+                            <div className="row form-group table-responsive">
+                                <div className="col-lg-12">
+                                    <table className="table table-hover table-condensed table-bordered">
+                                        <thead> 
+                                            <tr>
+                                                <th>
+                                                    <input class="form-check-input" type="checkbox" id="checkAllPackage" value="1" onChange={ () => hanldlerCheckAll() }/>
+                                                </th>
+                                                <th>#</th>
+                                                <th>DATE</th>
+                                                <th>HOUR</th>
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <th><b>TEAM</b></th>
+                                                    :
+                                                        ''
+                                                }
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <th><b>DRIVER</b></th>
+                                                    :
+                                                         
+                                                        roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
+                                                }
+                                                <th>PACKAGE ID</th>
+                                                <th>CLIENT</th>
+                                                <th>CONTACT</th>
+                                                <th>ADDREESS</th>
+                                                <th>CITY</th>
+                                                <th>STATE</th>
+                                                <th>ZIP CODE</th>
+                                                <th>WEIGHT</th>
+                                                <th>ROUTE</th>
+                                                <th>TASK ONFLEET</th>
+                                                <th>ACTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            { listPackageDispatchTable }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="col-lg-12">
+                                <Pagination
+                                    activePage={page}
+                                    totalItemsCount={totalPackage}
+                                    itemsCountPerPage={totalPage}
+                                    onChange={(pageNumber) => handlerChangePage(pageNumber)}
+                                    itemClass="page-item"
+                                    linkClass="page-link"
+                                    firstPageText="First"
+                                    lastPageText="Last"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+export default PackageDispatch;
+
+// DOM element
+if (document.getElementById('packageDispatch')) {
+    ReactDOM.render(<PackageDispatch />, document.getElementById('packageDispatch'));
+}
