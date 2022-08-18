@@ -19,5 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('package/insert', [PackageController::class, 'Insert']);
-Route::get('package/get/{reference}', [PackageController::class, 'Get']);
+Route::post('packages', [PackageController::class, 'Insert']);
+Route::get('packages/get/{reference}', [PackageController::class, 'Get']);
