@@ -13863,9 +13863,14 @@ function PackageInbound() {
         setTextMessage("VALID / " + Reference_Number_1 + ' / ' + response.packageInbound.Route);
         setTypeMessage('success');
         setNumberPackage('');
+        setWeightLabel(response.packageInbound.Weight);
+        setStateLabel(response.packageInbound.Dropoff_Province);
+        setRouteLabel(response.packageInbound.Route);
+        setReferenceLabel(response.packageInbound.Reference_Number_1);
         listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
+        handlerPrint('labelPrint');
       } else {
         setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
         setTypeMessage('error');
@@ -14038,6 +14043,46 @@ function PackageInbound() {
     inputFileRef.current.click();
   };
 
+  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
+      _useState82 = _slicedToArray(_useState81, 2),
+      EWR1 = _useState82[0],
+      setEWR1 = _useState82[1];
+
+  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
+      _useState84 = _slicedToArray(_useState83, 2),
+      WeightLabel = _useState84[0],
+      setWeightLabel = _useState84[1];
+
+  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
+      _useState86 = _slicedToArray(_useState85, 2),
+      StateLabel = _useState86[0],
+      setStateLabel = _useState86[1];
+
+  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState88 = _slicedToArray(_useState87, 2),
+      ReferenceLabel = _useState88[0],
+      setReferenceLabel = _useState88[1];
+
+  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+      _useState90 = _slicedToArray(_useState89, 2),
+      RouteLabel = _useState90[0],
+      setRouteLabel = _useState90[1];
+
+  var handlerPrint = function handlerPrint(nombreDiv) {
+    JsBarcode("#imgBarcode", Reference_Number_1, {
+      textMargin: 0,
+      fontSize: 27
+    });
+    var content = document.getElementById('labelPrint');
+    var pri = document.getElementById('ifmcontentstoprint').contentWindow;
+    pri.document.open();
+    pri.document.write(content.innerHTML);
+    pri.document.close();
+    pri.focus();
+    pri.print();
+    document.getElementById('Reference_Number_1').focus();
+  };
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("section", {
     className: "section",
     children: [modalPackageEdit, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
@@ -14089,7 +14134,7 @@ function PackageInbound() {
                           return setNumberPackage(e.target.value);
                         },
                         readOnly: readInput,
-                        maxLength: "15",
+                        maxLength: "16",
                         required: true
                       })]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
@@ -14290,6 +14335,154 @@ function PackageInbound() {
                         options: optionsRoleSearch
                       })
                     })]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-6"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-6",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("iframe", {
+                    id: "ifmcontentstoprint",
+                    style: {
+                      height: '0px',
+                      width: '100%',
+                      position: 'absolute',
+                      fontFamily: 'Arial, Helvetica, sans-serif'
+                    },
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      id: "labelPrint",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("table", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            className: "verticalTextRight",
+                            style: {
+                              transform: 'rotate(90deg)'
+                            },
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                              style: {
+                                fontSize: '2rem',
+                                fontFamily: 'Arial',
+                                marginBottom: '0px',
+                                position: 'relative',
+                                left: '10px',
+                                bottom: '40px'
+                              },
+                              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                children: EWR1
+                              })
+                            })
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("table", {
+                              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+                                  className: "text-center",
+                                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '35%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                                      style: {
+                                        textAlign: 'left',
+                                        paddingLeft: '5px',
+                                        fontSize: '1.9rem',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      },
+                                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                        children: WeightLabel
+                                      })
+                                    })
+                                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '30%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px',
+                                      textAlign: 'center'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                                      src: 'https://synctrucknj.com/img/logo.PNG',
+                                      style: {
+                                        width: '115px',
+                                        left: '-25px',
+                                        top: '30px',
+                                        position: 'relative',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      }
+                                    })
+                                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '35%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                                      style: {
+                                        textAlign: 'right',
+                                        paddingRight: '5px',
+                                        fontSize: '1.9rem',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      },
+                                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                        children: StateLabel
+                                      })
+                                    })
+                                  })]
+                                })
+                              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                                  style: {
+                                    textAlign: 'center'
+                                  },
+                                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("svg", {
+                                    id: "imgBarcode",
+                                    style: {
+                                      width: '400',
+                                      height: '250',
+                                      margin: '0px'
+                                    }
+                                  })
+                                })
+                              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                                  className: "text-center",
+                                  style: {
+                                    textAlign: 'center',
+                                    fontFamily: 'Arial',
+                                    marginBottom: '0px'
+                                  }
+                                })
+                              })]
+                            })
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            className: "verticalTextRight",
+                            style: {
+                              transform: 'rotate(90deg)',
+                              fontFamily: 'Arial',
+                              marginBottom: '0px'
+                            },
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                              style: {
+                                fontSize: '3.2rem',
+                                fontFamily: 'Arial',
+                                marginBottom: '0px',
+                                position: 'relative',
+                                left: '10px',
+                                bottom: '-40px'
+                              },
+                              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                children: RouteLabel
+                              })
+                            })
+                          })]
+                        })
+                      })
+                    })
                   })
                 })]
               })]
@@ -101983,7 +102176,7 @@ function combine (array, callback) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"range","registry":true,"raw":"axios@^0.21","name":"axios","escapedName":"axios","rawSpec":"^0.21","saveSpec":null,"fetchSpec":"^0.21"},"_requiredBy":["#DEV:/"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_shasum":"c67b90dc0568e5c1cf2b0b858c43ba28e2eda575","_spec":"axios@^0.21","_where":"C:\\\\xampp\\\\htdocs\\\\laravel-react-js","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundleDependencies":false,"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"deprecated":false,"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
+module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
 
 /***/ })
 
