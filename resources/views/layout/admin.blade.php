@@ -571,22 +571,40 @@
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 });
 
-                if(packageDelivery)
+                if(packageDispatch)
                 {
-                    let urlsPhoto = packageDelivery.photoUrl.split('https:')
+                    if(packageDispatch.idOnfleet)
+                    {
+                        let urlsPhoto = packageDispatch.photoUrl.split(',')
 
-                    urlsPhoto.forEach( url => {
+                        urlsPhoto.forEach( photoCode => {
 
-                        if(url)
-                        {
+                            let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+
                             tr =    '<tr>'+ 
-                                        '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                        '<td colspan="3"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                     '</tr>';
 
                             tableHistoryPackage.insertRow(-1).innerHTML = tr;
-                        }
-                        
-                    });
+                        });
+                    }
+                    else if(packageDelivery)
+                    {
+                        let urlsPhoto = packageDelivery.photoUrl.split('https:')
+
+                        urlsPhoto.forEach( url => {
+
+                            if(url)
+                            {
+                                tr =    '<tr>'+ 
+                                            '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                        '</tr>';
+
+                                tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                            }
+                            
+                        });
+                    }
                 }
 
                 document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;

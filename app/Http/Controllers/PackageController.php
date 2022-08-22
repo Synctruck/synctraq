@@ -213,16 +213,7 @@ class PackageController extends Controller
 
         $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
 
-        $packageDelivery = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
-                                            ->where('status', 'Delivery')
-                                            ->first();
-
-        $packageDelivery = null;
-
-        if($packageDelivery)
-        {
-            $packageDelivery = PackageDelivery::find($Reference_Number_1);
-        }
+        $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
 
         return ['packageHistoryList' => $packageHistoryList, 'packageDelivery' => $packageDelivery, 'packageDispatch' => $packageDispatch];
     }
