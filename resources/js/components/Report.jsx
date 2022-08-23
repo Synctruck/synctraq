@@ -6,7 +6,7 @@ import swal from 'sweetalert'
 import Select from 'react-select'
 import ReportDelivery from '../components/ReportDelivery'
 
-function ReportAssigns() {
+function Report() {
 
     const [listReport, setListReport] = useState([]);
 
@@ -281,14 +281,17 @@ function ReportAssigns() {
                         </div>
                     </div>
                 </div>
+                <div className="col-lg-12">
+                    <ReportDelivery/>
+                </div>
             </div>
         </section>
     );
 }
 
-export default ReportAssigns;
+export default Report;
 
-if (document.getElementById('reportAssigns'))
+if (document.getElementById('report'))
 {
-    ReactDOM.render(<ReportAssigns />, document.getElementById('reportAssigns'));
+    ReactDOM.render(<Report />, document.getElementById('report'));
 }

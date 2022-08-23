@@ -15,6 +15,7 @@ require('./components/PackageDispatch');
 require('./components/PackageDelivery');
 require('./components/PackageNotExists');
 require('./components/PackageReturn');
+require('./components/Report');
 require('./components/ReportDelivery');
 require('./components/ReportDispatch');
 require('./components/ReportInbound');
