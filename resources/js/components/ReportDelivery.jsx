@@ -161,7 +161,18 @@ function ReportDelivery() {
         let imgs = '';
         let urlImage = '';
 
+        let photoHttp = false;
+
         if(!packageDispatch.idOnfleet)
+        {
+            photoHttp = true;
+        }
+        else if(packageDispatch.idOnfleet && packageDispatch.photoUrl == '')
+        {
+            photoHttp = true;
+        }
+
+        if(photoHttp)
         {
             let team     = ''
             let driver   = '';
@@ -206,7 +217,7 @@ function ReportDelivery() {
                 }
             }
         }
-        else if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+        else
         {
             if(packageDispatch.photoUrl.split('https').length == 1)
             {
