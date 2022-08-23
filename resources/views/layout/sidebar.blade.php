@@ -184,10 +184,10 @@
 
                 <li class="nav-heading">Maintenances</li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#" aria-expanded="false">
+                    <a class="nav-link {{ (Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer') ) ? '' : 'collapsed'}}" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('team') ? 'true' : 'false'}}">
                       <i class="bi bi-person"></i><span>USERS GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="icons-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav" style="">
+                    <ul id="icons-nav" class="nav-content collapse {{Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer')? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
                         <li >
                             <a class="nav-link {{Request::is('user') ? 'show' : 'collapsed'}}" href="{{url('user')}}">
                                 <i class="bi bi-person"></i>
@@ -209,7 +209,13 @@
                         <li >
                             <a class="nav-link {{Request::is('viewer') ? 'active' : 'collapsed'}}" href="{{url('viewer')}}">
                                 <i class="bi bi-person"></i>
-                                <span>Viewer</span>
+                                <span>Viewers</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link {{Request::is('validator') ? 'active' : 'collapsed'}}" href="{{url('validator')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Validators</span>
                             </a>
                         </li>
                     </ul>

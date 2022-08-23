@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -185,8 +185,14 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('viewer/get/{id}', [ViewerController::class, 'Get']);
 	Route::post('viewer/update/{id}', [ViewerController::class, 'Update']);
 	Route::get('viewer/delete/{id}', [ViewerController::class, 'Delete']);
-	Route::get('viewer/changePassword', [ViewerController::class, 'ChangePassword']);
-	Route::post('viewer/changePassword/save', [ViewerController::class, 'SaveChangePassword']);
+	//============ Maintenance of validator
+	Route::get('validator', [ValidatorController::class, 'Index']);
+	Route::get('validator/list', [ValidatorController::class, 'List']);
+	Route::post('validator/insert', [ValidatorController::class, 'Insert']);
+	Route::get('validator/get/{id}', [ValidatorController::class, 'Get']);
+	Route::post('validator/update/{id}', [ValidatorController::class, 'Update']);
+	Route::get('validator/delete/{id}', [ValidatorController::class, 'Delete']);
+
 
 	Route::get('user/logout', [UserController::class, 'Logout']);
 

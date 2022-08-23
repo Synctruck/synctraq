@@ -40,13 +40,13 @@ function User() {
 
     const listAllUser = (pageNumber) => {
 
-        fetch(url_general +'viewer/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'validator/list?page='+ pageNumber +'&textSearch='+ textSearch)
         .then(res => res.json())
         .then((response) => {
-            setListUser(response.viewerList.data);
-            setPage(response.viewerList.current_page);
-            setTotalPage(response.viewerList.per_page);
-            setTotalUser(response.viewerList.total);
+            setListUser(response.validatorList.data);
+            setPage(response.validatorList.current_page);
+            setTotalPage(response.validatorList.per_page);
+            setTotalUser(response.validatorList.total);
         });
     }
 
@@ -54,7 +54,7 @@ function User() {
         fetch(url_general +'role/list')
         .then(res => res.json())
         .then((response) => {
-            setIdRole(5);
+            setIdRole(2);
             setListRole(response.roleList);
         });
     }
@@ -65,18 +65,18 @@ function User() {
 
         if(id)
         {
-            setTitleModal('Update Viewer')
+            setTitleModal('Update validator')
             setTextButtonSave('Update');
         }
         else
         {
             listAllRole();
             clearForm();
-            setTitleModal('Add Viewer');
+            setTitleModal('Add validator');
             setTextButtonSave('Save');
         }
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewerInsert'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalvalidatorInsert'), {
 
             keyboard: true
         });
@@ -105,7 +105,7 @@ function User() {
 
             LoadingShow();
 
-            fetch(url_general +'viewer/insert', {
+            fetch(url_general +'validator/insert', {
                 headers: { "X-CSRF-TOKEN": token },
                 method: 'post',
                 body: formData
@@ -114,7 +114,7 @@ function User() {
             then((response) => {
                     if(response.stateAction)
                     {
-                        swal("Viewer was registered!", {
+                        swal("validator was registered!", {
 
                             icon: "success",
                         });
@@ -141,7 +141,7 @@ function User() {
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'viewer/update/'+ id, {
+            fetch(url_general +'validator/update/'+ id, {
                 headers: {
                     "X-CSRF-TOKEN": token
                 },
@@ -178,7 +178,7 @@ function User() {
 
         listAllRole();
 
-        fetch(url_general +'viewer/get/'+ id)
+        fetch(url_general +'validator/get/'+ id)
         .then(response => response.json())
         .then(response => {
 
@@ -200,7 +200,7 @@ function User() {
 
         swal({
             title: "You want to delete?",
-            text: "Viewer will be deleted!",
+            text: "validator will be deleted!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -209,7 +209,7 @@ function User() {
 
             if(willDelete)
             {
-                fetch(url_general +'viewer/delete/'+ id)
+                fetch(url_general +'validator/delete/'+ id)
                 .then(response => response.json())
                 .then(response => {
 
@@ -284,7 +284,7 @@ function User() {
         return (
 
             (
-                role.name == 'View'
+                role.name == 'Validador'
                 ?
                     <option value={ role.id }>{ role.name }</option>
 
@@ -295,8 +295,8 @@ function User() {
         );
     });
 
-    const modalViewerInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalViewerInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const modalvalidatorInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalvalidatorInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <form onSubmit={ handlerSaveUser }>
                                                 <div className="modal-content">
@@ -364,7 +364,7 @@ function User() {
     return (
 
         <section className="section">
-            { modalViewerInsert }
+            { modalvalidatorInsert }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -372,7 +372,7 @@ function User() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-10">
-                                        Viewers List
+                                        Validators List
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
@@ -429,6 +429,6 @@ function User() {
 export default User;
 
 // DOM element
-if (document.getElementById('viewer')) {
-    ReactDOM.render(<User />, document.getElementById('viewer'));
+if (document.getElementById('validator')) {
+    ReactDOM.render(<User />, document.getElementById('validator'));
 }
