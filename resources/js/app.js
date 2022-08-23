@@ -29,6 +29,7 @@ require('./components/Team');
 require('./components/Unassigned');
 require('./components/UnassignedTeam');
 require('./components/User');
+require('./components/Viewer');
 require('./components/UserChangePassword');
 
 require('./components/Login');

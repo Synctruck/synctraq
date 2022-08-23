@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
+import Log from 'laravel-mix/src/Log'
 
 function User() {
 
@@ -39,23 +40,21 @@ function User() {
 
     const listAllUser = (pageNumber) => {
 
-        fetch(url_general +'user/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'viewer/list?page='+ pageNumber +'&textSearch='+ textSearch)
         .then(res => res.json())
         .then((response) => {
-
-            setListUser(response.userList.data);
-            setPage(response.userList.current_page);
-            setTotalPage(response.userList.per_page);
-            setTotalUser(response.userList.total);
+            setListUser(response.viewerList.data);
+            setPage(response.viewerList.current_page);
+            setTotalPage(response.viewerList.per_page);
+            setTotalUser(response.viewerList.total);
         });
     }
 
     const listAllRole = (pageNumber) => {
-
         fetch(url_general +'role/list')
         .then(res => res.json())
         .then((response) => {
-
+            setIdRole(5);
             setListRole(response.roleList);
         });
     }
@@ -66,18 +65,18 @@ function User() {
 
         if(id)
         {
-            setTitleModal('Update Usuario')
+            setTitleModal('Update Viewer')
             setTextButtonSave('Update');
         }
         else
         {
             listAllRole();
             clearForm();
-            setTitleModal('Add Usuario');
+            setTitleModal('Add Viewer');
             setTextButtonSave('Save');
         }
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalCategoryInsert'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalViewerInsert'), {
 
             keyboard: true
         });
@@ -106,17 +105,16 @@ function User() {
 
             LoadingShow();
 
-            fetch(url_general +'user/insert', {
+            fetch(url_general +'viewer/insert', {
                 headers: { "X-CSRF-TOKEN": token },
                 method: 'post',
                 body: formData
             })
             .then(res => res.json()).
             then((response) => {
-
                     if(response.stateAction)
                     {
-                        swal("User was registered!", {
+                        swal("Viewer was registered!", {
 
                             icon: "success",
                         });
@@ -143,7 +141,7 @@ function User() {
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'user/update/'+ id, {
+            fetch(url_general +'viewer/update/'+ id, {
                 headers: {
                     "X-CSRF-TOKEN": token
                 },
@@ -180,7 +178,7 @@ function User() {
 
         listAllRole();
 
-        fetch(url_general +'user/get/'+ id)
+        fetch(url_general +'viewer/get/'+ id)
         .then(response => response.json())
         .then(response => {
 
@@ -202,7 +200,7 @@ function User() {
 
         swal({
             title: "You want to delete?",
-            text: "User will be deleted!",
+            text: "Viewer will be deleted!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -211,7 +209,7 @@ function User() {
 
             if(willDelete)
             {
-                fetch(url_general +'user/delete/'+ id)
+                fetch(url_general +'viewer/delete/'+ id)
                 .then(response => response.json())
                 .then(response => {
 
@@ -287,7 +285,7 @@ function User() {
         return (
 
             (
-                role.name != 'Team'
+                role.name == 'View'
                 ?
                     <option value={ role.id }>{ role.name }</option>
 
@@ -298,8 +296,8 @@ function User() {
         );
     });
 
-    const modalCategoryInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const modalViewerInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalViewerInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <form onSubmit={ handlerSaveUser }>
                                                 <div className="modal-content">
@@ -314,7 +312,6 @@ function User() {
                                                                     <label>Role</label>
                                                                     <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Seleccione un rol</option>
                                                                         { listRoleSelect }
                                                                     </select>
                                                                 </div>
@@ -368,7 +365,7 @@ function User() {
     return (
 
         <section className="section">
-            { modalCategoryInsert }
+            { modalViewerInsert }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -376,7 +373,7 @@ function User() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-10">
-                                        Users List
+                                        Viewers List
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
@@ -434,6 +431,6 @@ function User() {
 export default User;
 
 // DOM element
-if (document.getElementById('user')) {
-    ReactDOM.render(<User />, document.getElementById('user'));
+if (document.getElementById('viewer')) {
+    ReactDOM.render(<User />, document.getElementById('viewer'));
 }
