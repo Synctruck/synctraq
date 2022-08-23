@@ -181,6 +181,8 @@ Route::group(['middleware' => 'login'], function() {
 
 	Route::get('user/logout', [UserController::class, 'Logout']);
 
+	Route::get('/reports', [ReportController::class, 'Index']);
+	
 	Route::get('/report/manifest', [ReportController::class, 'IndexManifest']);
 	Route::get('/report/list/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
 	Route::get('/report/export/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);

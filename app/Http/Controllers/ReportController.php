@@ -16,6 +16,11 @@ use Session;
 
 class ReportController extends Controller
 {
+    public function Index()
+    {        
+        return view('report.index');
+    }
+
     public function IndexManifest()
     {        
         return view('report.indexmanifest');

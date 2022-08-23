@@ -121,63 +121,91 @@
 
             @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'View' || Session::get('user')->role->name == 'Team')
                 <li class="nav-heading">Reports</li>
-                @if(Session::get('user')->role->name == 'Team')
-                    <li>
-                        <a class="nav-link {{Request::is('report/dispatch') ? 'show' : 'collapsed'}}" href="{{url('/report/dispatch')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Dispatch</span>
-                        </a>
-                    </li>
-                @else
-                    <li>
-                        <a class="nav-link {{Request::is('report/assigns') ? 'show' : 'collapsed'}}" href="{{url('/report/assigns')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Assigns Teams</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/delivery') ? 'show' : 'collapsed'}}" href="{{url('/report/delivery')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Delivery</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/dispatch') ? 'show' : 'collapsed'}}" href="{{url('/report/dispatch')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Dispatch</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Failed</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/inbound') ? 'show' : 'collapsed'}}" href="{{url('/report/inbound')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Inbound</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/manifest') ? 'show' : 'collapsed'}}" href="{{url('/report/manifest')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Manifest</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/notExists') ? 'show' : 'collapsed'}}" href="{{url('/report/notExists')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Not Exists</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link {{Request::is('report/return-company') ? 'show' : 'collapsed'}}" href="{{url('/report/return-company')}}">
-                            <i class="bx bxs-report"></i>
-                            <span>Return Company</span>
-                        </a>
-                    </li>
-                @endif
+                <li class="nav-item">
+                    <a class="nav-link 
+                            {{
+                                Request::is('report/failed') ||
+                                Request::is('report/assigns') ||
+                                Request::is('report/dispatch') ||
+                                Request::is('report/delivery') ||
+                                Request::is('report/inbound') ||
+                                Request::is('report/manifest') ||
+                                Request::is('report/notExists') ||
+                                Request::is('report/return-company')
+                                ?
+                                    ''
+                                :
+                                    'collapsed' 
+                            }}" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#"
+                    >
+                        <i class="bi bi-journal-text"></i><span>GENERAL REPORTS</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="forms-nav" class="nav-content 
+                            {{
+                                Request::is('report/failed') ||
+                                Request::is('report/assigns') ||
+                                Request::is('report/dispatch') ||
+                                Request::is('report/delivery') ||
+                                Request::is('report/inbound') ||
+                                Request::is('report/manifest') ||
+                                Request::is('report/notExists') ||
+                                Request::is('report/return-company')
+                                ?
+                                    'collapse show' 
+                                :
+                                    'collapse' 
+                            }}" data-bs-parent="#sidebar-nav"
+                    >
+                        <li>
+                            <a class="nav-link {{Request::is('report/assigns') ? 'show' : 'collapsed'}}" href="{{url('/report/assigns')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Assigns Teams</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/delivery') ? 'show' : 'collapsed'}}" href="{{url('/report/delivery')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Delivery</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/dispatch') ? 'show' : 'collapsed'}}" href="{{url('/report/dispatch')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Dispatch</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Failed</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/inbound') ? 'show' : 'collapsed'}}" href="{{url('/report/inbound')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Inbound</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/manifest') ? 'show' : 'collapsed'}}" href="{{url('/report/manifest')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Manifest</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/notExists') ? 'show' : 'collapsed'}}" href="{{url('/report/notExists')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Not Exists</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link {{Request::is('report/return-company') ? 'show' : 'collapsed'}}" href="{{url('/report/return-company')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Return Company</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             @endif
 
             @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
@@ -198,7 +226,7 @@
                     <a class="nav-link {{Request::is('driver') ? 'active' : 'collapsed'}}" href="{{url('driver')}}">
                         <i class="bx bxs-user"></i>
                         <span>Drivers</span>
-                    </a>
+                    </a> 
                 </li>
                 @if(Session::get('user')->role->name == 'Administrador')
                     <li >

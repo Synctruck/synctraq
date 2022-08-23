@@ -629,7 +629,7 @@ h1, h2, h3, h4, h5, h6 {
   background: #667aa4;
 }
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: white;
 }
 .sidebar-nav .nav-link .bi-chevron-down {
   margin-right: 0;
@@ -648,9 +648,9 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   font-size: 16px;
   font-weight: 600;
-  color: #012970;
+  color: #ffffff;
   transition: 0.3;
-  padding: 10px 0 10px 40px;
+  padding: 10px 0 10px 60px;
   transition: 0.3s;
 }
 .sidebar-nav .nav-content a i {
@@ -660,7 +660,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
 }
 .sidebar-nav .nav-content a:hover, .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: white;
 }
 .sidebar-nav .nav-content a.active i {
   background-color: #4154f1;
