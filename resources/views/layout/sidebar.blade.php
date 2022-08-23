@@ -72,7 +72,7 @@
                     </li>
                 @endif
 
-                
+
                 @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
                     <li class="nav-heading">* DESELECT</li>
                     @if(Session::get('user')->role->name == 'Administrador')
@@ -102,7 +102,7 @@
                         </li>
                     @endif
                 @endif
-                
+
                 @if(Session::get('user')->role->name == 'Team')
                     <li >
                         <a class="nav-link {{Request::is('assignedTeam') ? 'show' : 'collapsed'}}" href="{{url('/assignedTeam')}}">
@@ -181,25 +181,46 @@
             @endif
 
             @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
+
                 <li class="nav-heading">Maintenances</li>
-                <li >
-                    <a class="nav-link {{Request::is('user') ? 'show' : 'collapsed'}}" href="{{url('user')}}">
-                        <i class="bx bxs-user"></i>
-                        <span>Users</span>
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer') ) ? '' : 'collapsed'}}" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('team') ? 'true' : 'false'}}">
+                      <i class="bi bi-person"></i><span>USERS GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
+                    <ul id="icons-nav" class="nav-content collapse {{Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer')? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
+                        <li >
+                            <a class="nav-link {{Request::is('user') ? 'show' : 'collapsed'}}" href="{{url('user')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Users</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link {{Request::is('team') ? 'active' : 'collapsed'}}" href="{{url('team')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Teams</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link {{Request::is('driver') ? 'active' : 'collapsed'}}" href="{{url('driver')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Drivers</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link {{Request::is('viewer') ? 'active' : 'collapsed'}}" href="{{url('viewer')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Viewers</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link {{Request::is('validator') ? 'active' : 'collapsed'}}" href="{{url('validator')}}">
+                                <i class="bi bi-person"></i>
+                                <span>Validators</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li >
-                    <a class="nav-link {{Request::is('team') ? 'active' : 'collapsed'}}" href="{{url('team')}}">
-                        <i class="bx bxs-user"></i>
-                        <span>Teams</span>
-                    </a>
-                </li>
-                <li >
-                    <a class="nav-link {{Request::is('driver') ? 'active' : 'collapsed'}}" href="{{url('driver')}}">
-                        <i class="bx bxs-user"></i>
-                        <span>Drivers</span>
-                    </a>
-                </li>
+
                 @if(Session::get('user')->role->name == 'Administrador')
                     <li >
                         <a class="nav-link {{Request::is('routes') ? 'show' : 'collapsed'}}" href="{{url('routes')}}">

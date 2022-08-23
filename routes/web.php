@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,8 +10,8 @@ use App\Http\Controllers\{AssignedController, ClientController, CommentsControll
 |
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great! 
-| 
+| contains the "web" middleware group. Now create something great!
+|
 */
 Route::get('/home/public', [IndexController::class, 'IndexPublic']);
 
@@ -22,7 +22,7 @@ Route::post('/user/login', [UserController::class, 'ValidationLogin']);
 Route::group(['middleware' => 'login'], function() {
 
 	Route::get('/home', [IndexController::class, 'Index']);
-		
+
 	Route::get('/dashboard', [IndexController::class, 'Dashboard']);
 	Route::get('/dashboard/getallquantity', [IndexController::class, 'GetAllQuantity']);
 
@@ -47,7 +47,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('client/get/{id}', [ClientController::class, 'Get']);
 	Route::post('client/update/{id}', [ClientController::class, 'Update']);
 	Route::get('client/delete/{id}', [ClientController::class, 'Delete']);
-	
+
 	//============ Unassigned
 	Route::get('/unassigned/', [UnassignedController::class, 'UnassignedIndex']);
 	Route::get('/unassigned/list/{dataView}/{idTeam}', [UnassignedController::class, 'List']);
@@ -88,7 +88,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::post('/package-dispatch/change', [PackageDispatchController::class, 'Change']);
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
 
-	
+
 
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index']);
@@ -96,7 +96,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);
 	Route::get('/package-delivery/updatedDeliverFields', [PackageDeliveryController::class, 'UpdatedDeliverFields']);
-	
+
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);
@@ -168,7 +168,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('team/get/{id}', [TeamController::class, 'Get']);
 	Route::post('team/update/{id}', [TeamController::class, 'Update']);
 	Route::get('team/delete/{id}', [TeamController::class, 'Delete']);
-	 
+
 	//============ Maintenance of users
 	Route::get('user', [UserController::class, 'Index']);
 	Route::get('user/list', [UserController::class, 'List']);
@@ -178,6 +178,21 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('user/delete/{id}', [UserController::class, 'Delete']);
 	Route::get('user/changePassword', [UserController::class, 'ChangePassword']);
 	Route::post('user/changePassword/save', [UserController::class, 'SaveChangePassword']);
+	//============ Maintenance of view
+	Route::get('viewer', [ViewerController::class, 'Index']);
+	Route::get('viewer/list', [ViewerController::class, 'List']);
+	Route::post('viewer/insert', [ViewerController::class, 'Insert']);
+	Route::get('viewer/get/{id}', [ViewerController::class, 'Get']);
+	Route::post('viewer/update/{id}', [ViewerController::class, 'Update']);
+	Route::get('viewer/delete/{id}', [ViewerController::class, 'Delete']);
+	//============ Maintenance of validator
+	Route::get('validator', [ValidatorController::class, 'Index']);
+	Route::get('validator/list', [ValidatorController::class, 'List']);
+	Route::post('validator/insert', [ValidatorController::class, 'Insert']);
+	Route::get('validator/get/{id}', [ValidatorController::class, 'Get']);
+	Route::post('validator/update/{id}', [ValidatorController::class, 'Update']);
+	Route::get('validator/delete/{id}', [ValidatorController::class, 'Delete']);
+
 
 	Route::get('user/logout', [UserController::class, 'Logout']);
 

@@ -64,7 +64,7 @@ function Team() {
         fetch(url_general +'role/list')
         .then(res => res.json())
         .then((response) => {
-
+            console.log('rolesss: ',response.roleList)
             setListRole(response.roleList);
         });
     }
@@ -242,11 +242,11 @@ function Team() {
 
                 team.routes_team.forEach( teamRoute => {
 
-                    document.getElementById('idCheck'+ teamRoute.route.name).checked = true;                
+                    document.getElementById('idCheck'+ teamRoute.route.name).checked = true;
                 });
 
                 handleChange();
-                
+
             }, 100);
 
             handlerOpenModal(team.id);
@@ -286,7 +286,7 @@ function Team() {
 
                     LoadingHide();
                 });
-            } 
+            }
         });
     }
 
@@ -347,7 +347,7 @@ function Team() {
     });
 
     const listRoleSelect = listRole.map( (role, i) => {
-
+        console.log('roleee: ',role);
         return (
 
             (
@@ -455,7 +455,7 @@ function Team() {
                                                                         <option value="0">No</option>
                                                                         <option value="1">Yes</option>
                                                                     </select>
-                                                                </div> 
+                                                                </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
@@ -497,7 +497,7 @@ function Team() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10"> 
+                                    <div className="col-lg-10">
                                         Team List
                                     </div>
                                     <div className="col-lg-2">
@@ -508,7 +508,7 @@ function Team() {
                                 </div>
                             </h5>
                             <div className="row form-group">
-                                <div className="col-lg-12"> 
+                                <div className="col-lg-12">
                                     <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Buscar..."/>
                                     <br/>
                                 </div>
