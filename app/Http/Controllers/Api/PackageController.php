@@ -374,7 +374,7 @@ class PackageController extends Controller
                         "city" => $packageHistory->Dropoff_City,
                         "state" => $packageHistory->Dropoff_Province,
                         "country" => "US",
-                        "datetime" => date('Y-m-d H:i:s', strtotime($packageHistory->created_at)),
+                        "datetime" => $packageManifest->created_at,
                     ];
 
                     array_push($packagesHistories, $data);

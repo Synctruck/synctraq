@@ -20,24 +20,6 @@ use Session;
 
 class PackageController extends Controller
 {
-    private $apiKey;
-
-    private $base64;
-
-    private $headers;
-
-
-    public function __construct()
-    {
-        $this->apiKey = '4c52f49c1db8d158f7ff1ace1722f341';
-
-        $this->base64 = base64_encode($this->apiKey .':');
-
-        $this->headers = [
-                        'Authorization: Basic '. $this->base64,
-                    ];
-    }
-
     public function Index()
     {        
         return view('package.index');
