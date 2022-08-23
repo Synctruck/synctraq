@@ -108,7 +108,7 @@ class PackageController extends Controller
             $data['contains_alcohol']      = $request->get('shipment')['shipment_details']['contains_alcohol'];
             $data['insured_value']         = $request->get('shipment')['shipment_details']['insured_value'];
             $data['service_code']          = $request->get('shipment')['shipment_details']['service_code'];
-            $data['Route']                 = $request->get('shipment')['shipment_details']['route_name'];
+            $data['Route']                 = isset($request->get('shipment')['shipment_details']['route_name']) ? $request->get('shipment')['shipment_details']['route_name'] : '';
             $data['extra_data']            = $request->get('shipment')['shipment_details']['extra_data'];
 
             $validator = Validator::make($data,
@@ -122,7 +122,6 @@ class PackageController extends Controller
                     "Dropoff_Province" => ["required"],
                     "Dropoff_Postal_Code" => ["required"],
                     "Weight" => ["required"],
-                    "Route" => ["required"],
 
                     "manifest_id" => ["required"],
                     "mixing_center_shortcode" => ["required"],
@@ -155,8 +154,6 @@ class PackageController extends Controller
                     "Dropoff_Postal_Code.required" => "The field is required",
 
                     "Weight.required" => "The field is required",
-
-                    "Route.required" => "The field is required",
 
                     "manifest_id.required" => "The field is required",
 
