@@ -332,24 +332,26 @@ class PackageController extends Controller
                 return response()->json(
 
                     [
-                        'status' => 401,
                         'message' => 'Incorrect credentials (Authorization) for the use of the api',
                     ]
-                );
+                , 401);
             }
 
-            $packageHistoryList = PackageHistory::select('idCompany', 'Reference_Number_1', 'Description', 'Description_Return', 'status', 'created_at')
-                                            ->where('Reference_Number_1', $Reference_Number_1)
+            $packageManifest = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'On hold')
+                                            ->first();
+
+            $packageHistoryList = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                             ->orderBy('created_at')
                                             ->get();
 
-            if($packageHistoryList)
+            if(count($packageHistoryList) > 0)
             {
                 $packageManifest = $packageHistoryList->first();
 
                 $companyStatus = CompanyStatus::where('idCompany', $packageManifest->idCompany)->get();
 
-                $packages = [];
+                $packagesHistories = [];
 
                 foreach($packageHistoryList as $packageHistory)
                 {
@@ -368,22 +370,24 @@ class PackageController extends Controller
 
                     $data = [
 
-                        "Reference_Number_1" => $packageHistory->Reference_Number_1,
-                        "Description"        => $packageHistory->Description,
-                        "Description_Return" => $packageHistory->Description_Return,
-                        "status"             => $statusCompany,
+                        "status" => $packageHistory->status,
+                        "city" => $packageHistory->Dropoff_City,
+                        "state" => $packageHistory->Dropoff_Province,
+                        "country" => "US",
+                        "datetime" => date('Y-m-d H:i:s', strtotime($packageHistory->created_at)),
                     ];
 
-                    array_push($packages, $data);
+                    array_push($packagesHistories, $data);
                 }
 
                 return response()->json(
 
                     [
-                        'status' => 200,
-                        'Data Reference' => $packages,
+                        'reference' => $Reference_Number_1,
+                        'created_at' => date('Y-m-d H:i:s', strtotime($packageManifest->created_at)),
+                        'history' => $packagesHistories,
                     ]
-                );
+                , 200);
             }
 
             return response()->json(
@@ -392,17 +396,16 @@ class PackageController extends Controller
                     'Reference' => $Reference_Number_1,
                     'message' => 'The reference sent as parameter does not exist.',
                 ]
-            );
+            , 400);
         }
         else
         {
             return response()->json(
 
                 [
-                    'status' => 400,
                     'message' => 'Missing validation header (Authorization)',
                 ]
-            );
+            , 401);
         }
     }
 }
