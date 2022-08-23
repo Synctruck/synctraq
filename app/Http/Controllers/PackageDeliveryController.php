@@ -57,7 +57,7 @@ class PackageDeliveryController extends Controller
         }
 
         $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)->get();
-        
+
         $quantityDelivery = $packageListDelivery->total();
 
         return ['packageListDelivery' => $packageListDelivery, 'listDeliveries' => $listDeliveries, 'quantityDelivery' => $quantityDelivery];
@@ -85,12 +85,12 @@ class PackageDeliveryController extends Controller
                 {
                     $row = str_getcsv($raw_string);
 
-                    if(isset($row[20]))
+                    if(isset($row[0]))
                     {
                         $package = [];
 
-                        $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[20])->first();
-                        $packageDelivery = PackageDelivery::where('taskDetails', $row[20])->first();
+                        $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])->first();
+                        $packageDelivery = PackageDelivery::where('taskDetails', $row[0])->first();
 
                         if($packageDispatch)
                         {
@@ -165,74 +165,40 @@ class PackageDeliveryController extends Controller
                                 $packageHistory->idUserDispatch              = $packageDispatch->idUserDispatch;
                                 $packageHistory->idUser                       = Session::get('user')->id;
 
-                                $saveFailed = false;
+                                //Register delivery
+                                $packageDelivery = new PackageDelivery();
 
-                                if($row[16] == 'TRUE')
-                                {
-                                    //Register delivery
-                                    $packageDelivery = new PackageDelivery();
+                                $packageDelivery->taskDetails        = $row[0];//
+                                $packageDelivery->photoUrl           = $row[1];//
+                                $packageDelivery->arrivalTime        = $row[2];//
+                                $packageDelivery->arrivalLonLat      = $row[3];//
 
-                                    $packageDelivery->taskDetails        = $row[20];
-                                    $packageDelivery->status             = $row[3];
-                                    $packageDelivery->workerName         = $row[6];
-                                    $packageDelivery->destinationAddress = $row[7];
-                                    $packageDelivery->recipientNotes     = $row[21];
-                                    $packageDelivery->photoUrl           = $row[23];
-                                    $packageDelivery->forceCompletedBy   = $row[26];
-                                    $packageDelivery->arrivalTime        = $row[30];
-                                    $packageDelivery->arrivalLonLat      = $row[8];
+                                $packageDelivery->save();
 
-                                    $packageDelivery->save();
+                                //Updated dispatch to delivery, for data delivery
+                                $packageDispatch->taskDetails        = $row[0];
+                                $packageDispatch->photoUrl           = $row[1];
+                                // $packageDispatch->forceCompletedBy   = $row[26];
+                                $packageDispatch->arrivalTime        = $row[2];
+                                $packageDispatch->arrivalLonLat      = $row[3];
+                                $packageDispatch->Date_Delivery      = date('Y-m-d H:i:s');
+                                $packageDispatch->status = 'Delivery';
 
-                                    //Updated dispatch to delivery, for data delivery
-                                    $packageDispatch->taskDetails        = $row[20];
-                                    $packageDispatch->workerName         = $row[6];
-                                    $packageDispatch->destinationAddress = $row[7];
-                                    $packageDispatch->recipientNotes     = $row[21];
-                                    $packageDispatch->photoUrl           = $row[23];
-                                    $packageDispatch->forceCompletedBy   = $row[26];
-                                    $packageDispatch->arrivalTime        = $row[30];
-                                    $packageDispatch->arrivalLonLat      = $row[8];
-                                    $packageDispatch->Date_Delivery      = date('Y-m-d H:i:s');
+                                $packageDispatch->save();
 
-                                    $packageDispatch->status = 'Delivery';
+                                $packageHistory->idUserDelivery = Session::get('user')->id;
+                                $packageHistory->Date_Delivery  = date('Y-m-d H:s:i');
+                                $packageHistory->Description = $description;
+                                $packageHistory->status      = 'Delivery';
 
-                                    $packageDispatch->save();
+                                $packageHistory->save();
 
-                                    $packageHistory->idUserDelivery = Session::get('user')->id;
-                                    $packageHistory->Date_Delivery  = date('Y-m-d H:s:i');
 
-                                    $packageHistory->Description = $description;
-                                    $packageHistory->status      = 'Delivery';
-
-                                    $packageHistory->save();
-                                }
-                                else
-                                {
-                                    $dateInit = date('Y-m-d') .' 00:00:00';
-                                    $dateEnd  = date('Y-m-d') .' 23:59:59';
-
-                                    $packageFailed = PackageHistory::where('Reference_Number_1', $row[20])
-                                                                    ->where('status', 'Failed')
-                                                                    ->whereIn('created_at', [$dateInit, $dateEnd])
-                                                                    ->first();
-                                    if(!$packageFailed)
-                                    {
-                                        $packageHistory->idUserFailed = Session::get('user')->id;
-                                        $packageHistory->Date_Failed  = date('Y-m-d H:s:i');
-
-                                        $packageHistory->Description = 'Delivery - failed';
-
-                                        $packageHistory->status      = 'Failed';
-
-                                        $packageHistory->save();
-                                    }
-                                }
                             }
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -240,7 +206,7 @@ class PackageDeliveryController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -270,7 +236,7 @@ class PackageDeliveryController extends Controller
 
                 $packageFailed->save();
             }
-            
+
         }
 
         return "completed";
@@ -399,7 +365,7 @@ class PackageDeliveryController extends Controller
                                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
                                     $packageHistory->Description                  = $description;
                                     $packageHistory->status                       = 'Delivery';
- 
+
                                     $packageHistory->save();
 
                                     $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
@@ -431,7 +397,7 @@ class PackageDeliveryController extends Controller
                     }
                 }
 
-                DB::commit(); 
+                DB::commit();
 
                 return [
                         'stateAction' => 'onfleet',
@@ -457,7 +423,7 @@ class PackageDeliveryController extends Controller
         $curl = curl_init("https://onfleet.com/api/v2/tasks/shortId/". $taskOnfleet);
 
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
 
         $output = json_decode(curl_exec($curl), 1);
