@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Driver, Package, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -20,6 +20,23 @@ use Session;
 
 class PackageController extends Controller
 {
+    private $apiKey;
+
+    private $base64;
+
+    private $headers;
+
+    public function __construct()
+    {
+        $this->apiKey = Configuration::first()->key_onfleet;
+
+        $this->base64 = base64_encode($this->apiKey .':');
+
+        $this->headers = [
+                        'Authorization: Basic '. $this->base64,
+                    ];
+    }
+
     public function Index()
     {        
         return view('package.index');
