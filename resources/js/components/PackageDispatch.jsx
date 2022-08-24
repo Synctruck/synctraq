@@ -427,154 +427,163 @@ function PackageDispatch() {
         }
     }
 
+    const [sendDispatach, setSendDispatch] = useState(1);
+
     const handlerValidation = (e) => {
 
         e.preventDefault();
 
-        setReadOnly(true);
+        console.log(sendDispatach);
 
-        const formData = new FormData();
+        if(sendDispatach)
+        {
+            setReadOnly(true);
+            setSendDispatch(0);
 
-        formData.append('Reference_Number_1', Reference_Number_1);
-        formData.append('idTeam', idTeam);
-        formData.append('idDriver', idDriver);
-        formData.append('RouteSearch', RouteSearch);
+            const formData = new FormData();
 
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            formData.append('Reference_Number_1', Reference_Number_1);
+            formData.append('idTeam', idTeam);
+            formData.append('idDriver', idDriver);
+            formData.append('RouteSearch', RouteSearch);
 
-        fetch(url_general +'package-dispatch/insert', {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: formData
-        })
-        .then(res => res.json()).
-        then((response) => {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                if(response.stateAction == 'notInbound')
-                {
-                    setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+            fetch(url_general +'package-dispatch/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'notRoute')
-                {
-                    setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                    if(response.stateAction == 'notInbound')
+                    {
+                        setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'repairPackage')
-                {
-                    setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
-                    setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
-                    setTypeMessageDispatch('error');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notRoute')
+                    {
+                        setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notInland')
-                {
-                    setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'repairPackage')
+                    {
+                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'notExists')
-                {
-                    setTextMessage("NO EXISTS #"+ Reference_Number_1);
-                    setTypeMessageDispatch('error');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notInland')
+                    {
+                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notValidatedRoute')
-                {
-                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
-                    setTypeMessageDispatch('error');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notExists')
+                    {
+                        setTextMessage("NO EXISTS #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'validated')
-                {
-                    let packageDispatch = response.packageDispatch;
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notValidatedRoute')
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
 
-                    let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
-                    let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'validated')
+                    {
+                        let packageDispatch = response.packageDispatch;
 
-                    let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
-                                    packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
-                                    team +' / '+ driver;
+                        let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
+                        let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
 
-                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
-                    setTextMessageDate(textDate);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+ 
+                                        packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
+                                        team +' / '+ driver;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'returCompany')
-                {
-                    setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
+                        setTextMessageDate(textDate);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage(''); 
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'packageExist')
-                {
-                    setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'returCompany')
+                    {
+                        setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'delivery')
-                {
-                    setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageExist')
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'assigned')
-                {
-                    setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
-                    setTypeMessageDispatch('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'delivery')
+                    {
+                        setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction)
-                {
-                    setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
-                    setTextMessageDate('');
-                    setTypeMessageDispatch('success');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'assigned')
+                    {
+                        setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                    listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction)
+                    {
+                        setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
+                        setTextMessageDate('');
+                        setTypeMessageDispatch('success');
+                        setNumberPackage('');
+                        
+                        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoSuccess').play();
-                }
-                else
-                {
-                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                    setTypeMessageDispatch('error');
-                    setNumberPackage('');
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
+                    }
+                    else
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
 
-                setReadOnly(false);
-            },
-        );
+                    setReadOnly(false);
+                    setSendDispatch(1);
+                },
+            );
+        }
     }
 
     const handlerImport = (e) => {
@@ -1595,7 +1604,7 @@ function PackageDispatch() {
                                                             <div className="col-lg-3">
                                                                 <div className="form-group">
                                                                     <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                         <option value="0">All</option>
                                                                         { listDriverSelect }
                                                                     </select>

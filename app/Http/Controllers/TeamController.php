@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Routes, TeamRoute, User};
+use App\Models\{Configuration, Routes, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -25,7 +25,7 @@ class TeamController extends Controller
 
     public function __construct()
     {
-        $this->apiKey = '4c52f49c1db8d158f7ff1ace1722f341';
+        $this->apiKey = Configuration::first()->key_onfleet;
 
         $this->base64 = base64_encode($this->apiKey .':');
 

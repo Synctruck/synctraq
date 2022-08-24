@@ -96,10 +96,10 @@ function ReportManifest() {
 
             <tr key={i} className="alert-success">
                 <td>
-                    { pack.Date_manifest.substring(5, 7) }-{ pack.Date_manifest.substring(8, 10) }-{ pack.Date_manifest.substring(0, 4) }
+                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { pack.Date_manifest.substring(11, 19) }
+                    { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>

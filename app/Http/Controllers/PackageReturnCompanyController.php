@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, TeamRoute, User};
+use App\Models\{Company, Configuration, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -29,7 +29,7 @@ class PackageReturnCompanyController extends Controller
 
     public function __construct()
     {
-        $this->apiKey = '4c52f49c1db8d158f7ff1ace1722f341';
+        $this->apiKey = Configuration::first()->key_onfleet;
 
         $this->base64 = base64_encode($this->apiKey .':');
 
