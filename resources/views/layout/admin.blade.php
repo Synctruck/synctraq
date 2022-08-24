@@ -34,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;500&display=swap" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://jejo.es/posts/javascript/jsbarcode/JsBarcode.all.min.js"></script>
+    <script src="{{asset('js/barcode.js')}}"></script>
   <!-- =======================================================
   * Template Name: NiceAdmin - v2.2.0
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
