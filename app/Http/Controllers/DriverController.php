@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Driver, TeamRoute, User};
+use App\Models\{Configuration, Driver, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -35,7 +35,7 @@ class DriverController extends Controller
     }
 
     public function Index()
-    {        
+    {
         return view('driver.index');
     }
 
@@ -55,7 +55,7 @@ class DriverController extends Controller
                                 ->where('idTeam', Session::get('user')->id)
                                 ->paginate($this->paginate);
         }
-        
+
         $roleUser = Session::get('user')->role->name;
 
         return ['userList' => $userList, 'roleUser' => $roleUser];
@@ -76,7 +76,7 @@ class DriverController extends Controller
     }
 
     public function Insert(Request $request)
-    {        
+    {
         $validator = Validator::make($request->all(),
 
             [
@@ -118,7 +118,7 @@ class DriverController extends Controller
         {
             $registerTeam = true;
         }
-        
+
         if($registerTeam == 400)
         {
             return ['stateAction' => 'phoneIncorrect'];
@@ -140,14 +140,14 @@ class DriverController extends Controller
 
             return ['stateAction' => true];
         }
-        
+
         return ['stateAction' => 'notTeamOnfleet'];
-    } 
+    }
 
     public function Get($id)
     {
         $driver = Driver::find($id);
-        
+
         return ['driver' => $driver];
     }
 
@@ -202,7 +202,7 @@ class DriverController extends Controller
 
                     $updated = true;
                 }
-            } 
+            }
         }
         else
         {
@@ -225,10 +225,10 @@ class DriverController extends Controller
             if($updatedTeam)
             {
                 $user = Driver::find($id);
-                
+
                 $request['nameTeam'] = $team->name;
 
-                $user->update($request->all()); 
+                $user->update($request->all());
 
                 return ['stateAction' => true];
             }
@@ -249,7 +249,7 @@ class DriverController extends Controller
 
             if($driverOnfleet)
             {
-                $deleteOnfleet = $this->DeleteOnfleet($driver->idOnfleet); 
+                $deleteOnfleet = $this->DeleteOnfleet($driver->idOnfleet);
             }
         }
 
@@ -313,7 +313,7 @@ class DriverController extends Controller
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            
+
         $output = curl_exec($curl);
 
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -362,7 +362,7 @@ class DriverController extends Controller
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            
+
         $output = curl_exec($curl);
 
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
