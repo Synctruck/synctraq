@@ -11573,7 +11573,7 @@ function PackageDispatch() {
           setTextMessageDate('');
           setTypeMessageDispatch('success');
           setNumberPackage('');
-          listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+          listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
           document.getElementById('Reference_Number_1').focus();
           document.getElementById('soundPitidoSuccess').play();
         } else {
@@ -12572,10 +12572,10 @@ function PackageDispatch() {
         routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
       });
       setRouteSearchList(routesSearch);
-      listAllPackageDispatch(1, dataView, StateSearch, routesSearch);
+      listAllPackageDispatch(1, filterDate, StateSearch, routesSearch);
     } else {
       setRouteSearchList('all');
-      listAllPackageDispatch(1, dataView, StateSearch, 'all');
+      listAllPackageDispatch(1, filterDate, StateSearch, 'all');
     }
   };
 
@@ -12604,10 +12604,10 @@ function PackageDispatch() {
         statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
       });
       setStateSearch(statesSearch);
-      listAllPackageDispatch(1, dataView, statesSearch, RouteSearchList);
+      listAllPackageDispatch(1, filterDate, statesSearch, RouteSearchList);
     } else {
       setStateSearch('all');
-      listAllPackageDispatch(1, dataView, 'all', RouteSearchList);
+      listAllPackageDispatch(1, filterDate, 'all', RouteSearchList);
     }
   };
 
