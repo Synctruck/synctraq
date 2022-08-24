@@ -13869,9 +13869,14 @@ function PackageInbound() {
         setTextMessage("VALID / " + Reference_Number_1 + ' / ' + response.packageInbound.Route);
         setTypeMessage('success');
         setNumberPackage('');
+        setWeightLabel(response.packageInbound.Weight);
+        setStateLabel(response.packageInbound.Dropoff_Province);
+        setRouteLabel(response.packageInbound.Route);
+        setReferenceLabel(response.packageInbound.Reference_Number_1);
         listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
+        handlerPrint('labelPrint');
       } else {
         setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
         setTypeMessage('error');
@@ -14044,6 +14049,46 @@ function PackageInbound() {
     inputFileRef.current.click();
   };
 
+  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
+      _useState82 = _slicedToArray(_useState81, 2),
+      EWR1 = _useState82[0],
+      setEWR1 = _useState82[1];
+
+  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
+      _useState84 = _slicedToArray(_useState83, 2),
+      WeightLabel = _useState84[0],
+      setWeightLabel = _useState84[1];
+
+  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
+      _useState86 = _slicedToArray(_useState85, 2),
+      StateLabel = _useState86[0],
+      setStateLabel = _useState86[1];
+
+  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState88 = _slicedToArray(_useState87, 2),
+      ReferenceLabel = _useState88[0],
+      setReferenceLabel = _useState88[1];
+
+  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+      _useState90 = _slicedToArray(_useState89, 2),
+      RouteLabel = _useState90[0],
+      setRouteLabel = _useState90[1];
+
+  var handlerPrint = function handlerPrint(nombreDiv) {
+    JsBarcode("#imgBarcode", Reference_Number_1, {
+      textMargin: 0,
+      fontSize: 27
+    });
+    var content = document.getElementById('labelPrint');
+    var pri = document.getElementById('ifmcontentstoprint').contentWindow;
+    pri.document.open();
+    pri.document.write(content.innerHTML);
+    pri.document.close();
+    pri.focus();
+    pri.print();
+    document.getElementById('Reference_Number_1').focus();
+  };
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("section", {
     className: "section",
     children: [modalPackageEdit, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
@@ -14095,7 +14140,7 @@ function PackageInbound() {
                           return setNumberPackage(e.target.value);
                         },
                         readOnly: readInput,
-                        maxLength: "15",
+                        maxLength: "16",
                         required: true
                       })]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
@@ -14296,6 +14341,154 @@ function PackageInbound() {
                         options: optionsRoleSearch
                       })
                     })]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-6"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-6",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("iframe", {
+                    id: "ifmcontentstoprint",
+                    style: {
+                      height: '0px',
+                      width: '100%',
+                      position: 'absolute',
+                      fontFamily: 'Arial, Helvetica, sans-serif'
+                    },
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      id: "labelPrint",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("table", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            className: "verticalTextRight",
+                            style: {
+                              transform: 'rotate(90deg)'
+                            },
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                              style: {
+                                fontSize: '2rem',
+                                fontFamily: 'Arial',
+                                marginBottom: '0px',
+                                position: 'relative',
+                                left: '10px',
+                                bottom: '40px'
+                              },
+                              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                children: EWR1
+                              })
+                            })
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("table", {
+                              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+                                  className: "text-center",
+                                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '35%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                                      style: {
+                                        textAlign: 'left',
+                                        paddingLeft: '5px',
+                                        fontSize: '1.9rem',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      },
+                                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                        children: WeightLabel
+                                      })
+                                    })
+                                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '30%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px',
+                                      textAlign: 'center'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                                      src: 'https://synctrucknj.com/img/logo.PNG',
+                                      style: {
+                                        width: '115px',
+                                        left: '-25px',
+                                        top: '30px',
+                                        position: 'relative',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      }
+                                    })
+                                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                                    style: {
+                                      "float": 'left',
+                                      width: '35%',
+                                      fontFamily: 'Arial',
+                                      marginBottom: '0px'
+                                    },
+                                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                                      style: {
+                                        textAlign: 'right',
+                                        paddingRight: '5px',
+                                        fontSize: '1.9rem',
+                                        fontFamily: 'Arial',
+                                        marginBottom: '0px'
+                                      },
+                                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                        children: StateLabel
+                                      })
+                                    })
+                                  })]
+                                })
+                              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                                  style: {
+                                    textAlign: 'center'
+                                  },
+                                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("svg", {
+                                    id: "imgBarcode",
+                                    style: {
+                                      width: '400',
+                                      height: '250',
+                                      margin: '0px'
+                                    }
+                                  })
+                                })
+                              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tr", {
+                                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                                  className: "text-center",
+                                  style: {
+                                    textAlign: 'center',
+                                    fontFamily: 'Arial',
+                                    marginBottom: '0px'
+                                  }
+                                })
+                              })]
+                            })
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+                            className: "verticalTextRight",
+                            style: {
+                              transform: 'rotate(90deg)',
+                              fontFamily: 'Arial',
+                              marginBottom: '0px'
+                            },
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+                              style: {
+                                fontSize: '3.2rem',
+                                fontFamily: 'Arial',
+                                marginBottom: '0px',
+                                position: 'relative',
+                                left: '10px',
+                                bottom: '-40px'
+                              },
+                              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                                children: RouteLabel
+                              })
+                            })
+                          })]
+                        })
+                      })
+                    })
                   })
                 })]
               })]
