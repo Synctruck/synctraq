@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
+
 function UserChangePassword() {
 
     const [oldPassword , setOldPassword] = useState('');
@@ -44,7 +45,7 @@ function UserChangePassword() {
     const handlerSave = (e) => {
 
         e.preventDefault();
-        
+
         LoadingShow();
 
         const formData = new FormData();
@@ -108,7 +109,7 @@ function UserChangePassword() {
                                             <div className="form-group">
                                                 <label htmlFor="">OLD PASSWORD</label>
                                                 <div id="oldPassword" className="text-danger">{ messageOldPassword }</div>
-                                                <input type="password" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="30" required/>
+                                                <input type="text" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="30" required/>
                                             </div>
                                         </div>
                                         <div className="col-lg-3">
@@ -122,7 +123,7 @@ function UserChangePassword() {
                                             <div className="form-group">
                                                 <label htmlFor="">CONFIRMATION PASSWORD</label>
                                                 <div id="idRole" className="text-danger">{ messageConfirmationPassword }</div>
-                                                <input type="confirmationPassword" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="30" required/>
+                                                <input type="password" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="30" required/>
                                             </div>
                                         </div>
                                         <div className="col-lg-3">
