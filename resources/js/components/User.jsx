@@ -66,14 +66,14 @@ function User() {
 
         if(id)
         {
-            setTitleModal('Update Usuario')
+            setTitleModal('Update Admin')
             setTextButtonSave('Update');
         }
         else
         {
             listAllRole();
             clearForm();
-            setTitleModal('Add Usuario');
+            setTitleModal('Add Admin');
             setTextButtonSave('Save');
         }
 
@@ -116,7 +116,7 @@ function User() {
 
                     if(response.stateAction)
                     {
-                        swal("User was registered!", {
+                        swal("Admin was registered!", {
 
                             icon: "success",
                         });
@@ -157,7 +157,7 @@ function User() {
                 {
                     listAllUser(1);
 
-                    swal("User was updated!", {
+                    swal("Admin was updated!", {
 
                         icon: "success",
                     });
@@ -202,7 +202,7 @@ function User() {
 
         swal({
             title: "You want to delete?",
-            text: "User will be deleted!",
+            text: "Admin will be deleted!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -217,7 +217,7 @@ function User() {
 
                     if(response.stateAction)
                     {
-                        swal("User successfully deleted!", {
+                        swal("Admin successfully deleted!", {
 
                             icon: "success",
                         });
@@ -287,7 +287,7 @@ function User() {
         return (
 
             (
-                role.name != 'Team'
+                role.name == 'Administrador'
                 ?
                     <option value={ role.id }>{ role.name }</option>
 
@@ -376,7 +376,7 @@ function User() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-10">
-                                        Users List
+                                        Admins List
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>

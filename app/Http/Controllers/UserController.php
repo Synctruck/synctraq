@@ -19,7 +19,7 @@ class UserController extends Controller
     public $paginate = 50;
 
     public function Index()
-    {        
+    {
         return view('user.index');
     }
 
@@ -27,9 +27,9 @@ class UserController extends Controller
     {
         $userList = User::with('role')->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('idRole', '!=', 3)
+                                ->where('idRole', '=', 1)
                                 ->paginate($this->paginate);
-        
+
         return ['userList' => $userList];
     }
 
@@ -76,7 +76,7 @@ class UserController extends Controller
     public function Get($id)
     {
         $user = User::find($id);
-        
+
         return ['user' => $user];
     }
 
@@ -119,8 +119,8 @@ class UserController extends Controller
         }
 
         $user = User::find($id);
-        
-        $user->update($request->all()); 
+
+        $user->update($request->all());
 
         return ['stateAction' => true];
     }
@@ -137,7 +137,7 @@ class UserController extends Controller
     public function Login()
     {
 
-        //GET ALL 
+        //GET ALL
         /*$apiKey = '87c91d7a9a0f7480c0467ade52c999be';
 
         $base64 = base64_encode($apiKey .':');
@@ -153,12 +153,12 @@ class UserController extends Controller
         $output = json_decode(curl_exec($ch), 1);
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+
         dd($output);
 
         dd(2);*/
 
- 
+
 
 
         //$curl -i -X GET "https://onfleet.com/api/v2/auth/test" \ -u "thisIsNotAValidAPIKey:";
