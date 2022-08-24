@@ -175,7 +175,7 @@ class PackageDispatchController extends Controller
                 $team   = User::find($request->get('idTeam'));
                 $driver = $user;
 
-                $description = 'Dispatch - for: Dispatcher 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
             }
             elseif($request->get('idTeam'))
             {
@@ -183,7 +183,7 @@ class PackageDispatchController extends Controller
 
                 $user = User::find($idUserDispatch);
 
-                $description = 'Dispatch - for: Dispatcher 1 to '. $user->name;
+                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
             }
 
             try
@@ -647,7 +647,7 @@ class PackageDispatchController extends Controller
 
                                 $user = User::find($idUserDispatch);
 
-                                $description = 'Dispatch - for: Dispatcher 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                             }
                             elseif($request->get('idTeam'))
                             {
@@ -655,7 +655,7 @@ class PackageDispatchController extends Controller
 
                                 $user = User::find($idUserDispatch);
 
-                                $description = 'Dispatch - for: Dispatcher 1 to '. $user->name;
+                                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
                             }
 
                             $packageDispatch = new PackageDispatch();
@@ -781,11 +781,11 @@ class PackageDispatchController extends Controller
 
                 if($user->nameTeam)
                 {
-                    $description = 'Return - for: Dispatcher 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                    $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                 }
                 else
                 {
-                    $description = 'Return - for: Dispatcher 1 to '. $user->name;
+                    $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
                 }
 
                 try

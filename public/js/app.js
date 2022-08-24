@@ -11473,104 +11473,115 @@ function PackageDispatch() {
     }
   };
 
+  var _useState99 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState100 = _slicedToArray(_useState99, 2),
+      sendDispatach = _useState100[0],
+      setSendDispatch = _useState100[1];
+
   var handlerValidation = function handlerValidation(e) {
     e.preventDefault();
-    setReadOnly(true);
-    var formData = new FormData();
-    formData.append('Reference_Number_1', Reference_Number_1);
-    formData.append('idTeam', idTeam);
-    formData.append('idDriver', idDriver);
-    formData.append('RouteSearch', RouteSearch);
-    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    fetch(url_general + 'package-dispatch/insert', {
-      headers: {
-        "X-CSRF-TOKEN": token
-      },
-      method: 'post',
-      body: formData
-    }).then(function (res) {
-      return res.json();
-    }).then(function (response) {
-      if (response.stateAction == 'notInbound') {
-        setTextMessage("NOT VALIDATED INBOUND #" + Reference_Number_1);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'notRoute') {
-        setTextMessage("NOT VALIDATED ROUTES #" + Reference_Number_1);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'repairPackage') {
-        setTextMessage("TASK NOT LOADED #" + Reference_Number_1);
-        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
-        setTypeMessageDispatch('error');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'notInland') {
-        setTextMessage("NOT INLAND o 67660 #" + Reference_Number_1);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'notExists') {
-        setTextMessage("NO EXISTS #" + Reference_Number_1);
-        setTypeMessageDispatch('error');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'notValidatedRoute') {
-        setTextMessage("El paquete N° " + Reference_Number_1 + " no corresponde a su ruta asignada!");
-        setTypeMessageDispatch('error');
-        setNumberPackage('');
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'validated') {
-        var packageDispatch = response.packageDispatch;
-        var team = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
-        var driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name + ' ' + packageDispatch.driver.nameOfOwner : '';
-        var textDate = packageDispatch.Date_Dispatch.substring(5, 7) + '-' + packageDispatch.Date_Dispatch.substring(8, 10) + '-' + packageDispatch.Date_Dispatch.substring(0, 4) + '-' + packageDispatch.Date_Dispatch.substring(11, 19) + ' / ' + team + ' / ' + driver;
-        setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageDispatch.Route);
-        setTextMessageDate(textDate);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'returCompany') {
-        setTextMessage("The package N°" + Reference_Number_1 + " was returned to the company!");
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'packageExist') {
-        setTextMessage("El paquete N° " + Reference_Number_1 + " existe, pero no pasó la validación Inbound!");
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'delivery') {
-        setTextMessage("PACKAGE WAS MARKED AS DELIVERED #" + Reference_Number_1);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'assigned') {
-        setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #" + Reference_Number_1);
-        setTypeMessageDispatch('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction) {
-        setTextMessage("SUCCESSFULLY DISPATCHED #" + Reference_Number_1);
-        setTextMessageDate('');
-        setTypeMessageDispatch('success');
-        setNumberPackage('');
-        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoSuccess').play();
-      } else {
-        setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
-        setTypeMessageDispatch('error');
-        setNumberPackage('');
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoError').play();
-      }
+    console.log(sendDispatach);
 
-      setReadOnly(false);
-    });
+    if (sendDispatach) {
+      setReadOnly(true);
+      setSendDispatch(0);
+      var formData = new FormData();
+      formData.append('Reference_Number_1', Reference_Number_1);
+      formData.append('idTeam', idTeam);
+      formData.append('idDriver', idDriver);
+      formData.append('RouteSearch', RouteSearch);
+      var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+      fetch(url_general + 'package-dispatch/insert', {
+        headers: {
+          "X-CSRF-TOKEN": token
+        },
+        method: 'post',
+        body: formData
+      }).then(function (res) {
+        return res.json();
+      }).then(function (response) {
+        if (response.stateAction == 'notInbound') {
+          setTextMessage("NOT VALIDATED INBOUND #" + Reference_Number_1);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'notRoute') {
+          setTextMessage("NOT VALIDATED ROUTES #" + Reference_Number_1);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'repairPackage') {
+          setTextMessage("TASK NOT LOADED #" + Reference_Number_1);
+          setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+          setTypeMessageDispatch('error');
+          setNumberPackage('');
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'notInland') {
+          setTextMessage("NOT INLAND o 67660 #" + Reference_Number_1);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'notExists') {
+          setTextMessage("NO EXISTS #" + Reference_Number_1);
+          setTypeMessageDispatch('error');
+          setNumberPackage('');
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'notValidatedRoute') {
+          setTextMessage("El paquete N° " + Reference_Number_1 + " no corresponde a su ruta asignada!");
+          setTypeMessageDispatch('error');
+          setNumberPackage('');
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'validated') {
+          var packageDispatch = response.packageDispatch;
+          var team = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
+          var driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name + ' ' + packageDispatch.driver.nameOfOwner : '';
+          var textDate = packageDispatch.Date_Dispatch.substring(5, 7) + '-' + packageDispatch.Date_Dispatch.substring(8, 10) + '-' + packageDispatch.Date_Dispatch.substring(0, 4) + '-' + packageDispatch.Date_Dispatch.substring(11, 19) + ' / ' + team + ' / ' + driver;
+          setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageDispatch.Route);
+          setTextMessageDate(textDate);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'returCompany') {
+          setTextMessage("The package N°" + Reference_Number_1 + " was returned to the company!");
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'packageExist') {
+          setTextMessage("El paquete N° " + Reference_Number_1 + " existe, pero no pasó la validación Inbound!");
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'delivery') {
+          setTextMessage("PACKAGE WAS MARKED AS DELIVERED #" + Reference_Number_1);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'assigned') {
+          setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #" + Reference_Number_1);
+          setTypeMessageDispatch('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction) {
+          setTextMessage("SUCCESSFULLY DISPATCHED #" + Reference_Number_1);
+          setTextMessageDate('');
+          setTypeMessageDispatch('success');
+          setNumberPackage('');
+          listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoSuccess').play();
+        } else {
+          setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
+          setTypeMessageDispatch('error');
+          setNumberPackage('');
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoError').play();
+        }
+
+        setReadOnly(false);
+        setSendDispatch(1);
+      });
+    }
   };
 
   var handlerImport = function handlerImport(e) {
@@ -12516,10 +12527,10 @@ function PackageDispatch() {
     })
   });
 
-  var _useState99 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState100 = _slicedToArray(_useState99, 2),
-      optionsRoleSearch = _useState100[0],
-      setOptionsRoleSearch = _useState100[1];
+  var _useState101 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState102 = _slicedToArray(_useState101, 2),
+      optionsRoleSearch = _useState102[0],
+      setOptionsRoleSearch = _useState102[1];
 
   var listOptionRoute = function listOptionRoute(listRoutes) {
     setOptionsRoleSearch([]);
@@ -12532,10 +12543,10 @@ function PackageDispatch() {
     });
   };
 
-  var _useState101 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-      _useState102 = _slicedToArray(_useState101, 2),
-      RouteSearch = _useState102[0],
-      setRouteSearch = _useState102[1];
+  var _useState103 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState104 = _slicedToArray(_useState103, 2),
+      RouteSearch = _useState104[0],
+      setRouteSearch = _useState104[1];
 
   var handlerChangeRoute = function handlerChangeRoute(routes) {
     if (routes.length != 0) {
@@ -12563,10 +12574,10 @@ function PackageDispatch() {
     }
   };
 
-  var _useState103 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState104 = _slicedToArray(_useState103, 2),
-      optionsStateSearch = _useState104[0],
-      setOptionsStateSearch = _useState104[1];
+  var _useState105 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState106 = _slicedToArray(_useState105, 2),
+      optionsStateSearch = _useState106[0],
+      setOptionsStateSearch = _useState106[1];
 
   var listOptionState = function listOptionState(listState) {
     setOptionsStateSearch([]);
@@ -17074,34 +17085,32 @@ function ReportDelivery() {
           team = packageDispatch.driver.name;
         }
       }
-    } else {
-      if (packageDispatch.photoUrl.split('https').length == 1) {
-        var idsImages = packageDispatch.photoUrl.split(',');
+    } else if (packageDispatch.idOnfleet && packageDispatch.photoUrl) {
+      var idsImages = packageDispatch.photoUrl.split(',');
 
-        if (idsImages.length == 1) {
-          imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+      if (idsImages.length == 1) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+          src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
+          width: "100"
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png';
+      } else if (idsImages.length >= 2) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
             src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
-            width: "100"
-          });
-          urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png';
-        } else if (idsImages.length >= 2) {
-          imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
-              src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
-              width: "50",
-              style: {
-                border: '2px solid red'
-              }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
-              src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png',
-              width: "50",
-              style: {
-                border: '2px solid red'
-              }
-            })]
-          });
-          urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png';
-        }
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png',
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          })]
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png';
       }
     }
 
@@ -19461,9 +19470,9 @@ function ReportManifest() {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       className: "alert-success",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
-        children: [pack.Date_manifest.substring(5, 7), "-", pack.Date_manifest.substring(8, 10), "-", pack.Date_manifest.substring(0, 4)]
+        children: [pack.created_at.substring(5, 7), "-", pack.created_at.substring(8, 10), "-", pack.created_at.substring(0, 4)]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: pack.Date_manifest.substring(11, 19)
+        children: pack.created_at.substring(11, 19)
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
           children: pack.Reference_Number_1

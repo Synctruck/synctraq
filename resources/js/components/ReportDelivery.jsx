@@ -217,27 +217,24 @@ function ReportDelivery() {
                 }
             }
         }
-        else
+        else if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
         {
-            if(packageDispatch.photoUrl.split('https').length == 1)
+            let idsImages = packageDispatch.photoUrl.split(',');
+
+            if(idsImages.length == 1)
             {
-                let idsImages = packageDispatch.photoUrl.split(',');
+                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
 
-                if(idsImages.length == 1)
-                {
-                    imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+            }
+            else if(idsImages.length >= 2)
+            {
+                imgs =  <>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                        </>
 
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-                }
-                else if(idsImages.length >= 2)
-                {
-                    imgs =  <>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            </>
-
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
-                }
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
             }
         }
 

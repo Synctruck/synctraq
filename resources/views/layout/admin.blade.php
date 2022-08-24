@@ -586,7 +586,7 @@
 
                 if(packageDispatch)
                 {
-                    if(packageDispatch.idOnfleet)
+                    if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
                     {
                         let urlsPhoto = packageDispatch.photoUrl.split(',')
 
