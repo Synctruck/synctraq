@@ -19,6 +19,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use Barryvdh\DomPDF\Facade\PDF;
 
+use Picqer\Barcode\BarcodeGeneratorPNG;
+
 use DB;
 use Session;
 
@@ -105,6 +107,8 @@ class PackageInboundController extends Controller
             try
             {
                 DB::beginTransaction();
+
+                //$this->GenerateBarCode($packageManifest->Reference_Number_1);
 
                 $packageInbound = new PackageInbound();
 
@@ -499,6 +503,32 @@ class PackageInboundController extends Controller
         else
         {
             return ['stateAction' => true];
+        }
+    }
+
+    public function GenerateBarCode($Reference_Number_1)
+    {
+        $generador = new BarcodeGeneratorPNG();
+
+        $texto = $Reference_Number_1;
+        $tipo  = $generador::TYPE_CODE_128;
+
+        $imagen = $generador->getBarcode($texto, $tipo);
+
+        # Aquí se guarda la imagen
+        $nombreArchivo = 'img/barcode/'. $Reference_Number_1 .'.png';
+
+        # Escribir los datos
+        $bytesEscritos = file_put_contents($nombreArchivo, $imagen);
+
+        # Comprobar si todo fue bien
+        if($bytesEscritos !== false)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 

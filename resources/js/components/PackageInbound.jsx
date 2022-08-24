@@ -465,10 +465,17 @@ function PackageInbound() {
                     setTypeMessage('success');
                     setNumberPackage('');
 
+                    setWeightLabel(response.packageInbound.Weight);
+                    setStateLabel(response.packageInbound.Dropoff_Province);
+                    setRouteLabel(response.packageInbound.Route);
+                    setReferenceLabel(response.packageInbound.Reference_Number_1);
+
                     listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
+
+                    handlerPrint('labelPrint');
                 }
                 else
                 {
@@ -651,6 +658,32 @@ function PackageInbound() {
         inputFileRef.current.click();
     }
 
+    const [EWR1, setEWR1]                     = useState('EWR1');
+    const [WeightLabel, setWeightLabel]       = useState('12');
+    const [StateLabel, setStateLabel]         = useState('CR');
+    const [ReferenceLabel, setReferenceLabel] = useState('');
+    const [RouteLabel, setRouteLabel]         = useState('QWE');
+
+    const handlerPrint = (nombreDiv) => {
+
+        JsBarcode("#imgBarcode", Reference_Number_1, {
+
+            textMargin: 0,
+            fontSize: 27,
+        });
+
+        var content = document.getElementById('labelPrint');
+        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
+
+        pri.document.open();
+        pri.document.write(content.innerHTML);
+        pri.document.close();
+        pri.focus();
+        pri.print();
+        
+        document.getElementById('Reference_Number_1').focus();
+    }
+
     return (
 
         <section className="section">
@@ -704,7 +737,7 @@ function PackageInbound() {
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="15" required/>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="16" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
@@ -744,8 +777,6 @@ function PackageInbound() {
                                             </div>
                                         </form>
                                     </div>
-                                    
-                                    
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-6">
@@ -791,6 +822,55 @@ function PackageInbound() {
                                                 <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <iframe id="ifmcontentstoprint" style={{
+                                            height: '0px',
+                                            width: '100%',
+                                            position: 'absolute',
+                                            fontFamily: 'Arial, Helvetica, sans-serif',
+                                        }}>
+                                            <div id="labelPrint">
+                                                <table>
+                                                    <tr> 
+                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)'} }>
+                                                            <h1 style={ {fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px'} }><b>{ EWR1 }</b></h1>
+                                                        </td>
+                                                        <td> 
+                                                            <table>
+                                                                <tr>
+                                                                    <td className="text-center">
+                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                            <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ WeightLabel }</b></h1>
+                                                                        </div>
+                                                                        <div style={ {float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center'} }>
+                                                                            <img src={ 'https://synctrucknj.com/img/logo.PNG' } style={ {width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px'} }/>
+                                                                        </div>
+                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                            <h1 style={ {textAlign: 'right', paddingRight: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ StateLabel }</b></h1>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style={ {textAlign: 'center'} }>
+                                                                        <svg id="imgBarcode" style={ {width: '400', height: '250', margin: '0px'} }></svg>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className="text-center" style={ {textAlign: 'center', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                            <h1 style={ {fontSize: '3.2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '-40px'} }><b>{ RouteLabel }</b></h1>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </iframe> 
                                     </div>
                                 </div>
                             </h5>

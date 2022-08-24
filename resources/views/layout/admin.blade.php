@@ -34,6 +34,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;500&display=swap" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://jejo.es/posts/javascript/jsbarcode/JsBarcode.all.min.js"></script>
   <!-- =======================================================
   * Template Name: NiceAdmin - v2.2.0
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -56,6 +57,18 @@
         background: url('{{asset("cargando.gif")}}') 50% 50% no-repeat rgb(0,0,0);
         opacity: 0.92;
         display: none;
+    }
+
+    .verticalTextLeft
+    {
+        writing-mode: vertical-lr;
+        transform: rotate(180deg);
+    }
+
+    .verticalTextRight
+    {
+        writing-mode: vertical-lr;
+        transform: rotate(360deg);
     }
 </style>
 <body id="bodyAdmin">
