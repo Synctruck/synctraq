@@ -33,18 +33,23 @@ function PackageDispatch() {
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
-    const [dataView, setDataView] = useState('today');
+    // const [dataView, setDataView] = useState('today');
+    var dateNow = new Date();
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
+    const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
+    dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
 
+    const [filterDate, setFilterDate] = useState(dateNow);
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
-    
+
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
     const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
 
-    const [typeMessage, setTypeMessage] = useState(''); 
+    const [typeMessage, setTypeMessage] = useState('');
 
     const [file, setFile]             = useState('');
 
@@ -69,7 +74,7 @@ function PackageDispatch() {
 
     }, []);
 
-    useEffect(() => { 
+    useEffect(() => {
 
     }, [Reference_Number_1])
 
@@ -77,9 +82,9 @@ function PackageDispatch() {
 
         setPage(1);
 
-        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
 
-    }, [idTeam, idDriver, dataView]);
+    }, [idTeam, idDriver, filterDate]);
 
     useEffect(() => {
 
@@ -94,9 +99,9 @@ function PackageDispatch() {
 
     }, [file]);
 
-    const listAllPackageDispatch = (pageNumber, dataView, StateSearch, RouteSearchList) => {
+    const listAllPackageDispatch = (pageNumber, filterDate, StateSearch, RouteSearchList) => {
 
-        fetch(url_general +'package-dispatch/list/'+ dataView +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
+        fetch(url_general +'package-dispatch/list/'+ filterDate +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -127,7 +132,7 @@ function PackageDispatch() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageDispatch(pageNumber, dataView, StateSearch, RouteSearchList);
+        listAllPackageDispatch(pageNumber, filterDate, StateSearch, RouteSearchList);
     }
 
     const listAllRoute = (pageNumber) => {
@@ -188,7 +193,7 @@ function PackageDispatch() {
         //clearValidation();
 
         setReadOnlyInput(true);
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
 
             keyboard: true
@@ -242,7 +247,7 @@ function PackageDispatch() {
                         icon: "success",
                     });
 
-                    listAllPackageDispatch(page, dataView, StateSearch, RouteSearchList);
+                    listAllPackageDispatch(page, filterDate, StateSearch, RouteSearchList);
                 }
                 else(response.status == 422)
                 {
@@ -407,7 +412,7 @@ function PackageDispatch() {
             setIdTeam(idTeam);
             setIdDriver(0);
             setListDriver([]);
-            
+
             fetch(url_general +'driver/team/list/'+ idTeam)
             .then(res => res.json())
             .then((response) => {
@@ -502,14 +507,14 @@ function PackageDispatch() {
                     let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
                     let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
 
-                    let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+ 
+                    let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
                                     packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
                                     team +' / '+ driver;
 
                     setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
                     setTextMessageDate(textDate);
                     setTypeMessageDispatch('warning');
-                    setNumberPackage(''); 
+                    setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -551,8 +556,8 @@ function PackageDispatch() {
                     setTextMessageDate('');
                     setTypeMessageDispatch('success');
                     setNumberPackage('');
-                    
-                    listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+                    listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -605,7 +610,7 @@ function PackageDispatch() {
 
                         document.getElementById('fileImport').value = '';
 
-                        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+                        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
 
                         setViewButtonSave('none');
                     }
@@ -623,7 +628,7 @@ function PackageDispatch() {
     const changeReference = (e) => {
 
         e.preventDefault();
-        
+
         /*if(idDriverAsing == 0)
         {
             swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
@@ -654,8 +659,8 @@ function PackageDispatch() {
                     setTextMessage("RE-ASSIGN PACKAGE DISPATCHED #"+ Reference_Number_1);
                     setTypeMessageDispatch('success');
                     setNumberPackage('');
-                    
-                    listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+
+                    listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -663,7 +668,7 @@ function PackageDispatch() {
                     setTextButtonSave('Guardar');
                     setDisabledButton(false);
                 }
-                
+
             },
         );
 
@@ -678,8 +683,8 @@ function PackageDispatch() {
 
             if(willDelete)
             {
-                
-            } 
+
+            }
         });*/
     }
 
@@ -700,14 +705,14 @@ function PackageDispatch() {
                     { packageDispatch.Date_Dispatch.substring(11, 19) }
                 </td>
                 {
-                    roleUser == 'Administrador' 
+                    roleUser == 'Administrador'
                     ?
                         packageDispatch.driver ? parseInt(packageDispatch.driver.idTeam) == 0 || packageDispatch.driver.idTeam == null ? <><td><b>{ packageDispatch.driver.name }</b></td><td><b></b></td></> : <><td><b>{ packageDispatch.driver.nameTeam }</b></td><td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td></> : ''
                     :
                         ''
                 }
                 {
-                    roleUser == 'Team' 
+                    roleUser == 'Team'
                     ?
                         packageDispatch.driver.idTeam ? <td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td> : <td></td>
                     :
@@ -726,7 +731,7 @@ function PackageDispatch() {
                 <td style={ {textAlign: 'center'} }>
                     { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(packageDispatch.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -758,7 +763,7 @@ function PackageDispatch() {
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         setReadOnly(true);
- 
+
         fetch(url_general +'package/return/dispatch', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
@@ -787,7 +792,7 @@ function PackageDispatch() {
                     setTextMessage("Paquete N° "+ idPackage +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
-                    
+
                     document.getElementById('return_Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
 
@@ -1176,7 +1181,7 @@ function PackageDispatch() {
                                                                         <option value="0">No</option>
                                                                         <option value="1">Yes</option>
                                                                     </select>
-                                                                </div> 
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -1278,7 +1283,7 @@ function PackageDispatch() {
                 :
                     ''
             )
-            
+
         );
     });
 
@@ -1314,7 +1319,7 @@ function PackageDispatch() {
                                                                             <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
                                                                                 <option value="">All</option>
                                                                                 { listTeamSelect }
-                                                                            </select> 
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                 </>
@@ -1340,7 +1345,7 @@ function PackageDispatch() {
                                                         </div>
 
                                                         <div className="row">
-                                                            
+
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label>Address</label>
@@ -1478,7 +1483,7 @@ function PackageDispatch() {
         }
     }
 
-    return ( 
+    return (
 
         <section className="section">
             { modalTeamInsert }
@@ -1490,7 +1495,7 @@ function PackageDispatch() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    
+
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-1">
@@ -1555,15 +1560,15 @@ function PackageDispatch() {
                                                                 </button>
                                                             </div>
                                                         </form>
-                                                    </div> 
+                                                    </div>
                                                 :
-                                                    ''       
+                                                    ''
                                             }
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                                 <div className="row">
                                     <div className="col-lg-10">
                                         <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
@@ -1584,7 +1589,7 @@ function PackageDispatch() {
                                                                     <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                                         <option value="">All</option>
                                                                         { listTeamSelect }
-                                                                    </select> 
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-3">
@@ -1609,7 +1614,7 @@ function PackageDispatch() {
                                                                 <div className="form-group">
                                                                     <label htmlFor="">DRIVER</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) } required>
-                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option> 
+                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option>
                                                                         { listDriverSelect }
                                                                     </select>
                                                                 </div>
@@ -1618,7 +1623,7 @@ function PackageDispatch() {
                                                     :
                                                         ''
                                                 }
-                                                
+
                                             </div>
                                             <div className="row">
                                                 <div className="col-lg-12 text-center">
@@ -1672,13 +1677,13 @@ function PackageDispatch() {
                                     </div>
                                 </div>
 
-                                
+
                                 <hr/><br/>
-                                
+
                                 <div className="row">
                                     <div className="col-lg-2">
                                         <div className="form-group">
-                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b> 
+                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -1689,10 +1694,7 @@ function PackageDispatch() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-7">
-                                                <select className="form-control" onChange={ (e) => setDataView(e.target.value) }>
-                                                    <option value="all">All</option>
-                                                    <option value="today" selected>Today</option>
-                                                </select>
+                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>
@@ -1725,7 +1727,7 @@ function PackageDispatch() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>
                                                     <input class="form-check-input" type="checkbox" id="checkAllPackage" value="1" onChange={ () => hanldlerCheckAll() }/>
@@ -1745,7 +1747,7 @@ function PackageDispatch() {
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
-                                                         
+
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>PACKAGE ID</th>

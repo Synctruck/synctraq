@@ -31,7 +31,7 @@ class PackageInboundController extends Controller
         return view('package.inbound');
     }
 
-    public function List(Request $request, $dataView, $route, $state)
+    public function List(Request $request, $filterDate, $route, $state)
     {
         $routes = explode(',', $route);
         $states = explode(',', $state);
@@ -45,15 +45,11 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
+            $date = explode("-",$filterDate);
+            $packageListInbound = $packageListInbound->whereMonth('created_at', $date[1])
+                                    ->whereYear('created_at', $date[0])
+                                    ->whereDay('created_at', $date[2]);
 
-        if($dataView == 'today')
-        {
-            $dateInit  = date('Y-m-d') .' 00:00:00';
-            $dateEnd   = date('Y-m-d', strtotime('+1 day')) .' 03:00:00';
-
-            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateInit, $dateEnd]);
-        }
-        
         if($route != 'all')
         {
             $packageListInbound = $packageListInbound->whereIn('Route', $routes);
@@ -63,7 +59,7 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->whereIn('Dropoff_Province', $states);
         }
-        
+
         $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')
                                                 ->paginate(50);
@@ -80,14 +76,14 @@ class PackageInboundController extends Controller
     public function Insert(Request $request)
     {
         $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
-            
+
         $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
 
         if($packageInbound)
         {
             return ['stateAction' => 'validated', 'packageInbound' => $packageInbound];
         }
-        
+
         if($packageManifest)
         {
             if($packageManifest->filter)
@@ -147,7 +143,7 @@ class PackageInboundController extends Controller
                 $packageInbound->Weight                       = $packageManifest->Weight;
                 $packageInbound->Route                        = $packageManifest->Route;
                 $packageInbound->Name                         = $packageManifest->Name;
-                $packageInbound->idUser                       = Session::get('user')->id;  
+                $packageInbound->idUser                       = Session::get('user')->id;
                 $packageInbound->status                       = 'Inbound';
 
                 $packageInbound->save();
@@ -331,7 +327,7 @@ class PackageInboundController extends Controller
 
                 $packageIDs = $packageIDs == '' ? $row[0] : $packageIDs .','. $row[0];
             }
-            
+
             $lineNumber++;
         }
 
@@ -413,7 +409,7 @@ class PackageInboundController extends Controller
                                     $packageInbound->Weight                       = $packageManifest->Weight;
                                     $packageInbound->Route                        = $packageManifest->Route;
                                     $packageInbound->Name                         = $packageManifest->Name;
-                                    $packageInbound->idUser                       = Session::get('user')->id;  
+                                    $packageInbound->idUser                       = Session::get('user')->id;
                                     $packageInbound->status                       = 'Inbound';
 
                                     $packageInbound->save();
@@ -483,7 +479,7 @@ class PackageInboundController extends Controller
                             }
                         }
                     }
-                    
+
                     $lineNumber++;
                 }
 
@@ -491,7 +487,7 @@ class PackageInboundController extends Controller
 
                 DB::commit();
 
-                return ['stateAction' => true];    
+                return ['stateAction' => true];
             }
             catch(Exception $e)
             {

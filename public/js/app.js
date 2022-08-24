@@ -10854,12 +10854,18 @@ function PackageDispatch() {
   var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState40 = _slicedToArray(_useState39, 2),
       quantityDispatch = _useState40[0],
-      setQuantityDispatch = _useState40[1];
+      setQuantityDispatch = _useState40[1]; // const [dataView, setDataView] = useState('today');
 
-  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('today'),
+
+  var dateNow = new Date();
+  var day = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate();
+  var month = dateNow.getMonth() + 1 < 10 ? '0' + (dateNow.getMonth() + 1) : dateNow.getMonth() + 1;
+  dateNow = dateNow.getFullYear() + "-" + month + "-" + day;
+
+  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dateNow),
       _useState42 = _slicedToArray(_useState41, 2),
-      dataView = _useState42[0],
-      setDataView = _useState42[1];
+      filterDate = _useState42[0],
+      setFilterDate = _useState42[1];
 
   var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState44 = _slicedToArray(_useState43, 2),
@@ -10946,8 +10952,8 @@ function PackageDispatch() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, [Reference_Number_1]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     setPage(1);
-    listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
-  }, [idTeam, idDriver, dataView]);
+    listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+  }, [idTeam, idDriver, filterDate]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (String(file) == 'undefined' || file == '') {
       setViewButtonSave('none');
@@ -10956,8 +10962,8 @@ function PackageDispatch() {
     }
   }, [file]);
 
-  var listAllPackageDispatch = function listAllPackageDispatch(pageNumber, dataView, StateSearch, RouteSearchList) {
-    fetch(url_general + 'package-dispatch/list/' + dataView + '/' + idTeam + '/' + idDriver + '/' + StateSearch + '/' + RouteSearchList + '/?page=' + pageNumber).then(function (res) {
+  var listAllPackageDispatch = function listAllPackageDispatch(pageNumber, filterDate, StateSearch, RouteSearchList) {
+    fetch(url_general + 'package-dispatch/list/' + filterDate + '/' + idTeam + '/' + idDriver + '/' + StateSearch + '/' + RouteSearchList + '/?page=' + pageNumber).then(function (res) {
       return res.json();
     }).then(function (response) {
       setListPackageDispatch(response.packageDispatchList.data);
@@ -10982,7 +10988,7 @@ function PackageDispatch() {
   };
 
   var handlerChangePage = function handlerChangePage(pageNumber) {
-    listAllPackageDispatch(pageNumber, dataView, StateSearch, RouteSearchList);
+    listAllPackageDispatch(pageNumber, filterDate, StateSearch, RouteSearchList);
   };
 
   var listAllRoute = function listAllRoute(pageNumber) {
@@ -11126,7 +11132,7 @@ function PackageDispatch() {
         sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Se actualizó el Package!', {
           icon: "success"
         });
-        listAllPackageDispatch(page, dataView, StateSearch, RouteSearchList);
+        listAllPackageDispatch(page, filterDate, StateSearch, RouteSearchList);
       } else response.status == 422;
 
       {
@@ -11558,7 +11564,7 @@ function PackageDispatch() {
         setTextMessageDate('');
         setTypeMessageDispatch('success');
         setNumberPackage('');
-        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
       } else {
@@ -11597,7 +11603,7 @@ function PackageDispatch() {
             icon: "success"
           });
           document.getElementById('fileImport').value = '';
-          listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+          listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
           setViewButtonSave('none');
         }
 
@@ -11613,7 +11619,7 @@ function PackageDispatch() {
     /*if(idDriverAsing == 0)
     {
         swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
-          return 0;
+         return 0;
     }*/
 
     var formData = new FormData();
@@ -11635,7 +11641,7 @@ function PackageDispatch() {
         setTextMessage("RE-ASSIGN PACKAGE DISPATCHED #" + Reference_Number_1);
         setTypeMessageDispatch('success');
         setNumberPackage('');
-        listAllPackageDispatch(1, dataView, StateSearch, RouteSearchList);
+        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
         setTextButtonSave('Guardar');
@@ -11650,10 +11656,9 @@ function PackageDispatch() {
         dangerMode: true,
     })
     .then((willDelete) => {
-          if(willDelete)
+         if(willDelete)
         {
-            
-        } 
+         }
     });*/
   };
 
@@ -11920,7 +11925,7 @@ function PackageDispatch() {
     {
         listAllRole();
         listAllRoute();
-          //clearForm();
+         //clearForm();
         setTitleModal('Add Team');
         setTextButtonSave('Save');
     }*/
@@ -12970,19 +12975,13 @@ function PackageDispatch() {
                       })
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "col-lg-7",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
                         className: "form-control",
+                        value: filterDate,
                         onChange: function onChange(e) {
-                          return setDataView(e.target.value);
-                        },
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
-                          value: "all",
-                          children: "All"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
-                          value: "today",
-                          selected: true,
-                          children: "Today"
-                        })]
+                          return setFilterDate(e.target.value);
+                        }
                       })
                     })]
                   })
@@ -13255,10 +13254,15 @@ function PackageInbound() {
       readInput = _useState36[0],
       setReadInput = _useState36[1];
 
-  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('today'),
+  var dateNow = new Date();
+  var day = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate();
+  var month = dateNow.getMonth() + 1 < 10 ? '0' + (dateNow.getMonth() + 1) : dateNow.getMonth() + 1;
+  dateNow = dateNow.getFullYear() + "-" + month + "-" + day;
+
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dateNow),
       _useState38 = _slicedToArray(_useState37, 2),
-      dataView = _useState38[0],
-      setDataView = _useState38[1];
+      filterDate = _useState38[0],
+      setFilterDate = _useState38[1];
 
   var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
       _useState40 = _slicedToArray(_useState39, 2),
@@ -13289,8 +13293,8 @@ function PackageInbound() {
     document.getElementById('Reference_Number_1').focus();
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    listAllPackageInbound(page, dataView, RouteSearch, StateSearch);
-  }, [dataView]);
+    listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+  }, [filterDate]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, [Reference_Number_1]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (String(file) == 'undefined' || file == '') {
@@ -13300,8 +13304,8 @@ function PackageInbound() {
     }
   }, [file]);
 
-  var listAllPackageInbound = function listAllPackageInbound(pageNumber, dataView, route, state) {
-    fetch(url_general + 'package-inbound/list/' + dataView + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
+  var listAllPackageInbound = function listAllPackageInbound(pageNumber, filterDate, route, state) {
+    fetch(url_general + 'package-inbound/list/' + filterDate + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
       return res.json();
     }).then(function (response) {
       setListPackageInbound(response.packageList.data);
@@ -13318,7 +13322,7 @@ function PackageInbound() {
   };
 
   var handlerChangePage = function handlerChangePage(pageNumber) {
-    listAllPackageInbound(pageNumber, dataView, RouteSearch, StateSearch);
+    listAllPackageInbound(pageNumber, filterDate, RouteSearch, StateSearch);
   };
 
   var listAllRoute = function listAllRoute() {
@@ -13481,7 +13485,7 @@ function PackageInbound() {
         sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Se actualizó el Package!', {
           icon: "success"
         });
-        listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
+        listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
       } else response.status == 422;
 
       {
@@ -13873,7 +13877,7 @@ function PackageInbound() {
         setStateLabel(response.packageInbound.Dropoff_Province);
         setRouteLabel(response.packageInbound.Route);
         setReferenceLabel(response.packageInbound.Reference_Number_1);
-        listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
+        listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
         handlerPrint('labelPrint');
@@ -13909,7 +13913,7 @@ function PackageInbound() {
           icon: "success"
         });
         document.getElementById('fileImport').value = '';
-        listAllPackageInbound(page, dataView, RouteSearch, StateSearch);
+        listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
         setViewButtonSave('none');
       }
 
@@ -13984,10 +13988,10 @@ function PackageInbound() {
         routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
       });
       setRouteSearch(routesSearch);
-      listAllPackageInbound(page, dataView, routesSearch, StateSearch);
+      listAllPackageInbound(page, filterDate, routesSearch, StateSearch);
     } else {
       setRouteSearch('all');
-      listAllPackageInbound(page, dataView, 'all', StateSearch);
+      listAllPackageInbound(page, filterDate, 'all', StateSearch);
     }
   };
 
@@ -14014,10 +14018,10 @@ function PackageInbound() {
         statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
       });
       setStateSearch(statesSearch);
-      listAllPackageInbound(page, dataView, RouteSearch, statesSearch);
+      listAllPackageInbound(page, filterDate, RouteSearch, statesSearch);
     } else {
       setStateSearch('all');
-      listAllPackageInbound(page, dataView, RouteSearch, 'all');
+      listAllPackageInbound(page, filterDate, RouteSearch, 'all');
     }
   };
 
@@ -14284,19 +14288,13 @@ function PackageInbound() {
                       })
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "col-lg-12",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
                         className: "form-control",
+                        value: filterDate,
                         onChange: function onChange(e) {
-                          return setDataView(e.target.value);
-                        },
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
-                          value: "all",
-                          children: "All"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
-                          value: "today",
-                          selected: true,
-                          children: "Today"
-                        })]
+                          return setFilterDate(e.target.value);
+                        }
                       })
                     })]
                   })

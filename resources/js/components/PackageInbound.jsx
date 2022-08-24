@@ -35,7 +35,12 @@ function PackageInbound() {
 
     const [readInput, setReadInput] = useState(false);
 
-    const [dataView, setDataView] = useState('today');
+    var dateNow = new Date();
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
+    const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
+
+    dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
+    const [filterDate, setFilterDate] = useState(dateNow);
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -57,9 +62,9 @@ function PackageInbound() {
 
     useEffect(() => {
 
-        listAllPackageInbound(page, dataView, RouteSearch, StateSearch);
+        listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
 
-    }, [dataView]);
+    }, [filterDate]);
 
     useEffect(() => {
 
@@ -78,9 +83,9 @@ function PackageInbound() {
 
     }, [file]);
 
-    const listAllPackageInbound = (pageNumber, dataView, route, state) => {
+    const listAllPackageInbound = (pageNumber, filterDate, route, state) => {
 
-        fetch(url_general +'package-inbound/list/'+ dataView +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-inbound/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -100,7 +105,7 @@ function PackageInbound() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, dataView, RouteSearch, StateSearch);
+        listAllPackageInbound(pageNumber, filterDate, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -175,7 +180,7 @@ function PackageInbound() {
         //clearValidation();
 
         setReadOnlyInput(true);
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
 
             keyboard: true
@@ -229,7 +234,7 @@ function PackageInbound() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
+                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -394,7 +399,7 @@ function PackageInbound() {
     const handlerInsert = (e) => {
 
         e.preventDefault();
-        
+
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
@@ -439,7 +444,7 @@ function PackageInbound() {
                     setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
                     setTextMessageDate(packageInbound.created_at);
                     setTypeMessage('warning');
-                    setNumberPackage(''); 
+                    setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -470,7 +475,7 @@ function PackageInbound() {
                     setRouteLabel(response.packageInbound.Route);
                     setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                    listAllPackageInbound(1, dataView, RouteSearch, StateSearch);
+                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -521,7 +526,7 @@ function PackageInbound() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackageInbound(page, dataView, RouteSearch, StateSearch);
+                    listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -561,11 +566,11 @@ function PackageInbound() {
                 <td>{ pack.Route }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
 
                     <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1) }>
-                        PDF 
+                        PDF
                     </button>
                 </td>
             </tr>
@@ -585,13 +590,13 @@ function PackageInbound() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, dataView, routesSearch, StateSearch);
+            listAllPackageInbound(page, filterDate, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackageInbound(page, dataView, 'all', StateSearch);
+            listAllPackageInbound(page, filterDate, 'all', StateSearch);
         }
     };
 
@@ -622,13 +627,13 @@ function PackageInbound() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, dataView, RouteSearch, statesSearch);
+            listAllPackageInbound(page, filterDate, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, dataView, RouteSearch, 'all');
+            listAllPackageInbound(page, filterDate, RouteSearch, 'all');
         }
     };
 
@@ -647,14 +652,14 @@ function PackageInbound() {
     }
 
     const optionCompany = listCompany.map( (company, i) => {
- 
+
         return <option value={company.name}>{company.name}</option>
     })
 
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
-        
+
         inputFileRef.current.click();
     }
 
@@ -680,7 +685,7 @@ function PackageInbound() {
         pri.document.close();
         pri.focus();
         pri.print();
-        
+
         document.getElementById('Reference_Number_1').focus();
     }
 
@@ -694,7 +699,7 @@ function PackageInbound() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-12 form-group text-center"> 
+                                    <div className="col-lg-12 form-group text-center">
                                         {
                                             typeMessage == 'success'
                                             ?
@@ -781,7 +786,7 @@ function PackageInbound() {
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b> 
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -792,10 +797,7 @@ function PackageInbound() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <select className="form-control" onChange={ (e) => setDataView(e.target.value) }>
-                                                    <option value="all">All</option>
-                                                    <option value="today" selected>Today</option>
-                                                </select>
+                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>
@@ -834,11 +836,11 @@ function PackageInbound() {
                                         }}>
                                             <div id="labelPrint">
                                                 <table>
-                                                    <tr> 
+                                                    <tr>
                                                         <td className="verticalTextRight" style={ {transform: 'rotate(90deg)'} }>
                                                             <h1 style={ {fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px'} }><b>{ EWR1 }</b></h1>
                                                         </td>
-                                                        <td> 
+                                                        <td>
                                                             <table>
                                                                 <tr>
                                                                     <td className="text-center">
@@ -870,14 +872,14 @@ function PackageInbound() {
                                                     </tr>
                                                 </table>
                                             </div>
-                                        </iframe> 
+                                        </iframe>
                                     </div>
                                 </div>
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>

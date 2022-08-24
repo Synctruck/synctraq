@@ -42,8 +42,8 @@ class PackageDispatchController extends Controller
         return view('package.dispatch');
     }
 
-    public function List(Request $request, $dataView, $idTeam, $idDriver, $state, $routes)
-    {        
+    public function List(Request $request, $filterDate, $idTeam, $idDriver, $state, $routes)
+    {
         $roleUser = '';
 
         if(Session::get('user')->role->name == 'Driver')
@@ -81,17 +81,11 @@ class PackageDispatchController extends Controller
             $roleUser = 'Administrador';
         }
 
-        if($dataView == 'today')
-        {
-            $initDate = date('Y-m-d') .' 03:00:00';
-            $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1day'));
+        $date = explode("-",$filterDate);
 
-            $packageDispatchList = $packageDispatchList->whereBetween('Date_Dispatch', [$initDate, $endDate]);
-        }
-        else
-        {
-            $packageDispatchList = $packageDispatchList;
-        }
+        $packageDispatchList = $packageDispatchList->whereMonth('created_at', $date[1])
+                                ->whereYear('created_at', $date[0])
+                                ->whereDay('created_at', $date[2]);
 
         if($idTeam && $idDriver)
         {
@@ -122,7 +116,7 @@ class PackageDispatchController extends Controller
                                                    ->paginate(50);
 
         $quantityDispatch = $packageDispatchList->total();
-        
+
         $listState = PackageDispatch::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
@@ -151,7 +145,7 @@ class PackageDispatchController extends Controller
 
             if(!$package)
             {
-               $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first(); 
+               $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
             }
 
             if($package)
@@ -433,7 +427,7 @@ class PackageDispatchController extends Controller
                 return ['stateAction' => false];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 
@@ -630,7 +624,7 @@ class PackageDispatchController extends Controller
                         $package = packageInbound::find($row[0]);
                     }*/
 
-                    if($package) 
+                    if($package)
                     {
                         $validationRoute = true;
 
@@ -751,12 +745,12 @@ class PackageDispatchController extends Controller
                             $packageHistory->status                       = 'Dispatch';
 
                             $packageHistory->save();
-                            
+
                             $package->delete();
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -764,7 +758,7 @@ class PackageDispatchController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -777,7 +771,7 @@ class PackageDispatchController extends Controller
     public function Return(Request $request)
     {
         $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
-        
+
         if($packageDispatch)
         {
             if($packageDispatch->idUserDispatch == Session::get('user')->id || Session::get('user')->role->name == 'Administrador')
@@ -821,7 +815,7 @@ class PackageDispatchController extends Controller
                         {
                             $idOnfleet          = $packageDispatch->idOnfleet;
                             $taskOnfleet        = $packageDispatch->taskOnfleet;
-                            
+
                             $Description_Return = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
                             $Date_Return        = date('Y-m-d H:i:s');
 
@@ -889,7 +883,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->Name                         = $packageDispatch->Name;
                     $packageReturn->idUser                       = Session::get('user')->id;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
-                    $packageReturn->Date_Return                  = $Date_Return; 
+                    $packageReturn->Date_Return                  = $Date_Return;
                     $packageReturn->Description_Return           = $Description_Return;
                     $packageReturn->idOnfleet                    = $idOnfleet;
                     $packageReturn->taskOnfleet                  = $taskOnfleet;
@@ -901,7 +895,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->status                       = 'Return';
 
                     $packageReturn->save();
-                    
+
                     //update dispatch
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->where('dispatch', 1)
@@ -959,7 +953,7 @@ class PackageDispatchController extends Controller
                     $packageInbound->Route                        = $packageDispatch->Route;
                     $packageInbound->Name                         = $packageDispatch->Name;
                     $packageInbound->idUser                       = Session::get('user')->id;
-                    $packageInbound->reInbound                    = 1; 
+                    $packageInbound->reInbound                    = 1;
                     $packageInbound->status                       = 'Inbound';
 
                     $packageInbound->save();
@@ -1009,7 +1003,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->status                       = 'ReInbound';
 
                     $packageHistory->save();
-                    
+
                     $packageDispatch->delete();
 
                     if($onfleet)
@@ -1042,18 +1036,18 @@ class PackageDispatchController extends Controller
 
     public function RegisterOnfleet($package, $team, $driver)
     {
-        $data = [   "destination" =>  [ 
-                        "address" =>  [ 
+        $data = [   "destination" =>  [
+                        "address" =>  [
                             "unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
                         ] ,
                         "notes" =>  $package->Reference_Number_1,
                     ],
                     "recipients" =>  [
-                        [ 
+                        [
                             "name"  => $package->Dropoff_Contact_Name,
                             "phone" => $package->Dropoff_Contact_Phone_Number,
                             "notes" => $package->Reference_Number_1,
-                        ] 
+                        ]
                     ],
                     "notes" => $package->Reference_Number_1,
                     "container" =>  [
@@ -1076,7 +1070,7 @@ class PackageDispatchController extends Controller
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            
+
         $output = curl_exec($curl);
 
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -1140,4 +1134,4 @@ class PackageDispatchController extends Controller
             return false;
         }
     }
-} 
+}
