@@ -12855,6 +12855,7 @@ function PackageDispatch() {
                               onChange: function onChange(e) {
                                 return setIdDriver(e.target.value);
                               },
+                              required: true,
                               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                                 value: "0",
                                 children: "All"

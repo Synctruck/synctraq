@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Driver, TeamRoute, User};
+use App\Models\{Configuration, Driver, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 

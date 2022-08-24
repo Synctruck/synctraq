@@ -1590,7 +1590,7 @@ function PackageDispatch() {
                                                             <div className="col-lg-3">
                                                                 <div className="form-group">
                                                                     <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                         <option value="0">All</option>
                                                                         { listDriverSelect }
                                                                     </select>
