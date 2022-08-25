@@ -19,7 +19,7 @@ function ReportDelivery() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateEnd);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [idTeam, setIdTeam]     = useState(0);
     const [idDriver, setIdDriver] = useState(0);
 
@@ -49,7 +49,7 @@ function ReportDelivery() {
         }
 
     }, [file]);
-    
+
     useEffect( () => {
 
         listAllTeam();
@@ -78,7 +78,7 @@ function ReportDelivery() {
             setTotalPage(response.reportList.per_page);
             setPage(response.reportList.current_page);
             setQuantityDispatch(response.reportList.total);
-            
+
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -152,7 +152,7 @@ function ReportDelivery() {
     }
 
     const handlerExport = () => {
-        
+
         location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
@@ -271,7 +271,7 @@ function ReportDelivery() {
     const viewImages = (urlImage) => {
 
         setListViewImages(urlImage.split('https'));
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
 
             keyboard: true
@@ -441,7 +441,7 @@ function ReportDelivery() {
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
-        
+
         inputFileRef.current.click();
     }
 
@@ -503,16 +503,16 @@ function ReportDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listTeamSelect }
-                                                                </select> 
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -530,7 +530,7 @@ function ReportDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -539,7 +539,7 @@ function ReportDelivery() {
                                                 :
                                                     ''
                                             }
-                                            
+
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -565,7 +565,7 @@ function ReportDelivery() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b> 
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -596,7 +596,7 @@ function ReportDelivery() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
