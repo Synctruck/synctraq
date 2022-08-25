@@ -19,7 +19,7 @@ function ReportReturnCompany() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit]       = useState(auxDateInit);
-    const [dateEnd, setDateEnd]         = useState(auxDateEnd);
+    const [dateEnd, setDateEnd]         = useState(auxDateInit);
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
 

@@ -18,7 +18,7 @@ function ReportDispatch() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateEnd);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [idTeam, setIdTeam]     = useState(0);
     const [idDriver, setIdDriver] = useState(0);
 
@@ -56,7 +56,7 @@ function ReportDispatch() {
             setTotalPage(response.reportList.per_page);
             setPage(response.reportList.current_page);
             setQuantityDispatch(response.reportList.total);
-            
+
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -130,7 +130,7 @@ function ReportDispatch() {
     }
 
     const handlerExport = () => {
-        
+
         location.href = url_general +'report/export/dispatch/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
@@ -148,14 +148,14 @@ function ReportDispatch() {
                         { pack.Date_Dispatch.substring(11, 19) }
                     </td>
                     {
-                        roleUser == 'Administrador' 
+                        roleUser == 'Administrador'
                         ?
                             pack.driver ? parseInt(pack.driver.idTeam) == 0 || pack.driver.idTeam == null ? <><td><b>{ pack.driver.name }</b></td><td><b></b></td></> : <><td><b>{ pack.driver.nameTeam }</b></td><td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td></> : ''
                         :
                             ''
                     }
                     {
-                        roleUser == 'Team' 
+                        roleUser == 'Team'
                         ?
                             pack.driver.idTeam ? <td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td> : <td></td>
                         :
@@ -170,7 +170,7 @@ function ReportDispatch() {
                     <td>{ pack.Dropoff_Postal_Code }</td>
                     <td>{ pack.Weight }</td>
                     <td>{ pack.Route }</td>
-                </tr> 
+                </tr>
             );
         }
     });
@@ -307,7 +307,7 @@ function ReportDispatch() {
         let countCheck = 0;
 
         let valuesCheck = '';
- 
+
         for(var i = 0; i < checkboxes.length ; i++)
         {
             if(checkboxes[i].checked)
@@ -374,16 +374,16 @@ function ReportDispatch() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listTeamSelect }
-                                                                </select> 
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -401,7 +401,7 @@ function ReportDispatch() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -410,7 +410,7 @@ function ReportDispatch() {
                                                 :
                                                     ''
                                             }
-                                            
+
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -436,7 +436,7 @@ function ReportDispatch() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b> 
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -446,7 +446,7 @@ function ReportDispatch() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>FECHA</th>
                                                 <th>HORA</th>
@@ -462,7 +462,7 @@ function ReportDispatch() {
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
-                                                         
+
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>PACKAGE ID</th>

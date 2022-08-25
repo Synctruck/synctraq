@@ -10,7 +10,7 @@ function ReportInbound() {
     const [listReport, setListReport] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateEnd);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
 
     const [quantityInbound, setQuantityInbound] = useState(0);
 
@@ -236,7 +236,7 @@ function ReportInbound() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b> 
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
                                     </div>
                                     <div className="col-lg-3">
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -246,7 +246,7 @@ function ReportInbound() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>FECHA</th>
                                                 <th>HORA</th>
