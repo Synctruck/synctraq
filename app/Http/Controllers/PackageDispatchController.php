@@ -1035,12 +1035,13 @@ class PackageDispatchController extends Controller
                         "address" =>  [
                             "unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
                         ] ,
-                        "notes" =>  $team->name,
+                        "notes" => "",
                     ],
                     "recipients" =>  [
                         [
                             "name"  => $package->Dropoff_Contact_Name,
                             "phone" => $package->Dropoff_Contact_Phone_Number,
+                            "notes" => "",
                         ]
                     ],
                     "notes" => $package->Reference_Number_1,
