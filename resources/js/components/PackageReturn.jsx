@@ -252,6 +252,7 @@ function PackageReturn() {
                 <td>{ packageReturn.workerName }</td>
                 <td><b>{ packageReturn.Reference_Number_1 }</b></td>
                 <td>{ packageReturn.Description_Return }</td>
+                <td>{ packageReturn.Description_Onfleet }</td>
                 <td>{ packageReturn.Dropoff_Contact_Name }</td>
                 <td>{ packageReturn.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageReturn.Dropoff_Address_Line_1 }</td>
@@ -556,6 +557,7 @@ function PackageReturn() {
                                                 <th>DRIVER</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>DESCRIPTION RETURN</th>
+                                                <th>DESCRIPTION ONFLEET</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>

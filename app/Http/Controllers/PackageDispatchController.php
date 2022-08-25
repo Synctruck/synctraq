@@ -799,8 +799,9 @@ class PackageDispatchController extends Controller
                     $team       = $user->nameTeam;
                     $workerName = $user->name .' '. $user->nameOfOwner;
 
-                    $Date_Return        = date('Y-m-d H:i:s');
-                    $Description_Return = $request->get('Description_Return');
+                    $Date_Return         = date('Y-m-d H:i:s');
+                    $Description_Return  = $request->get('Description_Return');
+                    $Description_Onfleet = ''; 
 
                     if(env('APP_ENV') == 'local' && $packageDispatch->idOnfleet)
                     {
@@ -808,11 +809,10 @@ class PackageDispatchController extends Controller
 
                         if($onfleet)
                         {
-                            $idOnfleet          = $packageDispatch->idOnfleet;
-                            $taskOnfleet        = $packageDispatch->taskOnfleet;
-
-                            $Description_Return = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
-                            $Date_Return        = date('Y-m-d H:i:s');
+                            $idOnfleet           = $packageDispatch->idOnfleet;
+                            $taskOnfleet         = $packageDispatch->taskOnfleet;
+                            $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
+                            $Date_Return         = date('Y-m-d H:i:s');
 
                             if($onfleet['state'] == 3)
                             {
@@ -880,6 +880,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageReturn->Date_Return                  = $Date_Return;
                     $packageReturn->Description_Return           = $Description_Return;
+                    $packageReturn->Description_Onfleet          = $Description_Onfleet;
                     $packageReturn->idOnfleet                    = $idOnfleet;
                     $packageReturn->taskOnfleet                  = $taskOnfleet;
                     $packageReturn->team                         = $team;
@@ -994,6 +995,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                     $packageHistory->Description                  = 'Re-Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
                     $packageHistory->Description_Return           = $Description_Return;
+                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'ReInbound';
 
