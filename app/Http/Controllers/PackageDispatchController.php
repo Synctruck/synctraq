@@ -610,16 +610,10 @@ class PackageDispatchController extends Controller
                 {
                     $row = str_getcsv($raw_string);
 
-                    $package = packageInbound::find($row[0]);
+                    $package         = packageInbound::find($row[0]);
+                    $packageDispatch = PackageDispatch::find($row[0]);
 
-                    /*$package = PackageManifest::find($row[0]);
-
-                    if(!$package)
-                    {
-                        $package = packageInbound::find($row[0]);
-                    }*/
-
-                    if($package)
+                    if($package && $packageDispatch == null)
                     {
                         $validationRoute = true;
 
