@@ -214,7 +214,7 @@ function PackageReturn() {
         if(packageReturn.photoUrl)
         {
             let idsImages = packageReturn.photoUrl.split(',');
-            
+
             imgs          = '';
             urlImage      = '';
 
@@ -245,6 +245,9 @@ function PackageReturn() {
                 <td style={ { width: '100px'} }>
                     { packageReturn.Date_Return ? packageReturn.Date_Return.substring(5, 7) +'-'+ packageReturn.Date_Return.substring(8, 10) +'-'+ packageReturn.Date_Return.substring(0, 4) : '' }
                 </td>
+                <td>
+                    { packageReturn.Date_Return ? packageReturn.Date_Return.substring(11, 19):'' }
+                </td>
                 <td>{ packageReturn.team }</td>
                 <td>{ packageReturn.workerName }</td>
                 <td><b>{ packageReturn.Reference_Number_1 }</b></td>
@@ -263,7 +266,7 @@ function PackageReturn() {
                 </td>
                 <td>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(packageReturn.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -275,7 +278,7 @@ function PackageReturn() {
     const viewImages = (urlImage) => {
 
         setListViewImages(urlImage.split('https'));
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
 
             keyboard: true
@@ -344,7 +347,7 @@ function PackageReturn() {
                     setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
-                    
+
                     document.getElementById('return_Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
 
@@ -373,7 +376,7 @@ function PackageReturn() {
                     setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
-                    
+
                     document.getElementById('return_Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
 
@@ -419,7 +422,7 @@ function PackageReturn() {
     const modalReturnDispatch = <React.Fragment>
                                     <div className="modal fade" id="modalReturnDispatch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
-                                            
+
                                         </div>
                                     </div>
                                 </React.Fragment>;
@@ -498,7 +501,7 @@ function PackageReturn() {
                                 <div className="row">
                                     <div className="col-lg-2">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b> 
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -530,9 +533,10 @@ function PackageReturn() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>DATE</th>
+                                                <th>HOUR</th>
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?
@@ -545,7 +549,7 @@ function PackageReturn() {
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
-                                                         
+
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>TEAM</th>

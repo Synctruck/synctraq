@@ -216,7 +216,7 @@ function Package() {
             setAction('Save');
             setReadOnlyInput(false);
         }
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageInsert'), {
 
             keyboard: true
@@ -283,7 +283,7 @@ function Package() {
                     {
                         clearForm();
                     }
-                    
+
                     listAllPackage(page, RouteSearch, StateSearch);
                 }
                 else if(response.status == 422)
@@ -527,6 +527,9 @@ function Package() {
                 <td>
                     { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
                 </td>
+                <td>
+                    { pack.created_at.substring(11, 19) }
+                </td>
                 <td>{ pack.company }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
@@ -539,7 +542,7 @@ function Package() {
                 <td>{ pack.Route }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -563,7 +566,7 @@ function Package() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-8"> 
+                                    <div className="col-lg-8">
                                         Package List
                                     </div>
                                     <div className="col-lg-2">
@@ -585,11 +588,11 @@ function Package() {
                                                 </button>
                                             </div>
                                         </form>
-                                    </div> 
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-4">
-                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b> 
+                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b>
                                     </div>
                                     <div className="col-lg-4">
                                         <div className="row">
@@ -623,6 +626,7 @@ function Package() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>

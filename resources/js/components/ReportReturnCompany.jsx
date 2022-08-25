@@ -79,7 +79,7 @@ function ReportReturnCompany() {
             setTotalPage(response.packageReturnCompanyList.per_page);
             setPage(response.packageReturnCompanyList.current_page);
             setQuantityDispatch(response.packageReturnCompanyList.total);
-            
+
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -153,7 +153,7 @@ function ReportReturnCompany() {
     }
 
     const handlerExport = () => {
-        
+
         location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
@@ -164,6 +164,9 @@ function ReportReturnCompany() {
             <tr key={i}>
                 <td style={ { width: '100px'} }>
                     { packageReturnCompany.Date_Return.substring(5, 7) }-{ packageReturnCompany.Date_Return.substring(8, 10) }-{ packageReturnCompany.Date_Return.substring(0, 4) }
+                </td>
+                <td>
+                    { packageReturnCompany.Date_Return ? packageReturnCompany.Date_Return.substring(11, 19):'' }
                 </td>
                 <td>{ packageReturnCompany.company }</td>
                 <td><b>{ packageReturnCompany.Reference_Number_1 }</b></td>
@@ -328,7 +331,7 @@ function ReportReturnCompany() {
     }
 
     const handlerOpenModal = (PACKAGE_ID) => {
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalInsertReturn'), {
 
             keyboard: false,
@@ -420,7 +423,7 @@ function ReportReturnCompany() {
                                                 <label htmlFor="">Fecha final:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            
+
                                             <div className="col-lg-3">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -446,7 +449,7 @@ function ReportReturnCompany() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b> 
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
                                     </div>
                                     <div className="col-lg-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -459,9 +462,10 @@ function ReportReturnCompany() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
