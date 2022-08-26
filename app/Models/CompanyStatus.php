@@ -12,6 +12,10 @@ class CompanyStatus extends Model
     public $timestamps   = true;
     public $incrementing = false;
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function company()
     {
         return $this->belongsTo('App\Models\Company', 'idCompany', 'id');

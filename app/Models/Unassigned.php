@@ -8,9 +8,13 @@ class Unassigned extends Model
     protected $table      = 'unassigned';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';
-    
+
     public $timestamps   = true;
     public $incrementing = true;
+
+     protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function driver()
     {
@@ -19,6 +23,6 @@ class Unassigned extends Model
 
     public function team()
     {
-        return $this->belongsTo('App\Models\User', 'idTeam', 'id'); 
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
     }
 }

@@ -83,7 +83,7 @@ class DriverController extends Controller
                 "idRole" => ["required"],
                 "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
-                "phone" => ["required"],
+                "phone" => ["required","unique:user"],
                 "email" => ["required", "unique:user", "max:100"],
             ],
             [
@@ -157,10 +157,10 @@ class DriverController extends Controller
 
             [
                 "idRole" => ["required"],
-                "name" => ["required", "unique:user,name,$id", "max:100"],
+                "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
                 "address" => ["required"],
-                "phone" => ["required"],
+                "phone" => ["required","unique:user,phone,$id"],
                 "email" => ["required", "unique:user,email,$id", "max:100"],
             ],
             [

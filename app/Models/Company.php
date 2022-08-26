@@ -13,6 +13,10 @@ class Company extends Model
 
     protected $fillable = ['id', 'name', 'key_api', 'key_base64'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function company_status()
     {
         return $this->hasMany('App\Models\CompanyStatus', 'idCompany');

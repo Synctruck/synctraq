@@ -8,9 +8,12 @@ class PackageHistory extends Model
     protected $table      = 'packagehistory';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';
-    
+
     public $timestamps   = true;
     public $incrementing = true;
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function package_manifest()
     {

@@ -12,6 +12,10 @@ class TeamRoute extends Model
     public $incrementing = true;
     public $timestamps   = true;
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function route()
     {
         return $this->belongsTo('App\Models\Routes', 'idRoute', 'id');

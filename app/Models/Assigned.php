@@ -8,9 +8,13 @@ class Assigned extends Model
     protected $table      = 'assigned';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
-    
+
     public $timestamps   = true;
     public $incrementing = true;
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function driver()
     {
@@ -19,6 +23,6 @@ class Assigned extends Model
 
     public function team()
     {
-        return $this->belongsTo('App\Models\User', 'idTeam', 'id'); 
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
     }
 }
