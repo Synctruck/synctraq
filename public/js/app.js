@@ -16145,7 +16145,7 @@ function PackageWarehouse() {
     document.getElementById('Reference_Number_1').focus();
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+    listAllPackage(page, filterDate, RouteSearch, StateSearch);
   }, [filterDate]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, [Reference_Number_1]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -16156,8 +16156,8 @@ function PackageWarehouse() {
     }
   }, [file]);
 
-  var listAllPackageInbound = function listAllPackageInbound(pageNumber, filterDate, route, state) {
-    fetch(url_general + 'package-inbound/list/' + filterDate + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
+  var listAllPackage = function listAllPackage(pageNumber, filterDate, route, state) {
+    fetch(url_general + 'package-warehouse/list/' + filterDate + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
       return res.json();
     }).then(function (response) {
       setListPackageInbound(response.packageList.data);
@@ -16174,7 +16174,7 @@ function PackageWarehouse() {
   };
 
   var handlerChangePage = function handlerChangePage(pageNumber) {
-    listAllPackageInbound(pageNumber, filterDate, RouteSearch, StateSearch);
+    listAllPackage(pageNumber, filterDate, RouteSearch, StateSearch);
   };
 
   var listAllRoute = function listAllRoute() {
@@ -16280,7 +16280,7 @@ function PackageWarehouse() {
   });
 
   var handlerOpenModal = function handlerOpenModal(PACKAGE_ID) {
-    fetch(url_general + 'package-inbound/get/' + PACKAGE_ID).then(function (res) {
+    fetch(url_general + 'package-warehouse/get/' + PACKAGE_ID).then(function (res) {
       return res.json();
     }).then(function (response) {
       setReference_Number_1(PACKAGE_ID);
@@ -16320,7 +16320,7 @@ function PackageWarehouse() {
     var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     setDisabledButton(true);
     setTextButtonSave('Loading...');
-    var url = 'package-inbound/update';
+    var url = 'package-warehouse/update';
     fetch(url_general + url, {
       headers: {
         "X-CSRF-TOKEN": token
@@ -16337,7 +16337,7 @@ function PackageWarehouse() {
         sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Se actualizó el Package!', {
           icon: "success"
         });
-        listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+        listAllPackage(1, filterDate, RouteSearch, StateSearch);
       } else response.status == 422;
 
       {
@@ -16682,7 +16682,7 @@ function PackageWarehouse() {
     formData.append('CLIENT', Client);
     var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     setReadInput(true);
-    fetch(url_general + 'package-inbound/insert', {
+    fetch(url_general + 'package-warehouse/insert', {
       headers: {
         "X-CSRF-TOKEN": token
       },
@@ -16729,7 +16729,7 @@ function PackageWarehouse() {
         setStateLabel(response.packageInbound.Dropoff_Province);
         setRouteLabel(response.packageInbound.Route);
         setReferenceLabel(response.packageInbound.Reference_Number_1);
-        listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+        listAllPackage(1, filterDate, RouteSearch, StateSearch);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
         handlerPrint('labelPrint');
@@ -16751,7 +16751,7 @@ function PackageWarehouse() {
     formData.append('file', file);
     var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     LoadingShow();
-    fetch(url_general + 'package-inbound/import', {
+    fetch(url_general + 'package-warehouse/import', {
       headers: {
         "X-CSRF-TOKEN": token
       },
@@ -16765,7 +16765,7 @@ function PackageWarehouse() {
           icon: "success"
         });
         document.getElementById('fileImport').value = '';
-        listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+        listAllPackage(page, filterDate, RouteSearch, StateSearch);
         setViewButtonSave('none');
       }
 
@@ -16774,7 +16774,7 @@ function PackageWarehouse() {
   };
 
   var handlerViewPDF = function handlerViewPDF(Reference_Number) {
-    window.open(url_general + 'package-inbound/pdf-label/' + Reference_Number);
+    window.open(url_general + 'package-warehouse/pdf-label/' + Reference_Number);
   };
 
   var listPackageTable = listPackageInbound.map(function (pack, i) {
@@ -16840,10 +16840,10 @@ function PackageWarehouse() {
         routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
       });
       setRouteSearch(routesSearch);
-      listAllPackageInbound(page, filterDate, routesSearch, StateSearch);
+      listAllPackage(page, filterDate, routesSearch, StateSearch);
     } else {
       setRouteSearch('all');
-      listAllPackageInbound(page, filterDate, 'all', StateSearch);
+      listAllPackage(page, filterDate, 'all', StateSearch);
     }
   };
 
@@ -16870,10 +16870,10 @@ function PackageWarehouse() {
         statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
       });
       setStateSearch(statesSearch);
-      listAllPackageInbound(page, filterDate, RouteSearch, statesSearch);
+      listAllPackage(page, filterDate, RouteSearch, statesSearch);
     } else {
       setStateSearch('all');
-      listAllPackageInbound(page, filterDate, RouteSearch, 'all');
+      listAllPackage(page, filterDate, RouteSearch, 'all');
     }
   };
 

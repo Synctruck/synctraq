@@ -62,7 +62,7 @@ function PackageWarehouse() {
 
     useEffect(() => {
 
-        listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+        listAllPackage(page, filterDate, RouteSearch, StateSearch);
 
     }, [filterDate]);
 
@@ -83,9 +83,9 @@ function PackageWarehouse() {
 
     }, [file]);
 
-    const listAllPackageInbound = (pageNumber, filterDate, route, state) => {
+    const listAllPackage = (pageNumber, filterDate, route, state) => {
 
-        fetch(url_general +'package-inbound/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-warehouse/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -105,7 +105,7 @@ function PackageWarehouse() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, filterDate, RouteSearch, StateSearch);
+        listAllPackage(pageNumber, filterDate, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -161,7 +161,7 @@ function PackageWarehouse() {
 
     const handlerOpenModal = (PACKAGE_ID) => {
 
-        fetch(url_general +'package-inbound/get/'+ PACKAGE_ID)
+        fetch(url_general +'package-warehouse/get/'+ PACKAGE_ID)
         .then(res => res.json())
         .then((response) => {
 
@@ -214,7 +214,7 @@ function PackageWarehouse() {
         setDisabledButton(true);
         setTextButtonSave('Loading...');
 
-        let url = 'package-inbound/update'
+        let url = 'package-warehouse/update'
 
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
@@ -234,7 +234,7 @@ function PackageWarehouse() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -410,7 +410,7 @@ function PackageWarehouse() {
 
         setReadInput(true);
 
-        fetch(url_general +'package-inbound/insert', {
+        fetch(url_general +'package-warehouse/insert', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
@@ -475,7 +475,7 @@ function PackageWarehouse() {
                     setRouteLabel(response.packageInbound.Route);
                     setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -509,7 +509,7 @@ function PackageWarehouse() {
 
         LoadingShow();
 
-        fetch(url_general +'package-inbound/import', {
+        fetch(url_general +'package-warehouse/import', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
@@ -526,7 +526,7 @@ function PackageWarehouse() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+                    listAllPackage(page, filterDate, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -538,7 +538,7 @@ function PackageWarehouse() {
 
     const handlerViewPDF = (Reference_Number) => {
 
-        window.open(url_general +'package-inbound/pdf-label/'+ Reference_Number);
+        window.open(url_general +'package-warehouse/pdf-label/'+ Reference_Number);
     }
 
     const listPackageTable = listPackageInbound.map( (pack, i) => {
@@ -590,13 +590,13 @@ function PackageWarehouse() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, filterDate, routesSearch, StateSearch);
+            listAllPackage(page, filterDate, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackageInbound(page, filterDate, 'all', StateSearch);
+            listAllPackage(page, filterDate, 'all', StateSearch);
         }
     };
 
@@ -627,13 +627,13 @@ function PackageWarehouse() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, filterDate, RouteSearch, statesSearch);
+            listAllPackage(page, filterDate, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, filterDate, RouteSearch, 'all');
+            listAllPackage(page, filterDate, RouteSearch, 'all');
         }
     };
 
