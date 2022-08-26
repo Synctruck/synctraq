@@ -96,6 +96,7 @@ class DriverController extends Controller
                 "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
 
                 "phone.required" => "El campo es requerido",
+                "phone.unique" => "El teléfono ya existe",
 
                 "email.unique" => "El correo ya existe",
                 "email.required" => "El campo es requerido",
@@ -176,6 +177,7 @@ class DriverController extends Controller
                 "address.required" => "El campo es requerido",
 
                 "phone.required" => "El campo es requerido",
+                "phone.unique" => "El teléfono ya existe",
 
                 "email.unique" => "El correo ya existe",
                 "email.required" => "El campo es requerido",
