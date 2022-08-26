@@ -12,8 +12,9 @@ class Unassigned extends Model
     public $timestamps   = true;
     public $incrementing = true;
 
-     protected $casts = [
+    protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     public function driver()

@@ -42,8 +42,12 @@ class PackageDispatchController extends Controller
         return view('package.dispatch');
     }
 
-    public function List(Request $request, $filterDate, $idTeam, $idDriver, $state, $routes)
+    public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
+
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
         $roleUser = '';
 
         if(Session::get('user')->role->name == 'Driver')
@@ -67,9 +71,7 @@ class PackageDispatchController extends Controller
 
             array_push($idUsers, Session::get('user')->id);
 
-            $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
-                                                ->whereIn('idUserDispatch', $idUsers)
-                                                ->where('status', 'Dispatch');
+            $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
 
             $roleUser = 'Team';
         }
@@ -81,11 +83,7 @@ class PackageDispatchController extends Controller
             $roleUser = 'Administrador';
         }
 
-        $date = explode("-",$filterDate);
-
-        $packageDispatchList = $packageDispatchList->whereMonth('created_at', $date[1])
-                                ->whereYear('created_at', $date[0])
-                                ->whereDay('created_at', $date[2]);
+        $packageDispatchList = $packageDispatchList->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($idTeam && $idDriver)
         {
@@ -143,7 +141,7 @@ class PackageDispatchController extends Controller
 
         if(!$package)
         {
-           $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first(); 
+           $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
 
         if($package)
@@ -801,7 +799,7 @@ class PackageDispatchController extends Controller
 
                     $Date_Return         = date('Y-m-d H:i:s');
                     $Description_Return  = $request->get('Description_Return');
-                    $Description_Onfleet = ''; 
+                    $Description_Onfleet = '';
 
                     if(env('APP_ENV') == 'local' && $packageDispatch->idOnfleet)
                     {
