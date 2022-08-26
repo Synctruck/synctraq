@@ -11634,7 +11634,7 @@ function PackageDispatch() {
     /*if(idDriverAsing == 0)
     {
         swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
-         return 0;
+          return 0;
     }*/
 
     var formData = new FormData();
@@ -11671,9 +11671,9 @@ function PackageDispatch() {
         dangerMode: true,
     })
     .then((willDelete) => {
-         if(willDelete)
+          if(willDelete)
         {
-         }
+          }
     });*/
   };
 
@@ -11940,7 +11940,7 @@ function PackageDispatch() {
     {
         listAllRole();
         listAllRoute();
-         //clearForm();
+          //clearForm();
         setTitleModal('Add Team');
         setTextButtonSave('Save');
     }*/

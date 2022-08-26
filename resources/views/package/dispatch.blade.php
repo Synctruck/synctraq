@@ -29,7 +29,7 @@
 	let routesTeamGeneral = '{{$routesTeamGeneral}}';
 </script>
 <script>
-	let auxDateInit = '{{date('Y-m-01')}}';
+	let auxDateInit = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
 </script>
 <div id="packageDispatch">
