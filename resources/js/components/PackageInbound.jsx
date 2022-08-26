@@ -35,12 +35,8 @@ function PackageInbound() {
 
     const [readInput, setReadInput] = useState(false);
 
-    var dateNow = new Date();
-    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
-    const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
-
-    dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
-    const [filterDate, setFilterDate] = useState(dateNow);
+    const [dateStart, setDateStart] = useState(auxDateInit);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -62,9 +58,9 @@ function PackageInbound() {
 
     useEffect(() => {
 
-        listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+        listAllPackageInbound(page, RouteSearch, StateSearch);
 
-    }, [filterDate]);
+    }, [dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -83,9 +79,9 @@ function PackageInbound() {
 
     }, [file]);
 
-    const listAllPackageInbound = (pageNumber, filterDate, route, state) => {
+    const listAllPackageInbound = (pageNumber, route, state) => {
 
-        fetch(url_general +'package-inbound/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-inbound/list/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -105,7 +101,7 @@ function PackageInbound() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, filterDate, RouteSearch, StateSearch);
+        listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -234,7 +230,7 @@ function PackageInbound() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackageInbound(1, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -475,7 +471,7 @@ function PackageInbound() {
                     setRouteLabel(response.packageInbound.Route);
                     setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                    listAllPackageInbound(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackageInbound(1, RouteSearch, StateSearch);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -526,7 +522,7 @@ function PackageInbound() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackageInbound(page, filterDate, RouteSearch, StateSearch);
+                    listAllPackageInbound(page, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -590,13 +586,13 @@ function PackageInbound() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, filterDate, routesSearch, StateSearch);
+            listAllPackageInbound(page, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackageInbound(page, filterDate, 'all', StateSearch);
+            listAllPackageInbound(page, 'all', StateSearch);
         }
     };
 
@@ -627,13 +623,13 @@ function PackageInbound() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, filterDate, RouteSearch, statesSearch);
+            listAllPackageInbound(page, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, filterDate, RouteSearch, 'all');
+            listAllPackageInbound(page, RouteSearch, 'all');
         }
     };
 
@@ -784,7 +780,7 @@ function PackageInbound() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-4">
                                         <div className="form-group">
                                             <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
                                         </div>
@@ -793,11 +789,23 @@ function PackageInbound() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    View :
+                                                    Start date:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
+                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    End date :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>

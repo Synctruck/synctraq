@@ -28,6 +28,10 @@
 	let idUserGeneral     = '{{Session::get('user')->id}}';
 	let routesTeamGeneral = '{{$routesTeamGeneral}}';
 </script>
+<script>
+	let auxDateInit = '{{date('Y-m-01')}}';
+	let auxDateEnd  = '{{date('Y-m-t')}}';
+</script>
 <div id="packageDispatch">
 </div>
 @endsection

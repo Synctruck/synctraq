@@ -8,9 +8,14 @@ class PackageInbound extends Model
     protected $table      = 'packageinbound';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
-    
+
     public $timestamps = true;
     public $false      = true;
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function user()
     {

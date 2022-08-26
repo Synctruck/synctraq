@@ -12,4 +12,9 @@ class Comment extends Model
     public $incrementing = true;
 
     protected $fillable = ['id', 'description'];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
 }

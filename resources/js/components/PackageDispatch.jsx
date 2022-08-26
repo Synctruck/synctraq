@@ -34,12 +34,8 @@ function PackageDispatch() {
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
     // const [dataView, setDataView] = useState('today');
-    var dateNow = new Date();
-    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
-    const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
-    dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
-
-    const [filterDate, setFilterDate] = useState(dateNow);
+    const [dateStart, setDateStart] = useState(auxDateInit);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
@@ -82,9 +78,9 @@ function PackageDispatch() {
 
         setPage(1);
 
-        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+        listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
-    }, [idTeam, idDriver, filterDate]);
+    }, [idTeam, idDriver, dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -99,9 +95,9 @@ function PackageDispatch() {
 
     }, [file]);
 
-    const listAllPackageDispatch = (pageNumber, filterDate, StateSearch, RouteSearchList) => {
+    const listAllPackageDispatch = (pageNumber, StateSearch, RouteSearchList) => {
 
-        fetch(url_general +'package-dispatch/list/'+ filterDate +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
+        fetch(url_general +'package-dispatch/list/'+ dateStart+'/'+dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -132,7 +128,7 @@ function PackageDispatch() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageDispatch(pageNumber, filterDate, StateSearch, RouteSearchList);
+        listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
     }
 
     const listAllRoute = (pageNumber) => {
@@ -247,7 +243,7 @@ function PackageDispatch() {
                         icon: "success",
                     });
 
-                    listAllPackageDispatch(page, filterDate, StateSearch, RouteSearchList);
+                    listAllPackageDispatch(page, StateSearch, RouteSearchList);
                 }
                 else(response.status == 422)
                 {
@@ -514,14 +510,14 @@ function PackageDispatch() {
                         let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
                         let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
 
-                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+ 
+                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
                                         packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
                                         team +' / '+ driver;
 
                         setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
                         setTextMessageDate(textDate);
                         setTypeMessageDispatch('warning');
-                        setNumberPackage(''); 
+                        setNumberPackage('');
 
                         document.getElementById('soundPitidoWarning').play();
                     }
@@ -563,8 +559,8 @@ function PackageDispatch() {
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
                         setNumberPackage('');
-                        
-                        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+
+                        listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
@@ -619,7 +615,7 @@ function PackageDispatch() {
 
                         document.getElementById('fileImport').value = '';
 
-                        listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+                        listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
                         setViewButtonSave('none');
                     }
@@ -669,7 +665,7 @@ function PackageDispatch() {
                     setTypeMessageDispatch('success');
                     setNumberPackage('');
 
-                    listAllPackageDispatch(1, filterDate, StateSearch, RouteSearchList);
+                    listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -1443,13 +1439,13 @@ function PackageDispatch() {
 
             setRouteSearchList(routesSearch);
 
-            listAllPackageDispatch(1, filterDate, StateSearch, routesSearch);
+            listAllPackageDispatch(1, StateSearch, routesSearch);
         }
         else
         {
             setRouteSearchList('all');
 
-            listAllPackageDispatch(1, filterDate, StateSearch, 'all');
+            listAllPackageDispatch(1, StateSearch, 'all');
         }
     };
 
@@ -1482,13 +1478,13 @@ function PackageDispatch() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageDispatch(1, filterDate, statesSearch, RouteSearchList);
+            listAllPackageDispatch(1, statesSearch, RouteSearchList);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageDispatch(1, filterDate, 'all', RouteSearchList);
+            listAllPackageDispatch(1, 'all', RouteSearchList);
         }
     }
 
@@ -1697,36 +1693,48 @@ function PackageDispatch() {
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">
-                                            <div className="col-lg-5">
+                                            <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    View :
+                                                    Start date:
                                                 </div>
                                             </div>
-                                            <div className="col-lg-7">
-                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-3">
+                                    <div className="col-lg-2">
                                         <div className="row">
-                                            <div className="col-lg-5">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    End date :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
                                                 <div className="form-group">
                                                     States :
                                                 </div>
                                             </div>
-                                            <div className="col-lg-7">
+                                            <div className="col-lg-12">
                                                 <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-lg-4">
                                         <div className="row">
-                                            <div className="col-lg-5">
+                                            <div className="col-lg-12">
                                                 <div className="form-group">
                                                     Routes :
                                                 </div>
                                             </div>
-                                            <div className="col-lg-7">
+                                            <div className="col-lg-12">
                                                 <Select isMulti onChange={ (e) => handlerChangeRouteList(e) } options={ optionsRoleSearch } />
                                             </div>
                                         </div>

@@ -31,8 +31,11 @@ class PackageInboundController extends Controller
         return view('package.inbound');
     }
 
-    public function List(Request $request, $filterDate, $route, $state)
+    public function List(Request $request, $dateStart,$dateEnd, $route, $state)
     {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
@@ -45,10 +48,8 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
-            $date = explode("-",$filterDate);
-            $packageListInbound = $packageListInbound->whereMonth('created_at', $date[1])
-                                    ->whereYear('created_at', $date[0])
-                                    ->whereDay('created_at', $date[2]);
+
+            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($route != 'all')
         {

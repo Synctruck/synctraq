@@ -11,6 +11,11 @@ class Driver extends Model
     public $timestamps   = true;
     public $incrementing = true;
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'idTeam', 'nameTeam', 'idOnfleet'];
 
     public function role()
