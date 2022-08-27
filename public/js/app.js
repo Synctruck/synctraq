@@ -10991,6 +10991,15 @@ function PackageDispatch() {
     });
   };
 
+  var exportAllPackageDispatch = function exportAllPackageDispatch(StateSearch, RouteSearchList) {
+    location.href = url_general + 'package-dispatch/export/' + dateStart + '/' + dateEnd + '/' + idTeam + '/' + idDriver + '/' + StateSearch + '/' + RouteSearchList;
+  };
+
+  var handlerExport = function handlerExport() {
+    console.log('export!!!!');
+    exportAllPackageDispatch(StateSearch, RouteSearchList);
+  };
+
   var handlerChangePage = function handlerChangePage(pageNumber) {
     listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
   };
@@ -11634,7 +11643,7 @@ function PackageDispatch() {
     /*if(idDriverAsing == 0)
     {
         swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
-          return 0;
+         return 0;
     }*/
 
     var formData = new FormData();
@@ -11671,9 +11680,9 @@ function PackageDispatch() {
         dangerMode: true,
     })
     .then((willDelete) => {
-          if(willDelete)
+         if(willDelete)
         {
-          }
+         }
     });*/
   };
 
@@ -11940,7 +11949,7 @@ function PackageDispatch() {
     {
         listAllRole();
         listAllRoute();
-          //clearForm();
+         //clearForm();
         setTitleModal('Add Team');
         setTextButtonSave('Save');
     }*/
@@ -12759,7 +12768,7 @@ function PackageDispatch() {
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
                           className: "btn btn-primary btn-sm form-control",
                           onClick: function onClick() {
-                            return handlerRedirectReturns();
+                            return handlerExport();
                           },
                           children: "EXPORT"
                         })
