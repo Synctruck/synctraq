@@ -220,47 +220,6 @@ class PackageWarehouseController extends Controller
 
                     $packageReturn->save();
 
-                    $packageInbound = new PackageInbound();
-
-                    $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageInbound->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageInbound->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageInbound->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageInbound->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageInbound->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageInbound->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageInbound->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageInbound->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageInbound->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageInbound->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageInbound->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageInbound->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageInbound->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageInbound->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageInbound->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                    $packageInbound->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageInbound->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageInbound->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageInbound->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageInbound->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageInbound->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageInbound->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageInbound->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageInbound->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageInbound->Service_Level                = $packageDispatch->Service_Level;
-                    $packageInbound->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageInbound->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                    $packageInbound->Notes                        = $packageDispatch->Notes;
-                    $packageInbound->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                    $packageInbound->Weight                       = $packageDispatch->Weight;
-                    $packageInbound->Route                        = $packageDispatch->Route;
-                    $packageInbound->Name                         = $packageDispatch->Name;
-                    $packageInbound->idUser                       = Session::get('user')->id;
-                    $packageInbound->reInbound                    = 1;
-                    $packageInbound->status                       = 'Inbound';
-
-                    $packageInbound->save();
-
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -300,11 +259,11 @@ class PackageWarehouseController extends Controller
                     $packageHistory->idUser                       = Session::get('user')->id;
                     $packageHistory->idUserInbound                = Session::get('user')->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Re-Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
-                    $packageHistory->status                       = 'ReInbound';
+                    $packageHistory->status                       = 'Return';
 
                     $packageHistory->save();
 
@@ -356,8 +315,6 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->Name                         = $package->Name;
                 $packageWarehouse->idUser                       = Session::get('user')->id;
                 $packageWarehouse->status                       = 'Warehouse';
-                $packageWarehouse->created_at                   = date('Y-m-d H:i:s');
-                $packageWarehouse->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageWarehouse->save();
 
@@ -400,8 +357,6 @@ class PackageWarehouseController extends Controller
                 $packageHistory->idUser                       = Session::get('user')->id;
                 $packageHistory->Description                  = 'Warehouse - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
-                $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
                 

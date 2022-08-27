@@ -11,6 +11,7 @@ class PackageWarehouse extends Model
     protected $casts      = [
 
         'created_at' => 'date:Y-m-d H:i:s',
+        'updated_at' => 'date:Y-m-d H:i:s',
     ];
 
     public $timestamps   = false;
@@ -19,5 +20,19 @@ class PackageWarehouse extends Model
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'idUser', 'id');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function($user){
+
+            $user->created_at = date('Y-m-d H:i:s');
+            $user->updated_at = date('Y-m-d H:i:s');
+        });
+
+        static::updating(function($user){
+
+            $user->updated_at = date('Y-m-d H:i:s');
+        });
     }
 }
