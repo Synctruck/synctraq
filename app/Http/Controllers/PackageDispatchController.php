@@ -122,6 +122,120 @@ class PackageDispatchController extends Controller
         return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'roleUser' => $roleUser, 'listState' => $listState];
     }
 
+    public function Export(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - DISPATCH " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE' ,'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        if(Session::get('user')->role->name == 'Driver')
+        {
+            $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
+                                                    ->where('idUserDispatch', Session::get('user')->id)
+                                                    ->where('status', 'Dispatch');
+        }
+        elseif(Session::get('user')->role->name == 'Team')
+        {
+            $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
+
+            $idUsers = [];
+
+            foreach($drivers as $driver)
+            {
+                array_push($idUsers, $driver->id);
+            }
+
+            array_push($idUsers, Session::get('user')->id);
+
+            $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
+        }
+        else
+        {
+            $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
+                                                ->where('status', 'Dispatch');
+        }
+
+        $packageDispatchList = $packageDispatchList->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idTeam && $idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
+
+            $packageDispatchList = $packageDispatchList->whereIn('idUserDispatch', $idsUser);
+        }
+
+        if($state != 'all')
+        {
+            $state = explode(',', $state);
+
+            $packageDispatchList = $packageDispatchList->whereIn('Dropoff_Province', $state);
+        }
+
+        if($routes != 'all')
+        {
+            $routes = explode(',', $routes);
+
+            $packageDispatchList = $packageDispatchList->whereIn('Route', $routes);
+        }
+
+        $packageDispatchList = $packageDispatchList->orderBy('Date_Dispatch', 'desc')->get();
+
+       foreach($packageDispatchList as $packageDispatch)
+        {
+
+            if($packageDispatch->driver && $packageDispatch->driver->idTeam)
+            {
+                $team   = $packageDispatch->driver->nameTeam;
+                $driver = $packageDispatch->driver->name .' '. $packageDispatch->driver->nameOfOwner;
+            }
+            else
+            {
+                $team   = $packageDispatch->driver ? $packageDispatch->driver->name : '';
+                $driver = '';
+            }
+
+            $lineData = array(
+                date('m-d-Y', strtotime($packageDispatch->Date_Dispatch)),
+                date('H:i:s', strtotime($packageDispatch->Date_Dispatch)),
+                $team,
+                $driver,
+                $packageDispatch->Reference_Number_1,
+                $packageDispatch->Dropoff_Contact_Name,
+                $packageDispatch->Dropoff_Contact_Phone_Number,
+                $packageDispatch->Dropoff_Address_Line_1,
+                $packageDispatch->Dropoff_City,
+                $packageDispatch->Dropoff_Province,
+                $packageDispatch->Dropoff_Postal_Code,
+                $packageDispatch->Weight,
+                $packageDispatch->Route,
+                $packageDispatch->packageDispatch
+            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
     public function GetAll()
     {
         $listPackageDispatch = PackageDispatch::where('status', 'Dispatch')

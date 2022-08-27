@@ -126,6 +126,17 @@ function PackageDispatch() {
         });
     }
 
+    const exportAllPackageDispatch = ( StateSearch, RouteSearchList) => {
+
+
+        location.href = url_general +'package-dispatch/export/'+ dateStart+'/'+dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList;
+    }
+
+    const handlerExport = () => {
+        console.log('export!!!!');
+       exportAllPackageDispatch(StateSearch, RouteSearchList);
+    }
+
     const handlerChangePage = (pageNumber) => {
 
         listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
@@ -951,6 +962,7 @@ function PackageDispatch() {
         location.href = 'package/return';
     }
 
+
     const listAllRole = () => {
 
         fetch(url_general +'role/list')
@@ -1544,7 +1556,7 @@ function PackageDispatch() {
 
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerRedirectReturns() }>EXPORT</button>
+                                                    <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
                                                 </div>
                                             </div>
 

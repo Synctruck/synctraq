@@ -72,6 +72,7 @@ Route::group(['middleware' => 'login'], function() {
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index']);
 	Route::get('/package-inbound/list/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'List']);
+	Route::get('/package-inbound/export/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'Export']);
 	Route::post('/package-inbound/insert', [PackageInboundController::class, 'Insert']);
 	Route::get('/package-inbound/get/{PACKAGE_ID}', [PackageInboundController::class, 'Get']);
 	Route::post('/package-inbound/update', [PackageInboundController::class, 'Update']);
@@ -81,6 +82,7 @@ Route::group(['middleware' => 'login'], function() {
 	//============ Dispatch package
 	Route::get('/package-dispatch', [PackageDispatchController::class, 'Index']);
 	Route::get('/package-dispatch/list/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'List']);
+	Route::get('/package-dispatch/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'Export']);
 	Route::get('/package-dispatch/getAll', [PackageDispatchController::class, 'GetAll']);
 	Route::post('/package-dispatch/insert', [PackageDispatchController::class, 'Insert']);
 	Route::get('/package-dispatch/get/{PACKAGE_ID}', [PackageDispatchController::class, 'Get']);
