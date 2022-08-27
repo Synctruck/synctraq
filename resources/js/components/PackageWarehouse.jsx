@@ -421,76 +421,47 @@ function PackageWarehouse() {
                 setTextMessageDate('');
                 setTextMessage2('');
 
-                if(response.stateAction == 'notInland')
+                if(response.stateAction == 'notExists')
                 {
-                    setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
-
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notExists')
-                {
-                    setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                    setTextMessage("NO INBOUND and NO DISPATCH #"+ Reference_Number_1);
                     setTypeMessage('error');
                     setNumberPackage('');
 
                     document.getElementById('soundPitidoError').play();
                 }
-                else if(response.stateAction == 'validated')
+                else if(response.stateAction == 'packageInWarehouse')
                 {
-                    let packageInbound = response.packageInbound;
+                    let packageWarehouse = response.packageWarehouse;
 
-                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                    setTextMessageDate(packageInbound.created_at);
+                    setTextMessage("WAREHOUSE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                    setTextMessageDate(packageWarehouse.created_at);
                     setTypeMessage('warning');
                     setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
                 }
-                else if(response.stateAction == 'validatedFilterPackage')
+                else if(response.stateAction == 'packageUpdateCreatedAt')
                 {
-                    setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
-                    setTypeMessage('primary');
-                    setNumberPackage('');
+                    let packageWarehouse = response.packageWarehouse;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'validatedFilterState')
-                {
-                    setTextMessage("OTHER STATE "+ Reference_Number_1);
-                    setTypeMessage('primary');
+                    setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                    setTextMessageDate(packageWarehouse.created_at);
+                    setTypeMessage('warning');
                     setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
                 }
                 else if(response.stateAction)
                 {
-                    setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
+                    setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1);
                     setTypeMessage('success');
                     setNumberPackage('');
 
-                    setWeightLabel(response.packageInbound.Weight);
-                    setStateLabel(response.packageInbound.Dropoff_Province);
-                    setRouteLabel(response.packageInbound.Route);
-                    setReferenceLabel(response.packageInbound.Reference_Number_1);
-
-                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
-
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
-
-                    handlerPrint('labelPrint');
                 }
-                else
-                {
-                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                    setTypeMessage('error');
-                    setNumberPackage('');
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
+                listAllPackage(1, filterDate, RouteSearch, StateSearch);
 
                 setReadInput(false);
             },
@@ -553,8 +524,6 @@ function PackageWarehouse() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td>{ pack.user.name +' '+ pack.user.nameOfOwner }</td>
-                <td>{ pack.TRUCK }</td>
-                <td>{ pack.CLIENT }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -564,7 +533,7 @@ function PackageWarehouse() {
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
-                <td>
+                <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
                     </button>
@@ -869,8 +838,6 @@ function PackageWarehouse() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>VALIDATOR</th>
-                                                <th>TRUCK #</th>
-                                                <th>CLIENT</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
@@ -880,7 +847,7 @@ function PackageWarehouse() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>ACTION</th>
+                                                <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

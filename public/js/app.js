@@ -13870,10 +13870,17 @@ function PackageInbound() {
         setTypeMessage('error');
         setNumberPackage('');
         document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'validated') {
+      } else if (response.stateAction == 'validatedInbound') {
         var packageInbound = response.packageInbound;
         setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageInbound.Route);
         setTextMessageDate(packageInbound.created_at);
+        setTypeMessage('warning');
+        setNumberPackage('');
+        document.getElementById('soundPitidoWarning').play();
+      } else if (response.stateAction == 'validatedWarehouse') {
+        var packageWarehouse = response.packageWarehouse;
+        setTextMessage("PACKAGE IN WAREHOUSE  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
+        setTextMessageDate(packageWarehouse.created_at);
         setTypeMessage('warning');
         setNumberPackage('');
         document.getElementById('soundPitidoWarning').play();
@@ -16698,53 +16705,34 @@ function PackageWarehouse() {
       setTextMessageDate('');
       setTextMessage2('');
 
-      if (response.stateAction == 'notInland') {
-        setTextMessage("NOT INLAND o 67660 #" + Reference_Number_1);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'notExists') {
-        setTextMessage("NO MANIFEST #" + Reference_Number_1);
+      if (response.stateAction == 'notExists') {
+        setTextMessage("NO INBOUND and NO DISPATCH #" + Reference_Number_1);
         setTypeMessage('error');
         setNumberPackage('');
         document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'validated') {
-        var packageInbound = response.packageInbound;
-        setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageInbound.Route);
-        setTextMessageDate(packageInbound.created_at);
+      } else if (response.stateAction == 'packageInWarehouse') {
+        var packageWarehouse = response.packageWarehouse;
+        setTextMessage("WAREHOUSE TODAY:  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
+        setTextMessageDate(packageWarehouse.created_at);
         setTypeMessage('warning');
         setNumberPackage('');
         document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'validatedFilterPackage') {
-        setTextMessage("CHANGE LABEL #" + Reference_Number_1);
-        setTypeMessage('primary');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'validatedFilterState') {
-        setTextMessage("OTHER STATE " + Reference_Number_1);
-        setTypeMessage('primary');
+      } else if (response.stateAction == 'packageUpdateCreatedAt') {
+        var _packageWarehouse = response.packageWarehouse;
+        setTextMessage("WAREHOUSE UPDATE TODAY:  #" + Reference_Number_1 + ' / ' + _packageWarehouse.Route);
+        setTextMessageDate(_packageWarehouse.created_at);
+        setTypeMessage('warning');
         setNumberPackage('');
         document.getElementById('soundPitidoWarning').play();
       } else if (response.stateAction) {
-        setTextMessage("VALID / " + Reference_Number_1 + ' / ' + response.packageInbound.Route);
+        setTextMessage("VALID WAREHOUSE / " + Reference_Number_1);
         setTypeMessage('success');
         setNumberPackage('');
-        setWeightLabel(response.packageInbound.Weight);
-        setStateLabel(response.packageInbound.Dropoff_Province);
-        setRouteLabel(response.packageInbound.Route);
-        setReferenceLabel(response.packageInbound.Reference_Number_1);
-        listAllPackage(1, filterDate, RouteSearch, StateSearch);
         document.getElementById('Reference_Number_1').focus();
         document.getElementById('soundPitidoSuccess').play();
-        handlerPrint('labelPrint');
-      } else {
-        setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
-        setTypeMessage('error');
-        setNumberPackage('');
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoError').play();
       }
 
+      listAllPackage(1, filterDate, RouteSearch, StateSearch);
       setReadInput(false);
     });
   };
@@ -16791,10 +16779,6 @@ function PackageWarehouse() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: pack.user.name + ' ' + pack.user.nameOfOwner
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: pack.TRUCK
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: pack.CLIENT
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
           children: pack.Reference_Number_1
         })
@@ -16815,6 +16799,9 @@ function PackageWarehouse() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: pack.Route
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+        style: {
+          display: 'none'
+        },
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
           className: "btn btn-primary btn-sm",
           onClick: function onClick() {
@@ -17319,10 +17306,6 @@ function PackageWarehouse() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
                         children: "VALIDATOR"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
-                        children: "TRUCK #"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
-                        children: "CLIENT"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
                         children: "PACKAGE ID"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
                         children: "CLIENT"
@@ -17341,6 +17324,9 @@ function PackageWarehouse() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
                         children: "ROUTE"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        style: {
+                          display: 'none'
+                        },
                         children: "ACTION"
                       })]
                     })

@@ -437,12 +437,23 @@ function PackageInbound() {
 
                     document.getElementById('soundPitidoError').play();
                 }
-                else if(response.stateAction == 'validated')
+                else if(response.stateAction == 'validatedInbound')
                 {
                     let packageInbound = response.packageInbound;
 
                     setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
                     setTextMessageDate(packageInbound.created_at);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedWarehouse')
+                {
+                    let packageWarehouse = response.packageWarehouse;
+
+                    setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                    setTextMessageDate(packageWarehouse.created_at);
                     setTypeMessage('warning');
                     setNumberPackage('');
 
