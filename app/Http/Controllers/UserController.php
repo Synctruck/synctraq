@@ -86,7 +86,7 @@ class UserController extends Controller
 
             [
                 "idRole" => ["required"],
-                "name" => ["required", "unique:user,name,$id", "max:100"],
+                "name" => ["required","max:100"],
                 "nameOfOwner" => ["required", "unique:user,nameOfOwner,$id", "max:100"],
                 "address" => ["required"],
                 "phone" => ["required"],
@@ -95,7 +95,6 @@ class UserController extends Controller
             [
                 "idRole.required" => "Seleccione un rol",
 
-                "name.unique" => "El nombre ya existe",
                 "name.required" => "El campo es requerido",
                 "name.max"  => "Debe ingresar máximo 100 dígitos",
 

@@ -33,9 +33,9 @@ class TeamController extends Controller
                         'Authorization: Basic '. $this->base64,
                     ];
     }
-    
+
     public function Index()
-    {        
+    {
         return view('team.index');
     }
 
@@ -45,7 +45,7 @@ class TeamController extends Controller
                             ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                             ->where('idRole', 3)
                             ->paginate($this->paginate);
-        
+
         return ['userList' => $userList];
     }
 
@@ -62,7 +62,7 @@ class TeamController extends Controller
             $listTeam = User::where('idRole', 3)
                         ->orderBy('name', 'asc')->get();
         }
-        
+
         return ['listTeam' => $listTeam];
     }
 
@@ -120,7 +120,7 @@ class TeamController extends Controller
         {
             $register = true;
         }
-        
+
         if($register)
         {
             try
@@ -163,7 +163,7 @@ class TeamController extends Controller
                 }
 
                 DB::commit();
-                
+
                 return ['stateAction' => true];
             }
             catch(Exception $e)
@@ -182,7 +182,7 @@ class TeamController extends Controller
     public function Get($id)
     {
         $team = User::with('routes_team.route')->find($id);
-        
+
         return ['team' => $team];
     }
 
@@ -240,7 +240,7 @@ class TeamController extends Controller
         {
             $updated = true;
         }
-        
+
 
         if($updated)
         {
@@ -261,7 +261,7 @@ class TeamController extends Controller
                 $user->save();
 
                 $listTeamRoute = TeamRoute::where('idTeam', $id)->get();
-     
+
                 foreach($listTeamRoute as $teamRoute)
                 {
                     $teamRoute = TeamRoute::find($teamRoute->id);
@@ -287,7 +287,7 @@ class TeamController extends Controller
                 }
 
                 DB::commit();
-                
+
                 return ['stateAction' => true];
             }
             catch(Exception $e)
@@ -313,12 +313,12 @@ class TeamController extends Controller
 
             if($teamOnfleet)
             {
-                $deleteOnfleet = $this->DeleteOnfleet($user->idOnfleet); 
+                $deleteOnfleet = $this->DeleteOnfleet($user->idOnfleet);
             }
         }
 
         $user->delete();
-        
+
         return ['stateAction' => true];
     }
 
@@ -374,7 +374,7 @@ class TeamController extends Controller
                 'Authorization: Basic '. $base64,
             )
         );
-        
+
         $reponse = curl_exec($curl);
 
         return $reponse;

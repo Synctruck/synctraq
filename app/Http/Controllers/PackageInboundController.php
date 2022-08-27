@@ -31,8 +31,11 @@ class PackageInboundController extends Controller
         return view('package.inbound');
     }
 
-    public function List(Request $request, $filterDate, $route, $state)
+    public function List(Request $request, $dateStart,$dateEnd, $route, $state)
     {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
@@ -45,10 +48,8 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
-            $date = explode("-",$filterDate);
-            $packageListInbound = $packageListInbound->whereMonth('created_at', $date[1])
-                                    ->whereYear('created_at', $date[0])
-                                    ->whereDay('created_at', $date[2]);
+
+            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($route != 'all')
         {
@@ -71,6 +72,90 @@ class PackageInboundController extends Controller
                                             ->get();
 
         return ['packageList' => $packageListInbound, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+    }
+
+    public function Export(Request $request, $dateStart,$dateEnd, $route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'VALIDATOR', 'TRUCK #', 'CLIENT', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        if(Session::get('user')->role->name == 'Validador')
+        {
+            $packageListInbound = PackageInbound::with('user')->where('idUser', Session::get('user')->id)
+                                                ->where('status', 'Inbound');
+        }
+        else if(Session::get('user')->role->name == 'Administrador')
+        {
+            $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
+        }
+
+            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($route != 'all')
+        {
+            $packageListInbound = $packageListInbound->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageListInbound = $packageListInbound->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageListInbound = $packageListInbound->where('reInbound', 0)
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
+
+        foreach($packageListInbound as $packageInbound)
+        {
+            if($packageInbound->validator)
+            {
+                $validator = $packageInbound->validator->name .' '. $packageInbound->validator->nameOfOwner;
+            }
+            else
+            {
+                $validator = '';
+            }
+
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageInbound->Date_Inbound)),
+                                date('H:i:s', strtotime($packageInbound->Date_Inbound)),
+                                $validator,
+                                $packageInbound->TRUCK,
+                                $packageInbound->CLIENT,
+                                $packageInbound->Reference_Number_1,
+                                $packageInbound->Dropoff_Contact_Name,
+                                $packageInbound->Dropoff_Contact_Phone_Number,
+                                $packageInbound->Dropoff_Address_Line_1,
+                                $packageInbound->Dropoff_City,
+                                $packageInbound->Dropoff_Province,
+                                $packageInbound->Dropoff_Postal_Code,
+                                $packageInbound->Weight,
+                                $packageInbound->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 
     public function Insert(Request $request)
