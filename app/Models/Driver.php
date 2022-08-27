@@ -32,7 +32,15 @@ class Driver extends Model
     {
         return $this->hasMany('App\Models\PackageDispatch', 'idUserDispatch');
     }
+    public function routes_team()
+    {
+        return $this->hasMany('App\Models\TeamRoute', 'idTeam');
+    }
 
+    public function package_not_exists()
+    {
+        return $this->hasMany('App\Models\PackageNotExists', 'idUser');
+    }
 
     //observers
     protected static function booted()

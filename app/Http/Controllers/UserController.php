@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\PackageHistory;
 use Ixudra\Curl\Facades\Curl;
 
 use Session;
-
+use DB;
 class UserController extends Controller
 {
     public $paginate = 50;
@@ -25,10 +25,28 @@ class UserController extends Controller
 
     public function List(Request $request)
     {
-        $userList = User::with('role')->orderBy('name', 'asc')
+        $userList = User::with('role')
+                                ->with('package_not_exists')
+                                ->with('routes_team')
+                                ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idRole', '=', 1)
                                 ->paginate($this->paginate);
+
+
+        foreach ($userList as $key => $user) {
+            $history = PackageHistory::where('idUser',$user->id)
+                                        ->orWhere('idUserManifest',$user->id)
+                                        ->orWhere('idUserInbound',$user->id)
+                                        ->orWhere('idUserReInbound',$user->id)
+                                        ->orWhere('idUserDispatch',$user->id)
+                                        ->orWhere('idUserReturn',$user->id)
+                                        ->orWhere('idUserDelivery',$user->id)
+                                        ->orWhere('idUserFailed',$user->id)
+                                        ->select('id')
+                                        ->first();
+            $user->history = ($history)?true:false;
+        }
 
         return ['userList' => $userList];
     }
@@ -127,7 +145,7 @@ class UserController extends Controller
     public function Delete($id)
     {
         $user = User::find($id);
-
+        // $user = User::with('')
         $user->delete();
 
         return ['stateAction' => true];
