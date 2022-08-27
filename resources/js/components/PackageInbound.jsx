@@ -98,7 +98,16 @@ function PackageInbound() {
             }
         });
     }
+    const exportAllPackageInbound = (route, state) => {
 
+        location.href = url_general +'package-inbound/export/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+    }
+
+    const handlerExport = () => {
+        console.log('export!!');
+        exportAllPackageInbound(RouteSearch, StateSearch);
+
+    }
     const handlerChangePage = (pageNumber) => {
 
         listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
@@ -610,6 +619,8 @@ function PackageInbound() {
         });
     }
 
+
+
     const handlerChangeState = (states) => {
 
         if(states.length != 0)
@@ -733,6 +744,13 @@ function PackageInbound() {
                                             :
                                                 ''
                                         }
+                                    </div>
+                                    <div className="col-12 mb-4">
+                                        <div className="row">
+                                            <div className="col-2">
+                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="col-lg-8 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">

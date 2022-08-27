@@ -13368,6 +13368,15 @@ function PackageInbound() {
     });
   };
 
+  var exportAllPackageInbound = function exportAllPackageInbound(route, state) {
+    location.href = url_general + 'package-inbound/export/' + dateStart + '/' + dateEnd + '/' + route + '/' + state;
+  };
+
+  var handlerExport = function handlerExport() {
+    console.log('export!!');
+    exportAllPackageInbound(RouteSearch, StateSearch);
+  };
+
   var handlerChangePage = function handlerChangePage(pageNumber) {
     listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
   };
@@ -14172,6 +14181,21 @@ function PackageInbound() {
                     className: "text-warning",
                     children: [textMessageDate.substring(5, 7), "-", textMessageDate.substring(8, 10), "-", textMessageDate.substring(0, 4), " ", textMessageDate.substring(11, 19)]
                   }) : '']
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-12 mb-4",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "row",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-2",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                        className: "btn btn-primary btn-sm form-control",
+                        onClick: function onClick() {
+                          return handlerExport();
+                        },
+                        children: "EXPORT"
+                      })
+                    })
+                  })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "col-lg-8 form-group",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
