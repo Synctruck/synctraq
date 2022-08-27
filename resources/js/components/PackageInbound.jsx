@@ -541,9 +541,11 @@ function PackageInbound() {
         );
     }
 
-    const handlerViewPDF = (Reference_Number) => {
-
-        window.open(url_general +'package-inbound/pdf-label/'+ Reference_Number);
+    const handlerViewPDF = (printText,packWeight,packState,packRoute) => {
+        setWeightLabel(packWeight);
+        setStateLabel(packState);
+        setRouteLabel(packRoute);
+        handlerPrintSecondary(printText);
     }
 
     const listPackageTable = listPackageInbound.map( (pack, i) => {
@@ -574,7 +576,7 @@ function PackageInbound() {
                         <i className="bx bx-edit-alt"></i>
                     </button>
 
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1) }>
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1,pack.Weight,pack.Dropoff_Province,pack.Route) }>
                         PDF
                     </button>
                 </td>
@@ -696,6 +698,27 @@ function PackageInbound() {
         document.getElementById('Reference_Number_1').focus();
     }
 
+
+    const handlerPrintSecondary = (printText) => {
+
+        JsBarcode("#imgBarcode", printText, {
+
+            textMargin: 0,
+            fontSize: 27,
+        });
+
+        var content = document.getElementById('labelPrint');
+        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
+
+        pri.document.open();
+        pri.document.write(content.innerHTML);
+        pri.document.close();
+        pri.focus();
+        pri.print();
+
+        document.getElementById('Reference_Number_1').focus();
+    }
+
     return (
 
         <section className="section">
@@ -755,7 +778,7 @@ function PackageInbound() {
                                     <div className="col-lg-8 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
-                                                <label htmlFor="">PACKAGE ID</label>
+                                                <label htmlFor="">PACKAGE IDs</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="16" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
