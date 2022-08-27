@@ -35,7 +35,7 @@ function Driver() {
     useEffect(() => {
 
         listAllUser(page);
- 
+
     }, [textSearch])
 
     const handlerChangePage = (pageNumber) => {
@@ -55,7 +55,7 @@ function Driver() {
             setTotalUser(response.userList.total);
             setRoleUser(response.roleUser);
 
-            if(response.roleUser == 'Administrador') 
+            if(response.roleUser == 'Administrador')
             {
                 listAllTeam();
             }
@@ -279,7 +279,7 @@ function Driver() {
                         LoadingHide();
                     }
                 });
-            } 
+            }
         });
     }
 
@@ -313,7 +313,12 @@ function Driver() {
     }
 
     const listDriverTable = listUser.map( (user, i) => {
-
+        let buttonDelete ='';
+        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 ) {
+            buttonDelete = <button className="btn btn-danger btn-sm" title="Delete" style={ { display: user.dispatchs.length == 0 ? 'block' : 'none' }} onClick={ () => deleteUser(user.id) }>
+                            <i className="bx bxs-trash-alt"></i>
+                        </button>;
+        }
         return (
 
             <tr key={i}>
@@ -335,9 +340,7 @@ function Driver() {
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Delete" style={ { display: user.dispatchs.length == 0 ? 'block' : 'none' }} onClick={ () => deleteUser(user.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>
+                    {buttonDelete}
                 </td>
             </tr>
         );
@@ -354,7 +357,7 @@ function Driver() {
                 :
                     ''
             )
-            
+
         );
     });
 
@@ -398,7 +401,7 @@ function Driver() {
                                                                             <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
                                                                                 <option value="" style={ {display: 'none'} }>Select a team</option>
                                                                                 { listTeamSelect }
-                                                                            </select> 
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                 </>
@@ -468,7 +471,7 @@ function Driver() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10"> 
+                                    <div className="col-lg-10">
                                         Driver List
                                     </div>
                                     <div className="col-lg-2">
@@ -479,7 +482,7 @@ function Driver() {
                                 </div>
                             </h5>
                             <div className="row form-group">
-                                <div className="col-lg-12"> 
+                                <div className="col-lg-12">
                                     <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Buscar..."/>
                                     <br/>
                                 </div>

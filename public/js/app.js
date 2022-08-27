@@ -8337,6 +8337,24 @@ function Driver() {
   };
 
   var listDriverTable = listUser.map(function (user, i) {
+    var buttonDelete = '';
+
+    if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0) {
+      buttonDelete = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+        className: "btn btn-danger btn-sm",
+        title: "Delete",
+        style: {
+          display: user.dispatchs.length == 0 ? 'block' : 'none'
+        },
+        onClick: function onClick() {
+          return deleteUser(user.id);
+        },
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+          className: "bx bxs-trash-alt"
+        })
+      });
+    }
+
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       children: [roleUser == 'Administrador' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
@@ -8360,19 +8378,7 @@ function Driver() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
             className: "bx bx-edit-alt"
           })
-        }), " \xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-          className: "btn btn-danger btn-sm",
-          title: "Delete",
-          style: {
-            display: user.dispatchs.length == 0 ? 'block' : 'none'
-          },
-          onClick: function onClick() {
-            return deleteUser(user.id);
-          },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-            className: "bx bxs-trash-alt"
-          })
-        })]
+        }), " \xA0", buttonDelete]
       })]
     }, i);
   });
@@ -14181,7 +14187,22 @@ function PackageInbound() {
               className: "card-title",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                 className: "row form-group",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-12 mb-4",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "row",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-2",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                        className: "btn btn-primary btn-sm form-control",
+                        onClick: function onClick() {
+                          return handlerExport();
+                        },
+                        children: "EXPORT"
+                      })
+                    })
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                   className: "col-lg-12 form-group text-center",
                   children: [typeMessage == 'success' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
                     className: "text-success",
@@ -14199,21 +14220,6 @@ function PackageInbound() {
                     className: "text-warning",
                     children: [textMessageDate.substring(5, 7), "-", textMessageDate.substring(8, 10), "-", textMessageDate.substring(0, 4), " ", textMessageDate.substring(11, 19)]
                   }) : '']
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "col-12 mb-4",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    className: "row",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                      className: "col-2",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-                        className: "btn btn-primary btn-sm form-control",
-                        onClick: function onClick() {
-                          return handlerExport();
-                        },
-                        children: "EXPORT"
-                      })
-                    })
-                  })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "col-lg-8 form-group",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
@@ -25942,6 +25948,21 @@ function User() {
   };
 
   var listUserTable = listUser.map(function (user, i) {
+    var buttonDelete = '';
+
+    if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0) {
+      buttonDelete = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+        className: "btn btn-danger btn-sm",
+        title: "Eliminar",
+        onClick: function onClick() {
+          return deleteUser(user.id);
+        },
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+          className: "bx bxs-trash-alt"
+        })
+      });
+    }
+
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: user.role.name
@@ -25965,16 +25986,7 @@ function User() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
             className: "bx bx-edit-alt"
           })
-        }), " \xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
-          className: "btn btn-danger btn-sm",
-          title: "Eliminar",
-          onClick: function onClick() {
-            return deleteUser(user.id);
-          },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-            className: "bx bxs-trash-alt"
-          })
-        })]
+        }), " \xA0", buttonDelete]
       })]
     }, i);
   });
@@ -26802,6 +26814,21 @@ function User() {
   };
 
   var listUserTable = listUser.map(function (user, i) {
+    var buttonDelete = '';
+
+    if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0) {
+      buttonDelete = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+        className: "btn btn-danger btn-sm",
+        title: "Eliminar",
+        onClick: function onClick() {
+          return deleteUser(user.id);
+        },
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("i", {
+          className: "bx bxs-trash-alt"
+        })
+      });
+    }
+
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("tr", {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
         children: user.name
@@ -26823,16 +26850,7 @@ function User() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("i", {
             className: "bx bx-edit-alt"
           })
-        }), " \xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
-          className: "btn btn-danger btn-sm",
-          title: "Eliminar",
-          onClick: function onClick() {
-            return deleteUser(user.id);
-          },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("i", {
-            className: "bx bxs-trash-alt"
-          })
-        })]
+        }), " \xA0", buttonDelete]
       })]
     }, i);
   });

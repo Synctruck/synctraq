@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Configuration, Routes, TeamRoute, User};
+use App\Models\{Configuration, Driver, Routes, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -41,12 +41,12 @@ class TeamController extends Controller
 
     public function List(Request $request)
     {
-        $userList = User::with(['drivers', 'role', 'routes_team'])->orderBy('name', 'asc')
+        $teamsList = User::with(['drivers', 'role', 'routes_team'])->orderBy('name', 'asc')
                             ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                             ->where('idRole', 3)
                             ->paginate($this->paginate);
 
-        return ['userList' => $userList];
+        return ['userList' => $teamsList];
     }
 
     public function ListAll(Request $request)

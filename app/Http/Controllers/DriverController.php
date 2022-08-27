@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Configuration, Driver, TeamRoute, User};
+use App\Models\{Configuration, Driver, PackageHistory, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -43,17 +43,37 @@ class DriverController extends Controller
     {
         if(Session::get('user')->role->name == 'Administrador')
         {
-            $userList = Driver::with(['dispatchs', 'role'])->orderBy('name', 'asc')
+            $userList = Driver::with(['dispatchs', 'role'])
+                                ->with('package_not_exists')
+                                ->with('routes_team')
+                                ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idTeam', '!=', 0)
                                 ->paginate($this->paginate);
         }
         else
         {
-            $userList = Driver::with(['dispatchs', 'role'])->orderBy('name', 'asc')
+            $userList = Driver::with(['dispatchs', 'role'])
+                                ->with('package_not_exists')
+                                ->with('routes_team')
+                                ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idTeam', Session::get('user')->id)
                                 ->paginate($this->paginate);
+        }
+
+        foreach ($userList as $key => $user) {
+            $history = PackageHistory::where('idUser',$user->id)
+                                        ->orWhere('idUserManifest',$user->id)
+                                        ->orWhere('idUserInbound',$user->id)
+                                        ->orWhere('idUserReInbound',$user->id)
+                                        ->orWhere('idUserDispatch',$user->id)
+                                        ->orWhere('idUserReturn',$user->id)
+                                        ->orWhere('idUserDelivery',$user->id)
+                                        ->orWhere('idUserFailed',$user->id)
+                                        ->select('id')
+                                        ->first();
+            $user->history = ($history)?true:false;
         }
 
         $roleUser = Session::get('user')->role->name;

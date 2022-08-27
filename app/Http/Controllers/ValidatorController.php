@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\PackageHistory;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
@@ -25,11 +26,27 @@ class ValidatorController extends Controller
 
     public function List(Request $request)
     {
-        $validatorList = User::with('role')->orderBy('name', 'asc')
+        $validatorList = User::with('role')
+                                ->with('package_not_exists')
+                                ->with('routes_team')
+                                ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idRole', 2)
                                 ->paginate($this->paginate);
 
+        foreach ($validatorList as $key => $user) {
+            $history = PackageHistory::where('idUser',$user->id)
+                                        ->orWhere('idUserManifest',$user->id)
+                                        ->orWhere('idUserInbound',$user->id)
+                                        ->orWhere('idUserReInbound',$user->id)
+                                        ->orWhere('idUserDispatch',$user->id)
+                                        ->orWhere('idUserReturn',$user->id)
+                                        ->orWhere('idUserDelivery',$user->id)
+                                        ->orWhere('idUserFailed',$user->id)
+                                        ->select('id')
+                                        ->first();
+            $user->history = ($history)?true:false;
+        }
         return response()->json([
             'validatorList' => $validatorList
             ]);
