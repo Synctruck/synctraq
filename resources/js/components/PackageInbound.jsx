@@ -740,6 +740,13 @@ function PackageInbound() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
+                                     <div className="col-12 mb-4">
+                                        <div className="row">
+                                            <div className="col-2">
+                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="col-lg-12 form-group text-center">
                                         {
                                             typeMessage == 'success'
@@ -779,13 +786,7 @@ function PackageInbound() {
                                                 ''
                                         }
                                     </div>
-                                    <div className="col-12 mb-4">
-                                        <div className="row">
-                                            <div className="col-2">
-                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                     <div className="col-lg-8 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
