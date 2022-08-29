@@ -401,116 +401,125 @@ function PackageInbound() {
                                     </div>
                                 </React.Fragment>;
 
+    const [sendInbound, setSendInbound] = useState(1);
+
     const handlerInsert = (e) => {
 
         e.preventDefault();
 
-        const formData = new FormData();
+        console.log(sendInbound);
 
-        formData.append('Reference_Number_1', Reference_Number_1);
-        formData.append('TRUCK', Truck);
-        formData.append('CLIENT', Client);
+        if(sendInbound)
+        {
+            const formData = new FormData();
 
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            formData.append('Reference_Number_1', Reference_Number_1);
+            formData.append('TRUCK', Truck);
+            formData.append('CLIENT', Client);
 
-        setReadInput(true);
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(url_general +'package-inbound/insert', {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: formData
-        })
-        .then(res => res.json())
-        .then((response) => {
+            setReadInput(true);
+            setSendInbound(0);
 
-                setTextMessageDate('');
-                setTextMessage2('');
+            fetch(url_general +'package-inbound/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
 
-                if(response.stateAction == 'notInland')
-                {
-                    setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
+                    setTextMessageDate('');
+                    setTextMessage2('');
 
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notExists')
-                {
-                    setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                    setTypeMessage('error');
-                    setNumberPackage('');
+                    if(response.stateAction == 'notInland')
+                    {
+                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'validatedInbound')
-                {
-                    let packageInbound = response.packageInbound;
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notExists')
+                    {
+                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                        setTypeMessage('error');
+                        setNumberPackage('');
 
-                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                    setTextMessageDate(packageInbound.created_at);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'validatedInbound')
+                    {
+                        let packageInbound = response.packageInbound;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'validatedWarehouse')
-                {
-                    let packageWarehouse = response.packageWarehouse;
+                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
+                        setTextMessageDate(packageInbound.created_at);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                    setTextMessageDate(packageWarehouse.created_at);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedWarehouse')
+                    {
+                        let packageWarehouse = response.packageWarehouse;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'validatedFilterPackage')
-                {
-                    setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
-                    setTypeMessage('primary');
-                    setNumberPackage('');
+                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                        setTextMessageDate(packageWarehouse.created_at);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'validatedFilterState')
-                {
-                    setTextMessage("OTHER STATE "+ Reference_Number_1);
-                    setTypeMessage('primary');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
+                        setTypeMessage('primary');
+                        setNumberPackage('');
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction)
-                {
-                    setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
-                    setTypeMessage('success');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedFilterState')
+                    {
+                        setTextMessage("OTHER STATE "+ Reference_Number_1);
+                        setTypeMessage('primary');
+                        setNumberPackage('');
 
-                    setWeightLabel(response.packageInbound.Weight);
-                    setStateLabel(response.packageInbound.Dropoff_Province);
-                    setRouteLabel(response.packageInbound.Route);
-                    setReferenceLabel(response.packageInbound.Reference_Number_1);
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction)
+                    {
+                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
+                        setTypeMessage('success');
+                        setNumberPackage('');
 
-                    listAllPackageInbound(1, RouteSearch, StateSearch);
+                        setWeightLabel(response.packageInbound.Weight);
+                        setStateLabel(response.packageInbound.Dropoff_Province);
+                        setRouteLabel(response.packageInbound.Route);
+                        setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoSuccess').play();
+                        listAllPackageInbound(1, RouteSearch, StateSearch);
 
-                    handlerPrint('labelPrint');
-                }
-                else
-                {
-                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                    setTypeMessage('error');
-                    setNumberPackage('');
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
+                        handlerPrint('labelPrint');
+                    }
+                    else
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                        setTypeMessage('error');
+                        setNumberPackage('');
 
-                setReadInput(false);
-            },
-        );
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+
+                    setReadInput(false);
+                    setSendInbound(1);
+                },
+            );
+        }
     }
 
     const handlerImport = (e) => {
@@ -790,7 +799,7 @@ function PackageInbound() {
                                     <div className="col-lg-8 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
-                                                <label htmlFor="">PACKAGE IDs</label>
+                                                <label htmlFor="">PACKAGE ID</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="16" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">

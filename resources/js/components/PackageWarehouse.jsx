@@ -396,76 +396,85 @@ function PackageWarehouse() {
                                     </div>
                                 </React.Fragment>;
 
+    const [sendWarehouse, setSendWarehouse] = useState(1);
+
     const handlerInsert = (e) => {
 
         e.preventDefault();
 
-        const formData = new FormData();
+        console.log(sendWarehouse);
 
-        formData.append('Reference_Number_1', Reference_Number_1);
-        formData.append('TRUCK', Truck);
-        formData.append('CLIENT', Client);
+        if(sendWarehouse)
+        {
+            const formData = new FormData();
 
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            formData.append('Reference_Number_1', Reference_Number_1);
+            formData.append('TRUCK', Truck);
+            formData.append('CLIENT', Client);
 
-        setReadInput(true);
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(url_general +'package-warehouse/insert', {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: formData
-        })
-        .then(res => res.json())
-        .then((response) => {
+            setReadInput(true);
+            setSendWarehouse(0);
 
-                setTextMessageDate('');
-                setTextMessage2('');
+            fetch(url_general +'package-warehouse/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
 
-                if(response.stateAction == 'notExists')
-                {
-                    setTextMessage("NO INBOUND and NO DISPATCH #"+ Reference_Number_1);
-                    setTypeMessage('error');
-                    setNumberPackage('');
+                    setTextMessageDate('');
+                    setTextMessage2('');
 
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'packageInWarehouse')
-                {
-                    let packageWarehouse = response.packageWarehouse;
+                    if(response.stateAction == 'notExists')
+                    {
+                        setTextMessage("NO INBOUND and NO DISPATCH #"+ Reference_Number_1);
+                        setTypeMessage('error');
+                        setNumberPackage('');
 
-                    setTextMessage("WAREHOUSE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                    setTextMessageDate(packageWarehouse.created_at);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'packageInWarehouse')
+                    {
+                        let packageWarehouse = response.packageWarehouse;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'packageUpdateCreatedAt')
-                {
-                    let packageWarehouse = response.packageWarehouse;
+                        setTextMessage("WAREHOUSE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                        setTextMessageDate(packageWarehouse.created_at);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                    setTextMessageDate(packageWarehouse.created_at);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageUpdateCreatedAt')
+                    {
+                        let packageWarehouse = response.packageWarehouse;
 
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction)
-                {
-                    setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1);
-                    setTypeMessage('success');
-                    setNumberPackage('');
+                        setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                        setTextMessageDate(packageWarehouse.created_at);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('Reference_Number_1').focus();
-                    document.getElementById('soundPitidoSuccess').play();
-                }
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction)
+                    {
+                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1);
+                        setTypeMessage('success');
+                        setNumberPackage('');
 
-                listAllPackage(1, filterDate, RouteSearch, StateSearch);
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
+                    }
 
-                setReadInput(false);
-            },
-        );
+                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
+
+                    setReadInput(false);
+                    setSendWarehouse(1);
+                },
+            );
+        }
     }
 
     const handlerImport = (e) => {

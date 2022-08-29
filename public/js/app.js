@@ -11502,14 +11502,14 @@ function PackageDispatch() {
 
   var _useState101 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
       _useState102 = _slicedToArray(_useState101, 2),
-      sendDispatach = _useState102[0],
+      sendDispatch = _useState102[0],
       setSendDispatch = _useState102[1];
 
   var handlerValidation = function handlerValidation(e) {
     e.preventDefault();
-    console.log(sendDispatach);
+    console.log(sendDispatch);
 
-    if (sendDispatach) {
+    if (sendDispatch) {
       setReadOnly(true);
       setSendDispatch(0);
       var formData = new FormData();
@@ -13886,82 +13886,93 @@ function PackageInbound() {
     })
   });
 
+  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState80 = _slicedToArray(_useState79, 2),
+      sendInbound = _useState80[0],
+      setSendInbound = _useState80[1];
+
   var handlerInsert = function handlerInsert(e) {
     e.preventDefault();
-    var formData = new FormData();
-    formData.append('Reference_Number_1', Reference_Number_1);
-    formData.append('TRUCK', Truck);
-    formData.append('CLIENT', Client);
-    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    setReadInput(true);
-    fetch(url_general + 'package-inbound/insert', {
-      headers: {
-        "X-CSRF-TOKEN": token
-      },
-      method: 'post',
-      body: formData
-    }).then(function (res) {
-      return res.json();
-    }).then(function (response) {
-      setTextMessageDate('');
-      setTextMessage2('');
+    console.log(sendInbound);
 
-      if (response.stateAction == 'notInland') {
-        setTextMessage("NOT INLAND o 67660 #" + Reference_Number_1);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'notExists') {
-        setTextMessage("NO MANIFEST #" + Reference_Number_1);
-        setTypeMessage('error');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'validatedInbound') {
-        var packageInbound = response.packageInbound;
-        setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageInbound.Route);
-        setTextMessageDate(packageInbound.created_at);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'validatedWarehouse') {
-        var packageWarehouse = response.packageWarehouse;
-        setTextMessage("PACKAGE IN WAREHOUSE  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
-        setTextMessageDate(packageWarehouse.created_at);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'validatedFilterPackage') {
-        setTextMessage("CHANGE LABEL #" + Reference_Number_1);
-        setTypeMessage('primary');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'validatedFilterState') {
-        setTextMessage("OTHER STATE " + Reference_Number_1);
-        setTypeMessage('primary');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction) {
-        setTextMessage("VALID / " + Reference_Number_1 + ' / ' + response.packageInbound.Route);
-        setTypeMessage('success');
-        setNumberPackage('');
-        setWeightLabel(response.packageInbound.Weight);
-        setStateLabel(response.packageInbound.Dropoff_Province);
-        setRouteLabel(response.packageInbound.Route);
-        setReferenceLabel(response.packageInbound.Reference_Number_1);
-        listAllPackageInbound(1, RouteSearch, StateSearch);
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoSuccess').play();
-        handlerPrint('labelPrint');
-      } else {
-        setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
-        setTypeMessage('error');
-        setNumberPackage('');
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoError').play();
-      }
+    if (sendInbound) {
+      var formData = new FormData();
+      formData.append('Reference_Number_1', Reference_Number_1);
+      formData.append('TRUCK', Truck);
+      formData.append('CLIENT', Client);
+      var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+      setReadInput(true);
+      setSendInbound(0);
+      fetch(url_general + 'package-inbound/insert', {
+        headers: {
+          "X-CSRF-TOKEN": token
+        },
+        method: 'post',
+        body: formData
+      }).then(function (res) {
+        return res.json();
+      }).then(function (response) {
+        setTextMessageDate('');
+        setTextMessage2('');
 
-      setReadInput(false);
-    });
+        if (response.stateAction == 'notInland') {
+          setTextMessage("NOT INLAND o 67660 #" + Reference_Number_1);
+          setTypeMessage('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'notExists') {
+          setTextMessage("NO MANIFEST #" + Reference_Number_1);
+          setTypeMessage('error');
+          setNumberPackage('');
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'validatedInbound') {
+          var packageInbound = response.packageInbound;
+          setTextMessage("VALIDATE:  #" + Reference_Number_1 + ' / ' + packageInbound.Route);
+          setTextMessageDate(packageInbound.created_at);
+          setTypeMessage('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'validatedWarehouse') {
+          var packageWarehouse = response.packageWarehouse;
+          setTextMessage("PACKAGE IN WAREHOUSE  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
+          setTextMessageDate(packageWarehouse.created_at);
+          setTypeMessage('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'validatedFilterPackage') {
+          setTextMessage("CHANGE LABEL #" + Reference_Number_1);
+          setTypeMessage('primary');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'validatedFilterState') {
+          setTextMessage("OTHER STATE " + Reference_Number_1);
+          setTypeMessage('primary');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction) {
+          setTextMessage("VALID / " + Reference_Number_1 + ' / ' + response.packageInbound.Route);
+          setTypeMessage('success');
+          setNumberPackage('');
+          setWeightLabel(response.packageInbound.Weight);
+          setStateLabel(response.packageInbound.Dropoff_Province);
+          setRouteLabel(response.packageInbound.Route);
+          setReferenceLabel(response.packageInbound.Reference_Number_1);
+          listAllPackageInbound(1, RouteSearch, StateSearch);
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoSuccess').play();
+          handlerPrint('labelPrint');
+        } else {
+          setTextMessage("El paquete N° " + Reference_Number_1 + " no existe!");
+          setTypeMessage('error');
+          setNumberPackage('');
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoError').play();
+        }
+
+        setReadInput(false);
+        setSendInbound(1);
+      });
+    }
   };
 
   var handlerImport = function handlerImport(e) {
@@ -14069,10 +14080,10 @@ function PackageInbound() {
     }
   };
 
-  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState80 = _slicedToArray(_useState79, 2),
-      optionsRoleSearch = _useState80[0],
-      setOptionsRoleSearch = _useState80[1];
+  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState82 = _slicedToArray(_useState81, 2),
+      optionsRoleSearch = _useState82[0],
+      setOptionsRoleSearch = _useState82[1];
 
   var listOptionRoute = function listOptionRoute(listRoutes) {
     setOptionsRoleSearch([]);
@@ -14099,10 +14110,10 @@ function PackageInbound() {
     }
   };
 
-  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState82 = _slicedToArray(_useState81, 2),
-      optionsStateSearch = _useState82[0],
-      setOptionsStateSearch = _useState82[1];
+  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState84 = _slicedToArray(_useState83, 2),
+      optionsStateSearch = _useState84[0],
+      setOptionsStateSearch = _useState84[1];
 
   var listOptionState = function listOptionState(listState) {
     setOptionsStateSearch([]);
@@ -14127,30 +14138,30 @@ function PackageInbound() {
     inputFileRef.current.click();
   };
 
-  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
-      _useState84 = _slicedToArray(_useState83, 2),
-      EWR1 = _useState84[0],
-      setEWR1 = _useState84[1];
-
-  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
+  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
       _useState86 = _slicedToArray(_useState85, 2),
-      WeightLabel = _useState86[0],
-      setWeightLabel = _useState86[1];
+      EWR1 = _useState86[0],
+      setEWR1 = _useState86[1];
 
-  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
+  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
       _useState88 = _slicedToArray(_useState87, 2),
-      StateLabel = _useState88[0],
-      setStateLabel = _useState88[1];
+      WeightLabel = _useState88[0],
+      setWeightLabel = _useState88[1];
 
-  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
       _useState90 = _slicedToArray(_useState89, 2),
-      ReferenceLabel = _useState90[0],
-      setReferenceLabel = _useState90[1];
+      StateLabel = _useState90[0],
+      setStateLabel = _useState90[1];
 
-  var _useState91 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+  var _useState91 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState92 = _slicedToArray(_useState91, 2),
-      RouteLabel = _useState92[0],
-      setRouteLabel = _useState92[1];
+      ReferenceLabel = _useState92[0],
+      setReferenceLabel = _useState92[1];
+
+  var _useState93 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+      _useState94 = _slicedToArray(_useState93, 2),
+      RouteLabel = _useState94[0],
+      setRouteLabel = _useState94[1];
 
   var handlerPrint = function handlerPrint(nombreDiv) {
     JsBarcode("#imgBarcode", Reference_Number_1, {
@@ -14238,7 +14249,7 @@ function PackageInbound() {
                       className: "form-group",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
                         htmlFor: "",
-                        children: "PACKAGE IDs"
+                        children: "PACKAGE ID"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
                         id: "Reference_Number_1",
                         type: "text",
@@ -16786,56 +16797,67 @@ function PackageWarehouse() {
     })
   });
 
+  var _useState77 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState78 = _slicedToArray(_useState77, 2),
+      sendWarehouse = _useState78[0],
+      setSendWarehouse = _useState78[1];
+
   var handlerInsert = function handlerInsert(e) {
     e.preventDefault();
-    var formData = new FormData();
-    formData.append('Reference_Number_1', Reference_Number_1);
-    formData.append('TRUCK', Truck);
-    formData.append('CLIENT', Client);
-    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    setReadInput(true);
-    fetch(url_general + 'package-warehouse/insert', {
-      headers: {
-        "X-CSRF-TOKEN": token
-      },
-      method: 'post',
-      body: formData
-    }).then(function (res) {
-      return res.json();
-    }).then(function (response) {
-      setTextMessageDate('');
-      setTextMessage2('');
+    console.log(sendWarehouse);
 
-      if (response.stateAction == 'notExists') {
-        setTextMessage("NO INBOUND and NO DISPATCH #" + Reference_Number_1);
-        setTypeMessage('error');
-        setNumberPackage('');
-        document.getElementById('soundPitidoError').play();
-      } else if (response.stateAction == 'packageInWarehouse') {
-        var packageWarehouse = response.packageWarehouse;
-        setTextMessage("WAREHOUSE TODAY:  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
-        setTextMessageDate(packageWarehouse.created_at);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction == 'packageUpdateCreatedAt') {
-        var _packageWarehouse = response.packageWarehouse;
-        setTextMessage("WAREHOUSE UPDATE TODAY:  #" + Reference_Number_1 + ' / ' + _packageWarehouse.Route);
-        setTextMessageDate(_packageWarehouse.created_at);
-        setTypeMessage('warning');
-        setNumberPackage('');
-        document.getElementById('soundPitidoWarning').play();
-      } else if (response.stateAction) {
-        setTextMessage("VALID WAREHOUSE / " + Reference_Number_1);
-        setTypeMessage('success');
-        setNumberPackage('');
-        document.getElementById('Reference_Number_1').focus();
-        document.getElementById('soundPitidoSuccess').play();
-      }
+    if (sendWarehouse) {
+      var formData = new FormData();
+      formData.append('Reference_Number_1', Reference_Number_1);
+      formData.append('TRUCK', Truck);
+      formData.append('CLIENT', Client);
+      var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+      setReadInput(true);
+      setSendWarehouse(0);
+      fetch(url_general + 'package-warehouse/insert', {
+        headers: {
+          "X-CSRF-TOKEN": token
+        },
+        method: 'post',
+        body: formData
+      }).then(function (res) {
+        return res.json();
+      }).then(function (response) {
+        setTextMessageDate('');
+        setTextMessage2('');
 
-      listAllPackage(1, filterDate, RouteSearch, StateSearch);
-      setReadInput(false);
-    });
+        if (response.stateAction == 'notExists') {
+          setTextMessage("NO INBOUND and NO DISPATCH #" + Reference_Number_1);
+          setTypeMessage('error');
+          setNumberPackage('');
+          document.getElementById('soundPitidoError').play();
+        } else if (response.stateAction == 'packageInWarehouse') {
+          var packageWarehouse = response.packageWarehouse;
+          setTextMessage("WAREHOUSE TODAY:  #" + Reference_Number_1 + ' / ' + packageWarehouse.Route);
+          setTextMessageDate(packageWarehouse.created_at);
+          setTypeMessage('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction == 'packageUpdateCreatedAt') {
+          var _packageWarehouse = response.packageWarehouse;
+          setTextMessage("WAREHOUSE UPDATE TODAY:  #" + Reference_Number_1 + ' / ' + _packageWarehouse.Route);
+          setTextMessageDate(_packageWarehouse.created_at);
+          setTypeMessage('warning');
+          setNumberPackage('');
+          document.getElementById('soundPitidoWarning').play();
+        } else if (response.stateAction) {
+          setTextMessage("VALID WAREHOUSE / " + Reference_Number_1);
+          setTypeMessage('success');
+          setNumberPackage('');
+          document.getElementById('Reference_Number_1').focus();
+          document.getElementById('soundPitidoSuccess').play();
+        }
+
+        listAllPackage(1, filterDate, RouteSearch, StateSearch);
+        setReadInput(false);
+        setSendWarehouse(1);
+      });
+    }
   };
 
   var handlerImport = function handlerImport(e) {
@@ -16939,10 +16961,10 @@ function PackageWarehouse() {
     }
   };
 
-  var _useState77 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState78 = _slicedToArray(_useState77, 2),
-      optionsRoleSearch = _useState78[0],
-      setOptionsRoleSearch = _useState78[1];
+  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState80 = _slicedToArray(_useState79, 2),
+      optionsRoleSearch = _useState80[0],
+      setOptionsRoleSearch = _useState80[1];
 
   var listOptionRoute = function listOptionRoute(listRoutes) {
     setOptionsRoleSearch([]);
@@ -16969,10 +16991,10 @@ function PackageWarehouse() {
     }
   };
 
-  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState80 = _slicedToArray(_useState79, 2),
-      optionsStateSearch = _useState80[0],
-      setOptionsStateSearch = _useState80[1];
+  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState82 = _slicedToArray(_useState81, 2),
+      optionsStateSearch = _useState82[0],
+      setOptionsStateSearch = _useState82[1];
 
   var listOptionState = function listOptionState(listState) {
     setOptionsStateSearch([]);
@@ -16997,30 +17019,30 @@ function PackageWarehouse() {
     inputFileRef.current.click();
   };
 
-  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
-      _useState82 = _slicedToArray(_useState81, 2),
-      EWR1 = _useState82[0],
-      setEWR1 = _useState82[1];
-
-  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
+  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
       _useState84 = _slicedToArray(_useState83, 2),
-      WeightLabel = _useState84[0],
-      setWeightLabel = _useState84[1];
+      EWR1 = _useState84[0],
+      setEWR1 = _useState84[1];
 
-  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
+  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
       _useState86 = _slicedToArray(_useState85, 2),
-      StateLabel = _useState86[0],
-      setStateLabel = _useState86[1];
+      WeightLabel = _useState86[0],
+      setWeightLabel = _useState86[1];
 
-  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
       _useState88 = _slicedToArray(_useState87, 2),
-      ReferenceLabel = _useState88[0],
-      setReferenceLabel = _useState88[1];
+      StateLabel = _useState88[0],
+      setStateLabel = _useState88[1];
 
-  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState90 = _slicedToArray(_useState89, 2),
-      RouteLabel = _useState90[0],
-      setRouteLabel = _useState90[1];
+      ReferenceLabel = _useState90[0],
+      setReferenceLabel = _useState90[1];
+
+  var _useState91 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+      _useState92 = _slicedToArray(_useState91, 2),
+      RouteLabel = _useState92[0],
+      setRouteLabel = _useState92[1];
 
   var handlerPrint = function handlerPrint(nombreDiv) {
     JsBarcode("#imgBarcode", Reference_Number_1, {
