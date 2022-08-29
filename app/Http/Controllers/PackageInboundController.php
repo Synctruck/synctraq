@@ -131,8 +131,8 @@ class PackageInboundController extends Controller
             }
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound->Date_Inbound)),
-                                date('H:i:s', strtotime($packageInbound->Date_Inbound)),
+                                date('m-d-Y', strtotime($packageInbound->created_at)),
+                                date('H:i:s', strtotime($packageInbound->created_at)),
                                 $validator,
                                 $packageInbound->TRUCK,
                                 $packageInbound->CLIENT,
