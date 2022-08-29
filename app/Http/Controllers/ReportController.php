@@ -372,10 +372,10 @@ class ReportController extends Controller
             }
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound->Date_Inbound)),
-                                date('H:i:s', strtotime($packageInbound->Date_Inbound)),
+                                date('m-d-Y', strtotime($packageInbound->created_at)),
+                                date('H:i:s', strtotime($packageInbound->created_at)),
                                 $validator,
-                                $packageInbound->TRUCK,
+                                $packageInbound->TRUCK, 
                                 $packageInbound->CLIENT,
                                 $packageInbound->Reference_Number_1,
                                 $packageInbound->Dropoff_Contact_Name,
