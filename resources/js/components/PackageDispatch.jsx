@@ -434,15 +434,15 @@ function PackageDispatch() {
         }
     }
 
-    const [sendDispatach, setSendDispatch] = useState(1);
+    const [sendDispatch, setSendDispatch] = useState(1);
 
     const handlerValidation = (e) => {
 
         e.preventDefault();
 
-        console.log(sendDispatach);
+        console.log(sendDispatch);
 
-        if(sendDispatach)
+        if(sendDispatch)
         {
             setReadOnly(true);
             setSendDispatch(0);

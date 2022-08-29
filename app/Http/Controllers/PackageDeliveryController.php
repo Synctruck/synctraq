@@ -93,8 +93,8 @@ class PackageDeliveryController extends Controller
                                                             ->where('status', 'Dispatch')
                                                             ->first();
 
-                        $packageDelivery = PackageDelivery::find($row);
-
+                        $packageDelivery = PackageDelivery::where('taskDetails', $row)->first();
+                        
                         if($packageDispatch && $packageDelivery == null)
                         {
                             $user = User::find($packageDispatch->idUserDispatch);

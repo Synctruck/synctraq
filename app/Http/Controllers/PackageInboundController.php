@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, States};
+use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -160,14 +160,19 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
-        $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
-
-        $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
+        $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));
+        $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 
         if($packageInbound)
         {
-            return ['stateAction' => 'validated', 'packageInbound' => $packageInbound];
+            return ['stateAction' => 'validatedInbound', 'packageInbound' => $packageInbound];
         }
+        elseif($packageWarehouse)
+        {
+            return ['stateAction' => 'validatedWarehouse', 'packageWarehouse' => $packageWarehouse];
+        }
+
+        $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
 
         if($packageManifest)
         {

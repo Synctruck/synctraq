@@ -93,6 +93,15 @@
                         </li>
                     @endif
 
+                    @if(Session::get('user')->role->name == 'Administrador')
+                        <li >
+                            <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/package-warehouse')}}">
+                                <i class="bx bx-car"></i>
+                                <span>WAREHOUSE</span>
+                            </a>
+                        </li>
+                    @endif
+
                     {{-- @if(Session::get('user')->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">

@@ -33,5 +33,6 @@ require('./components/User');
 require('./components/Viewer');
 require('./components/Validator');
 require('./components/UserChangePassword');
+require('./components/PackageWarehouse');
 
 require('./components/Login');

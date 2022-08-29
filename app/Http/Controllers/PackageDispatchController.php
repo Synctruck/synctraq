@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, TeamRoute, User};
+use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -256,6 +256,11 @@ class PackageDispatchController extends Controller
         if(!$package)
         {
            $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        }
+
+        if(!$package)
+        {
+           $package = PackageWarehouse::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
 
         if($package)
@@ -722,16 +727,10 @@ class PackageDispatchController extends Controller
                 {
                     $row = str_getcsv($raw_string);
 
-                    $package = packageInbound::find($row[0]);
+                    $package         = packageInbound::find($row[0]);
+                    $packageDispatch = PackageDispatch::find($row[0]);
 
-                    /*$package = PackageManifest::find($row[0]);
-
-                    if(!$package)
-                    {
-                        $package = packageInbound::find($row[0]);
-                    }*/
-
-                    if($package)
+                    if($package && $packageDispatch == null)
                     {
                         $validationRoute = true;
 

@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function PackageInbound() {
+function PackageWarehouse() {
 
     const [listPackageInbound, setListPackageInbound] = useState([]);
     const [listPackageTotal, setListPackageTotal]     = useState([]);
@@ -35,8 +35,12 @@ function PackageInbound() {
 
     const [readInput, setReadInput] = useState(false);
 
-    const [dateStart, setDateStart] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateInit);
+    var dateNow = new Date();
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
+    const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
+
+    dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
+    const [filterDate, setFilterDate] = useState(dateNow);
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -58,9 +62,9 @@ function PackageInbound() {
 
     useEffect(() => {
 
-        listAllPackageInbound(page, RouteSearch, StateSearch);
+        listAllPackage(page, filterDate, RouteSearch, StateSearch);
 
-    }, [dateStart,dateEnd]);
+    }, [filterDate]);
 
     useEffect(() => {
 
@@ -79,9 +83,9 @@ function PackageInbound() {
 
     }, [file]);
 
-    const listAllPackageInbound = (pageNumber, route, state) => {
+    const listAllPackage = (pageNumber, filterDate, route, state) => {
 
-        fetch(url_general +'package-inbound/list/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-warehouse/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -98,19 +102,10 @@ function PackageInbound() {
             }
         });
     }
-    const exportAllPackageInbound = (route, state) => {
 
-        location.href = url_general +'package-inbound/export/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
-    }
-
-    const handlerExport = () => {
-        console.log('export!!');
-        exportAllPackageInbound(RouteSearch, StateSearch);
-
-    }
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
+        listAllPackage(pageNumber, filterDate, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -166,7 +161,7 @@ function PackageInbound() {
 
     const handlerOpenModal = (PACKAGE_ID) => {
 
-        fetch(url_general +'package-inbound/get/'+ PACKAGE_ID)
+        fetch(url_general +'package-warehouse/get/'+ PACKAGE_ID)
         .then(res => res.json())
         .then((response) => {
 
@@ -219,7 +214,7 @@ function PackageInbound() {
         setDisabledButton(true);
         setTextButtonSave('Loading...');
 
-        let url = 'package-inbound/update'
+        let url = 'package-warehouse/update'
 
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
@@ -239,7 +234,7 @@ function PackageInbound() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, RouteSearch, StateSearch);
+                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -401,15 +396,15 @@ function PackageInbound() {
                                     </div>
                                 </React.Fragment>;
 
-    const [sendInbound, setSendInbound] = useState(1);
+    const [sendWarehouse, setSendWarehouse] = useState(1);
 
     const handlerInsert = (e) => {
 
         e.preventDefault();
 
-        console.log(sendInbound);
+        console.log(sendWarehouse);
 
-        if(sendInbound)
+        if(sendWarehouse)
         {
             const formData = new FormData();
 
@@ -420,9 +415,9 @@ function PackageInbound() {
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             setReadInput(true);
-            setSendInbound(0);
+            setSendWarehouse(0);
 
-            fetch(url_general +'package-inbound/insert', {
+            fetch(url_general +'package-warehouse/insert', {
                 headers: { "X-CSRF-TOKEN": token },
                 method: 'post',
                 body: formData
@@ -433,90 +428,50 @@ function PackageInbound() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'notInland')
+                    if(response.stateAction == 'notExists')
                     {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                        setTextMessage("NO INBOUND and NO DISPATCH #"+ Reference_Number_1);
                         setTypeMessage('error');
                         setNumberPackage('');
 
                         document.getElementById('soundPitidoError').play();
                     }
-                    else if(response.stateAction == 'validatedInbound')
-                    {
-                        let packageInbound = response.packageInbound;
-
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                        setTextMessageDate(packageInbound.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedWarehouse')
+                    else if(response.stateAction == 'packageInWarehouse')
                     {
                         let packageWarehouse = response.packageWarehouse;
 
-                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                        setTextMessage("WAREHOUSE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
                         setTextMessageDate(packageWarehouse.created_at);
                         setTypeMessage('warning');
                         setNumberPackage('');
 
                         document.getElementById('soundPitidoWarning').play();
                     }
-                    else if(response.stateAction == 'validatedFilterPackage')
+                    else if(response.stateAction == 'packageUpdateCreatedAt')
                     {
-                        setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
-                        setTypeMessage('primary');
-                        setNumberPackage('');
+                        let packageWarehouse = response.packageWarehouse;
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterState')
-                    {
-                        setTextMessage("OTHER STATE "+ Reference_Number_1);
-                        setTypeMessage('primary');
+                        setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                        setTextMessageDate(packageWarehouse.created_at);
+                        setTypeMessage('warning');
                         setNumberPackage('');
 
                         document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction)
                     {
-                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
+                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1);
                         setTypeMessage('success');
                         setNumberPackage('');
 
-                        setWeightLabel(response.packageInbound.Weight);
-                        setStateLabel(response.packageInbound.Dropoff_Province);
-                        setRouteLabel(response.packageInbound.Route);
-                        setReferenceLabel(response.packageInbound.Reference_Number_1);
-
-                        listAllPackageInbound(1, RouteSearch, StateSearch);
-
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
-
-                        handlerPrint('labelPrint');
                     }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessage('error');
-                        setNumberPackage('');
 
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
+                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
 
                     setReadInput(false);
-                    setSendInbound(1);
+                    setSendWarehouse(1);
                 },
             );
         }
@@ -534,7 +489,7 @@ function PackageInbound() {
 
         LoadingShow();
 
-        fetch(url_general +'package-inbound/import', {
+        fetch(url_general +'package-warehouse/import', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
@@ -551,7 +506,7 @@ function PackageInbound() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackageInbound(page, RouteSearch, StateSearch);
+                    listAllPackage(page, filterDate, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -561,11 +516,9 @@ function PackageInbound() {
         );
     }
 
-    const handlerViewPDF = (printText,packWeight,packState,packRoute) => {
-        setWeightLabel(packWeight);
-        setStateLabel(packState);
-        setRouteLabel(packRoute);
-        handlerPrintSecondary(printText);
+    const handlerViewPDF = (Reference_Number) => {
+
+        window.open(url_general +'package-warehouse/pdf-label/'+ Reference_Number);
     }
 
     const listPackageTable = listPackageInbound.map( (pack, i) => {
@@ -580,8 +533,6 @@ function PackageInbound() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td>{ pack.user.name +' '+ pack.user.nameOfOwner }</td>
-                <td>{ pack.TRUCK }</td>
-                <td>{ pack.CLIENT }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -591,12 +542,12 @@ function PackageInbound() {
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
-                <td>
+                <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
                     </button>
 
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1,pack.Weight,pack.Dropoff_Province,pack.Route) }>
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1) }>
                         PDF
                     </button>
                 </td>
@@ -617,13 +568,13 @@ function PackageInbound() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, routesSearch, StateSearch);
+            listAllPackage(page, filterDate, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackageInbound(page, 'all', StateSearch);
+            listAllPackage(page, filterDate, 'all', StateSearch);
         }
     };
 
@@ -641,8 +592,6 @@ function PackageInbound() {
         });
     }
 
-
-
     const handlerChangeState = (states) => {
 
         if(states.length != 0)
@@ -656,13 +605,13 @@ function PackageInbound() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, RouteSearch, statesSearch);
+            listAllPackage(page, filterDate, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, RouteSearch, 'all');
+            listAllPackage(page, filterDate, RouteSearch, 'all');
         }
     };
 
@@ -718,27 +667,6 @@ function PackageInbound() {
         document.getElementById('Reference_Number_1').focus();
     }
 
-
-    const handlerPrintSecondary = (printText) => {
-
-        JsBarcode("#imgBarcode", printText, {
-
-            textMargin: 0,
-            fontSize: 27,
-        });
-
-        var content = document.getElementById('labelPrint');
-        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
-
-        pri.document.open();
-        pri.document.write(content.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
-
-        document.getElementById('Reference_Number_1').focus();
-    }
-
     return (
 
         <section className="section">
@@ -749,13 +677,6 @@ function PackageInbound() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                     <div className="col-12 mb-4">
-                                        <div className="row">
-                                            <div className="col-2">
-                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div className="col-lg-12 form-group text-center">
                                         {
                                             typeMessage == 'success'
@@ -795,8 +716,7 @@ function PackageInbound() {
                                                 ''
                                         }
                                     </div>
-
-                                    <div className="col-lg-8 form-group">
+                                    <div className="col-lg-12 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -808,21 +728,6 @@ function PackageInbound() {
                                                 <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
-                                    </div>
-                                    <div className="col-lg-4 form-group">
-                                        <div className="form-group">
-                                            <label htmlFor="">TRUCK #</label>
-                                            <input id="Reference_Number_1" type="text" className="form-control" value={ Truck } onChange={ (e) => setTruck(e.target.value) } maxLength="20"/>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3 form-group" style={ {display: 'none'} }>
-                                        <div className="form-group">
-                                            <label htmlFor="">CLIENT</label>
-                                            <select className="form-control" onChange={ (e) => setClient(e.target.value) }>
-                                                <option value="" style={ {display: 'none'} }>Select client</option>
-                                                { optionCompany }
-                                            </select>
-                                        </div>
                                     </div>
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
@@ -842,32 +747,20 @@ function PackageInbound() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-6">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Warehouse: { totalPackage }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Start date:
+                                                    View :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    End date :
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>
@@ -954,8 +847,6 @@ function PackageInbound() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>VALIDATOR</th>
-                                                <th>TRUCK #</th>
-                                                <th>CLIENT</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
@@ -965,7 +856,7 @@ function PackageInbound() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>ACTION</th>
+                                                <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -994,9 +885,9 @@ function PackageInbound() {
     );
 }
 
-export default PackageInbound;
+export default PackageWarehouse;
 
 // DOM element
-if (document.getElementById('packageValidation')) {
-    ReactDOM.render(<PackageInbound />, document.getElementById('packageValidation'));
+if (document.getElementById('packageWarehouse')) {
+    ReactDOM.render(<PackageWarehouse />, document.getElementById('packageWarehouse'));
 }

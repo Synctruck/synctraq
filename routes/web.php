@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -90,8 +90,6 @@ Route::group(['middleware' => 'login'], function() {
 	Route::post('/package-dispatch/change', [PackageDispatchController::class, 'Change']);
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
 
-
-
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index']);
 	Route::get('/package-delivery/list', [PackageDeliveryController::class, 'List']);
@@ -113,6 +111,11 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('/package/download/onfleet/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{dayNight}', [PackageController::class, 'DownloadOnfleet']);
 	Route::get('/package/download/roadwarrior/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{dayNight}', [PackageController::class, 'DownloadRoadWarrior']);
 	Route::post('/package/dispatch/import', [PackageController::class, 'ImportDispatch']);
+
+	//============ Validation warehouse
+	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index']);
+	Route::get('/package-warehouse/list/{dataView}/{route}/{state}', [PackageWarehouseController::class, 'List']);
+	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
