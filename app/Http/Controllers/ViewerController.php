@@ -45,6 +45,7 @@ class ViewerController extends Controller
                 "nameOfOwner" => ["required", "max:100"],
                 "phone" => ["required"],
                 "email" => ["required", "unique:user", "max:100"],
+                "password" => ["required", "max:100"],
             ],
             [
                 "idRole.required" => "Seleccione un rol",
@@ -60,6 +61,8 @@ class ViewerController extends Controller
                 "email.unique" => "El correo ya existe",
                 "email.required" => "El campo es requerido",
                 "email.max"  => "Debe ingresar máximo 100 dígitos",
+
+                "password.required" => "El campo es requerido",
             ]
         );
 
@@ -68,7 +71,7 @@ class ViewerController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $request['password'] = Hash::make($request->get('email'));
+        $request['password'] = Hash::make($request->get('password'));
 
         User::create($request->all());
 
@@ -122,7 +125,12 @@ class ViewerController extends Controller
 
         $user = User::find($id);
 
-        $user->update($request->all());
+        $user->name        = $request->get('name');
+        $user->nameOfOwner = $request->get('nameOfOwner');
+        $user->phone       = $request->get('phone');
+        $user->email       = $request->get('email');
+
+        $user->save();
 
         return ['stateAction' => true];
     }

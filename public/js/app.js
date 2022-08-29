@@ -763,18 +763,18 @@ var react__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CacheProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.C),
-/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
-/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "ThemeContext": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.T),
 /* harmony export */   "ThemeProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.b),
 /* harmony export */   "__unsafe_useEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__._),
+/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
+/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
+/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d),
+/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
+/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "createElement": () => (/* binding */ jsx),
 /* harmony export */   "css": () => (/* binding */ css),
 /* harmony export */   "jsx": () => (/* binding */ jsx),
-/* harmony export */   "keyframes": () => (/* binding */ keyframes),
-/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
-/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
-/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d)
+/* harmony export */   "keyframes": () => (/* binding */ keyframes)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @emotion/cache */ "./node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js");
@@ -27114,45 +27114,55 @@ function User() {
       email = _useState14[0],
       setEmail = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState16 = _slicedToArray(_useState15, 2),
-      listUser = _useState16[0],
-      setListUser = _useState16[1];
+      password = _useState16[0],
+      setPassword = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
       _useState18 = _slicedToArray(_useState17, 2),
-      listRole = _useState18[0],
-      setListRole = _useState18[1];
+      viewInputPassword = _useState18[0],
+      setViewInputPassword = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      page = _useState20[0],
-      setPage = _useState20[1];
+      listUser = _useState20[0],
+      setListUser = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState22 = _slicedToArray(_useState21, 2),
-      totalPage = _useState22[0],
-      setTotalPage = _useState22[1];
+      listRole = _useState22[0],
+      setListRole = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
       _useState24 = _slicedToArray(_useState23, 2),
-      totalUser = _useState24[0],
-      setTotalUser = _useState24[1];
+      page = _useState24[0],
+      setPage = _useState24[1];
 
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState26 = _slicedToArray(_useState25, 2),
-      titleModal = _useState26[0],
-      setTitleModal = _useState26[1];
+      totalPage = _useState26[0],
+      setTotalPage = _useState26[1];
 
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState28 = _slicedToArray(_useState27, 2),
-      textSearch = _useState28[0],
-      setSearch = _useState28[1];
+      totalUser = _useState28[0],
+      setTotalUser = _useState28[1];
 
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState30 = _slicedToArray(_useState29, 2),
-      textButtonSave = _useState30[0],
-      setTextButtonSave = _useState30[1];
+      titleModal = _useState30[0],
+      setTitleModal = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState32 = _slicedToArray(_useState31, 2),
+      textSearch = _useState32[0],
+      setSearch = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+      _useState34 = _slicedToArray(_useState33, 2),
+      textButtonSave = _useState34[0],
+      setTextButtonSave = _useState34[1];
 
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     listAllUser(page);
@@ -27192,6 +27202,7 @@ function User() {
       clearForm();
       setTitleModal('Add Admin');
       setTextButtonSave('Save');
+      setViewInputPassword(true);
     }
 
     var myModal = new bootstrap.Modal(document.getElementById('modalCategoryInsert'), {
@@ -27209,6 +27220,7 @@ function User() {
     formData.append('address', address);
     formData.append('phone', phone);
     formData.append('email', email);
+    formData.append('password', password);
     clearValidation();
 
     if (id == 0) {
@@ -27273,6 +27285,7 @@ function User() {
 
   var getUser = function getUser(id) {
     listAllRole();
+    setViewInputPassword(false);
     fetch(url_general + 'user/get/' + id).then(function (response) {
       return response.json();
     }).then(function (response) {
@@ -27319,6 +27332,7 @@ function User() {
     setAddress('');
     setPhone('');
     setEmail('');
+    setPassword('');
   };
 
   var clearValidation = function clearValidation() {
@@ -27332,6 +27346,8 @@ function User() {
     document.getElementById('phone').innerHTML = '';
     document.getElementById('email').style.display = 'none';
     document.getElementById('email').innerHTML = '';
+    document.getElementById('password').style.display = 'none';
+    document.getElementById('password').innerHTML = '';
   };
 
   var listUserTable = listUser.map(function (user, i) {
@@ -27536,6 +27552,34 @@ function User() {
                     })]
                   })
                 })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "row",
+                style: {
+                  display: viewInputPassword ? 'block' : 'none'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-12",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "form-group",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                      children: "Password"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      id: "password",
+                      className: "text-danger",
+                      style: {
+                        display: 'none'
+                      }
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                      type: "password",
+                      value: password,
+                      className: "form-control",
+                      onChange: function onChange(e) {
+                        return setPassword(e.target.value);
+                      },
+                      required: viewInputPassword ? true : false
+                    })]
+                  })
+                })
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "modal-footer",
@@ -27979,45 +28023,55 @@ function User() {
       email = _useState14[0],
       setEmail = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState16 = _slicedToArray(_useState15, 2),
-      listUser = _useState16[0],
-      setListUser = _useState16[1];
+      password = _useState16[0],
+      setPassword = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
       _useState18 = _slicedToArray(_useState17, 2),
-      listRole = _useState18[0],
-      setListRole = _useState18[1];
+      viewInputPassword = _useState18[0],
+      setViewInputPassword = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      page = _useState20[0],
-      setPage = _useState20[1];
+      listUser = _useState20[0],
+      setListUser = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState22 = _slicedToArray(_useState21, 2),
-      totalPage = _useState22[0],
-      setTotalPage = _useState22[1];
+      listRole = _useState22[0],
+      setListRole = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
       _useState24 = _slicedToArray(_useState23, 2),
-      totalUser = _useState24[0],
-      setTotalUser = _useState24[1];
+      page = _useState24[0],
+      setPage = _useState24[1];
 
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState26 = _slicedToArray(_useState25, 2),
-      titleModal = _useState26[0],
-      setTitleModal = _useState26[1];
+      totalPage = _useState26[0],
+      setTotalPage = _useState26[1];
 
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState28 = _slicedToArray(_useState27, 2),
-      textSearch = _useState28[0],
-      setSearch = _useState28[1];
+      totalUser = _useState28[0],
+      setTotalUser = _useState28[1];
 
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState30 = _slicedToArray(_useState29, 2),
-      textButtonSave = _useState30[0],
-      setTextButtonSave = _useState30[1];
+      titleModal = _useState30[0],
+      setTitleModal = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState32 = _slicedToArray(_useState31, 2),
+      textSearch = _useState32[0],
+      setSearch = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+      _useState34 = _slicedToArray(_useState33, 2),
+      textButtonSave = _useState34[0],
+      setTextButtonSave = _useState34[1];
 
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     listAllUser(page);
@@ -28058,6 +28112,7 @@ function User() {
       clearForm();
       setTitleModal('Add validator');
       setTextButtonSave('Save');
+      setViewInputPassword(true);
     }
 
     var myModal = new bootstrap.Modal(document.getElementById('modalvalidatorInsert'), {
@@ -28075,6 +28130,7 @@ function User() {
     formData.append('address', address);
     formData.append('phone', phone);
     formData.append('email', email);
+    formData.append('password', password);
     clearValidation();
 
     if (id == 0) {
@@ -28139,6 +28195,7 @@ function User() {
 
   var getUser = function getUser(id) {
     listAllRole();
+    setViewInputPassword(false);
     fetch(url_general + 'validator/get/' + id).then(function (response) {
       return response.json();
     }).then(function (response) {
@@ -28185,6 +28242,7 @@ function User() {
     setAddress('');
     setPhone('');
     setEmail('');
+    setPassword('');
   };
 
   var clearValidation = function clearValidation() {
@@ -28198,6 +28256,8 @@ function User() {
     document.getElementById('phone').innerHTML = '';
     document.getElementById('email').style.display = 'none';
     document.getElementById('email').innerHTML = '';
+    document.getElementById('password').style.display = 'none';
+    document.getElementById('password').innerHTML = '';
   };
 
   var listUserTable = listUser.map(function (user, i) {
@@ -28394,6 +28454,34 @@ function User() {
                     })]
                   })
                 })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                className: "row",
+                style: {
+                  display: viewInputPassword ? 'block' : 'none'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                  className: "col-lg-12",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                    className: "form-group",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("label", {
+                      children: "Password"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                      id: "password",
+                      className: "text-danger",
+                      style: {
+                        display: 'none'
+                      }
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+                      type: "password",
+                      value: password,
+                      className: "form-control",
+                      onChange: function onChange(e) {
+                        return setPassword(e.target.value);
+                      },
+                      required: viewInputPassword ? true : false
+                    })]
+                  })
+                })
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
               className: "modal-footer",
@@ -28591,45 +28679,55 @@ function User() {
       email = _useState14[0],
       setEmail = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState16 = _slicedToArray(_useState15, 2),
-      listUser = _useState16[0],
-      setListUser = _useState16[1];
+      password = _useState16[0],
+      setPassword = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
       _useState18 = _slicedToArray(_useState17, 2),
-      listRole = _useState18[0],
-      setListRole = _useState18[1];
+      viewInputPassword = _useState18[0],
+      setViewInputPassword = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      page = _useState20[0],
-      setPage = _useState20[1];
+      listUser = _useState20[0],
+      setListUser = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState22 = _slicedToArray(_useState21, 2),
-      totalPage = _useState22[0],
-      setTotalPage = _useState22[1];
+      listRole = _useState22[0],
+      setListRole = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
       _useState24 = _slicedToArray(_useState23, 2),
-      totalUser = _useState24[0],
-      setTotalUser = _useState24[1];
+      page = _useState24[0],
+      setPage = _useState24[1];
 
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState26 = _slicedToArray(_useState25, 2),
-      titleModal = _useState26[0],
-      setTitleModal = _useState26[1];
+      totalPage = _useState26[0],
+      setTotalPage = _useState26[1];
 
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState28 = _slicedToArray(_useState27, 2),
-      textSearch = _useState28[0],
-      setSearch = _useState28[1];
+      totalUser = _useState28[0],
+      setTotalUser = _useState28[1];
 
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState30 = _slicedToArray(_useState29, 2),
-      textButtonSave = _useState30[0],
-      setTextButtonSave = _useState30[1];
+      titleModal = _useState30[0],
+      setTitleModal = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState32 = _slicedToArray(_useState31, 2),
+      textSearch = _useState32[0],
+      setSearch = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Save'),
+      _useState34 = _slicedToArray(_useState33, 2),
+      textButtonSave = _useState34[0],
+      setTextButtonSave = _useState34[1];
 
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     listAllUser(page);
@@ -28670,6 +28768,7 @@ function User() {
       clearForm();
       setTitleModal('Add Viewer');
       setTextButtonSave('Save');
+      setViewInputPassword(true);
     }
 
     var myModal = new bootstrap.Modal(document.getElementById('modalViewerInsert'), {
@@ -28687,6 +28786,7 @@ function User() {
     formData.append('address', address);
     formData.append('phone', phone);
     formData.append('email', email);
+    formData.append('password', password);
     clearValidation();
 
     if (id == 0) {
@@ -28751,6 +28851,7 @@ function User() {
 
   var getUser = function getUser(id) {
     listAllRole();
+    setViewInputPassword(false);
     fetch(url_general + 'viewer/get/' + id).then(function (response) {
       return response.json();
     }).then(function (response) {
@@ -28797,6 +28898,7 @@ function User() {
     setAddress('');
     setPhone('');
     setEmail('');
+    setPassword('');
   };
 
   var clearValidation = function clearValidation() {
@@ -28810,6 +28912,8 @@ function User() {
     document.getElementById('phone').innerHTML = '';
     document.getElementById('email').style.display = 'none';
     document.getElementById('email').innerHTML = '';
+    document.getElementById('password').style.display = 'none';
+    document.getElementById('password').innerHTML = '';
   };
 
   var listUserTable = listUser.map(function (user, i) {
@@ -29000,6 +29104,34 @@ function User() {
                     })]
                   })
                 })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                className: "row",
+                style: {
+                  display: viewInputPassword ? 'block' : 'none'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                  className: "col-lg-12",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                    className: "form-group",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("label", {
+                      children: "Password"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                      id: "password",
+                      className: "text-danger",
+                      style: {
+                        display: 'none'
+                      }
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+                      type: "password",
+                      value: password,
+                      className: "form-control",
+                      onChange: function onChange(e) {
+                        return setPassword(e.target.value);
+                      },
+                      required: viewInputPassword ? true : false
+                    })]
+                  })
+                })
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
               className: "modal-footer",
@@ -46533,16 +46665,12 @@ class Log {
     /**
      * Determine if the given message was logged.
      *
-     * @param  {string|string[]} messages
+     * @param  {string} message
      */
-    static received(messages) {
-        messages = Array.isArray(messages) ? messages : [messages];
+    static received(message) {
+        let result = Log.fakedLogs.some(log => log.includes(message));
 
-        let result = messages.every(message =>
-            this.fakedLogs.some(log => log.includes(message))
-        );
-
-        this.restore();
+        Log.restore();
 
         return result;
     }
@@ -100964,13 +101092,13 @@ var defaultComponents = function defaultComponents(props) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider),
-/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
+/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u),
 /* harmony export */   "createFilter": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.c),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "defaultTheme": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.d),
 /* harmony export */   "mergeStyles": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.m),
-/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u)
+/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider)
 /* harmony export */ });
 /* harmony import */ var _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./useStateManager-18181353.esm.js */ "./node_modules/react-select/dist/useStateManager-18181353.esm.js");
 /* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
@@ -106339,24 +106467,24 @@ function _unsupportedIterableToArray(o, minLen) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CHARSET": () => (/* binding */ CHARSET),
-/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
-/* harmony export */   "COUNTER_STYLE": () => (/* binding */ COUNTER_STYLE),
-/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
-/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
-/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
-/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES),
-/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
-/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
-/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
-/* harmony export */   "MOZ": () => (/* binding */ MOZ),
 /* harmony export */   "MS": () => (/* binding */ MS),
-/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
-/* harmony export */   "PAGE": () => (/* binding */ PAGE),
+/* harmony export */   "MOZ": () => (/* binding */ MOZ),
+/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT),
+/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
 /* harmony export */   "RULESET": () => (/* binding */ RULESET),
-/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
+/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
+/* harmony export */   "PAGE": () => (/* binding */ PAGE),
+/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
+/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
+/* harmony export */   "CHARSET": () => (/* binding */ CHARSET),
 /* harmony export */   "VIEWPORT": () => (/* binding */ VIEWPORT),
-/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT)
+/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
+/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
+/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
+/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
+/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
+/* harmony export */   "COUNTER_STYLE": () => (/* binding */ COUNTER_STYLE),
+/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES)
 /* harmony export */ });
 var MS = '-ms-'
 var MOZ = '-moz-'
@@ -106392,9 +106520,9 @@ var FONT_FEATURE_VALUES = '@font-feature-values'
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "middleware": () => (/* binding */ middleware),
-/* harmony export */   "namespace": () => (/* binding */ namespace),
+/* harmony export */   "rulesheet": () => (/* binding */ rulesheet),
 /* harmony export */   "prefixer": () => (/* binding */ prefixer),
-/* harmony export */   "rulesheet": () => (/* binding */ rulesheet)
+/* harmony export */   "namespace": () => (/* binding */ namespace)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -106522,11 +106650,11 @@ function namespace (element) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "comment": () => (/* binding */ comment),
 /* harmony export */   "compile": () => (/* binding */ compile),
-/* harmony export */   "declaration": () => (/* binding */ declaration),
 /* harmony export */   "parse": () => (/* binding */ parse),
-/* harmony export */   "ruleset": () => (/* binding */ ruleset)
+/* harmony export */   "ruleset": () => (/* binding */ ruleset),
+/* harmony export */   "comment": () => (/* binding */ comment),
+/* harmony export */   "declaration": () => (/* binding */ declaration)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -106924,31 +107052,31 @@ function stringify (element, index, children, callback) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "alloc": () => (/* binding */ alloc),
-/* harmony export */   "caret": () => (/* binding */ caret),
-/* harmony export */   "char": () => (/* binding */ char),
+/* harmony export */   "line": () => (/* binding */ line),
+/* harmony export */   "column": () => (/* binding */ column),
+/* harmony export */   "length": () => (/* binding */ length),
+/* harmony export */   "position": () => (/* binding */ position),
 /* harmony export */   "character": () => (/* binding */ character),
 /* harmony export */   "characters": () => (/* binding */ characters),
-/* harmony export */   "column": () => (/* binding */ column),
-/* harmony export */   "commenter": () => (/* binding */ commenter),
-/* harmony export */   "copy": () => (/* binding */ copy),
-/* harmony export */   "dealloc": () => (/* binding */ dealloc),
-/* harmony export */   "delimit": () => (/* binding */ delimit),
-/* harmony export */   "delimiter": () => (/* binding */ delimiter),
-/* harmony export */   "escaping": () => (/* binding */ escaping),
-/* harmony export */   "identifier": () => (/* binding */ identifier),
-/* harmony export */   "length": () => (/* binding */ length),
-/* harmony export */   "line": () => (/* binding */ line),
-/* harmony export */   "next": () => (/* binding */ next),
 /* harmony export */   "node": () => (/* binding */ node),
-/* harmony export */   "peek": () => (/* binding */ peek),
-/* harmony export */   "position": () => (/* binding */ position),
+/* harmony export */   "copy": () => (/* binding */ copy),
+/* harmony export */   "char": () => (/* binding */ char),
 /* harmony export */   "prev": () => (/* binding */ prev),
+/* harmony export */   "next": () => (/* binding */ next),
+/* harmony export */   "peek": () => (/* binding */ peek),
+/* harmony export */   "caret": () => (/* binding */ caret),
 /* harmony export */   "slice": () => (/* binding */ slice),
 /* harmony export */   "token": () => (/* binding */ token),
+/* harmony export */   "alloc": () => (/* binding */ alloc),
+/* harmony export */   "dealloc": () => (/* binding */ dealloc),
+/* harmony export */   "delimit": () => (/* binding */ delimit),
 /* harmony export */   "tokenize": () => (/* binding */ tokenize),
+/* harmony export */   "whitespace": () => (/* binding */ whitespace),
 /* harmony export */   "tokenizer": () => (/* binding */ tokenizer),
-/* harmony export */   "whitespace": () => (/* binding */ whitespace)
+/* harmony export */   "escaping": () => (/* binding */ escaping),
+/* harmony export */   "delimiter": () => (/* binding */ delimiter),
+/* harmony export */   "commenter": () => (/* binding */ commenter),
+/* harmony export */   "identifier": () => (/* binding */ identifier)
 /* harmony export */ });
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
 
@@ -107211,19 +107339,19 @@ function identifier (index) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "abs": () => (/* binding */ abs),
-/* harmony export */   "append": () => (/* binding */ append),
-/* harmony export */   "assign": () => (/* binding */ assign),
-/* harmony export */   "charat": () => (/* binding */ charat),
-/* harmony export */   "combine": () => (/* binding */ combine),
 /* harmony export */   "from": () => (/* binding */ from),
+/* harmony export */   "assign": () => (/* binding */ assign),
 /* harmony export */   "hash": () => (/* binding */ hash),
-/* harmony export */   "indexof": () => (/* binding */ indexof),
+/* harmony export */   "trim": () => (/* binding */ trim),
 /* harmony export */   "match": () => (/* binding */ match),
 /* harmony export */   "replace": () => (/* binding */ replace),
-/* harmony export */   "sizeof": () => (/* binding */ sizeof),
-/* harmony export */   "strlen": () => (/* binding */ strlen),
+/* harmony export */   "indexof": () => (/* binding */ indexof),
+/* harmony export */   "charat": () => (/* binding */ charat),
 /* harmony export */   "substr": () => (/* binding */ substr),
-/* harmony export */   "trim": () => (/* binding */ trim)
+/* harmony export */   "strlen": () => (/* binding */ strlen),
+/* harmony export */   "sizeof": () => (/* binding */ sizeof),
+/* harmony export */   "append": () => (/* binding */ append),
+/* harmony export */   "combine": () => (/* binding */ combine)
 /* harmony export */ });
 /**
  * @param {number}
@@ -107351,7 +107479,7 @@ function combine (array, callback) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["axios@0.21.4","C:\\\\laragon\\\\www\\\\synctraq"]],"_development":true,"_from":"axios@0.21.4","_id":"axios@0.21.4","_inBundle":false,"_integrity":"sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==","_location":"/axios","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"axios@0.21.4","name":"axios","escapedName":"axios","rawSpec":"0.21.4","saveSpec":null,"fetchSpec":"0.21.4"},"_requiredBy":["#DEV:/"],"_resolved":"https://registry.npmjs.org/axios/-/axios-0.21.4.tgz","_spec":"0.21.4","_where":"C:\\\\laragon\\\\www\\\\synctraq","author":{"name":"Matt Zabriskie"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"bugs":{"url":"https://github.com/axios/axios/issues"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}],"dependencies":{"follow-redirects":"^1.14.0"},"description":"Promise based HTTP client for the browser and node.js","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"homepage":"https://axios-http.com","jsdelivr":"dist/axios.min.js","keywords":["xhr","http","ajax","promise","node"],"license":"MIT","main":"index.js","name":"axios","repository":{"type":"git","url":"git+https://github.com/axios/axios.git"},"scripts":{"build":"NODE_ENV=production grunt build","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","examples":"node ./examples/server.js","fix":"eslint --fix lib/**/*.js","postversion":"git push && git push --tags","preversion":"npm test","start":"node ./sandbox/server.js","test":"grunt test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"},"typings":"./index.d.ts","unpkg":"dist/axios.min.js","version":"0.21.4"}');
+module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
 
 /***/ })
 
@@ -107555,7 +107683,7 @@ module.exports = JSON.parse('{"_args":[["axios@0.21.4","C:\\\\laragon\\\\www\\\\
 /******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 					installedChunks[chunkId][0]();
 /******/ 				}
-/******/ 				installedChunks[chunkId] = 0;
+/******/ 				installedChunks[chunkIds[i]] = 0;
 /******/ 			}
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}

@@ -14,6 +14,9 @@ function User() {
     const [address, setAddress]         = useState('');
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
+    const [password, setPassword]       = useState('');
+
+    const [viewInputPassword, setViewInputPassword] = useState(true);
 
     const [listUser, setListUser] = useState([]);
     const [listRole, setListRole] = useState([]);
@@ -72,8 +75,10 @@ function User() {
         {
             listAllRole();
             clearForm();
+
             setTitleModal('Add Viewer');
             setTextButtonSave('Save');
+            setViewInputPassword(true);
         }
 
         let myModal = new bootstrap.Modal(document.getElementById('modalViewerInsert'), {
@@ -96,6 +101,7 @@ function User() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('password', password);
 
         clearValidation();
 
@@ -178,6 +184,8 @@ function User() {
 
         listAllRole();
 
+        setViewInputPassword(false);
+
         fetch(url_general +'viewer/get/'+ id)
         .then(response => response.json())
         .then(response => {
@@ -236,6 +244,7 @@ function User() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setPassword('');
     }
 
     const clearValidation = () => {
@@ -254,6 +263,9 @@ function User() {
 
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
+
+        document.getElementById('password').style.display = 'none';
+        document.getElementById('password').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -347,6 +359,16 @@ function User() {
                                                                     <label>Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row" style={ { display: (viewInputPassword ? 'block' : 'none' )}  }>
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Password</label>
+                                                                    <div id="password" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="password" value={ password } className="form-control" onChange={ (e) => setPassword(e.target.value) } required={ viewInputPassword ? true : false }/>
                                                                 </div>
                                                             </div>
                                                         </div>
