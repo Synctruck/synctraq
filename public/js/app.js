@@ -16842,9 +16842,9 @@ function PackageWarehouse() {
           var _packageWarehouse = response.packageWarehouse;
           setTextMessage("WAREHOUSE UPDATE TODAY:  #" + Reference_Number_1 + ' / ' + _packageWarehouse.Route);
           setTextMessageDate(_packageWarehouse.created_at);
-          setTypeMessage('warning');
+          setTypeMessage('success');
           setNumberPackage('');
-          document.getElementById('soundPitidoWarning').play();
+          document.getElementById('soundPitidoSuccess').play();
         } else if (response.stateAction) {
           setTextMessage("VALID WAREHOUSE / " + Reference_Number_1);
           setTypeMessage('success');

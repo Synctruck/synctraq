@@ -453,10 +453,10 @@ function PackageWarehouse() {
 
                         setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
                         setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
+                        setTypeMessage('success');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
+                        document.getElementById('soundPitidoSuccess').play();
                     }
                     else if(response.stateAction)
                     {
