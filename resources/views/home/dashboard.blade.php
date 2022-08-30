@@ -10,7 +10,10 @@
     	</ol>
   	</nav>
 </div><!-- End Page Title -->
-
+<script>
+	let auxDateStart = '{{date('Y-m-d')}}';
+	let auxDateEnd  = '{{date('Y-m-t')}}';
+</script>
 <div id="dashboard">
 </div>
 @endsection

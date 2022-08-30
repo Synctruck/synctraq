@@ -24,7 +24,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::get('/home', [IndexController::class, 'Index']);
 
 	Route::get('/dashboard', [IndexController::class, 'Dashboard']);
-	Route::get('/dashboard/getallquantity', [IndexController::class, 'GetAllQuantity']);
+	Route::get('/dashboard/getallquantity/{startDate}/{endDate}', [IndexController::class, 'GetAllQuantity']);
 
 	Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
 	Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);

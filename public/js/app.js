@@ -763,18 +763,18 @@ var react__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CacheProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.C),
+/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
+/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "ThemeContext": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.T),
 /* harmony export */   "ThemeProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.b),
 /* harmony export */   "__unsafe_useEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__._),
-/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
-/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
-/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d),
-/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
-/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "createElement": () => (/* binding */ jsx),
 /* harmony export */   "css": () => (/* binding */ css),
 /* harmony export */   "jsx": () => (/* binding */ jsx),
-/* harmony export */   "keyframes": () => (/* binding */ keyframes)
+/* harmony export */   "keyframes": () => (/* binding */ keyframes),
+/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
+/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
+/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @emotion/cache */ "./node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js");
@@ -7422,6 +7422,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 function Dashboard() {
+  // const [quantityManifest, setQuantityManifest]   = useState(0);
+  // const [quantityInbound, setQuantityInbound]     = useState(0);
+  // const [quantityNotExists, setQuantityNotExists] = useState(0);
+  // const [quantityDispatch, setQuantityDispatch]   = useState(0);
+  // const [quantityReturn, setQuantityReturn]       = useState(0);
+  // const [quantityDelivery, setQuantityDelivery]   = useState(0);
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState2 = _slicedToArray(_useState, 2),
       quantityManifest = _useState2[0],
@@ -7452,215 +7458,129 @@ function Dashboard() {
       quantityDelivery = _useState12[0],
       setQuantityDelivery = _useState12[1];
 
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState14 = _slicedToArray(_useState13, 2),
-      quantityManifestToday = _useState14[0],
-      setQuantityManifestToday = _useState14[1];
+      listQuantityRoute = _useState14[0],
+      setListQuantityRoute = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
       _useState16 = _slicedToArray(_useState15, 2),
-      quantityInboundToday = _useState16[0],
-      setQuantityInboundToday = _useState16[1];
+      textLoading = _useState16[0],
+      setTextLoading = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
       _useState18 = _slicedToArray(_useState17, 2),
-      quantityNotExistsToday = _useState18[0],
-      setQuantityNotExistsToday = _useState18[1];
+      loading = _useState18[0],
+      setLoading = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
       _useState20 = _slicedToArray(_useState19, 2),
-      quantityDispatchToday = _useState20[0],
-      setQuantityDispatchToday = _useState20[1];
+      dateStart = _useState20[0],
+      setDateStart = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
       _useState22 = _slicedToArray(_useState21, 2),
-      quantityReturnToday = _useState22[0],
-      setQuantityReturnToday = _useState22[1];
+      dateEnd = _useState22[0],
+      setDateEnd = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
       _useState24 = _slicedToArray(_useState23, 2),
-      quantityDeliveryToday = _useState24[0],
-      setQuantityDeliveryToday = _useState24[1];
-
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState26 = _slicedToArray(_useState25, 2),
-      listQuantityRoute = _useState26[0],
-      setListQuantityRoute = _useState26[1];
-
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
-      _useState28 = _slicedToArray(_useState27, 2),
-      textLoading = _useState28[0],
-      setTextLoading = _useState28[1];
-
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
-      _useState30 = _slicedToArray(_useState29, 2),
-      loading = _useState30[0],
-      setLoading = _useState30[1];
-
-  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
-      _useState32 = _slicedToArray(_useState31, 2),
-      card = _useState32[0],
-      setCart = _useState32[1];
+      card = _useState24[0],
+      setCart = _useState24[1];
 
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     getAllQuantityStatusPackage();
-  }, []);
+    initBarChart();
+  }, [dateStart, dateEnd]);
 
   var getAllQuantityStatusPackage = function getAllQuantityStatusPackage() {
     setLoading('block');
     setCart('none');
-    fetch(url_general + 'dashboard/getallquantity').then(function (res) {
+    fetch("".concat(url_general, "dashboard/getallquantity/").concat(dateStart, "/").concat(dateEnd)).then(function (res) {
       return res.json();
     }).then(function (response) {
       setQuantityManifest(response.quantityManifest);
       setQuantityInbound(response.quantityInbound);
-      setQuantityNotExists(response.quantityNotExists);
       setQuantityDispatch(response.quantityDispatch);
-      setQuantityReturn(response.quantityReturn);
       setQuantityDelivery(response.quantityDelivery);
-      setQuantityManifestToday(response.quantityManifestToday);
-      setQuantityInboundToday(response.quantityInboundToday);
-      setQuantityNotExistsToday(response.quantityNotExistsToday);
-      setQuantityDispatchToday(response.quantityDispatchToday);
-      setQuantityReturnToday(response.quantityReturnToday);
-      setQuantityDeliveryToday(response.quantityDeliveryToday);
-      GraficMovementsToday(response.quantityManifestToday, response.quantityInboundToday, response.quantityNotExistsToday, response.quantityDispatchToday, response.quantityReturnToday, response.quantityDeliveryToday);
-      GraficMovementsOfTheWeek();
+      setQuantityDelivery(response.quantityWarehouse); // setQuantityManifestToday(response.quantityManifestToday);
+      // setQuantityInboundToday(response.quantityInboundToday);
+      // setQuantityNotExistsToday(response.quantityNotExistsToday);
+      // setQuantityDispatchToday(response.quantityDispatchToday);
+      // setQuantityReturnToday(response.quantityReturnToday);
+      // setQuantityDeliveryToday(response.quantityDeliveryToday);
+
       setLoading('none');
       setCart('block');
     });
   };
 
-  var GraficMovementsToday = function GraficMovementsToday(quantityManifestToday, quantityInboundToday, quantityNotExistsToday, quantityDispatchToday, quantityReturnToday, quantityDeliveryToday) {
-    Highcharts.chart('graficMovementsToday', {
-      chart: {
-        type: 'column'
-      },
-      title: {
-        align: 'left',
-        text: 'Movements of the day 23/05/2022'
-      },
-      accessibility: {
-        announceNewData: {
-          enabled: true
-        }
-      },
-      xAxis: {
-        type: 'category'
-      },
-      yAxis: {
-        title: {
-          text: ''
-        }
-      },
+  function initBarChart() {
+    console.log('gollll'); //-------------
+    //- BAR CHART -
+    //-------------
+
+    var areaChartData = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [{
+        label: 'Electronics',
+        backgroundColor: '#f56954',
+        data: [65, 59, 80, 81, 56, 55, 40]
+      }, {
+        label: 'Fashion',
+        backgroundColor: '#00a65a',
+        data: [28, 48, 40, 19, 86, 27, 90]
+      }, {
+        label: 'Foods',
+        backgroundColor: '#00c0ef',
+        data: [70, 60, 65, 50, 60, 70, 80]
+      }, {
+        label: 'Foods',
+        backgroundColor: '#8E44AD',
+        data: [70, 60, 65, 50, 60, 70, 80]
+      }]
+    };
+    var barChartOptions = {
+      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+      scaleBeginAtZero: true,
+      //Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines: true,
+      //String - Colour of the grid lines
+      scaleGridLineColor: 'rgba(0,0,0,.05)',
+      //Number - Width of the grid lines
+      scaleGridLineWidth: 1,
+      //Boolean - Whether to show horizontal lines (except X axis)
+      scaleShowHorizontalLines: true,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines: true,
+      //Boolean - If there is a stroke on each bar
+      barShowStroke: true,
+      //Number - Pixel width of the bar stroke
+      barStrokeWidth: 2,
+      //Number - Spacing between each of the X value sets
+      barValueSpacing: 5,
+      //Number - Spacing between data sets within X values
+      barDatasetSpacing: 1,
+      //String - A legend template
+      responsive: true,
+      maintainAspectRatio: true,
       legend: {
-        enabled: false
-      },
-      plotOptions: {
-        series: {
-          borderWidth: 0,
-          dataLabels: {
-            enabled: true,
-            format: '{point.y:.1f}'
-          }
-        }
-      },
-      tooltip: {
-        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f} </b> of total<br/>'
-      },
-      series: [{
-        name: "Browsers",
-        colorByPoint: true,
-        data: [{
-          name: "Manifest",
-          y: quantityManifestToday,
-          drilldown: "Manifest"
-        }, {
-          name: "Inbound",
-          y: quantityInboundToday,
-          drilldown: "Inbound"
-        }, {
-          name: "Not Exists",
-          y: quantityNotExistsToday,
-          drilldown: "Not Exists"
-        }, {
-          name: "Dispatch",
-          y: quantityDispatchToday,
-          drilldown: "Dispatch"
-        }, {
-          name: "Returns",
-          y: quantityReturnToday,
-          drilldown: "Returns"
-        }, {
-          name: "Delivery",
-          y: quantityDeliveryToday,
-          drilldown: "Delivery"
-        }]
-      }],
-      drilldown: {
-        breadcrumbs: {
-          position: {
-            align: 'right'
-          }
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 15,
+          defaultFontColor: '#343a40',
+          defaultFontSize: 11
         }
       }
+    };
+    var ctxBar = document.getElementById("barChart");
+    new Chart(ctxBar, {
+      type: 'bar',
+      data: areaChartData,
+      options: barChartOptions
     });
-  };
-
-  var GraficMovementsOfTheWeek = function GraficMovementsOfTheWeek() {
-    Highcharts.chart('graficMovementsOfTheWeek', {
-      chart: {
-        type: 'areaspline'
-      },
-      title: {
-        text: 'Movements of the week (23/05/2022 - 29/05/2022)'
-      },
-      legend: {
-        layout: 'vertical',
-        align: 'left',
-        verticalAlign: 'top',
-        x: 150,
-        y: 100,
-        floating: true,
-        borderWidth: 1,
-        backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF'
-      },
-      xAxis: {
-        categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        plotBands: [{
-          // visualize the weekend
-          from: 4.5,
-          to: 6.5,
-          color: 'rgba(68, 170, 213, .2)'
-        }]
-      },
-      yAxis: {
-        title: {
-          text: 'Fruit units'
-        }
-      },
-      tooltip: {
-        shared: true,
-        valueSuffix: ' units'
-      },
-      credits: {
-        enabled: false
-      },
-      plotOptions: {
-        areaspline: {
-          fillOpacity: 0.5
-        }
-      },
-      series: [{
-        name: 'Manifest',
-        data: [3, 4, 3, 5, 4, 10, 12]
-      }, {
-        name: 'Inbound',
-        data: [1, 3, 4, 3, 3, 5, 4]
-      }]
-    });
-  };
+  }
 
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("section", {
     className: "section",
@@ -7676,9 +7596,9 @@ function Dashboard() {
               display: loading
             },
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-              "class": "col-lg-12 text-center form-group",
+              className: "col-lg-12 text-center form-group",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                "class": "card-title",
+                className: "card-title",
                 children: textLoading
               })
             })
@@ -7688,21 +7608,62 @@ function Dashboard() {
               display: card
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "row mb-4",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "row",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: "Start date:"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                      type: "date",
+                      className: "form-control",
+                      value: dateStart,
+                      onChange: function onChange(e) {
+                        return setDateStart(e.target.value);
+                      }
+                    })
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "row",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: "End date :"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                      type: "date",
+                      className: "form-control",
+                      value: dateEnd,
+                      onChange: function onChange(e) {
+                        return setDateEnd(e.target.value);
+                      }
+                    })
+                  })]
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "row form-group table-responsive",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-primary d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-primary d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bxs-box",
+                            className: "bx bxs-box",
                             style: {
                               fontSize: '30px'
                             }
@@ -7711,7 +7672,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Manifest"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityManifest
@@ -7721,19 +7682,19 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-barcode-reader",
+                            className: "bx bx-barcode-reader",
                             style: {
                               fontSize: '30px'
                             }
@@ -7742,7 +7703,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Inbound"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityInbound
@@ -7752,19 +7713,19 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-barcode-reader",
+                            className: "bx bx-barcode-reader",
                             style: {
                               fontSize: '30px'
                             }
@@ -7773,7 +7734,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Not Exists"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityNotExists
@@ -7783,19 +7744,19 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-warning d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-warning d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
+                            className: "bx bx-car",
                             style: {
                               fontSize: '30px'
                             }
@@ -7804,7 +7765,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Dispatch"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityDispatch
@@ -7814,19 +7775,19 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
+                            className: "bx bx-car",
                             style: {
                               fontSize: '30px'
                             }
@@ -7835,7 +7796,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Returns"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityReturn
@@ -7845,19 +7806,19 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
+                className: "col-lg-3 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "cardDashboard",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                       className: "row",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "col-lg-4",
                         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
+                          className: "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
                           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
+                            className: "bx bx-car",
                             style: {
                               fontSize: '30px'
                             }
@@ -7866,7 +7827,7 @@ function Dashboard() {
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                         className: "col-lg-8",
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
+                          className: "card-title",
                           children: "Delivery"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
                           children: quantityDelivery
@@ -7882,18 +7843,18 @@ function Dashboard() {
                 display: 'none'
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["FEDEX  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7901,18 +7862,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["UPS   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7920,18 +7881,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["DHL   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7939,18 +7900,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.1rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["USPS  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7958,18 +7919,12 @@ function Dashboard() {
                   })
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
               className: "row form-group",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                id: "graficMovementsToday",
-                className: "col-lg-6"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                id: "graficMovementsOfTheWeek",
-                className: "col-lg-6",
-                style: {
-                  display: 'none'
-                }
-              })]
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+                className: "chart w-100",
+                id: "barChart"
+              })
             })]
           })]
         })
@@ -46687,12 +46642,16 @@ class Log {
     /**
      * Determine if the given message was logged.
      *
-     * @param  {string} message
+     * @param  {string|string[]} messages
      */
-    static received(message) {
-        let result = Log.fakedLogs.some(log => log.includes(message));
+    static received(messages) {
+        messages = Array.isArray(messages) ? messages : [messages];
 
-        Log.restore();
+        let result = messages.every(message =>
+            this.fakedLogs.some(log => log.includes(message))
+        );
+
+        this.restore();
 
         return result;
     }
@@ -101114,13 +101073,13 @@ var defaultComponents = function defaultComponents(props) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u),
+/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider),
+/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
 /* harmony export */   "createFilter": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.c),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "defaultTheme": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.d),
 /* harmony export */   "mergeStyles": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.m),
-/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider)
+/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u)
 /* harmony export */ });
 /* harmony import */ var _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./useStateManager-18181353.esm.js */ "./node_modules/react-select/dist/useStateManager-18181353.esm.js");
 /* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
@@ -106489,24 +106448,24 @@ function _unsupportedIterableToArray(o, minLen) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MS": () => (/* binding */ MS),
-/* harmony export */   "MOZ": () => (/* binding */ MOZ),
-/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT),
-/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
-/* harmony export */   "RULESET": () => (/* binding */ RULESET),
-/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
-/* harmony export */   "PAGE": () => (/* binding */ PAGE),
-/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
-/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
 /* harmony export */   "CHARSET": () => (/* binding */ CHARSET),
-/* harmony export */   "VIEWPORT": () => (/* binding */ VIEWPORT),
-/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
-/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
-/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
-/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
-/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
+/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
 /* harmony export */   "COUNTER_STYLE": () => (/* binding */ COUNTER_STYLE),
-/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES)
+/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
+/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
+/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
+/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES),
+/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
+/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
+/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
+/* harmony export */   "MOZ": () => (/* binding */ MOZ),
+/* harmony export */   "MS": () => (/* binding */ MS),
+/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
+/* harmony export */   "PAGE": () => (/* binding */ PAGE),
+/* harmony export */   "RULESET": () => (/* binding */ RULESET),
+/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
+/* harmony export */   "VIEWPORT": () => (/* binding */ VIEWPORT),
+/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT)
 /* harmony export */ });
 var MS = '-ms-'
 var MOZ = '-moz-'
@@ -106542,9 +106501,9 @@ var FONT_FEATURE_VALUES = '@font-feature-values'
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "middleware": () => (/* binding */ middleware),
-/* harmony export */   "rulesheet": () => (/* binding */ rulesheet),
+/* harmony export */   "namespace": () => (/* binding */ namespace),
 /* harmony export */   "prefixer": () => (/* binding */ prefixer),
-/* harmony export */   "namespace": () => (/* binding */ namespace)
+/* harmony export */   "rulesheet": () => (/* binding */ rulesheet)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -106672,11 +106631,11 @@ function namespace (element) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "compile": () => (/* binding */ compile),
-/* harmony export */   "parse": () => (/* binding */ parse),
-/* harmony export */   "ruleset": () => (/* binding */ ruleset),
 /* harmony export */   "comment": () => (/* binding */ comment),
-/* harmony export */   "declaration": () => (/* binding */ declaration)
+/* harmony export */   "compile": () => (/* binding */ compile),
+/* harmony export */   "declaration": () => (/* binding */ declaration),
+/* harmony export */   "parse": () => (/* binding */ parse),
+/* harmony export */   "ruleset": () => (/* binding */ ruleset)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -107074,31 +107033,31 @@ function stringify (element, index, children, callback) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "line": () => (/* binding */ line),
-/* harmony export */   "column": () => (/* binding */ column),
-/* harmony export */   "length": () => (/* binding */ length),
-/* harmony export */   "position": () => (/* binding */ position),
+/* harmony export */   "alloc": () => (/* binding */ alloc),
+/* harmony export */   "caret": () => (/* binding */ caret),
+/* harmony export */   "char": () => (/* binding */ char),
 /* harmony export */   "character": () => (/* binding */ character),
 /* harmony export */   "characters": () => (/* binding */ characters),
-/* harmony export */   "node": () => (/* binding */ node),
+/* harmony export */   "column": () => (/* binding */ column),
+/* harmony export */   "commenter": () => (/* binding */ commenter),
 /* harmony export */   "copy": () => (/* binding */ copy),
-/* harmony export */   "char": () => (/* binding */ char),
-/* harmony export */   "prev": () => (/* binding */ prev),
-/* harmony export */   "next": () => (/* binding */ next),
-/* harmony export */   "peek": () => (/* binding */ peek),
-/* harmony export */   "caret": () => (/* binding */ caret),
-/* harmony export */   "slice": () => (/* binding */ slice),
-/* harmony export */   "token": () => (/* binding */ token),
-/* harmony export */   "alloc": () => (/* binding */ alloc),
 /* harmony export */   "dealloc": () => (/* binding */ dealloc),
 /* harmony export */   "delimit": () => (/* binding */ delimit),
-/* harmony export */   "tokenize": () => (/* binding */ tokenize),
-/* harmony export */   "whitespace": () => (/* binding */ whitespace),
-/* harmony export */   "tokenizer": () => (/* binding */ tokenizer),
-/* harmony export */   "escaping": () => (/* binding */ escaping),
 /* harmony export */   "delimiter": () => (/* binding */ delimiter),
-/* harmony export */   "commenter": () => (/* binding */ commenter),
-/* harmony export */   "identifier": () => (/* binding */ identifier)
+/* harmony export */   "escaping": () => (/* binding */ escaping),
+/* harmony export */   "identifier": () => (/* binding */ identifier),
+/* harmony export */   "length": () => (/* binding */ length),
+/* harmony export */   "line": () => (/* binding */ line),
+/* harmony export */   "next": () => (/* binding */ next),
+/* harmony export */   "node": () => (/* binding */ node),
+/* harmony export */   "peek": () => (/* binding */ peek),
+/* harmony export */   "position": () => (/* binding */ position),
+/* harmony export */   "prev": () => (/* binding */ prev),
+/* harmony export */   "slice": () => (/* binding */ slice),
+/* harmony export */   "token": () => (/* binding */ token),
+/* harmony export */   "tokenize": () => (/* binding */ tokenize),
+/* harmony export */   "tokenizer": () => (/* binding */ tokenizer),
+/* harmony export */   "whitespace": () => (/* binding */ whitespace)
 /* harmony export */ });
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
 
@@ -107361,19 +107320,19 @@ function identifier (index) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "abs": () => (/* binding */ abs),
-/* harmony export */   "from": () => (/* binding */ from),
+/* harmony export */   "append": () => (/* binding */ append),
 /* harmony export */   "assign": () => (/* binding */ assign),
+/* harmony export */   "charat": () => (/* binding */ charat),
+/* harmony export */   "combine": () => (/* binding */ combine),
+/* harmony export */   "from": () => (/* binding */ from),
 /* harmony export */   "hash": () => (/* binding */ hash),
-/* harmony export */   "trim": () => (/* binding */ trim),
+/* harmony export */   "indexof": () => (/* binding */ indexof),
 /* harmony export */   "match": () => (/* binding */ match),
 /* harmony export */   "replace": () => (/* binding */ replace),
-/* harmony export */   "indexof": () => (/* binding */ indexof),
-/* harmony export */   "charat": () => (/* binding */ charat),
-/* harmony export */   "substr": () => (/* binding */ substr),
-/* harmony export */   "strlen": () => (/* binding */ strlen),
 /* harmony export */   "sizeof": () => (/* binding */ sizeof),
-/* harmony export */   "append": () => (/* binding */ append),
-/* harmony export */   "combine": () => (/* binding */ combine)
+/* harmony export */   "strlen": () => (/* binding */ strlen),
+/* harmony export */   "substr": () => (/* binding */ substr),
+/* harmony export */   "trim": () => (/* binding */ trim)
 /* harmony export */ });
 /**
  * @param {number}
@@ -107705,7 +107664,7 @@ module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"P
 /******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 					installedChunks[chunkId][0]();
 /******/ 				}
-/******/ 				installedChunks[chunkIds[i]] = 0;
+/******/ 				installedChunks[chunkId] = 0;
 /******/ 			}
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}
