@@ -266,7 +266,7 @@ class PackageDeliveryController extends Controller
         {
             $listPackageDispatch = PackageDispatch::where('status', 'Dispatch')
                                                 ->where('idOnfleet', '!=', '')
-                                                ->inRandomOrder()
+                                                ->orderBy('created_at', 'asc')
                                                 ->get()
                                                 ->take(200);
 
@@ -286,7 +286,8 @@ class PackageDeliveryController extends Controller
                         {
                             if($onfleet['completionDetails']['success'] == true)
                             {
-                                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                                $packageDispatch = PackageDispatch::where('status', 'Dispatch')
+                                                                    ->find($packageDispatch->Reference_Number_1);
 
                                 if($packageDispatch)
                                 {
