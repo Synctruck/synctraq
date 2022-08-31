@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\Api\{ PackageController, WHookController };
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,5 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('packages', [PackageController::class, 'Index']);
 Route::get('packages/{reference}', [PackageController::class, 'Get']);
 Route::post('packages', [PackageController::class, 'Insert']);
+
+Route::get('packages-webhook', [WHookController::class, 'Index']);
+Route::post('packages-webhook', [WHookController::class, 'UpdateStatusOnfleet']);

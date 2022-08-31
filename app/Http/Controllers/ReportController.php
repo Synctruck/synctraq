@@ -176,7 +176,7 @@ class ReportController extends Controller
         $states = explode(',', $state);
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                ->whereBetween('updated_at', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
         if(Session::get('user')->role->name == 'Team')
@@ -204,7 +204,7 @@ class ReportController extends Controller
                 $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
             }
 
-            $listAll = $listAll->orderBy('created_at', 'desc');
+            $listAll = $listAll->orderBy('updated_at', 'desc');
         }
 
         if($route != 'all') 
@@ -217,7 +217,7 @@ class ReportController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->paginate(50);
+        $listAll = $listAll->orderBy('updated_at', 'desc')->paginate(50);
 
         $Reference_Number_1s = [];
 
@@ -226,7 +226,9 @@ class ReportController extends Controller
             array_push($Reference_Number_1s, $delivery->Reference_Number_1);
         }
 
-        $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)->get();
+        $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)
+                                        ->orderBy('updated_at', 'desc')
+                                        ->get();
 
         $roleUser = Session::get('user')->role->name;
 

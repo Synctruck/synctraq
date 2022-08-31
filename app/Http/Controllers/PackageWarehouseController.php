@@ -39,19 +39,30 @@ class PackageWarehouseController extends Controller
         return view('package.warehouse');
     }
 
-    public function List(Request $request, $filterDate, $route, $state)
+    public function List($idValidator, $dateStart,$dateEnd, $route, $state)
     {
-        $routes = explode(',', $route);
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route); 
         $states = explode(',', $state);
 
         if(Session::get('user')->role->name == 'Administrador')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }
-            $date = explode("-",$filterDate);
-            $packageListWarehouse = $packageListWarehouse->whereMonth('created_at', $date[1])
-                                    ->whereYear('created_at', $date[0])
-                                    ->whereDay('created_at', $date[2]);
+        else
+        {
+            $packageListWarehouse = PackageWarehouse::with('user')
+                                                    ->where('idUser', Session::get('user')->id);
+        }
+
+        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idValidator)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
+        }
 
         if($route != 'all')
         {
@@ -64,13 +75,88 @@ class PackageWarehouseController extends Controller
         }
 
         $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->paginate(50);
-        $quantityInbound      = $packageListWarehouse->total();
+        $quantityWarehouse      = $packageListWarehouse->total();
 
         $listState  = PackageWarehouse::select('Dropoff_Province')
                                             ->groupBy('Dropoff_Province')
                                             ->get();
 
-        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityWarehouse' => $quantityWarehouse];
+    }
+
+    public function Export($idValidator, $dateStart,$dateEnd, $route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        if(Session::get('user')->role->name == 'Validador')
+        {
+            $packageListWarehouse = PackageWarehouse::with('user')->where('idUser', Session::get('user')->id);
+        }
+        else if(Session::get('user')->role->name == 'Administrador')
+        {
+            $packageListWarehouse = PackageWarehouse::with('user');
+        }
+
+        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idValidator)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
+        }
+        
+        if($route != 'all')
+        {
+            $packageListWarehouse = $packageListWarehouse->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->get();
+
+        foreach($packageListWarehouse as $packageWarehouse)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageWarehouse->created_at)),
+                                date('H:i:s', strtotime($packageWarehouse->created_at)),
+                                $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
+                                $packageWarehouse->Reference_Number_1,
+                                $packageWarehouse->Dropoff_Contact_Name,
+                                $packageWarehouse->Dropoff_Contact_Phone_Number,
+                                $packageWarehouse->Dropoff_Address_Line_1,
+                                $packageWarehouse->Dropoff_City,
+                                $packageWarehouse->Dropoff_Province,
+                                $packageWarehouse->Dropoff_Postal_Code,
+                                $packageWarehouse->Weight,
+                                $packageWarehouse->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 
     public function Insert(Request $request)

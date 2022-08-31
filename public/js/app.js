@@ -16156,8 +16156,8 @@ function PackageWarehouse() {
 
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState8 = _slicedToArray(_useState7, 2),
-      listCompany = _useState8[0],
-      setListCompany = _useState8[1];
+      listValidator = _useState8[0],
+      setListValidator = _useState8[1];
 
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState10 = _slicedToArray(_useState9, 2),
@@ -16166,8 +16166,8 @@ function PackageWarehouse() {
 
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState12 = _slicedToArray(_useState11, 2),
-      quantityInbound = _useState12[0],
-      setQuantityInbound = _useState12[1];
+      quantityWarehouse = _useState12[0],
+      setQuantityWarehouse = _useState12[1];
 
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState14 = _slicedToArray(_useState13, 2),
@@ -16204,72 +16204,87 @@ function PackageWarehouse() {
       typeMessage = _useState26[0],
       setTypeMessage = _useState26[1];
 
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState28 = _slicedToArray(_useState27, 2),
-      listInbound = _useState28[0],
-      setListInbound = _useState28[1];
+      idValidator = _useState28[0],
+      setIdValidator = _useState28[1];
 
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
       _useState30 = _slicedToArray(_useState29, 2),
-      file = _useState30[0],
-      setFile = _useState30[1];
+      dateStart = _useState30[0],
+      setDateStart = _useState30[1];
 
-  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
       _useState32 = _slicedToArray(_useState31, 2),
-      displayButton = _useState32[0],
-      setDisplayButton = _useState32[1];
+      dateEnd = _useState32[0],
+      setDateEnd = _useState32[1];
 
-  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState34 = _slicedToArray(_useState33, 2),
-      disabledInput = _useState34[0],
-      setDisabledInput = _useState34[1];
+      listInbound = _useState34[0],
+      setListInbound = _useState34[1];
 
-  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState36 = _slicedToArray(_useState35, 2),
-      readInput = _useState36[0],
-      setReadInput = _useState36[1];
+      file = _useState36[0],
+      setFile = _useState36[1];
+
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState38 = _slicedToArray(_useState37, 2),
+      displayButton = _useState38[0],
+      setDisplayButton = _useState38[1];
+
+  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+      _useState40 = _slicedToArray(_useState39, 2),
+      disabledInput = _useState40[0],
+      setDisabledInput = _useState40[1];
+
+  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+      _useState42 = _slicedToArray(_useState41, 2),
+      readInput = _useState42[0],
+      setReadInput = _useState42[1];
 
   var dateNow = new Date();
   var day = dateNow.getDate() < 10 ? '0' + dateNow.getDate() : dateNow.getDate();
   var month = dateNow.getMonth() + 1 < 10 ? '0' + (dateNow.getMonth() + 1) : dateNow.getMonth() + 1;
   dateNow = dateNow.getFullYear() + "-" + month + "-" + day;
 
-  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dateNow),
-      _useState38 = _slicedToArray(_useState37, 2),
-      filterDate = _useState38[0],
-      setFilterDate = _useState38[1];
-
-  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
-      _useState40 = _slicedToArray(_useState39, 2),
-      page = _useState40[0],
-      setPage = _useState40[1];
-
-  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
-      _useState42 = _slicedToArray(_useState41, 2),
-      totalPage = _useState42[0],
-      setTotalPage = _useState42[1];
-
-  var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dateNow),
       _useState44 = _slicedToArray(_useState43, 2),
-      totalPackage = _useState44[0],
-      setTotalPackage = _useState44[1];
+      filterDate = _useState44[0],
+      setFilterDate = _useState44[1];
+
+  var _useState45 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState46 = _slicedToArray(_useState45, 2),
+      page = _useState46[0],
+      setPage = _useState46[1];
+
+  var _useState47 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState48 = _slicedToArray(_useState47, 2),
+      totalPage = _useState48[0],
+      setTotalPage = _useState48[1];
+
+  var _useState49 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState50 = _slicedToArray(_useState49, 2),
+      totalPackage = _useState50[0],
+      setTotalPackage = _useState50[1];
 
   var inputFileRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef();
 
-  var _useState45 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
-      _useState46 = _slicedToArray(_useState45, 2),
-      viewButtonSave = _useState46[0],
-      setViewButtonSave = _useState46[1];
+  var _useState51 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState52 = _slicedToArray(_useState51, 2),
+      viewButtonSave = _useState52[0],
+      setViewButtonSave = _useState52[1];
 
   document.getElementById('bodyAdmin').style.backgroundColor = '#fff3cd';
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     listAllRoute();
-    listAllCompany();
+    listAllValidator();
     document.getElementById('Reference_Number_1').focus();
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    listAllPackage(page, filterDate, RouteSearch, StateSearch);
-  }, [filterDate]);
+    listAllPackageWarehouse(page, RouteSearch, StateSearch);
+  }, [idValidator, dateStart, dateEnd]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, [Reference_Number_1]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (String(file) == 'undefined' || file == '') {
@@ -16279,15 +16294,15 @@ function PackageWarehouse() {
     }
   }, [file]);
 
-  var listAllPackage = function listAllPackage(pageNumber, filterDate, route, state) {
-    fetch(url_general + 'package-warehouse/list/' + filterDate + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
+  var listAllPackageWarehouse = function listAllPackageWarehouse(pageNumber, route, state) {
+    fetch(url_general + 'package-warehouse/list/' + idValidator + '/' + dateStart + '/' + dateEnd + '/' + route + '/' + state + '/?page=' + pageNumber).then(function (res) {
       return res.json();
     }).then(function (response) {
       setListPackageInbound(response.packageList.data);
       setTotalPackage(response.packageList.total);
       setTotalPage(response.packageList.per_page);
       setPage(response.packageList.current_page);
-      setQuantityInbound(response.quantityInbound);
+      setQuantityWarehouse(response.quantityWarehouse);
       setListState(response.listState);
 
       if (listState.length == 0) {
@@ -16297,7 +16312,7 @@ function PackageWarehouse() {
   };
 
   var handlerChangePage = function handlerChangePage(pageNumber) {
-    listAllPackage(pageNumber, filterDate, RouteSearch, StateSearch);
+    listAllPackageWarehouse(pageNumber, RouteSearch, StateSearch);
   };
 
   var listAllRoute = function listAllRoute() {
@@ -16310,89 +16325,90 @@ function PackageWarehouse() {
     });
   };
 
-  var listAllCompany = function listAllCompany() {
-    setListCompany([]);
-    fetch(url_general + 'company/getAll').then(function (res) {
+  var listAllValidator = function listAllValidator() {
+    setListValidator([]);
+    fetch(url_general + 'validator/getAll').then(function (res) {
       return res.json();
     }).then(function (response) {
-      setListCompany(response.companyList);
+      console.log(response);
+      setListValidator(response.validatorList);
     });
   };
 
-  var _useState47 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-      _useState48 = _slicedToArray(_useState47, 2),
-      Reference_Number_1_Edit = _useState48[0],
-      setReference_Number_1 = _useState48[1];
-
-  var _useState49 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-      _useState50 = _slicedToArray(_useState49, 2),
-      Dropoff_Contact_Name = _useState50[0],
-      setDropoff_Contact_Name = _useState50[1];
-
-  var _useState51 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
-      _useState52 = _slicedToArray(_useState51, 2),
-      Dropoff_Contact_Phone_Number = _useState52[0],
-      setDropoff_Contact_Phone_Number = _useState52[1];
-
   var _useState53 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState54 = _slicedToArray(_useState53, 2),
-      Dropoff_Address_Line_1 = _useState54[0],
-      setDropoff_Address_Line_1 = _useState54[1];
+      Reference_Number_1_Edit = _useState54[0],
+      setReference_Number_1 = _useState54[1];
 
   var _useState55 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState56 = _slicedToArray(_useState55, 2),
-      Dropoff_Address_Line_2 = _useState56[0],
-      setDropoff_Address_Line_2 = _useState56[1];
+      Dropoff_Contact_Name = _useState56[0],
+      setDropoff_Contact_Name = _useState56[1];
 
   var _useState57 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState58 = _slicedToArray(_useState57, 2),
-      Dropoff_City = _useState58[0],
-      setDropoff_City = _useState58[1];
+      Dropoff_Contact_Phone_Number = _useState58[0],
+      setDropoff_Contact_Phone_Number = _useState58[1];
 
   var _useState59 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState60 = _slicedToArray(_useState59, 2),
-      Dropoff_Province = _useState60[0],
-      setDropoff_Province = _useState60[1];
+      Dropoff_Address_Line_1 = _useState60[0],
+      setDropoff_Address_Line_1 = _useState60[1];
 
   var _useState61 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState62 = _slicedToArray(_useState61, 2),
-      Dropoff_Postal_Code = _useState62[0],
-      setDropoff_Postal_Code = _useState62[1];
+      Dropoff_Address_Line_2 = _useState62[0],
+      setDropoff_Address_Line_2 = _useState62[1];
 
   var _useState63 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState64 = _slicedToArray(_useState63, 2),
-      Weight = _useState64[0],
-      setWeight = _useState64[1];
+      Dropoff_City = _useState64[0],
+      setDropoff_City = _useState64[1];
 
   var _useState65 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState66 = _slicedToArray(_useState65, 2),
-      Route = _useState66[0],
-      setRoute = _useState66[1];
+      Dropoff_Province = _useState66[0],
+      setDropoff_Province = _useState66[1];
 
-  var _useState67 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+  var _useState67 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState68 = _slicedToArray(_useState67, 2),
-      RouteSearch = _useState68[0],
-      setRouteSearch = _useState68[1];
+      Dropoff_Postal_Code = _useState68[0],
+      setDropoff_Postal_Code = _useState68[1];
 
-  var _useState69 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+  var _useState69 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState70 = _slicedToArray(_useState69, 2),
-      StateSearch = _useState70[0],
-      setStateSearch = _useState70[1];
+      Weight = _useState70[0],
+      setWeight = _useState70[1];
 
-  var _useState71 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState71 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
       _useState72 = _slicedToArray(_useState71, 2),
-      readOnlyInput = _useState72[0],
-      setReadOnlyInput = _useState72[1];
+      Route = _useState72[0],
+      setRoute = _useState72[1];
 
-  var _useState73 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState73 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
       _useState74 = _slicedToArray(_useState73, 2),
-      disabledButton = _useState74[0],
-      setDisabledButton = _useState74[1];
+      RouteSearch = _useState74[0],
+      setRouteSearch = _useState74[1];
 
-  var _useState75 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Guardar'),
+  var _useState75 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
       _useState76 = _slicedToArray(_useState75, 2),
-      textButtonSave = _useState76[0],
-      setTextButtonSave = _useState76[1];
+      StateSearch = _useState76[0],
+      setStateSearch = _useState76[1];
+
+  var _useState77 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+      _useState78 = _slicedToArray(_useState77, 2),
+      readOnlyInput = _useState78[0],
+      setReadOnlyInput = _useState78[1];
+
+  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+      _useState80 = _slicedToArray(_useState79, 2),
+      disabledButton = _useState80[0],
+      setDisabledButton = _useState80[1];
+
+  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Guardar'),
+      _useState82 = _slicedToArray(_useState81, 2),
+      textButtonSave = _useState82[0],
+      setTextButtonSave = _useState82[1];
 
   var optionsRole = listRoute.map(function (route, i) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("option", {
@@ -16460,7 +16476,7 @@ function PackageWarehouse() {
         sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Se actualizó el Package!', {
           icon: "success"
         });
-        listAllPackage(1, filterDate, RouteSearch, StateSearch);
+        listAllPackageWarehouse(1, RouteSearch, StateSearch);
       } else response.status == 422;
 
       {
@@ -16797,10 +16813,10 @@ function PackageWarehouse() {
     })
   });
 
-  var _useState77 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
-      _useState78 = _slicedToArray(_useState77, 2),
-      sendWarehouse = _useState78[0],
-      setSendWarehouse = _useState78[1];
+  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState84 = _slicedToArray(_useState83, 2),
+      sendWarehouse = _useState84[0],
+      setSendWarehouse = _useState84[1];
 
   var handlerInsert = function handlerInsert(e) {
     e.preventDefault();
@@ -16853,7 +16869,7 @@ function PackageWarehouse() {
           document.getElementById('soundPitidoSuccess').play();
         }
 
-        listAllPackage(1, filterDate, RouteSearch, StateSearch);
+        listAllPackageWarehouse(1, RouteSearch, StateSearch);
         setReadInput(false);
         setSendWarehouse(1);
       });
@@ -16880,7 +16896,7 @@ function PackageWarehouse() {
           icon: "success"
         });
         document.getElementById('fileImport').value = '';
-        listAllPackage(page, filterDate, RouteSearch, StateSearch);
+        listAllPackageWarehouse(page, RouteSearch, StateSearch);
         setViewButtonSave('none');
       }
 
@@ -16947,6 +16963,15 @@ function PackageWarehouse() {
     }, i);
   });
 
+  var exportAllPackageWarehouse = function exportAllPackageWarehouse(route, state) {
+    location.href = url_general + 'package-warehouse/export/' + idValidator + '/' + dateStart + '/' + dateEnd + '/' + route + '/' + state;
+  };
+
+  var handlerExport = function handlerExport() {
+    console.log('export!!');
+    exportAllPackageWarehouse(RouteSearch, StateSearch);
+  };
+
   var handlerChangeRoute = function handlerChangeRoute(routes) {
     if (routes.length != 0) {
       var routesSearch = '';
@@ -16954,17 +16979,17 @@ function PackageWarehouse() {
         routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
       });
       setRouteSearch(routesSearch);
-      listAllPackage(page, filterDate, routesSearch, StateSearch);
+      listAllPackageWarehouse(page, routesSearch, StateSearch);
     } else {
       setRouteSearch('all');
-      listAllPackage(page, filterDate, 'all', StateSearch);
+      listAllPackageWarehouse(page, 'all', StateSearch);
     }
   };
 
-  var _useState79 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState80 = _slicedToArray(_useState79, 2),
-      optionsRoleSearch = _useState80[0],
-      setOptionsRoleSearch = _useState80[1];
+  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState86 = _slicedToArray(_useState85, 2),
+      optionsRoleSearch = _useState86[0],
+      setOptionsRoleSearch = _useState86[1];
 
   var listOptionRoute = function listOptionRoute(listRoutes) {
     setOptionsRoleSearch([]);
@@ -16984,17 +17009,17 @@ function PackageWarehouse() {
         statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
       });
       setStateSearch(statesSearch);
-      listAllPackage(page, filterDate, RouteSearch, statesSearch);
+      listAllPackageWarehouse(page, RouteSearch, statesSearch);
     } else {
       setStateSearch('all');
-      listAllPackage(page, filterDate, RouteSearch, 'all');
+      listAllPackageWarehouse(page, RouteSearch, 'all');
     }
   };
 
-  var _useState81 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState82 = _slicedToArray(_useState81, 2),
-      optionsStateSearch = _useState82[0],
-      setOptionsStateSearch = _useState82[1];
+  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState88 = _slicedToArray(_useState87, 2),
+      optionsStateSearch = _useState88[0],
+      setOptionsStateSearch = _useState88[1];
 
   var listOptionState = function listOptionState(listState) {
     setOptionsStateSearch([]);
@@ -17007,10 +17032,10 @@ function PackageWarehouse() {
     });
   };
 
-  var optionCompany = listCompany.map(function (company, i) {
+  var optionValidator = listValidator.map(function (validator, i) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
-      value: company.name,
-      children: company.name
+      value: validator.id,
+      children: validator.name + ' ' + validator.nameOfOwner
     });
   });
 
@@ -17019,30 +17044,30 @@ function PackageWarehouse() {
     inputFileRef.current.click();
   };
 
-  var _useState83 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
-      _useState84 = _slicedToArray(_useState83, 2),
-      EWR1 = _useState84[0],
-      setEWR1 = _useState84[1];
-
-  var _useState85 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
-      _useState86 = _slicedToArray(_useState85, 2),
-      WeightLabel = _useState86[0],
-      setWeightLabel = _useState86[1];
-
-  var _useState87 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
-      _useState88 = _slicedToArray(_useState87, 2),
-      StateLabel = _useState88[0],
-      setStateLabel = _useState88[1];
-
-  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState89 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('EWR1'),
       _useState90 = _slicedToArray(_useState89, 2),
-      ReferenceLabel = _useState90[0],
-      setReferenceLabel = _useState90[1];
+      EWR1 = _useState90[0],
+      setEWR1 = _useState90[1];
 
-  var _useState91 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+  var _useState91 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('12'),
       _useState92 = _slicedToArray(_useState91, 2),
-      RouteLabel = _useState92[0],
-      setRouteLabel = _useState92[1];
+      WeightLabel = _useState92[0],
+      setWeightLabel = _useState92[1];
+
+  var _useState93 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('CR'),
+      _useState94 = _slicedToArray(_useState93, 2),
+      StateLabel = _useState94[0],
+      setStateLabel = _useState94[1];
+
+  var _useState95 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState96 = _slicedToArray(_useState95, 2),
+      ReferenceLabel = _useState96[0],
+      setReferenceLabel = _useState96[1];
+
+  var _useState97 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('QWE'),
+      _useState98 = _slicedToArray(_useState97, 2),
+      RouteLabel = _useState98[0],
+      setRouteLabel = _useState98[1];
 
   var handlerPrint = function handlerPrint(nombreDiv) {
     JsBarcode("#imgBarcode", Reference_Number_1, {
@@ -17073,7 +17098,22 @@ function PackageWarehouse() {
               className: "card-title",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                 className: "row form-group",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-12 mb-4",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "row",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-2",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                        className: "btn btn-primary btn-sm form-control",
+                        onClick: function onClick() {
+                          return handlerExport();
+                        },
+                        children: "EXPORT"
+                      })
+                    })
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                   className: "col-lg-12 form-group text-center",
                   children: [typeMessage == 'success' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
                     className: "text-success",
@@ -17188,7 +17228,7 @@ function PackageWarehouse() {
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                 className: "row",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "col-lg-6",
+                  className: "col-lg-2",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                     className: "form-group",
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("b", {
@@ -17197,7 +17237,7 @@ function PackageWarehouse() {
                         borderRadius: '10px',
                         padding: '10px'
                       },
-                      children: ["Warehouse: ", totalPackage]
+                      children: ["Total: ", totalPackage]
                     })
                   })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
@@ -17208,16 +17248,62 @@ function PackageWarehouse() {
                       className: "col-lg-12",
                       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                         className: "form-group",
-                        children: "View :"
+                        children: "Validators:"
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-12",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                        className: "form-control",
+                        onChange: function onChange(e) {
+                          return setIdValidator(e.target.value);
+                        },
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                          value: "0",
+                          children: "All"
+                        }), optionValidator]
+                      })
+                    })]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-2",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "row",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-12",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "form-group",
+                        children: "Start date:"
                       })
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "col-lg-12",
                       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
                         type: "date",
                         className: "form-control",
-                        value: filterDate,
+                        value: dateStart,
                         onChange: function onChange(e) {
-                          return setFilterDate(e.target.value);
+                          return setDateStart(e.target.value);
+                        }
+                      })
+                    })]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-2",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "row",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-12",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "form-group",
+                        children: "End date :"
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-12",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
+                        className: "form-control",
+                        value: dateEnd,
+                        onChange: function onChange(e) {
+                          return setDateEnd(e.target.value);
                         }
                       })
                     })]
@@ -18640,9 +18726,9 @@ function ReportDelivery() {
         style: {
           width: '100px'
         },
-        children: [packageDispatch.created_at.substring(5, 7), "-", packageDispatch.created_at.substring(8, 10), "-", packageDispatch.created_at.substring(0, 4)]
+        children: [packageDispatch.updated_at.substring(5, 7), "-", packageDispatch.updated_at.substring(8, 10), "-", packageDispatch.updated_at.substring(0, 4)]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDispatch.created_at.substring(11, 19)
+        children: packageDispatch.updated_at.substring(11, 19)
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: packageDispatch.recipientNotes
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {

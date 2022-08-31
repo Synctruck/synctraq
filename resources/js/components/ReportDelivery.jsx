@@ -242,10 +242,10 @@ function ReportDelivery() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
+                    { packageDispatch.updated_at.substring(5, 7) }-{ packageDispatch.updated_at.substring(8, 10) }-{ packageDispatch.updated_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.created_at.substring(11, 19) }
+                    { packageDispatch.updated_at.substring(11, 19) }
                 </td>
                 <td>{ packageDispatch.recipientNotes }</td>
                 <td>{ packageDispatch.workerName }</td>

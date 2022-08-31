@@ -49,7 +49,7 @@ class PackageInboundController extends Controller
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
 
-            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
+        $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($route != 'all')
         {
