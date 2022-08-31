@@ -25,3 +25,6 @@ Route::post('packages', [PackageController::class, 'Insert']);
 
 Route::get('packages-webhook', [WHookController::class, 'Index']);
 Route::post('packages-webhook', [WHookController::class, 'UpdateStatusOnfleet']);
+
+Route::post('packages-webhook-taskFailed', [WHookController::class, 'EndPointTaskFailed']);
+Route::post('packages-webhook-taskFailed', [WHookController::class, 'TaskFailed']);

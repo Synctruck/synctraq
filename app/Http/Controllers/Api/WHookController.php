@@ -130,4 +130,16 @@ class WHookController extends Controller
 
         }
     }
+
+    public function EndPointTaskFailed(Request $request)
+    {
+        dd($request);
+        return response($request->check, 200)
+            ->header('Content-Type', 'text/plain');
+    }
+
+    public function TaskFailed(Request $request)
+    {
+        Log::info($request->all());
+    }
 }
