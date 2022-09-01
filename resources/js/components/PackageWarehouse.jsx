@@ -10,11 +10,11 @@ function PackageWarehouse() {
     const [listPackageInbound, setListPackageInbound] = useState([]);
     const [listPackageTotal, setListPackageTotal]     = useState([]);
     const [listState , setListState]                  = useState([]);
-    const [listCompany , setListCompany]                = useState([]);
+    const [listValidator , setListValidator]          = useState([]);
 
     const [listRoute, setListRoute]     = useState([]);
 
-    const [quantityInbound, setQuantityInbound] = useState(0);
+    const [quantityWarehouse, setQuantityWarehouse] = useState(0);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [Truck, setTruck]                      = useState('');
@@ -24,6 +24,10 @@ function PackageWarehouse() {
     const [textMessage2, setTextMessage2]       = useState('');
     const [textMessageDate, setTextMessageDate] = useState('');
     const [typeMessage, setTypeMessage]         = useState('');
+
+    const [idValidator, setIdValidator] = useState(0);
+    const [dateStart, setDateStart]     = useState(auxDateInit);
+    const [dateEnd, setDateEnd]         = useState(auxDateInit);
 
     const [listInbound, setListInbound] = useState([]);
 
@@ -55,16 +59,16 @@ function PackageWarehouse() {
     useEffect(() => {
 
         listAllRoute();
-        listAllCompany();
+        listAllValidator();
         document.getElementById('Reference_Number_1').focus();
 
     }, []);
 
     useEffect(() => {
 
-        listAllPackage(page, filterDate, RouteSearch, StateSearch);
+        listAllPackageWarehouse(page, RouteSearch, StateSearch);
 
-    }, [filterDate]);
+    }, [ idValidator, dateStart, dateEnd ]);
 
     useEffect(() => {
 
@@ -83,9 +87,9 @@ function PackageWarehouse() {
 
     }, [file]);
 
-    const listAllPackage = (pageNumber, filterDate, route, state) => {
+    const listAllPackageWarehouse = (pageNumber, route, state) => {
 
-        fetch(url_general +'package-warehouse/list/'+ filterDate +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-warehouse/list/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -93,7 +97,7 @@ function PackageWarehouse() {
             setTotalPackage(response.packageList.total);
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
-            setQuantityInbound(response.quantityInbound);
+            setQuantityWarehouse(response.quantityWarehouse);
             setListState(response.listState);
 
             if(listState.length == 0)
@@ -105,7 +109,7 @@ function PackageWarehouse() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackage(pageNumber, filterDate, RouteSearch, StateSearch);
+        listAllPackageWarehouse(pageNumber, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -121,15 +125,16 @@ function PackageWarehouse() {
         });
     }
 
-    const listAllCompany = () => {
+    const listAllValidator = () => {
 
-        setListCompany([]);
+        setListValidator([]);
 
-        fetch(url_general +'company/getAll')
+        fetch(url_general +'validator/getAll')
         .then(res => res.json())
         .then((response) => {
 
-            setListCompany(response.companyList);
+            console.log(response);
+            setListValidator(response.validatorList);
         });
     }
 
@@ -234,7 +239,7 @@ function PackageWarehouse() {
                         icon: "success",
                     });
 
-                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackageWarehouse(1, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -453,10 +458,10 @@ function PackageWarehouse() {
 
                         setTextMessage("WAREHOUSE UPDATE TODAY:  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
                         setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
+                        setTypeMessage('success');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
+                        document.getElementById('soundPitidoSuccess').play();
                     }
                     else if(response.stateAction)
                     {
@@ -468,7 +473,7 @@ function PackageWarehouse() {
                         document.getElementById('soundPitidoSuccess').play();
                     }
 
-                    listAllPackage(1, filterDate, RouteSearch, StateSearch);
+                    listAllPackageWarehouse(1, RouteSearch, StateSearch);
 
                     setReadInput(false);
                     setSendWarehouse(1);
@@ -506,7 +511,7 @@ function PackageWarehouse() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackage(page, filterDate, RouteSearch, StateSearch);
+                    listAllPackageWarehouse(page, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -553,7 +558,18 @@ function PackageWarehouse() {
                 </td>
             </tr>
         );
-    });
+    }); 
+
+    const exportAllPackageWarehouse = (route, state) => {
+
+        location.href = url_general +'package-warehouse/export/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+    }
+
+    const handlerExport = () => {
+
+        console.log('export!!');
+        exportAllPackageWarehouse(RouteSearch, StateSearch);
+    }
 
     const handlerChangeRoute = (routes) => {
 
@@ -568,13 +584,13 @@ function PackageWarehouse() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackage(page, filterDate, routesSearch, StateSearch);
+            listAllPackageWarehouse(page, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackage(page, filterDate, 'all', StateSearch);
+            listAllPackageWarehouse(page, 'all', StateSearch);
         }
     };
 
@@ -605,13 +621,13 @@ function PackageWarehouse() {
 
             setStateSearch(statesSearch);
 
-            listAllPackage(page, filterDate, RouteSearch, statesSearch);
+            listAllPackageWarehouse(page, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackage(page, filterDate, RouteSearch, 'all');
+            listAllPackageWarehouse(page, RouteSearch, 'all');
         }
     };
 
@@ -629,9 +645,9 @@ function PackageWarehouse() {
         });
     }
 
-    const optionCompany = listCompany.map( (company, i) => {
+    const optionValidator = listValidator.map( (validator, i) => {
 
-        return <option value={company.name}>{company.name}</option>
+        return <option value={ validator.id }>{ validator.name +' '+ validator.nameOfOwner }</option>
     })
 
     const onBtnClickFile = () => {
@@ -677,6 +693,13 @@ function PackageWarehouse() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
+                                    <div className="col-12 mb-4">
+                                        <div className="row">
+                                            <div className="col-2">
+                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="col-lg-12 form-group text-center">
                                         {
                                             typeMessage == 'success'
@@ -747,20 +770,47 @@ function PackageWarehouse() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-2">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Warehouse: { totalPackage }</b>
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Total: { totalPackage }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    View :
+                                                    Validators:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ filterDate } onChange={ (e) => setFilterDate(e.target.value) }/>
+                                                <select className="form-control" onChange={ (e) => setIdValidator(e.target.value) }>
+                                                    <option value="0">All</option>
+                                                    { optionValidator }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Start date:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    End date :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>

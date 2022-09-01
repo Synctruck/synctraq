@@ -98,6 +98,7 @@ function PackageInbound() {
             }
         });
     }
+    
     const exportAllPackageInbound = (route, state) => {
 
         location.href = url_general +'package-inbound/export/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
@@ -108,6 +109,7 @@ function PackageInbound() {
         exportAllPackageInbound(RouteSearch, StateSearch);
 
     }
+
     const handlerChangePage = (pageNumber) => {
 
         listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
@@ -749,7 +751,7 @@ function PackageInbound() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                     <div className="col-12 mb-4">
+                                    <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
                                                 <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>

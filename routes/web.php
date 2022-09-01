@@ -114,8 +114,9 @@ Route::group(['middleware' => 'login'], function() {
 
 	//============ Validation warehouse
 	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index']);
-	Route::get('/package-warehouse/list/{dataView}/{route}/{state}', [PackageWarehouseController::class, 'List']);
+	Route::get('/package-warehouse/list/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'List']);
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
+	Route::get('/package-warehouse/export/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
@@ -193,6 +194,7 @@ Route::group(['middleware' => 'login'], function() {
 	//============ Maintenance of validator
 	Route::get('validator', [ValidatorController::class, 'Index']);
 	Route::get('validator/list', [ValidatorController::class, 'List']);
+	Route::get('validator/getAll', [ValidatorController::class, 'GetAll']);
 	Route::post('validator/insert', [ValidatorController::class, 'Insert']);
 	Route::get('validator/get/{id}', [ValidatorController::class, 'Get']);
 	Route::post('validator/update/{id}', [ValidatorController::class, 'Update']);

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageReturn, PackageWarehouse, User};
+use App\Models\{Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -39,19 +39,30 @@ class PackageWarehouseController extends Controller
         return view('package.warehouse');
     }
 
-    public function List(Request $request, $filterDate, $route, $state)
+    public function List($idValidator, $dateStart,$dateEnd, $route, $state)
     {
-        $routes = explode(',', $route);
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route); 
         $states = explode(',', $state);
 
         if(Session::get('user')->role->name == 'Administrador')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }
-            $date = explode("-",$filterDate);
-            $packageListWarehouse = $packageListWarehouse->whereMonth('created_at', $date[1])
-                                    ->whereYear('created_at', $date[0])
-                                    ->whereDay('created_at', $date[2]);
+        else
+        {
+            $packageListWarehouse = PackageWarehouse::with('user')
+                                                    ->where('idUser', Session::get('user')->id);
+        }
+
+        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idValidator)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
+        }
 
         if($route != 'all')
         {
@@ -64,13 +75,88 @@ class PackageWarehouseController extends Controller
         }
 
         $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->paginate(50);
-        $quantityInbound      = $packageListWarehouse->total();
+        $quantityWarehouse      = $packageListWarehouse->total();
 
         $listState  = PackageWarehouse::select('Dropoff_Province')
                                             ->groupBy('Dropoff_Province')
                                             ->get();
 
-        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityWarehouse' => $quantityWarehouse];
+    }
+
+    public function Export($idValidator, $dateStart,$dateEnd, $route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        if(Session::get('user')->role->name == 'Validador')
+        {
+            $packageListWarehouse = PackageWarehouse::with('user')->where('idUser', Session::get('user')->id);
+        }
+        else if(Session::get('user')->role->name == 'Administrador')
+        {
+            $packageListWarehouse = PackageWarehouse::with('user');
+        }
+
+        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idValidator)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
+        }
+        
+        if($route != 'all')
+        {
+            $packageListWarehouse = $packageListWarehouse->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->get();
+
+        foreach($packageListWarehouse as $packageWarehouse)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageWarehouse->created_at)),
+                                date('H:i:s', strtotime($packageWarehouse->created_at)),
+                                $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
+                                $packageWarehouse->Reference_Number_1,
+                                $packageWarehouse->Dropoff_Contact_Name,
+                                $packageWarehouse->Dropoff_Contact_Phone_Number,
+                                $packageWarehouse->Dropoff_Address_Line_1,
+                                $packageWarehouse->Dropoff_City,
+                                $packageWarehouse->Dropoff_Province,
+                                $packageWarehouse->Dropoff_Postal_Code,
+                                $packageWarehouse->Weight,
+                                $packageWarehouse->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 
     public function Insert(Request $request)
@@ -92,22 +178,133 @@ class PackageWarehouseController extends Controller
             return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse];
         }
 
+        $packageInbound  = null;
         $packageDispatch = null;
 
-        $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
+        $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
+
+        if($packageManifest == null)
+        {
+            $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
+        }
 
         if($packageInbound == null)
         {
             $packageDispatch = PackageDispatch::find($request->get('Reference_Number_1'));
         }
 
-        if($packageInbound || $packageDispatch)
+        if($packageManifest || $packageInbound || $packageDispatch)
         {
             try
             {
                 DB::beginTransaction();
 
-                $package = $packageInbound ? $packageInbound : $packageDispatch;
+                if($packageManifest)
+                {
+                    $package = $packageManifest;
+                }
+                elseif($packageInbound)
+                {
+                    $package = $packageInbound;
+                }
+                elseif($packageDispatch)
+                {
+                    $package = $packageDispatch;
+                }
+                
+                if($packageManifest)
+                {
+                    $packageInbound = new PackageInbound();
+
+                    $packageInbound->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageInbound->Reference_Number_2           = $package->Reference_Number_2;
+                    $packageInbound->Reference_Number_3           = $package->Reference_Number_3;
+                    $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
+                    $packageInbound->CLIENT                       = $package->company;
+                    $packageInbound->Ready_At                     = $package->Ready_At;
+                    $packageInbound->Del_Date                     = $package->Del_Date;
+                    $packageInbound->Del_no_earlier_than          = $package->Del_no_earlier_than;
+                    $packageInbound->Del_no_later_than            = $package->Del_no_later_than;
+                    $packageInbound->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
+                    $packageInbound->Pickup_Company               = $package->Pickup_Company;
+                    $packageInbound->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
+                    $packageInbound->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
+                    $packageInbound->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
+                    $packageInbound->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
+                    $packageInbound->Pickup_City                  = $package->Pickup_City;
+                    $packageInbound->Pickup_Province              = $package->Pickup_Province;
+                    $packageInbound->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
+                    $packageInbound->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageInbound->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageInbound->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageInbound->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageInbound->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageInbound->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageInbound->Dropoff_City                 = $package->Dropoff_City;
+                    $packageInbound->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageInbound->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageInbound->Service_Level                = $package->Service_Level;
+                    $packageInbound->Carrier_Name                 = $package->Carrier_Name;
+                    $packageInbound->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
+                    $packageInbound->Notes                        = $package->Notes;
+                    $packageInbound->Number_Of_Pieces             = $package->Number_Of_Pieces;
+                    $packageInbound->Weight                       = $package->Weight;
+                    $packageInbound->Route                        = $package->Route;
+                    $packageInbound->Name                         = $package->Name;
+                    $packageInbound->idUser                       = Session::get('user')->id;
+                    $packageInbound->status                       = 'Inbound';
+
+                    $packageInbound->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
+                    $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
+                    $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
+                    $packageHistory->CLIENT                       = $request->get('CLIENT') ? $request->get('CLIENT') : '';
+                    $packageHistory->Ready_At                     = $package->Ready_At;
+                    $packageHistory->Del_Date                     = $package->Del_Date;
+                    $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
+                    $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
+                    $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
+                    $packageHistory->Pickup_Company               = $package->Pickup_Company;
+                    $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
+                    $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
+                    $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
+                    $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
+                    $packageHistory->Pickup_City                  = $package->Pickup_City;
+                    $packageHistory->Pickup_Province              = $package->Pickup_Province;
+                    $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
+                    $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageHistory->Service_Level                = $package->Service_Level;
+                    $packageHistory->Carrier_Name                 = $package->Carrier_Name;
+                    $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
+                    $packageHistory->Notes                        = $package->Notes;
+                    $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
+                    $packageHistory->Weight                       = $package->Weight;
+                    $packageHistory->Route                        = $package->Route;
+                    $packageHistory->Name                         = $package->Name;
+                    $packageHistory->idUser                       = Session::get('user')->id;
+                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                    $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->inbound                      = 1;
+                    $packageHistory->status                       = 'Inbound';
+
+                    $packageHistory->save();
+
+                    $packageManifest->delete();
+                }
 
                 if($packageDispatch)
                 {

@@ -565,6 +565,7 @@
 
                 packageHistoryList.forEach( package =>  {
 
+                    let Description        = '';
                     let Description_Return = '';
                     
                     if(package.Description_Return != '')
@@ -572,12 +573,19 @@
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>'; 
                     }
 
-
+                    if(package.status == 'Failed')
+                    {
+                        Description = package.Description_Onfleet;
+                    }
+                    else
+                    {
+                        Description = package.Description;
+                    }
 
                     tr =    '<tr>'+ 
                                 '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
                                 '<td>'+ package.status +'</td>'+
-                                '<td>'+ package.Description + Description_Return +'</td>'+
+                                '<td>'+ Description + Description_Return +'</td>'+
                             '</tr>';
 
 

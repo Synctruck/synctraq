@@ -52,6 +52,16 @@ class ValidatorController extends Controller
             ]);
     }
 
+    public function GetAll(Request $request)
+    {
+        $validatorList = User::with('role')
+                                ->where('idRole', 2)
+                                ->orWhere('idRole', 1)
+                                ->get();
+
+        return ['validatorList' => $validatorList];
+    }
+
     public function Insert(Request $request)
     {
         $validator = Validator::make($request->all(),
