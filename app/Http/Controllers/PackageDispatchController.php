@@ -16,6 +16,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Log;
 use Session;
 
 class PackageDispatchController extends Controller
@@ -725,9 +726,16 @@ class PackageDispatchController extends Controller
             {
                 if($lineNumber > 1)
                 {
-                    $row = str_getcsv($raw_string);
+                    $row = str_getcsv($raw_string); 
 
-                    $package         = packageInbound::find($row[0]);
+                    $package = PackageInbound::find($row[0]);
+
+                    if($package == null)
+                    {
+                        $package = PackageWarehouse::find($row[0]);
+                    }
+
+                    Log::info($package->Reference_Number_1);
                     $packageDispatch = PackageDispatch::find($row[0]);
 
                     if($package && $packageDispatch == null)
@@ -804,8 +812,6 @@ class PackageDispatchController extends Controller
                             $packageDispatch->status                       = 'Dispatch';
 
                             $packageDispatch->save();
-
-                            $package->delete();
 
                             $packageHistory = new PackageHistory();
 
