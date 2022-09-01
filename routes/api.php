@@ -28,3 +28,6 @@ Route::post('packages-webhook', [WHookController::class, 'UpdateStatusOnfleet'])
 
 Route::get('packages-webhook-taskFailed', [WHookController::class, 'EndPointTaskFailed']);
 Route::post('packages-webhook-taskFailed', [WHookController::class, 'TaskFailed']);
+
+Route::get('packages-webhook-taskCreated', [WHookController::class, 'EndPointTaskCreated']);
+Route::post('packages-webhook-taskCreated', [WHookController::class, 'TaskCreated']);
