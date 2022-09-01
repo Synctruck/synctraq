@@ -763,18 +763,18 @@ var react__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CacheProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.C),
+/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
+/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "ThemeContext": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.T),
 /* harmony export */   "ThemeProvider": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.b),
 /* harmony export */   "__unsafe_useEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__._),
-/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
-/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
-/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d),
-/* harmony export */   "ClassNames": () => (/* binding */ ClassNames),
-/* harmony export */   "Global": () => (/* binding */ Global),
 /* harmony export */   "createElement": () => (/* binding */ jsx),
 /* harmony export */   "css": () => (/* binding */ css),
 /* harmony export */   "jsx": () => (/* binding */ jsx),
-/* harmony export */   "keyframes": () => (/* binding */ keyframes)
+/* harmony export */   "keyframes": () => (/* binding */ keyframes),
+/* harmony export */   "useTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.a),
+/* harmony export */   "withEmotionCache": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.w),
+/* harmony export */   "withTheme": () => (/* reexport safe */ _emotion_element_cbed451f_browser_esm_js__WEBPACK_IMPORTED_MODULE_2__.d)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @emotion/cache */ "./node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js");
@@ -7401,6 +7401,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -7422,6 +7430,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 function Dashboard() {
+  // const [quantityManifest, setQuantityManifest]   = useState(0);
+  // const [quantityInbound, setQuantityInbound]     = useState(0);
+  // const [quantityNotExists, setQuantityNotExists] = useState(0);
+  // const [quantityDispatch, setQuantityDispatch]   = useState(0);
+  // const [quantityReturn, setQuantityReturn]       = useState(0);
+  // const [quantityDelivery, setQuantityDelivery]   = useState(0);
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState2 = _slicedToArray(_useState, 2),
       quantityManifest = _useState2[0],
@@ -7434,466 +7448,445 @@ function Dashboard() {
 
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState6 = _slicedToArray(_useState5, 2),
-      quantityNotExists = _useState6[0],
-      setQuantityNotExists = _useState6[1];
+      quantityDispatch = _useState6[0],
+      setQuantityDispatch = _useState6[1];
 
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState8 = _slicedToArray(_useState7, 2),
-      quantityDispatch = _useState8[0],
-      setQuantityDispatch = _useState8[1];
+      quantityDelivery = _useState8[0],
+      setQuantityDelivery = _useState8[1];
 
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState10 = _slicedToArray(_useState9, 2),
-      quantityReturn = _useState10[0],
-      setQuantityReturn = _useState10[1];
+      quantityWarehouse = _useState10[0],
+      setQuantityWarehouse = _useState10[1];
 
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState12 = _slicedToArray(_useState11, 2),
-      quantityDelivery = _useState12[0],
-      setQuantityDelivery = _useState12[1];
+      listQuantityRoute = _useState12[0],
+      setListQuantityRoute = _useState12[1];
 
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState14 = _slicedToArray(_useState13, 2),
-      quantityManifestToday = _useState14[0],
-      setQuantityManifestToday = _useState14[1];
+      listDataPie = _useState14[0],
+      setListDataPie = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
       _useState16 = _slicedToArray(_useState15, 2),
-      quantityInboundToday = _useState16[0],
-      setQuantityInboundToday = _useState16[1];
+      textLoading = _useState16[0],
+      setTextLoading = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
       _useState18 = _slicedToArray(_useState17, 2),
-      quantityNotExistsToday = _useState18[0],
-      setQuantityNotExistsToday = _useState18[1];
+      loading = _useState18[0],
+      setLoading = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
       _useState20 = _slicedToArray(_useState19, 2),
-      quantityDispatchToday = _useState20[0],
-      setQuantityDispatchToday = _useState20[1];
+      dateStart = _useState20[0],
+      setDateStart = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
       _useState22 = _slicedToArray(_useState21, 2),
-      quantityReturnToday = _useState22[0],
-      setQuantityReturnToday = _useState22[1];
+      dateEnd = _useState22[0],
+      setDateEnd = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
       _useState24 = _slicedToArray(_useState23, 2),
-      quantityDeliveryToday = _useState24[0],
-      setQuantityDeliveryToday = _useState24[1];
+      card = _useState24[0],
+      setCart = _useState24[1];
 
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-      _useState26 = _slicedToArray(_useState25, 2),
-      listQuantityRoute = _useState26[0],
-      setListQuantityRoute = _useState26[1];
-
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
-      _useState28 = _slicedToArray(_useState27, 2),
-      textLoading = _useState28[0],
-      setTextLoading = _useState28[1];
-
-  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
-      _useState30 = _slicedToArray(_useState29, 2),
-      loading = _useState30[0],
-      setLoading = _useState30[1];
-
-  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
-      _useState32 = _slicedToArray(_useState31, 2),
-      card = _useState32[0],
-      setCart = _useState32[1];
-
+  var chartBar;
+  var chartPie;
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     getAllQuantityStatusPackage();
-  }, []);
+    return function () {};
+  }, [dateStart, dateEnd]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    initPieChart();
+    initBarChart();
+    return function () {
+      chartBar.destroy();
+      chartPie.destroy();
+    };
+  }, [listDataPie]);
 
-  var getAllQuantityStatusPackage = function getAllQuantityStatusPackage() {
-    setLoading('block');
-    setCart('none');
-    fetch(url_general + 'dashboard/getallquantity').then(function (res) {
-      return res.json();
-    }).then(function (response) {
-      setQuantityManifest(response.quantityManifest);
-      setQuantityInbound(response.quantityInbound);
-      setQuantityNotExists(response.quantityNotExists);
-      setQuantityDispatch(response.quantityDispatch);
-      setQuantityReturn(response.quantityReturn);
-      setQuantityDelivery(response.quantityDelivery);
-      setQuantityManifestToday(response.quantityManifestToday);
-      setQuantityInboundToday(response.quantityInboundToday);
-      setQuantityNotExistsToday(response.quantityNotExistsToday);
-      setQuantityDispatchToday(response.quantityDispatchToday);
-      setQuantityReturnToday(response.quantityReturnToday);
-      setQuantityDeliveryToday(response.quantityDeliveryToday);
-      GraficMovementsToday(response.quantityManifestToday, response.quantityInboundToday, response.quantityNotExistsToday, response.quantityDispatchToday, response.quantityReturnToday, response.quantityDeliveryToday);
-      GraficMovementsOfTheWeek();
-      setLoading('none');
-      setCart('block');
-    });
-  };
+  var getAllQuantityStatusPackage = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              setLoading('block');
+              setCart('none');
+              _context.next = 4;
+              return fetch("".concat(url_general, "dashboard/getallquantity/").concat(dateStart, "/").concat(dateEnd)).then(function (res) {
+                return res.json();
+              }).then(function (response) {
+                setQuantityManifest(response.quantityManifest);
+                setQuantityInbound(response.quantityInbound);
+                setQuantityDispatch(response.quantityDispatch);
+                setQuantityDelivery(response.quantityDelivery);
+                setQuantityWarehouse(response.quantityWarehouse);
+                setListDataPie([]);
+                var dataPie = [];
+                dataPie.push(response.quantityManifest);
+                dataPie.push(response.quantityInbound);
+                dataPie.push(response.quantityDispatch);
+                dataPie.push(response.quantityDelivery);
+                dataPie.push(response.quantityWarehouse);
+                setListDataPie(dataPie);
+                console.log(listDataPie);
+                setLoading('none');
+                setCart('block');
+              });
 
-  var GraficMovementsToday = function GraficMovementsToday(quantityManifestToday, quantityInboundToday, quantityNotExistsToday, quantityDispatchToday, quantityReturnToday, quantityDeliveryToday) {
-    Highcharts.chart('graficMovementsToday', {
-      chart: {
-        type: 'column'
-      },
-      title: {
-        align: 'left',
-        text: 'Movements of the day 23/05/2022'
-      },
-      accessibility: {
-        announceNewData: {
-          enabled: true
+            case 4:
+            case "end":
+              return _context.stop();
+          }
         }
-      },
-      xAxis: {
-        type: 'category'
-      },
-      yAxis: {
-        title: {
-          text: ''
-        }
-      },
+      }, _callee);
+    }));
+
+    return function getAllQuantityStatusPackage() {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  function initPieChart() {
+    //-------------
+    //- PIE CHART -
+    //-------------
+    var pieOptions = {
+      responsive: true,
+      segmentShowStroke: true,
+      segmentStrokeColor: '#fff',
+      segmentStrokeWidth: 1,
+      animationSteps: 100,
+      animationEasing: 'easeOutBounce',
+      animateRotate: true,
+      animateScale: true,
+      maintainAspectRatio: true,
       legend: {
-        enabled: false
-      },
-      plotOptions: {
-        series: {
-          borderWidth: 0,
-          dataLabels: {
-            enabled: true,
-            format: '{point.y:.1f}'
-          }
-        }
-      },
-      tooltip: {
-        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f} </b> of total<br/>'
-      },
-      series: [{
-        name: "Browsers",
-        colorByPoint: true,
-        data: [{
-          name: "Manifest",
-          y: quantityManifestToday,
-          drilldown: "Manifest"
-        }, {
-          name: "Inbound",
-          y: quantityInboundToday,
-          drilldown: "Inbound"
-        }, {
-          name: "Not Exists",
-          y: quantityNotExistsToday,
-          drilldown: "Not Exists"
-        }, {
-          name: "Dispatch",
-          y: quantityDispatchToday,
-          drilldown: "Dispatch"
-        }, {
-          name: "Returns",
-          y: quantityReturnToday,
-          drilldown: "Returns"
-        }, {
-          name: "Delivery",
-          y: quantityDeliveryToday,
-          drilldown: "Delivery"
-        }]
-      }],
-      drilldown: {
-        breadcrumbs: {
-          position: {
-            align: 'right'
-          }
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 15,
+          defaultFontColor: '#343a40',
+          defaultFontSize: 11
         }
       }
+    };
+    var ctx = document.getElementById("pieChart");
+    chartPie = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: listDataPie,
+          backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#00c0ef', '#f56954']
+        }],
+        labels: ['Manifest', 'Inbound', 'Dispatch', 'Delivery', 'Warehouse']
+      },
+      options: pieOptions
     });
-  };
+  }
 
-  var GraficMovementsOfTheWeek = function GraficMovementsOfTheWeek() {
-    Highcharts.chart('graficMovementsOfTheWeek', {
-      chart: {
-        type: 'areaspline'
-      },
-      title: {
-        text: 'Movements of the week (23/05/2022 - 29/05/2022)'
-      },
-      legend: {
-        layout: 'vertical',
-        align: 'left',
-        verticalAlign: 'top',
-        x: 150,
-        y: 100,
-        floating: true,
-        borderWidth: 1,
-        backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF'
-      },
-      xAxis: {
-        categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        plotBands: [{
-          // visualize the weekend
-          from: 4.5,
-          to: 6.5,
-          color: 'rgba(68, 170, 213, .2)'
-        }]
-      },
-      yAxis: {
-        title: {
-          text: 'Fruit units'
-        }
-      },
-      tooltip: {
-        shared: true,
-        valueSuffix: ' units'
-      },
-      credits: {
-        enabled: false
-      },
-      plotOptions: {
-        areaspline: {
-          fillOpacity: 0.5
-        }
-      },
-      series: [{
-        name: 'Manifest',
-        data: [3, 4, 3, 5, 4, 10, 12]
+  function initBarChart() {
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var areaChartData = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [{
+        label: 'Electronics',
+        backgroundColor: '#f56954',
+        data: [65, 59, 80, 81, 56, 55, 40]
       }, {
-        name: 'Inbound',
-        data: [1, 3, 4, 3, 3, 5, 4]
+        label: 'Fashion',
+        backgroundColor: '#00a65a',
+        data: [28, 48, 40, 19, 86, 27, 90]
+      }, {
+        label: 'Foods',
+        backgroundColor: '#00c0ef',
+        data: [70, 60, 65, 50, 60, 70, 80]
+      }, {
+        label: 'Foods',
+        backgroundColor: '#8E44AD',
+        data: [70, 60, 65, 50, 60, 70, 80]
       }]
+    };
+    var barChartOptions = {
+      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+      scaleBeginAtZero: true,
+      //Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines: true,
+      //String - Colour of the grid lines
+      scaleGridLineColor: 'rgba(0,0,0,.05)',
+      //Number - Width of the grid lines
+      scaleGridLineWidth: 1,
+      //Boolean - Whether to show horizontal lines (except X axis)
+      scaleShowHorizontalLines: true,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines: true,
+      //Boolean - If there is a stroke on each bar
+      barShowStroke: true,
+      //Number - Pixel width of the bar stroke
+      barStrokeWidth: 2,
+      //Number - Spacing between each of the X value sets
+      barValueSpacing: 5,
+      //Number - Spacing between data sets within X values
+      barDatasetSpacing: 1,
+      //String - A legend template
+      responsive: true,
+      maintainAspectRatio: true,
+      indexAxis: 'y',
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 15,
+          defaultFontColor: '#343a40',
+          defaultFontSize: 11
+        }
+      }
+    };
+    var ctxBar = document.getElementById("barChart");
+    chartBar = new Chart(ctxBar, {
+      type: 'bar',
+      data: areaChartData,
+      options: barChartOptions
     });
-  };
+  }
 
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("section", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("section", {
     className: "section",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
       className: "row",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
         className: "col-lg-12",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
           className: "card",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "card-body",
-            style: {
-              display: loading
-            },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-              "class": "col-lg-12 text-center form-group",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                "class": "card-title",
-                children: textLoading
-              })
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-            className: "card-body",
-            style: {
-              display: card
-            },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-              className: "row form-group table-responsive",
+              className: "row mb-4",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-primary d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bxs-box",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Manifest"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityManifest
-                        })]
-                      })]
+                className: "col-lg-2",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "row",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: "Start date:"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                      type: "date",
+                      className: "form-control",
+                      value: dateStart,
+                      onChange: function onChange(e) {
+                        return setDateStart(e.target.value);
+                      }
                     })
-                  })
+                  })]
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-barcode-reader",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Inbound"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityInbound
-                        })]
-                      })]
+                className: "col-lg-2",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "row",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: "End date :"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "col-lg-12",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                      type: "date",
+                      className: "form-control",
+                      value: dateEnd,
+                      onChange: function onChange(e) {
+                        return setDateEnd(e.target.value);
+                      }
                     })
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-barcode-reader",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Not Exists"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityNotExists
-                        })]
-                      })]
-                    })
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-warning d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Dispatch"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityDispatch
-                        })]
-                      })]
-                    })
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Returns"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityReturn
-                        })]
-                      })]
-                    })
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-3 text-center form-group",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "cardDashboard",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                    "class": "card-body",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                      className: "row",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                        className: "col-lg-4",
-                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                          "class": "card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center",
-                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
-                            "class": "bx bx-car",
-                            style: {
-                              fontSize: '30px'
-                            }
-                          })
-                        })
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                        className: "col-lg-8",
-                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
-                          "class": "card-title",
-                          children: "Delivery"
-                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-                          children: quantityDelivery
-                        })]
-                      })]
-                    })
-                  })
+                  })]
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("hr", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "row justify-content-center",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-primary mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-primary text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bx-box",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Manifest"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityManifest
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-primary text-white",
+                    href: "/package-manifest",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-success mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-success text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bx-barcode-reader",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Inbound "]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityInbound
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-success text-white",
+                    href: "/package-inbound",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-warning mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-warning text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bx-car",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Dispatch"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityDispatch
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-warning text-white",
+                    href: "/package-dispatch",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-info mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-info text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bx-car",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Delivery"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityDelivery
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-info text-white",
+                    href: "#",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-danger mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-danger text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bx-box",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Warehouse"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityWarehouse
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-danger text-white",
+                    href: "/package-warehouse",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "row form-group",
               style: {
                 display: 'none'
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["FEDEX  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7901,18 +7894,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["UPS   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7920,18 +7913,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["DHL   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7939,18 +7932,18 @@ function Dashboard() {
                   })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                "class": "col-lg-2 text-center",
+                className: "col-lg-2 text-center",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  "class": "card info-card sales-card alert-danger",
+                  className: "card info-card sales-card alert-danger",
                   style: {
                     background: 'white',
                     borderRadius: '0.5rem',
                     boxShadow: '0 0.1rem 0.25rem rgb(0 0 0 / 5%)'
                   },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    "class": "card-body",
+                    className: "card-body",
                     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      "class": "card-title",
+                      className: "card-title",
                       children: ["USPS  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                       className: "row"
@@ -7958,23 +7951,31 @@ function Dashboard() {
                   })
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-              className: "row form-group",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                id: "graficMovementsToday",
-                className: "col-lg-6"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                id: "graficMovementsOfTheWeek",
-                className: "col-lg-6",
-                style: {
-                  display: 'none'
-                }
-              })]
             })]
-          })]
+          })
         })
       })
-    })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "row justify-content-center",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Reports ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Pie"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChart"
+            })]
+          })
+        })
+      })
+    })]
   });
 }
 
@@ -46687,12 +46688,16 @@ class Log {
     /**
      * Determine if the given message was logged.
      *
-     * @param  {string} message
+     * @param  {string|string[]} messages
      */
-    static received(message) {
-        let result = Log.fakedLogs.some(log => log.includes(message));
+    static received(messages) {
+        messages = Array.isArray(messages) ? messages : [messages];
 
-        Log.restore();
+        let result = messages.every(message =>
+            this.fakedLogs.some(log => log.includes(message))
+        );
+
+        this.restore();
 
         return result;
     }
@@ -101114,13 +101119,13 @@ var defaultComponents = function defaultComponents(props) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u),
+/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider),
+/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
 /* harmony export */   "createFilter": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.c),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "defaultTheme": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.d),
 /* harmony export */   "mergeStyles": () => (/* reexport safe */ _Select_8612393a_esm_js__WEBPACK_IMPORTED_MODULE_3__.m),
-/* harmony export */   "components": () => (/* reexport safe */ _index_d8fed9ee_esm_js__WEBPACK_IMPORTED_MODULE_7__.c),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   "NonceProvider": () => (/* binding */ NonceProvider)
+/* harmony export */   "useStateManager": () => (/* reexport safe */ _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__.u)
 /* harmony export */ });
 /* harmony import */ var _useStateManager_18181353_esm_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./useStateManager-18181353.esm.js */ "./node_modules/react-select/dist/useStateManager-18181353.esm.js");
 /* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
@@ -106489,24 +106494,24 @@ function _unsupportedIterableToArray(o, minLen) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MS": () => (/* binding */ MS),
-/* harmony export */   "MOZ": () => (/* binding */ MOZ),
-/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT),
-/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
-/* harmony export */   "RULESET": () => (/* binding */ RULESET),
-/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
-/* harmony export */   "PAGE": () => (/* binding */ PAGE),
-/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
-/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
 /* harmony export */   "CHARSET": () => (/* binding */ CHARSET),
-/* harmony export */   "VIEWPORT": () => (/* binding */ VIEWPORT),
-/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
-/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
-/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
-/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
-/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
+/* harmony export */   "COMMENT": () => (/* binding */ COMMENT),
 /* harmony export */   "COUNTER_STYLE": () => (/* binding */ COUNTER_STYLE),
-/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES)
+/* harmony export */   "DECLARATION": () => (/* binding */ DECLARATION),
+/* harmony export */   "DOCUMENT": () => (/* binding */ DOCUMENT),
+/* harmony export */   "FONT_FACE": () => (/* binding */ FONT_FACE),
+/* harmony export */   "FONT_FEATURE_VALUES": () => (/* binding */ FONT_FEATURE_VALUES),
+/* harmony export */   "IMPORT": () => (/* binding */ IMPORT),
+/* harmony export */   "KEYFRAMES": () => (/* binding */ KEYFRAMES),
+/* harmony export */   "MEDIA": () => (/* binding */ MEDIA),
+/* harmony export */   "MOZ": () => (/* binding */ MOZ),
+/* harmony export */   "MS": () => (/* binding */ MS),
+/* harmony export */   "NAMESPACE": () => (/* binding */ NAMESPACE),
+/* harmony export */   "PAGE": () => (/* binding */ PAGE),
+/* harmony export */   "RULESET": () => (/* binding */ RULESET),
+/* harmony export */   "SUPPORTS": () => (/* binding */ SUPPORTS),
+/* harmony export */   "VIEWPORT": () => (/* binding */ VIEWPORT),
+/* harmony export */   "WEBKIT": () => (/* binding */ WEBKIT)
 /* harmony export */ });
 var MS = '-ms-'
 var MOZ = '-moz-'
@@ -106542,9 +106547,9 @@ var FONT_FEATURE_VALUES = '@font-feature-values'
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "middleware": () => (/* binding */ middleware),
-/* harmony export */   "rulesheet": () => (/* binding */ rulesheet),
+/* harmony export */   "namespace": () => (/* binding */ namespace),
 /* harmony export */   "prefixer": () => (/* binding */ prefixer),
-/* harmony export */   "namespace": () => (/* binding */ namespace)
+/* harmony export */   "rulesheet": () => (/* binding */ rulesheet)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -106672,11 +106677,11 @@ function namespace (element) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "compile": () => (/* binding */ compile),
-/* harmony export */   "parse": () => (/* binding */ parse),
-/* harmony export */   "ruleset": () => (/* binding */ ruleset),
 /* harmony export */   "comment": () => (/* binding */ comment),
-/* harmony export */   "declaration": () => (/* binding */ declaration)
+/* harmony export */   "compile": () => (/* binding */ compile),
+/* harmony export */   "declaration": () => (/* binding */ declaration),
+/* harmony export */   "parse": () => (/* binding */ parse),
+/* harmony export */   "ruleset": () => (/* binding */ ruleset)
 /* harmony export */ });
 /* harmony import */ var _Enum_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Enum.js */ "./node_modules/stylis/src/Enum.js");
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
@@ -107074,31 +107079,31 @@ function stringify (element, index, children, callback) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "line": () => (/* binding */ line),
-/* harmony export */   "column": () => (/* binding */ column),
-/* harmony export */   "length": () => (/* binding */ length),
-/* harmony export */   "position": () => (/* binding */ position),
+/* harmony export */   "alloc": () => (/* binding */ alloc),
+/* harmony export */   "caret": () => (/* binding */ caret),
+/* harmony export */   "char": () => (/* binding */ char),
 /* harmony export */   "character": () => (/* binding */ character),
 /* harmony export */   "characters": () => (/* binding */ characters),
-/* harmony export */   "node": () => (/* binding */ node),
+/* harmony export */   "column": () => (/* binding */ column),
+/* harmony export */   "commenter": () => (/* binding */ commenter),
 /* harmony export */   "copy": () => (/* binding */ copy),
-/* harmony export */   "char": () => (/* binding */ char),
-/* harmony export */   "prev": () => (/* binding */ prev),
-/* harmony export */   "next": () => (/* binding */ next),
-/* harmony export */   "peek": () => (/* binding */ peek),
-/* harmony export */   "caret": () => (/* binding */ caret),
-/* harmony export */   "slice": () => (/* binding */ slice),
-/* harmony export */   "token": () => (/* binding */ token),
-/* harmony export */   "alloc": () => (/* binding */ alloc),
 /* harmony export */   "dealloc": () => (/* binding */ dealloc),
 /* harmony export */   "delimit": () => (/* binding */ delimit),
-/* harmony export */   "tokenize": () => (/* binding */ tokenize),
-/* harmony export */   "whitespace": () => (/* binding */ whitespace),
-/* harmony export */   "tokenizer": () => (/* binding */ tokenizer),
-/* harmony export */   "escaping": () => (/* binding */ escaping),
 /* harmony export */   "delimiter": () => (/* binding */ delimiter),
-/* harmony export */   "commenter": () => (/* binding */ commenter),
-/* harmony export */   "identifier": () => (/* binding */ identifier)
+/* harmony export */   "escaping": () => (/* binding */ escaping),
+/* harmony export */   "identifier": () => (/* binding */ identifier),
+/* harmony export */   "length": () => (/* binding */ length),
+/* harmony export */   "line": () => (/* binding */ line),
+/* harmony export */   "next": () => (/* binding */ next),
+/* harmony export */   "node": () => (/* binding */ node),
+/* harmony export */   "peek": () => (/* binding */ peek),
+/* harmony export */   "position": () => (/* binding */ position),
+/* harmony export */   "prev": () => (/* binding */ prev),
+/* harmony export */   "slice": () => (/* binding */ slice),
+/* harmony export */   "token": () => (/* binding */ token),
+/* harmony export */   "tokenize": () => (/* binding */ tokenize),
+/* harmony export */   "tokenizer": () => (/* binding */ tokenizer),
+/* harmony export */   "whitespace": () => (/* binding */ whitespace)
 /* harmony export */ });
 /* harmony import */ var _Utility_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Utility.js */ "./node_modules/stylis/src/Utility.js");
 
@@ -107361,19 +107366,19 @@ function identifier (index) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "abs": () => (/* binding */ abs),
-/* harmony export */   "from": () => (/* binding */ from),
+/* harmony export */   "append": () => (/* binding */ append),
 /* harmony export */   "assign": () => (/* binding */ assign),
+/* harmony export */   "charat": () => (/* binding */ charat),
+/* harmony export */   "combine": () => (/* binding */ combine),
+/* harmony export */   "from": () => (/* binding */ from),
 /* harmony export */   "hash": () => (/* binding */ hash),
-/* harmony export */   "trim": () => (/* binding */ trim),
+/* harmony export */   "indexof": () => (/* binding */ indexof),
 /* harmony export */   "match": () => (/* binding */ match),
 /* harmony export */   "replace": () => (/* binding */ replace),
-/* harmony export */   "indexof": () => (/* binding */ indexof),
-/* harmony export */   "charat": () => (/* binding */ charat),
-/* harmony export */   "substr": () => (/* binding */ substr),
-/* harmony export */   "strlen": () => (/* binding */ strlen),
 /* harmony export */   "sizeof": () => (/* binding */ sizeof),
-/* harmony export */   "append": () => (/* binding */ append),
-/* harmony export */   "combine": () => (/* binding */ combine)
+/* harmony export */   "strlen": () => (/* binding */ strlen),
+/* harmony export */   "substr": () => (/* binding */ substr),
+/* harmony export */   "trim": () => (/* binding */ trim)
 /* harmony export */ });
 /**
  * @param {number}
@@ -107705,7 +107710,7 @@ module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"P
 /******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 					installedChunks[chunkId][0]();
 /******/ 				}
-/******/ 				installedChunks[chunkIds[i]] = 0;
+/******/ 				installedChunks[chunkId] = 0;
 /******/ 			}
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}

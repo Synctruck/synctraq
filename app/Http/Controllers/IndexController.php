@@ -18,12 +18,12 @@ class IndexController extends Controller
     public $paginate = 50;
 
     public function Index()
-    {        
+    {
         return view('home.index');
     }
 
     public function IndexPublic()
-    { 
+    {
         $listQuantityRoute = PackageHistory::where('status', 'Inbound')
                                             ->select(DB::raw('count(Route) as quantity, Route'))
                                             ->groupBy('Route')
@@ -34,51 +34,51 @@ class IndexController extends Controller
     }
 
     public function Dashboard()
-    {        
+    {
         return view('home.dashboard');
     }
 
-    public function GetAllQuantity()
+    public function GetAllQuantity(Request $request,$startDate,$endDate)
     {
-        $quantityManifest  = PackageManifest::get()->count();
-        $quantityInbound   = PackageInbound::get()->count();
-        $quantityNotExists = PackageNotExists::get()->count();
-        $quantityDispatch  = PackageDispatch::where('status', 'Dispatch')->get()->count();
-        $quantityReturn    = PackageReturn::get()->count();
-        $quantityDelivery  = PackageDelivery::get()->count();
+        $leastOneDayDateStart =date("Y-m-d",strtotime($startDate."- 1 days")).' 00:00:00';
+        $leastOneDayDateEnd =date("Y-m-d",strtotime($endDate."- 1 days")).' 23:59:59';
+        $initDate = $startDate.' 00:00:00';
+        $endDate  = $endDate.' 23:59:59';
 
-        $todayInitDate = date('Y-m-d') .' 00-00-00';
-        $todayEndDate  = date('Y-m-d') .' 23-59-59';
-
-        $quantityManifestToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $todayEndDate])
+        $quantityManifest = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'On hold')
                                                 ->get()
                                                 ->count();
 
-        $quantityInboundToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $todayEndDate])
+        $quantityInbound = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Inbound')
                                                 ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
 
-        $quantityDispatchToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $todayEndDate])
+        $quantityDispatch = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Dispatch')
                                                 ->where('dispatch', 1)
                                                 ->get()
                                                 ->count();
 
-        $quantityNotExistsToday = PackageNotExists::whereBetween('created_at', [$todayInitDate, $todayEndDate])
-                                                ->get()
-                                                ->count();
+        // $quantityNotExistsToday = PackageNotExists::whereBetween('created_at', [$initDate, $endDate])
+        //                                         ->get()
+        //                                         ->count();
 
-        $quantityReturnToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $todayEndDate])
-                                                ->where('status', 'Return')
-                                                ->where('dispatch', 0)
-                                                ->get()
-                                                ->count();
+        // $quantityReturnToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $endDate])
+        //                                         ->where('status', 'Return')
+        //                                         ->where('dispatch', 0)
+        //                                         ->get()
+        //                                         ->count();
 
-        $quantityDeliveryToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $todayEndDate])
+        $quantityDelivery = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Delivery')
+                                                ->get()
+                                                ->count();
+
+        $quantityWarehouse = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 
@@ -86,16 +86,9 @@ class IndexController extends Controller
 
             'quantityManifest' => $quantityManifest,
             'quantityInbound' => $quantityInbound,
-            'quantityNotExists' => $quantityNotExists,
             'quantityDispatch' => $quantityDispatch,
-            'quantityReturn' => $quantityReturn,
             'quantityDelivery' => $quantityDelivery,
-            'quantityManifestToday' => $quantityManifestToday,
-            'quantityInboundToday' => $quantityInboundToday,
-            'quantityNotExistsToday' => $quantityNotExistsToday,
-            'quantityDispatchToday' => $quantityDispatchToday,
-            'quantityReturnToday' => $quantityReturnToday,
-            'quantityDeliveryToday' => $quantityDeliveryToday,
+            'quantityWarehouse' => $quantityWarehouse,
         ];
     }
 }
