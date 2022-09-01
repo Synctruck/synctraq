@@ -15,12 +15,12 @@ function Dashboard() {
 
     const [quantityManifest, setQuantityManifest]   = useState(0);
     const [quantityInbound, setQuantityInbound]     = useState(0);
-    const [quantityNotExists, setQuantityNotExists] = useState(0);
     const [quantityDispatch, setQuantityDispatch]   = useState(0);
-    const [quantityReturn, setQuantityReturn]       = useState(0);
     const [quantityDelivery, setQuantityDelivery]   = useState(0);
+    const [quantityWarehouse, setQuantityWarehouse]   = useState(0);
 
     const [listQuantityRoute, setListQuantityRoute] = useState([]);
+    const [listDataPie, setListDataPie] = useState([]);
 
     const [textLoading, setTextLoading] = useState('Loading...');
 
@@ -29,21 +29,33 @@ function Dashboard() {
     const [dateEnd, setDateEnd] = useState(auxDateStart);
     const [card, setCart] = useState('none');
 
-
+    var chartBar;
+    var chartPie;
 
     useEffect(() => {
 
-        getAllQuantityStatusPackage();
-        initBarChart();
+    }, []);
+    useEffect(() => {
 
+        getAllQuantityStatusPackage();
+        return () => {}
     }, [dateStart,dateEnd]);
 
-    const getAllQuantityStatusPackage = () => {
+    useEffect(() => {
+        initPieChart();
+        initBarChart();
+        return () => {
+            chartBar.destroy();
+            chartPie.destroy();
+        }
+    },[listDataPie]);
+
+    const getAllQuantityStatusPackage = async () => {
 
         setLoading('block');
         setCart('none');
 
-        fetch(`${url_general}dashboard/getallquantity/${dateStart}/${dateEnd}`)
+        await  fetch(`${url_general}dashboard/getallquantity/${dateStart}/${dateEnd}`)
         .then(res => res.json())
         .then((response) => {
 
@@ -51,24 +63,78 @@ function Dashboard() {
             setQuantityInbound(response.quantityInbound);
             setQuantityDispatch(response.quantityDispatch);
             setQuantityDelivery(response.quantityDelivery);
-            setQuantityDelivery(response.quantityWarehouse);
+            setQuantityWarehouse(response.quantityWarehouse);
 
-            // setQuantityManifestToday(response.quantityManifestToday);
-            // setQuantityInboundToday(response.quantityInboundToday);
-            // setQuantityNotExistsToday(response.quantityNotExistsToday);
-            // setQuantityDispatchToday(response.quantityDispatchToday);
-            // setQuantityReturnToday(response.quantityReturnToday);
-            // setQuantityDeliveryToday(response.quantityDeliveryToday);
+            setListDataPie([]);
+            let dataPie = [];
 
+            dataPie.push(response.quantityManifest);
+            dataPie.push(response.quantityInbound);
+            dataPie.push(response.quantityDispatch);
+            dataPie.push(response.quantityDelivery);
+            dataPie.push(response.quantityWarehouse);
+
+            setListDataPie(dataPie);
+            console.log(listDataPie);
 
             setLoading('none');
             setCart('block');
         });
     }
 
-    function initBarChart () {
+    function initPieChart() {
+        //-------------
+        //- PIE CHART -
+        //-------------
+        var pieOptions = {
+          responsive: true,
+          segmentShowStroke: true,
+          segmentStrokeColor: '#fff',
+          segmentStrokeWidth: 1,
+          animationSteps: 100,
+          animationEasing: 'easeOutBounce',
+          animateRotate: true,
+          animateScale: true,
+          maintainAspectRatio: true,
+          legend: {
+            display: true,
+            position: 'right',
+            labels: {
+              boxWidth: 15,
+              defaultFontColor: '#343a40',
+              defaultFontSize: 11,
+            }
+          }
+        }
 
-        console.log('gollll')
+        var ctx = document.getElementById("pieChart");
+        chartPie = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: listDataPie,
+              backgroundColor: [
+                '#0d6efd',
+                '#198754',
+                '#ffc107',
+                '#00c0ef',
+                '#f56954'
+              ],
+            }],
+            labels: [
+              'Manifest',
+              'Inbound',
+              'Dispatch',
+              'Delivery',
+              'Warehouse'
+            ]
+          },
+          options: pieOptions
+        });
+      }
+
+
+    function initBarChart () {
         //-------------
         //- BAR CHART -
         //-------------
@@ -121,6 +187,7 @@ function Dashboard() {
           //String - A legend template
           responsive              : true,
           maintainAspectRatio     : true,
+          indexAxis: 'y',
           legend: {
             display: true,
             position: 'right',
@@ -133,11 +200,14 @@ function Dashboard() {
         }
 
         var ctxBar = document.getElementById("barChart");
-        new Chart(ctxBar, {
+
+        chartBar = new Chart(ctxBar, {
           type: 'bar',
           data: areaChartData,
           options: barChartOptions
         });
+
+
       }
 
     return (
@@ -146,12 +216,8 @@ function Dashboard() {
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
-                        <div className="card-body" style={ {display: loading} }>
-                            <div className="col-lg-12 text-center form-group">
-                                <h5 className="card-title">{ textLoading }</h5>
-                            </div>
-                        </div>
-                        <div className="card-body" style={ {display: card} }>
+
+                        <div className="card-body" >
                             <div className="row mb-4">
                                 <div className="col-lg-2">
                                     <div className="row">
@@ -174,8 +240,8 @@ function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row form-group table-responsive">
-                                <div className="col-lg-3 text-center form-group">
+                            <div className="row justify-content-center">
+                                {/* <div className="col-lg-3 text-center form-group">
                                     <div className="cardDashboard">
                                         <div className="card-body">
                                             <div className="row">
@@ -211,23 +277,6 @@ function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-3 text-center form-group">
-                                    <div className="cardDashboard">
-                                        <div className="card-body">
-                                            <div className="row">
-                                                <div className="col-lg-4">
-                                                    <div className="card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center">
-                                                        <i className="bx bx-barcode-reader" style={ {fontSize: '30px'} }></i>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-8">
-                                                    <h5 className="card-title">Not Exists</h5>
-                                                    <h4>{ quantityNotExists }</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div className="col-lg-3 text-center form-group">
                                     <div className="cardDashboard">
@@ -247,30 +296,13 @@ function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-3 text-center form-group">
-                                    <div className="cardDashboard">
-                                        <div className="card-body">
-                                            <div className="row">
-                                                <div className="col-lg-4">
-                                                    <div className="card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center">
-                                                        <i className="bx bx-car" style={ {fontSize: '30px'} }></i>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-8">
-                                                    <h5 className="card-title">Returns</h5>
-                                                    <h4>{ quantityReturn }</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div className="col-lg-3 text-center form-group">
                                     <div className="cardDashboard">
                                         <div className="card-body">
                                             <div className="row">
                                                 <div className="col-lg-4">
-                                                    <div className="card-icon rounded-circle-dashboard rounded-circle-success d-flex align-items-center justify-content-center">
+                                                    <div className="card-icon rounded-circle-dashboard bg-info d-flex align-items-center justify-content-center">
                                                         <i className="bx bx-car" style={ {fontSize: '30px'} }></i>
                                                     </div>
                                                 </div>
@@ -282,8 +314,83 @@ function Dashboard() {
                                         </div>
                                     </div>
                                 </div>
+                                <div className="col-lg-3 text-center form-group">
+                                    <div className="cardDashboard">
+                                        <div className="card-body">
+                                            <div className="row">
+                                                <div className="col-lg-4">
+                                                    <div className="card-icon rounded-circle-dashboard rounded-circle-danger d-flex align-items-center justify-content-center">
+                                                        <i className="bx bx-car" style={ {fontSize: '30px'} }></i>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-8">
+                                                    <h5 className="card-title">Warehouse</h5>
+                                                    <h4>{ quantityWarehouse }</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> */}
+                                <div className="col-lg-2 text-center form-group">
+                                    <div className="card text-white bg-primary mb-3" style={{maxWidth: '18rem'}} >
+                                        <div className="card-header bg-primary text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Manifest</div>
+                                        <div className="card-body">
+                                            <h3 className=" text-white text-start">{ quantityManifest }</h3>
+                                        </div>
+                                        <a className="card-footer text-end bg-primary text-white" href="/package-manifest">
+                                            More info <i className='bi bi-arrow-right-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="col-lg-2 text-center form-group">
+                                    <div className="card text-white bg-success mb-3" style={{maxWidth: '18rem'}} >
+                                        <div className="card-header bg-success text-white text-start">  <i className="bx bx-barcode-reader" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Inbound </div>
+                                        <div className="card-body">
+                                            <h3 className=" text-white text-start">{ quantityInbound}</h3>
+                                        </div>
+                                        <a className="card-footer text-end bg-success text-white" href="/package-inbound">
+                                            More info <i className='bi bi-arrow-right-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="col-lg-2 text-center form-group">
+                                    <div className="card text-white bg-warning mb-3" style={{maxWidth: '18rem'}} >
+                                        <div className="card-header bg-warning text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Dispatch</div>
+                                        <div className="card-body">
+                                            <h3 className=" text-white text-start">{ quantityDispatch}</h3>
+                                        </div>
+                                        <a className="card-footer text-end bg-warning text-white" href="/package-dispatch">
+                                            More info <i className='bi bi-arrow-right-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="col-lg-2 text-center form-group">
+                                    <div className="card text-white bg-info mb-3" style={{maxWidth: '18rem'}} >
+                                        <div className="card-header bg-info text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Delivery</div>
+                                        <div className="card-body">
+                                            <h3 className=" text-white text-start">{ quantityDelivery }</h3>
+                                        </div>
+                                        <a className="card-footer text-end bg-info text-white" href="#">
+                                            More info <i className='bi bi-arrow-right-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="col-lg-2 text-center form-group">
+                                    <div className="card text-white bg-danger mb-3" style={{maxWidth: '18rem'}} >
+                                        <div className="card-header bg-danger text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Warehouse</div>
+                                        <div className="card-body">
+                                            <h3 className=" text-white text-start">{ quantityWarehouse }</h3>
+                                        </div>
+                                        <a className="card-footer text-end bg-danger text-white" href="/package-warehouse">
+                                            More info <i className='bi bi-arrow-right-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+
+
                             </div>
-                            <hr/>
+
                             <div className="row form-group" style={ {display: 'none'} }>
                                 <div className="col-lg-2 text-center">
                                     <div className="card info-card sales-card alert-danger" style={ {background: 'white', borderRadius: '0.5rem', boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'} }>
@@ -322,10 +429,29 @@ function Dashboard() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div className="row form-group">
-                                <canvas className="chart w-100" id="barChart"></canvas>
-                            </div>
+
+            </div>
+            <div className='row justify-content-center'>
+                    {/* <div className='col-8'>
+                    <div className='card'>
+
+                        < div className='card-body'>
+                            <h5 className="card-title">Reports <span>/Bar</span></h5>
+                            <canvas className="chart w-100" id="barChart"></canvas>
+
+                        </div>
+                    </div>
+                </div> */}
+                <div className='col-6'>
+                    <div className='card'>
+
+                        <div className='card-body'>
+                            <h5 className="card-title">Reports <span>/Pie</span></h5>
+                            <canvas className="chart w-100" id="pieChart"></canvas>
                         </div>
                     </div>
                 </div>
