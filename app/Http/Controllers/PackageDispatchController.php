@@ -264,6 +264,20 @@ class PackageDispatchController extends Controller
            $package = PackageWarehouse::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
 
+        if(!$package)
+        {
+            $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                ->where('status', 'Delete')
+                                                ->first();
+
+            if($packageDispatch)
+            {
+                $package = $packageDispatch;
+
+                $packageDispatch->delete();
+            }
+        }
+
         if($package)
         {
             if($request->get('RouteSearch'))
@@ -1004,7 +1018,6 @@ class PackageDispatchController extends Controller
                     $packageReturn->workerName                   = $workerName;
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
-
                     $packageReturn->status                       = 'Return';
 
                     $packageReturn->save();

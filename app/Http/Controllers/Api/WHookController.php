@@ -257,9 +257,18 @@ class WHookController extends Controller
                $package = PackageWarehouse::where('Reference_Number_1', $Reference_Number_1)->first();
             }
 
+            $packageDispatch = null;
+
+            if(!$package)
+            {
+                $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'Dispatch')
+                                            ->first();
+            }
+
             $descriptionDispatch = 'For: Onfleet[ '. $userCreatorOnfleet .' ] to '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
 
-            if($package)
+            if($package && $packageDispatch == null)
             {
                 try
                 {
@@ -421,99 +430,107 @@ class WHookController extends Controller
             }
             else
             {
-                $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
-                                            ->where('status', 'Delete')
-                                            ->first();
-
-                if($package)
+                if($packageDispatch)
                 {
-                    try
-                    {
-                        DB::beginTransaction();
-
-                        $packageHistory = new PackageHistory();
-
-                        $packageHistory->id                           = uniqid();
-                        $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
-                        $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                        $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
-                        $packageHistory->Ready_At                     = $package->Ready_At;
-                        $packageHistory->Del_Date                     = $package->Del_Date;
-                        $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                        $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                        $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                        $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                        $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                        $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                        $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                        $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                        $packageHistory->Pickup_City                  = $package->Pickup_City;
-                        $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                        $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
-                        $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                        $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
-                        $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                        $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                        $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                        $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                        $packageHistory->Dropoff_City                 = $package->Dropoff_City;
-                        $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
-                        $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                        $packageHistory->Service_Level                = $package->Service_Level;
-                        $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                        $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
-                        $packageHistory->Notes                        = $package->Notes;
-                        $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
-                        $packageHistory->Weight                       = $package->Weight;
-                        $packageHistory->Route                        = $package->Route;
-                        $packageHistory->Name                         = $package->Name;
-                        $packageHistory->idUser                       = 64;
-                        $packageHistory->idUserDispatch               = $driver->id;
-                        $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
-                        $packageHistory->dispatch                     = 1;
-                        $packageHistory->Description                  = $descriptionDispatch;
-                        $packageHistory->status                       = 'Dispatch';
-
-                        $packageHistory->save();
-                        
-                        $package->Date_Dispatch                = date('Y-m-d H:i:s');
-                        $package->status                       = 'Dispatch';
-                        $package->idOnfleet                    = $idOnfleet;
-                        $package->taskOnfleet                  = $taskOnfleet;
-
-                        $package->save();
-
-                        DB::commit();
-
-                        Log::info('==== UPDATE TASK CREATED');      
-                    }
-                    catch(Exception $e)
-                    {
-                        Log::info('========= ERROR PROCESS - TASK CREATED');
-
-                        $packageDispatch = new PackageDispatchController();
-                        $packageDispatch->DeleteOnfleet($idOnfleet);
-
-                        Log::info('========= UPDATE - DELETE - TASK CREATED');
-
-                        DB::rollback();
-                    }
+                    Log::info('==== EJECUTION TWO TASK CREATED'); 
                 }
                 else
                 {
-                    Log::info('========= NO EXISTS PACKAGE ID - TASK CREATED');
+                    $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'Delete')
+                                            ->first();
 
-                    $packageDispatch = new PackageDispatchController();
-                    $packageDispatch->DeleteOnfleet($idOnfleet);
+                    if($package)
+                    {
+                        try
+                        {
+                            DB::beginTransaction();
 
-                    Log::info('========= DELETE - TASK CREATED');
+                            $packageHistory = new PackageHistory();
+
+                            $packageHistory->id                           = uniqid();
+                            $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
+                            $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
+                            $packageHistory->Ready_At                     = $package->Ready_At;
+                            $packageHistory->Del_Date                     = $package->Del_Date;
+                            $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
+                            $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
+                            $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
+                            $packageHistory->Pickup_Company               = $package->Pickup_Company;
+                            $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
+                            $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
+                            $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
+                            $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
+                            $packageHistory->Pickup_City                  = $package->Pickup_City;
+                            $packageHistory->Pickup_Province              = $package->Pickup_Province;
+                            $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
+                            $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                            $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                            $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                            $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                            $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                            $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                            $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                            $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                            $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                            $packageHistory->Service_Level                = $package->Service_Level;
+                            $packageHistory->Carrier_Name                 = $package->Carrier_Name;
+                            $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
+                            $packageHistory->Notes                        = $package->Notes;
+                            $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
+                            $packageHistory->Weight                       = $package->Weight;
+                            $packageHistory->Route                        = $package->Route;
+                            $packageHistory->Name                         = $package->Name;
+                            $packageHistory->idUser                       = 64;
+                            $packageHistory->idUserDispatch               = $driver->id;
+                            $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
+                            $packageHistory->dispatch                     = 1;
+                            $packageHistory->Description                  = $descriptionDispatch;
+                            $packageHistory->status                       = 'Dispatch';
+
+                            $packageHistory->save();
+                            
+                            $package->Date_Dispatch                = date('Y-m-d H:i:s');
+                            $package->status                       = 'Dispatch';
+                            $package->idOnfleet                    = $idOnfleet;
+                            $package->taskOnfleet                  = $taskOnfleet;
+                            $package->created_at                   = date('Y-m-d H:i:s');
+
+                            $package->save();
+
+                            DB::commit();
+
+                            Log::info('==== UPDATE TASK CREATED');      
+                        }
+                        catch(Exception $e)
+                        {
+                            Log::info('========= ERROR PROCESS - TASK CREATED');
+
+                            $packageDispatchController = new PackageDispatchController();
+                            $packageDispatchController->DeleteOnfleet($idOnfleet);
+
+                            Log::info('========= UPDATE - DELETE - TASK CREATED');
+
+                            DB::rollback();
+                        }
+                    }
+                    else
+                    {
+                        Log::info('========= NO EXISTS PACKAGE ID - TASK CREATED');
+
+                        $packageDispatchController = new PackageDispatchController();
+                        $packageDispatchController->DeleteOnfleet($idOnfleet);
+
+                        Log::info('========= DELETE - TASK CREATED');
+                    }
                 }
             }
         }
         else
         {
-            $packageDispatch = new PackageDispatchController();
-            $packageDispatch->DeleteOnfleet($idOnfleet);
+            $packageDispatchController = new PackageDispatchController();
+            $packageDispatchController->DeleteOnfleet($idOnfleet);
 
             Log::info('========= DELETE - TASK CREATED');
         }
