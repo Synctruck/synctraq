@@ -171,11 +171,68 @@ class PackageWarehouseController extends Controller
                 return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
             }
 
-            $packageWarehouse->created_at = date('Y-m-d H:i:s');
+            try
+            {
+                DB::beginTransaction();
 
-            $packageWarehouse->save();
+                // history warehouse
+                $packageHistory = new PackageHistory();
 
-            return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse];
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+                $packageHistory->Reference_Number_2           = $packageWarehouse->Reference_Number_2;
+                $packageHistory->Reference_Number_3           = $packageWarehouse->Reference_Number_3;
+                $packageHistory->Ready_At                     = $packageWarehouse->Ready_At;
+                $packageHistory->Del_Date                     = $packageWarehouse->Del_Date;
+                $packageHistory->Del_no_earlier_than          = $packageWarehouse->Del_no_earlier_than;
+                $packageHistory->Del_no_later_than            = $packageWarehouse->Del_no_later_than;
+                $packageHistory->Pickup_Contact_Name          = $packageWarehouse->Pickup_Contact_Name;
+                $packageHistory->Pickup_Company               = $packageWarehouse->Pickup_Company;
+                $packageHistory->Pickup_Contact_Phone_Number  = $packageWarehouse->Pickup_Contact_Phone_Number;
+                $packageHistory->Pickup_Contact_Email         = $packageWarehouse->Pickup_Contact_Email;
+                $packageHistory->Pickup_Address_Line_1        = $packageWarehouse->Pickup_Address_Line_1;
+                $packageHistory->Pickup_Address_Line_2        = $packageWarehouse->Pickup_Address_Line_2;
+                $packageHistory->Pickup_City                  = $packageWarehouse->Pickup_City;
+                $packageHistory->Pickup_Province              = $packageWarehouse->Pickup_Province;
+                $packageHistory->Pickup_Postal_Code           = $packageWarehouse->Pickup_Postal_Code;
+                $packageHistory->Dropoff_Contact_Name         = $packageWarehouse->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packageWarehouse->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageWarehouse->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageWarehouse->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageWarehouse->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packageWarehouse->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packageWarehouse->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageWarehouse->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageWarehouse->Dropoff_Postal_Code;
+                $packageHistory->Service_Level                = $packageWarehouse->Service_Level;
+                $packageHistory->Carrier_Name                 = $packageWarehouse->Carrier_Name;
+                $packageHistory->Vehicle_Type_Id              = $packageWarehouse->Vehicle_Type_Id;
+                $packageHistory->Notes                        = $packageWarehouse->Notes;
+                $packageHistory->Number_Of_Pieces             = $packageWarehouse->Number_Of_Pieces;
+                $packageHistory->Weight                       = $packageWarehouse->Weight;
+                $packageHistory->Route                        = $packageWarehouse->Route;
+                $packageHistory->Name                         = $packageWarehouse->Name;
+                $packageHistory->idUser                       = Session::get('user')->id;
+                $packageHistory->Description                  = 'For: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->status                       = 'Warehouse';
+
+                $packageHistory->save();
+
+                // update warehouse
+                $packageWarehouse->created_at = date('Y-m-d H:i:s');
+
+                $packageWarehouse->save();
+
+                DB::commit();
+
+                return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse];
+            }
+            catch(Exception $e)
+            {
+                DB::rollback();
+
+                return ['stateAction' => false];
+            }
         }
 
         $packageInbound  = null;

@@ -149,6 +149,10 @@ class WHookController extends Controller
         $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
         $Description_Onfleet     = $request['data']['task']['completionDetails']['failureReason'] .': ['. $request['data']['task']['completionDetails']['failureNotes'] .', '. $request['data']['task']['completionDetails']['notes'] .']';
 
+        Log::info('================================================');
+        Log::info('============ START TASK CREATED ================');
+        Log::info($Reference_Number_1);
+
         if($completionDetailsStatus == false)
         {
             $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);

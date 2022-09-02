@@ -496,8 +496,8 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-            <div className='row justify-content-center'>
-                <div className='col-6'>
+            <div className='row justify-content-center' style={ {display: 'none'} }>
+                <div className='col-4'>
                     <div className='card'>
                         <div className='card-body'>
                             <h5 className="card-title">Report <span>/General</span></h5>
@@ -506,7 +506,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         <div className='card-body'>
                             <h5 className="card-title">Report <span>/Manifest</span></h5>
@@ -514,7 +514,7 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         < div className='card-body'>
                             <h5 className="card-title">Report <span>/Inbound</span></h5>
@@ -522,7 +522,7 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         < div className='card-body'>
                             <h5 className="card-title">Report <span>/Dispatch</span></h5>
@@ -530,7 +530,7 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         < div className='card-body'>
                             <h5 className="card-title">Report <span>/Failed</span></h5>
@@ -538,7 +538,7 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         < div className='card-body'>
                             <h5 className="card-title">Report <span>/Delivery</span></h5>
@@ -546,7 +546,7 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-4'>
                     <div className='card'>
                         < div className='card-body'>
                             <h5 className="card-title">Report <span>/Warehouse</span></h5>
