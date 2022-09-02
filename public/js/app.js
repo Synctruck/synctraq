@@ -7461,43 +7461,158 @@ function Dashboard() {
       quantityWarehouse = _useState10[0],
       setQuantityWarehouse = _useState10[1];
 
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState12 = _slicedToArray(_useState11, 2),
-      listQuantityRoute = _useState12[0],
-      setListQuantityRoute = _useState12[1];
+      quantityFailed = _useState12[0],
+      setQuantityFailed = _useState12[1];
 
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState14 = _slicedToArray(_useState13, 2),
-      listDataPie = _useState14[0],
-      setListDataPie = _useState14[1];
+      listColorsForManifest = _useState14[0],
+      setListColorsForManifest = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState16 = _slicedToArray(_useState15, 2),
-      textLoading = _useState16[0],
-      setTextLoading = _useState16[1];
+      listRoutesForManifest = _useState16[0],
+      setListRoutesForManifest = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState18 = _slicedToArray(_useState17, 2),
-      loading = _useState18[0],
-      setLoading = _useState18[1];
+      lisValuesForManifest = _useState18[0],
+      setLisValuesForManifest = _useState18[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      dateStart = _useState20[0],
-      setDateStart = _useState20[1];
+      listColorsForInbound = _useState20[0],
+      setListColorsForInbound = _useState20[1];
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState22 = _slicedToArray(_useState21, 2),
-      dateEnd = _useState22[0],
-      setDateEnd = _useState22[1];
+      listRoutesForInbound = _useState22[0],
+      setListRoutesForInbound = _useState22[1];
 
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState24 = _slicedToArray(_useState23, 2),
-      card = _useState24[0],
-      setCart = _useState24[1];
+      lisValuesForInbound = _useState24[0],
+      setLisValuesForInbound = _useState24[1];
 
-  var chartBar;
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState26 = _slicedToArray(_useState25, 2),
+      listColorsForDispatch = _useState26[0],
+      setListColorsForDispatch = _useState26[1];
+
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState28 = _slicedToArray(_useState27, 2),
+      listRoutesForDispatch = _useState28[0],
+      setListRoutesForDispatch = _useState28[1];
+
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState30 = _slicedToArray(_useState29, 2),
+      lisValuesForDispatch = _useState30[0],
+      setLisValuesForDispatch = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState32 = _slicedToArray(_useState31, 2),
+      listColorsForFailed = _useState32[0],
+      setListColorsForFailed = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState34 = _slicedToArray(_useState33, 2),
+      listRoutesForFailed = _useState34[0],
+      setListRoutesForFailed = _useState34[1];
+
+  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState36 = _slicedToArray(_useState35, 2),
+      lisValuesForFailed = _useState36[0],
+      setLisValuesForFailed = _useState36[1];
+
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState38 = _slicedToArray(_useState37, 2),
+      listColorsForDelivery = _useState38[0],
+      setListColorsForDelivery = _useState38[1];
+
+  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState40 = _slicedToArray(_useState39, 2),
+      listRoutesForDelivery = _useState40[0],
+      setListRoutesForDelivery = _useState40[1];
+
+  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState42 = _slicedToArray(_useState41, 2),
+      lisValuesForDelivery = _useState42[0],
+      setLisValuesForDelivery = _useState42[1];
+
+  var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState44 = _slicedToArray(_useState43, 2),
+      listColorsForWarehouse = _useState44[0],
+      setListColorsForWarehouse = _useState44[1];
+
+  var _useState45 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState46 = _slicedToArray(_useState45, 2),
+      listRoutesForWarehouse = _useState46[0],
+      setListRoutesForWarehouse = _useState46[1];
+
+  var _useState47 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState48 = _slicedToArray(_useState47, 2),
+      lisValuesForWarehouse = _useState48[0],
+      setLisValuesForWarehouse = _useState48[1];
+
+  var _useState49 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState50 = _slicedToArray(_useState49, 2),
+      listDataPie = _useState50[0],
+      setListDataPie = _useState50[1];
+
+  var _useState51 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('Loading...'),
+      _useState52 = _slicedToArray(_useState51, 2),
+      textLoading = _useState52[0],
+      setTextLoading = _useState52[1];
+
+  var _useState53 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('block'),
+      _useState54 = _slicedToArray(_useState53, 2),
+      loading = _useState54[0],
+      setLoading = _useState54[1];
+
+  var _useState55 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
+      _useState56 = _slicedToArray(_useState55, 2),
+      dateStart = _useState56[0],
+      setDateStart = _useState56[1];
+
+  var _useState57 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateStart),
+      _useState58 = _slicedToArray(_useState57, 2),
+      dateEnd = _useState58[0],
+      setDateEnd = _useState58[1];
+
+  var _useState59 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState60 = _slicedToArray(_useState59, 2),
+      card = _useState60[0],
+      setCart = _useState60[1];
+
   var chartPie;
+  var chartPieManifest;
+  var chartPieInbound;
+  var chartPieDispatch;
+  var chartPieFailed;
+  var chartPieDelivery;
+  var chartPieWarehouse;
+  var pieOptions = {
+    responsive: true,
+    segmentShowStroke: true,
+    segmentStrokeColor: '#fff',
+    segmentStrokeWidth: 1,
+    animationSteps: 100,
+    animationEasing: 'easeOutBounce',
+    animateRotate: true,
+    animateScale: true,
+    maintainAspectRatio: true,
+    legend: {
+      display: true,
+      position: 'right',
+      labels: {
+        boxWidth: 15,
+        defaultFontColor: '#343a40',
+        defaultFontSize: 11
+      }
+    }
+  };
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {}, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     getAllQuantityStatusPackage();
@@ -7505,12 +7620,22 @@ function Dashboard() {
   }, [dateStart, dateEnd]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     initPieChart();
-    initBarChart();
+    initPieChartManifest();
+    initPieChartInbound();
+    initPieChartDispatch();
+    initPieChartFailed();
+    initPieChartDelivery();
+    initPieChartWarehouse();
     return function () {
-      chartBar.destroy();
       chartPie.destroy();
+      chartPieManifest.destroy();
+      chartPieInbound.destroy();
+      chartPieDispatch.destroy();
+      chartPieFailed.destroy();
+      chartPieDelivery.destroy();
+      chartPieWarehouse.destroy();
     };
-  }, [listDataPie]);
+  }, [listDataPie, listColorsForManifest, listColorsForInbound, listColorsForDispatch, listColorsForFailed, listColorsForDelivery, listColorsForWarehouse]);
 
   var getAllQuantityStatusPackage = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -7526,20 +7651,96 @@ function Dashboard() {
               }).then(function (response) {
                 setQuantityManifest(response.quantityManifest);
                 setQuantityInbound(response.quantityInbound);
-                setQuantityDispatch(response.quantityDispatch);
-                setQuantityDelivery(response.quantityDelivery);
                 setQuantityWarehouse(response.quantityWarehouse);
+                setQuantityDispatch(response.quantityDispatch);
+                setQuantityFailed(response.quantityFailed);
+                setQuantityDelivery(response.quantityDelivery); //asignando valores al pie general
+
                 setListDataPie([]);
                 var dataPie = [];
                 dataPie.push(response.quantityManifest);
                 dataPie.push(response.quantityInbound);
-                dataPie.push(response.quantityDispatch);
-                dataPie.push(response.quantityDelivery);
                 dataPie.push(response.quantityWarehouse);
+                dataPie.push(response.quantityDispatch);
+                dataPie.push(response.quantityFailed);
+                dataPie.push(response.quantityDelivery);
                 setListDataPie(dataPie);
-                console.log(listDataPie);
-                setLoading('none');
-                setCart('block');
+                var arrayNamesRoutesManifest = [];
+                var arrayValuesRoutesManifest = [];
+                var arrayColorsRoutesManifest = [];
+                response.quantityManifestByRoutes.forEach(function (element) {
+                  arrayNamesRoutesManifest.push(element.Route);
+                  arrayValuesRoutesManifest.push(element.total);
+                  arrayColorsRoutesManifest.push(generarColorAleatorio());
+                });
+                setListRoutesForManifest(arrayNamesRoutesManifest);
+                setLisValuesForManifest(arrayValuesRoutesManifest);
+                setListColorsForManifest(arrayColorsRoutesManifest); //fin
+                //inicion
+
+                var arrayNamesRoutesInbound = [];
+                var arrayValuesRoutesInbound = [];
+                var arrayColorsRoutesInbound = [];
+                response.quantityInboundByRoutes.forEach(function (element) {
+                  arrayNamesRoutesInbound.push(element.Route);
+                  arrayValuesRoutesInbound.push(element.total);
+                  arrayColorsRoutesInbound.push(generarColorAleatorio());
+                });
+                setListRoutesForInbound(arrayNamesRoutesInbound);
+                setLisValuesForInbound(arrayValuesRoutesInbound);
+                setListColorsForInbound(arrayColorsRoutesInbound); //fin
+                //inicion
+
+                var arrayNamesRoutesDispatch = [];
+                var arrayValuesRoutesDispatch = [];
+                var arrayColorsRoutesDispatch = [];
+                response.quantityDispatchByRoutes.forEach(function (element) {
+                  arrayNamesRoutesDispatch.push(element.Route);
+                  arrayValuesRoutesDispatch.push(element.total);
+                  arrayColorsRoutesDispatch.push(generarColorAleatorio());
+                });
+                setListRoutesForDispatch(arrayNamesRoutesDispatch);
+                setLisValuesForDispatch(arrayValuesRoutesDispatch);
+                setListColorsForDispatch(arrayColorsRoutesDispatch); //fin
+                //inicion
+
+                var arrayNamesRoutesFailed = [];
+                var arrayValuesRoutesFailed = [];
+                var arrayColorsRoutesFailed = [];
+                response.quantityFailedByRoutes.forEach(function (element) {
+                  arrayNamesRoutesFailed.push(element.Route);
+                  arrayValuesRoutesFailed.push(element.total);
+                  arrayColorsRoutesFailed.push(generarColorAleatorio());
+                });
+                setListRoutesForFailed(arrayNamesRoutesFailed);
+                setLisValuesForFailed(arrayValuesRoutesFailed);
+                setListColorsForFailed(arrayColorsRoutesFailed); //fin
+                //inicion
+
+                var arrayNamesRoutesDelivery = [];
+                var arrayValuesRoutesDelivery = [];
+                var arrayColorsRoutesDelivery = [];
+                response.quantityDeliveryByRoutes.forEach(function (element) {
+                  arrayNamesRoutesDelivery.push(element.Route);
+                  arrayValuesRoutesDelivery.push(element.total);
+                  arrayColorsRoutesDelivery.push(generarColorAleatorio());
+                });
+                setListRoutesForDelivery(arrayNamesRoutesDelivery);
+                setLisValuesForDelivery(arrayValuesRoutesDelivery);
+                setListColorsForDelivery(arrayColorsRoutesDelivery); //fin
+                //inicion
+
+                var arrayNamesRoutesWarehouse = [];
+                var arrayValuesRoutesWarehouse = [];
+                var arrayColorsRoutesWarehouse = [];
+                response.quantityWarehouseByRoutes.forEach(function (element) {
+                  arrayNamesRoutesWarehouse.push(element.Route);
+                  arrayValuesRoutesWarehouse.push(element.total);
+                  arrayColorsRoutesWarehouse.push(generarColorAleatorio());
+                });
+                setListRoutesForWarehouse(arrayNamesRoutesWarehouse);
+                setLisValuesForWarehouse(arrayValuesRoutesWarehouse);
+                setListColorsForWarehouse(arrayColorsRoutesWarehouse);
               });
 
             case 4:
@@ -7555,37 +7756,42 @@ function Dashboard() {
     };
   }();
 
+  function colorAleatorio(inferior, superior) {
+    var numPosibilidades = superior - inferior;
+    var aleat = Math.random() * numPosibilidades;
+    aleat = Math.floor(aleat);
+    return parseInt(inferior) + aleat;
+  }
+
+  function generarColorAleatorio() {
+    var hexadecimal = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F");
+    var resultado = "#";
+
+    for (var i = 0; i < 6; i++) {
+      var posarray = colorAleatorio(0, hexadecimal.length);
+      resultado += hexadecimal[posarray];
+    }
+
+    return resultado;
+  }
+
   function initPieChart() {
     //-------------
     //- PIE CHART -
     //-------------
-    var pieOptions = {
-      responsive: true,
-      segmentShowStroke: true,
-      segmentStrokeColor: '#fff',
-      segmentStrokeWidth: 1,
-      animationSteps: 100,
-      animationEasing: 'easeOutBounce',
-      animateRotate: true,
-      animateScale: true,
-      maintainAspectRatio: true,
-      legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          boxWidth: 15,
-          defaultFontColor: '#343a40',
-          defaultFontSize: 11
-        }
-      }
-    };
     var ctx = document.getElementById("pieChart");
     chartPie = new Chart(ctx, {
       type: 'doughnut',
       data: {
         datasets: [{
           data: listDataPie,
-          backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#00c0ef', '#f56954']
+          backgroundColor: ['#0d6efd', //manifest
+          '#198754', //inbound
+          '#5b0672', //warehouse
+          '#ffc107', //dispatch
+          '#4B79EA', //failed
+          '#00c0ef' //delivery
+          ]
         }],
         labels: ['Manifest', 'Inbound', 'Dispatch', 'Delivery', 'Warehouse']
       },
@@ -7593,70 +7799,111 @@ function Dashboard() {
     });
   }
 
-  function initBarChart() {
+  function initPieChartManifest() {
     //-------------
-    //- BAR CHART -
+    //- PIE CHART Manifest-
     //-------------
-    var areaChartData = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [{
-        label: 'Electronics',
-        backgroundColor: '#f56954',
-        data: [65, 59, 80, 81, 56, 55, 40]
-      }, {
-        label: 'Fashion',
-        backgroundColor: '#00a65a',
-        data: [28, 48, 40, 19, 86, 27, 90]
-      }, {
-        label: 'Foods',
-        backgroundColor: '#00c0ef',
-        data: [70, 60, 65, 50, 60, 70, 80]
-      }, {
-        label: 'Foods',
-        backgroundColor: '#8E44AD',
-        data: [70, 60, 65, 50, 60, 70, 80]
-      }]
-    };
-    var barChartOptions = {
-      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-      scaleBeginAtZero: true,
-      //Boolean - Whether grid lines are shown across the chart
-      scaleShowGridLines: true,
-      //String - Colour of the grid lines
-      scaleGridLineColor: 'rgba(0,0,0,.05)',
-      //Number - Width of the grid lines
-      scaleGridLineWidth: 1,
-      //Boolean - Whether to show horizontal lines (except X axis)
-      scaleShowHorizontalLines: true,
-      //Boolean - Whether to show vertical lines (except Y axis)
-      scaleShowVerticalLines: true,
-      //Boolean - If there is a stroke on each bar
-      barShowStroke: true,
-      //Number - Pixel width of the bar stroke
-      barStrokeWidth: 2,
-      //Number - Spacing between each of the X value sets
-      barValueSpacing: 5,
-      //Number - Spacing between data sets within X values
-      barDatasetSpacing: 1,
-      //String - A legend template
-      responsive: true,
-      maintainAspectRatio: true,
-      indexAxis: 'y',
-      legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          boxWidth: 15,
-          defaultFontColor: '#343a40',
-          defaultFontSize: 11
-        }
-      }
-    };
-    var ctxBar = document.getElementById("barChart");
-    chartBar = new Chart(ctxBar, {
-      type: 'bar',
-      data: areaChartData,
-      options: barChartOptions
+    var ctx = document.getElementById("pieChartManifest");
+    chartPieManifest = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForManifest,
+          backgroundColor: listColorsForManifest
+        }],
+        labels: listRoutesForManifest
+      },
+      options: pieOptions
+    });
+  }
+
+  function initPieChartInbound() {
+    //-------------
+    //- PIE CHART Manifest-
+    //-------------
+    var ctx = document.getElementById("pieChartInbound");
+    chartPieInbound = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForInbound,
+          backgroundColor: listColorsForInbound
+        }],
+        labels: listRoutesForInbound
+      },
+      options: pieOptions
+    });
+  }
+
+  function initPieChartDispatch() {
+    //-------------
+    //- PIE CHART Manifest-
+    //-------------
+    var ctx = document.getElementById("pieChartDispatch");
+    chartPieDispatch = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForDispatch,
+          backgroundColor: listColorsForDispatch
+        }],
+        labels: listRoutesForDispatch
+      },
+      options: pieOptions
+    });
+  }
+
+  function initPieChartFailed() {
+    //-------------
+    //- PIE CHART Manifest-
+    //-------------
+    var ctx = document.getElementById("pieChartFailed");
+    chartPieFailed = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForFailed,
+          backgroundColor: listColorsForFailed
+        }],
+        labels: listRoutesForFailed
+      },
+      options: pieOptions
+    });
+  }
+
+  function initPieChartDelivery() {
+    //-------------
+    //- PIE CHART Manifest-
+    //-------------
+    var ctx = document.getElementById("pieChartDelivery");
+    chartPieDelivery = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForDelivery,
+          backgroundColor: listColorsForDelivery
+        }],
+        labels: listRoutesForDelivery
+      },
+      options: pieOptions
+    });
+  }
+
+  function initPieChartWarehouse() {
+    //-------------
+    //- PIE CHART Manifest-
+    //-------------
+    var ctx = document.getElementById("pieChartWarehouse");
+    chartPieWarehouse = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: lisValuesForWarehouse,
+          backgroundColor: listColorsForWarehouse
+        }],
+        labels: listRoutesForWarehouse
+      },
+      options: pieOptions
     });
   }
 
@@ -7809,6 +8056,37 @@ function Dashboard() {
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "col-lg-2 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                  className: "card text-white bg-danger mb-3",
+                  style: {
+                    maxWidth: '18rem'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "card-header bg-danger text-white text-start",
+                    children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bx bxs-error-alt",
+                      style: {
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        borderColor: ''
+                      }
+                    }), " Failed"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                    className: "card-body",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+                      className: " text-white text-start",
+                      children: quantityFailed
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
+                    className: "card-footer text-end bg-danger text-white",
+                    href: "/package-dispatch",
+                    children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
+                      className: "bi bi-arrow-right-circle"
+                    })]
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-2 text-center form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                   className: "card text-white bg-info mb-3",
                   style: {
                     maxWidth: '18rem'
@@ -7840,28 +8118,38 @@ function Dashboard() {
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "col-lg-2 text-center form-group",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                  className: "card text-white bg-danger mb-3",
+                  className: "card text-white mb-3",
                   style: {
                     maxWidth: '18rem'
                   },
                   children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    className: "card-header bg-danger text-white text-start",
+                    className: "card-header  text-white text-start",
+                    style: {
+                      background: '#5b0672'
+                    },
                     children: ["  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
                       className: "bx bx-box",
                       style: {
                         fontSize: '16px',
                         fontFamily: 'sans-serif',
-                        borderColor: ''
+                        borderColor: '',
+                        background: '#5b0672'
                       }
                     }), " Warehouse"]
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                     className: "card-body",
+                    style: {
+                      background: '#5b0672'
+                    },
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
                       className: " text-white text-start",
                       children: quantityWarehouse
                     })
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("a", {
-                    className: "card-footer text-end bg-danger text-white",
+                    className: "card-footer text-end text-white",
+                    style: {
+                      background: '#5b0672'
+                    },
                     href: "/package-warehouse",
                     children: ["More info ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("i", {
                       className: "bi bi-arrow-right-circle"
@@ -7869,95 +8157,13 @@ function Dashboard() {
                   })]
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-              className: "row form-group",
-              style: {
-                display: 'none'
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                className: "col-lg-2 text-center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "card info-card sales-card alert-danger",
-                  style: {
-                    background: 'white',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
-                  },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    className: "card-body",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      className: "card-title",
-                      children: ["FEDEX  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                      className: "row"
-                    })]
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                className: "col-lg-2 text-center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "card info-card sales-card alert-danger",
-                  style: {
-                    background: 'white',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
-                  },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    className: "card-body",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      className: "card-title",
-                      children: ["UPS   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                      className: "row"
-                    })]
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                className: "col-lg-2 text-center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "card info-card sales-card alert-danger",
-                  style: {
-                    background: 'white',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 0.125rem 0.25rem rgb(0 0 0 / 5%)'
-                  },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    className: "card-body",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      className: "card-title",
-                      children: ["DHL   ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                      className: "row"
-                    })]
-                  })
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                className: "col-lg-2 text-center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                  className: "card info-card sales-card alert-danger",
-                  style: {
-                    background: 'white',
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 0.1rem 0.25rem rgb(0 0 0 / 5%)'
-                  },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-                    className: "card-body",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
-                      className: "card-title",
-                      children: ["USPS  ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {})]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-                      className: "row"
-                    })]
-                  })
-                })
-              })]
             })]
           })
         })
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
       className: "row justify-content-center",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
         className: "col-6",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
           className: "card",
@@ -7965,8 +8171,8 @@ function Dashboard() {
             className: "card-body",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
               className: "card-title",
-              children: ["Reports ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
-                children: "/Pie"
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/General"
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
               className: "chart w-100",
@@ -7974,7 +8180,109 @@ function Dashboard() {
             })]
           })
         })
-      })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Manifest"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartManifest"
+            })]
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Inbound"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartInbound"
+            })]
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Dispatch"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartDispatch"
+            })]
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Failed"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartFailed"
+            })]
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Delivery"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartDelivery"
+            })]
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-6",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: ["Report ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "/Warehouse"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("canvas", {
+              className: "chart w-100",
+              id: "pieChartWarehouse"
+            })]
+          })
+        })
+      })]
     })]
   });
 }
