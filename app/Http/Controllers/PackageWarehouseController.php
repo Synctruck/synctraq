@@ -214,48 +214,6 @@ class PackageWarehouseController extends Controller
                 
                 if($packageManifest)
                 {
-                    $packageInbound = new PackageInbound();
-
-                    $packageInbound->Reference_Number_1           = $package->Reference_Number_1;
-                    $packageInbound->Reference_Number_2           = $package->Reference_Number_2;
-                    $packageInbound->Reference_Number_3           = $package->Reference_Number_3;
-                    $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
-                    $packageInbound->CLIENT                       = $package->company;
-                    $packageInbound->Ready_At                     = $package->Ready_At;
-                    $packageInbound->Del_Date                     = $package->Del_Date;
-                    $packageInbound->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                    $packageInbound->Del_no_later_than            = $package->Del_no_later_than;
-                    $packageInbound->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                    $packageInbound->Pickup_Company               = $package->Pickup_Company;
-                    $packageInbound->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                    $packageInbound->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                    $packageInbound->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                    $packageInbound->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                    $packageInbound->Pickup_City                  = $package->Pickup_City;
-                    $packageInbound->Pickup_Province              = $package->Pickup_Province;
-                    $packageInbound->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
-                    $packageInbound->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                    $packageInbound->Dropoff_Company              = $package->Dropoff_Company;
-                    $packageInbound->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                    $packageInbound->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                    $packageInbound->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                    $packageInbound->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                    $packageInbound->Dropoff_City                 = $package->Dropoff_City;
-                    $packageInbound->Dropoff_Province             = $package->Dropoff_Province;
-                    $packageInbound->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                    $packageInbound->Service_Level                = $package->Service_Level;
-                    $packageInbound->Carrier_Name                 = $package->Carrier_Name;
-                    $packageInbound->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
-                    $packageInbound->Notes                        = $package->Notes;
-                    $packageInbound->Number_Of_Pieces             = $package->Number_Of_Pieces;
-                    $packageInbound->Weight                       = $package->Weight;
-                    $packageInbound->Route                        = $package->Route;
-                    $packageInbound->Name                         = $package->Name;
-                    $packageInbound->idUser                       = Session::get('user')->id;
-                    $packageInbound->status                       = 'Inbound';
-
-                    $packageInbound->save();
-
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -302,8 +260,6 @@ class PackageWarehouseController extends Controller
                     $packageHistory->status                       = 'Inbound';
 
                     $packageHistory->save();
-
-                    $packageManifest->delete();
                 }
 
                 if($packageDispatch)
