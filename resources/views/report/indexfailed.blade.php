@@ -12,7 +12,7 @@
 </div><!-- End Page Title -->
 <script>
 	let idUserGeneral = '{{Session::get('user')->id}}';
-	let auxDateInit   = '{{date('Y-m-01')}}';
+	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
 </script>
 <div id="reportFailed">

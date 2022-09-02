@@ -50,45 +50,84 @@ class IndexController extends Controller
                                                 ->get()
                                                 ->count();
 
+        $quantityManifestByRoutes =  PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+                                                    ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                    ->where('status', 'On hold')
+                                                    ->groupBy('Route')
+                                                    ->get();
+
         $quantityInbound = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Inbound')
-                                                ->where('inbound', 1)
+                                                // ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
+
+        $quantityInboundByRoutes = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+                                                ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                ->where('status', 'Inbound')
+                                                ->groupBy('Route')
+                                                ->get();
+
 
         $quantityDispatch = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Dispatch')
-                                                ->where('dispatch', 1)
+                                                // ->where('dispatch', 1)
                                                 ->get()
                                                 ->count();
 
-        // $quantityNotExistsToday = PackageNotExists::whereBetween('created_at', [$initDate, $endDate])
-        //                                         ->get()
-        //                                         ->count();
-
-        // $quantityReturnToday = PackageHistory::whereBetween('created_at', [$todayInitDate, $endDate])
-        //                                         ->where('status', 'Return')
-        //                                         ->where('dispatch', 0)
-        //                                         ->get()
-        //                                         ->count();
+        $quantityDispatchByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                ->where('status', 'Dispatch')
+                                                ->groupBy('Route')
+                                                ->get();
 
         $quantityDelivery = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Delivery')
                                                 ->get()
                                                 ->count();
 
+        $quantityDeliveryByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                ->where('status', 'Delivery')
+                                                ->groupBy('Route')
+                                                ->get();
+
+        $quantityFailed = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('status', 'Failed')
+                                                ->get()
+                                                ->count();
+
+        $quantityFailedByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                ->where('status', 'Failed')
+                                                ->groupBy('Route')
+                                                ->get();
+
         $quantityWarehouse = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 
-        return [
+        $quantityWarehouseByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+                                                ->select('Route', DB::raw('COUNT(id) AS total'))
+                                                ->where('status', 'Warehouse')
+                                                ->groupBy('Route')
+                                                ->get();
 
+        return [
             'quantityManifest' => $quantityManifest,
             'quantityInbound' => $quantityInbound,
             'quantityDispatch' => $quantityDispatch,
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
+            'quantityFailed' => $quantityFailed,
+
+            'quantityManifestByRoutes' => $quantityManifestByRoutes,
+            'quantityInboundByRoutes' => $quantityInboundByRoutes,
+            'quantityDispatchByRoutes' => $quantityDispatchByRoutes,
+            'quantityDeliveryByRoutes' => $quantityDeliveryByRoutes,
+            'quantityWarehouseByRoutes' => $quantityWarehouseByRoutes,
+            'quantityFailedByRoutes' => $quantityFailedByRoutes
         ];
     }
 }
