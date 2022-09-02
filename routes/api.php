@@ -23,11 +23,14 @@ Route::get('packages', [PackageController::class, 'Index']);
 Route::get('packages/{reference}', [PackageController::class, 'Get']);
 Route::post('packages', [PackageController::class, 'Insert']);
 
-Route::get('packages-webhook', [WHookController::class, 'Index']);
-Route::post('packages-webhook', [WHookController::class, 'UpdateStatusOnfleet']);
+Route::get('packages-webhook-taskCompleted', [WHookController::class, 'EndPointTaskCompleted']);
+Route::post('packages-webhook-taskCompleted', [WHookController::class, 'TaskCompleted']);
 
 Route::get('packages-webhook-taskFailed', [WHookController::class, 'EndPointTaskFailed']);
 Route::post('packages-webhook-taskFailed', [WHookController::class, 'TaskFailed']);
 
 Route::get('packages-webhook-taskCreated', [WHookController::class, 'EndPointTaskCreated']);
 Route::post('packages-webhook-taskCreated', [WHookController::class, 'TaskCreated']);
+
+Route::get('packages-webhook-taskDelete', [WHookController::class, 'EndPointTaskDelete']);
+Route::post('packages-webhook-taskDelete', [WHookController::class, 'TaskDelete']);
