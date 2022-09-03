@@ -3946,6 +3946,10 @@ __webpack_require__(/*! ./components/UserChangePassword */ "./resources/js/compo
 
 __webpack_require__(/*! ./components/PackageWarehouse */ "./resources/js/components/PackageWarehouse.jsx");
 
+__webpack_require__(/*! ./components/PackageCheckDelivery */ "./resources/js/components/PackageCheckDelivery.jsx");
+
+__webpack_require__(/*! ./components/PackageFinance */ "./resources/js/components/PackageFinance.jsx");
+
 __webpack_require__(/*! ./components/Login */ "./resources/js/components/Login.js");
 
 /***/ }),
@@ -10687,6 +10691,855 @@ if (document.getElementById('packageCheck')) {
 
 /***/ }),
 
+/***/ "./resources/js/components/PackageCheckDelivery.jsx":
+/*!**********************************************************!*\
+  !*** ./resources/js/components/PackageCheckDelivery.jsx ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_js_pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-js-pagination */ "./node_modules/react-js-pagination/dist/Pagination.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+
+
+
+
+
+
+
+
+
+
+function PackageCheckDelivery() {
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState2 = _slicedToArray(_useState, 2),
+      listReport = _useState2[0],
+      setListReport = _useState2[1];
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      listDeliveries = _useState4[0],
+      setListDeliveries = _useState4[1];
+
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState6 = _slicedToArray(_useState5, 2),
+      listTeam = _useState6[0],
+      setListTeam = _useState6[1];
+
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState8 = _slicedToArray(_useState7, 2),
+      listDriver = _useState8[0],
+      setListDriver = _useState8[1];
+
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState10 = _slicedToArray(_useState9, 2),
+      roleUser = _useState10[0],
+      setRoleUser = _useState10[1];
+
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState12 = _slicedToArray(_useState11, 2),
+      quantityDispatch = _useState12[0],
+      setQuantityDispatch = _useState12[1];
+
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState14 = _slicedToArray(_useState13, 2),
+      listRoute = _useState14[0],
+      setListRoute = _useState14[1];
+
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState16 = _slicedToArray(_useState15, 2),
+      listState = _useState16[0],
+      setListState = _useState16[1];
+
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
+      _useState18 = _slicedToArray(_useState17, 2),
+      dateInit = _useState18[0],
+      setDateInit = _useState18[1];
+
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
+      _useState20 = _slicedToArray(_useState19, 2),
+      dateEnd = _useState20[0],
+      setDateEnd = _useState20[1];
+
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState22 = _slicedToArray(_useState21, 2),
+      idTeam = _useState22[0],
+      setIdTeam = _useState22[1];
+
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState24 = _slicedToArray(_useState23, 2),
+      idDriver = _useState24[0],
+      setIdDriver = _useState24[1];
+
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+      _useState26 = _slicedToArray(_useState25, 2),
+      RouteSearch = _useState26[0],
+      setRouteSearch = _useState26[1];
+
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+      _useState28 = _slicedToArray(_useState27, 2),
+      StateSearch = _useState28[0],
+      setStateSearch = _useState28[1];
+
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState30 = _slicedToArray(_useState29, 2),
+      page = _useState30[0],
+      setPage = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState32 = _slicedToArray(_useState31, 2),
+      totalPage = _useState32[0],
+      setTotalPage = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState34 = _slicedToArray(_useState33, 2),
+      totalPackage = _useState34[0],
+      setTotalPackage = _useState34[1];
+
+  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState36 = _slicedToArray(_useState35, 2),
+      file = _useState36[0],
+      setFile = _useState36[1];
+
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState38 = _slicedToArray(_useState37, 2),
+      btnDisplay = _useState38[0],
+      setbtnDisplay = _useState38[1];
+
+  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState40 = _slicedToArray(_useState39, 2),
+      viewButtonSave = _useState40[0],
+      setViewButtonSave = _useState40[1];
+
+  var inputFileRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef();
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (String(file) == 'undefined' || file == '') {
+      setViewButtonSave('none');
+    } else {
+      setViewButtonSave('block');
+    }
+  }, [file]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    listAllTeam();
+    listAllRoute();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    listReportDispatch(1, RouteSearch, StateSearch);
+  }, [dateInit, dateEnd, idTeam, idDriver]);
+
+  var listReportDispatch = function listReportDispatch(pageNumber, routeSearch, stateSearch) {
+    setListReport([]);
+    fetch(url_general + 'package-delivery/list-for-check/' + dateInit + '/' + dateEnd + '/' + idTeam + '/' + idDriver + '/' + routeSearch + '/' + stateSearch + '?page=' + pageNumber).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListReport(response.reportList.data);
+      setListDeliveries(response.listDeliveries);
+      setTotalPackage(response.reportList.total);
+      setTotalPage(response.reportList.per_page);
+      setPage(response.reportList.current_page);
+      setQuantityDispatch(response.reportList.total);
+      setRoleUser(response.roleUser);
+      setListState(response.listState);
+
+      if (listState.length == 0) {
+        listOptionState(response.listState);
+      }
+
+      if (response.roleUser == 'Administrador') {
+        listAllTeam();
+      } else {
+        listAllDriverByTeam(idUserGeneral);
+        setIdTeam(idUserGeneral);
+      }
+    });
+  };
+
+  var listAllTeam = function listAllTeam() {
+    fetch(url_general + 'team/listall').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListTeam(response.listTeam);
+    });
+  };
+
+  var listAllDriverByTeam = function listAllDriverByTeam(idTeam) {
+    setListDriver([]);
+    setIdTeam(idTeam);
+    setIdDriver(0);
+    fetch(url_general + 'driver/team/list/' + idTeam).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListDriver(response.listDriver);
+    });
+  };
+
+  var listAllRoute = function listAllRoute() {
+    setListRoute([]);
+    fetch(url_general + 'routes/getAll').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListRoute(response.routeList);
+      listOptionRoute(response.routeList);
+    });
+  };
+
+  var handlerChangeDateInit = function handlerChangeDateInit(date) {
+    setDateInit(date);
+  };
+
+  var handlerChangeDateEnd = function handlerChangeDateEnd(date) {
+    setDateEnd(date);
+  };
+
+  var handlerChangePage = function handlerChangePage(pageNumber) {
+    listReportDispatch(pageNumber, RouteSearch, StateSearch);
+  };
+
+  var handlerExport = function handlerExport() {
+    location.href = url_general + 'report/export/delivery/' + dateInit + '/' + dateEnd + '/' + idTeam + '/' + idDriver + '/' + RouteSearch + '/' + StateSearch;
+  };
+
+  var handlerCheckbox = function handlerCheckbox(Reference_Number_1) {
+    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var formData = new FormData();
+    formData.append('Reference_Number_1', Reference_Number_1);
+    fetch(url_general + 'package-delivery/insert-for-check', {
+      headers: {
+        "X-CSRF-TOKEN": token
+      },
+      method: 'post',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      LoadingHide();
+    });
+    console.log(e);
+  };
+
+  var listReportTable = listReport.map(function (packageDelivery, i) {
+    var imgs = '';
+    var urlImage = '';
+    var photoHttp = false;
+
+    if (!packageDelivery.idOnfleet) {
+      photoHttp = true;
+    } else if (packageDelivery.idOnfleet && packageDelivery.photoUrl == '') {
+      photoHttp = true;
+    }
+
+    if (photoHttp) {
+      var team = '';
+      var driver = '';
+      listDeliveries.forEach(function (delivery) {
+        if (packageDelivery.Reference_Number_1 == delivery.taskDetails) {
+          urlImage = delivery.photoUrl;
+
+          if (urlImage) {
+            urlImage = urlImage.split('https');
+
+            if (urlImage.length == 2) {
+              imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: 'https' + urlImage[1],
+                width: "100"
+              });
+            } else if (urlImage.length >= 3) {
+              imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: 'https' + urlImage[1],
+                  width: "50",
+                  style: {
+                    border: '2px solid red'
+                  }
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: 'https' + urlImage[2],
+                  width: "50",
+                  style: {
+                    border: '2px solid red'
+                  }
+                })]
+              });
+            }
+          }
+
+          urlImage = delivery.photoUrl;
+        }
+      });
+
+      if (packageDelivery.driver) {
+        if (packageDelivery.driver.nameTeam) {
+          team = packageDelivery.driver.nameTeam;
+          driver = packageDelivery.driver.name + ' ' + packageDelivery.driver.nameOfOwner;
+        } else {
+          team = packageDelivery.driver.name;
+        }
+      }
+    } else if (packageDelivery.idOnfleet && packageDelivery.photoUrl) {
+      var idsImages = packageDelivery.photoUrl.split(',');
+
+      if (idsImages.length == 1) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+          src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
+          width: "100"
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png';
+      } else if (idsImages.length >= 2) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png',
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          })]
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png';
+      }
+    }
+
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+        style: {
+          width: '100px'
+        },
+        children: [packageDelivery.updated_at.substring(5, 7), "-", packageDelivery.updated_at.substring(8, 10), "-", packageDelivery.updated_at.substring(0, 4)]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.updated_at.substring(11, 19)
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.recipientNotes
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.workerName
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+          children: packageDelivery.Reference_Number_1
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Contact_Name
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Contact_Phone_Number
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Address_Line_1
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_City
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Province
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Postal_Code
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Weight
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Route
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.taskOnfleet
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        onClick: function onClick() {
+          return viewImages(urlImage);
+        },
+        style: {
+          cursor: 'pointer'
+        },
+        children: imgs
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+          "class": "form-check-input",
+          type: "checkbox",
+          id: 'idCheck' + packageDelivery.Reference_Number_1,
+          defaultChecked: packageDelivery.checkPayment,
+          onChange: function onChange(e) {
+            return handlerCheckbox(packageDelivery.Reference_Number_1);
+          }
+        })
+      })]
+    }, i);
+  });
+
+  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState42 = _slicedToArray(_useState41, 2),
+      listViewImages = _useState42[0],
+      setListViewImages = _useState42[1];
+
+  var viewImages = function viewImages(urlImage) {
+    setListViewImages(urlImage.split('https'));
+    var myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+      keyboard: true
+    });
+    myModal.show();
+  };
+
+  var listViewImagesModal = listViewImages.map(function (image, i) {
+    if (i > 0) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+        src: 'https' + image,
+        className: "img-fluid mt-2"
+      });
+    }
+  });
+
+  var modalViewImages = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "modal fade",
+      id: "modalViewImages",
+      tabindex: "-1",
+      "aria-labelledby": "exampleModalLabel",
+      "aria-hidden": "true",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "modal-dialog",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "modal-header",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
+              className: "modal-title text-primary",
+              id: "exampleModalLabel",
+              children: "View Images"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+              type: "button",
+              className: "btn-close",
+              "data-bs-dismiss": "modal",
+              "aria-label": "Close"
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "modal-body",
+            children: listViewImagesModal
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "modal-footer",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+              type: "button",
+              className: "btn btn-secondary",
+              "data-bs-dismiss": "modal",
+              children: "Cerrar"
+            })
+          })]
+        })
+      })
+    })
+  });
+
+  var listTeamSelect = listTeam.map(function (team, i) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+      value: team.id,
+      children: team.name
+    });
+  });
+  var listDriverSelect = listDriver.map(function (driver, i) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+      value: driver.id,
+      children: driver.name + ' ' + driver.nameOfOwner
+    });
+  });
+
+  var handlerChangeRoute = function handlerChangeRoute(routes) {
+    if (routes.length != 0) {
+      var routesSearch = '';
+      routes.map(function (route) {
+        routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
+      });
+      setRouteSearch(routesSearch);
+      listReportDispatch(1, routesSearch, StateSearch);
+    } else {
+      setRouteSearch('all');
+      listReportDispatch(1, 'all', StateSearch);
+    }
+  };
+
+  var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState44 = _slicedToArray(_useState43, 2),
+      optionsRoleSearch = _useState44[0],
+      setOptionsRoleSearch = _useState44[1];
+
+  var listOptionRoute = function listOptionRoute(listRoutes) {
+    setOptionsRoleSearch([]);
+    listRoutes.map(function (route, i) {
+      optionsRoleSearch.push({
+        value: route.name,
+        label: route.name
+      });
+      setOptionsRoleSearch(optionsRoleSearch);
+    });
+  };
+
+  var handlerChangeState = function handlerChangeState(states) {
+    if (states.length != 0) {
+      var statesSearch = '';
+      states.map(function (state) {
+        statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
+      });
+      setStateSearch(statesSearch);
+      listReportDispatch(page, RouteSearch, statesSearch);
+    } else {
+      setStateSearch('all');
+      listReportDispatch(page, RouteSearch, 'all');
+    }
+  };
+
+  var _useState45 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState46 = _slicedToArray(_useState45, 2),
+      optionsStateSearch = _useState46[0],
+      setOptionsStateSearch = _useState46[1];
+
+  var listOptionState = function listOptionState(listState) {
+    setOptionsStateSearch([]);
+    listState.map(function (state, i) {
+      optionsStateSearch.push({
+        value: state.Dropoff_Province,
+        label: state.Dropoff_Province
+      });
+      setOptionsStateSearch(optionsStateSearch);
+    });
+  };
+
+  var handlerImport = function handlerImport(e) {
+    e.preventDefault();
+    var formData = new FormData();
+    formData.append('file', file);
+    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    LoadingShow();
+    fetch(url_general + 'package-delivery/import', {
+      headers: {
+        "X-CSRF-TOKEN": token
+      },
+      method: 'post',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      if (response.stateAction) {
+        sweetalert__WEBPACK_IMPORTED_MODULE_3___default()("Se importó el archivo!", {
+          icon: "success"
+        });
+        document.getElementById('fileImport').value = '';
+        listAllPackage();
+        setbtnDisplay('none');
+      }
+
+      LoadingHide();
+    });
+  };
+
+  var onBtnClickFile = function onBtnClickFile() {
+    setViewButtonSave('none');
+    inputFileRef.current.click();
+  };
+
+  var _useState47 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState48 = _slicedToArray(_useState47, 2),
+      messageUpdateOnfleet = _useState48[0],
+      setMessageUpdateOnfleet = _useState48[1];
+
+  var linkUpdateOnfleet = function linkUpdateOnfleet() {
+    setMessageUpdateOnfleet('Updating onfleet...');
+    fetch(url_general + 'package-delivery/updatedOnfleet').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      if (response.stateAction == 'onfleet') {
+        setMessageUpdateOnfleet(response.quantityOnfleet + ' packages have been updated as delivered'); //swal('Update Complete!', response.quantityOnfleet +' packages have been updated as delivered', 'success');
+
+        listReportDispatch(1, RouteSearch, StateSearch);
+      }
+
+      LoadingHide();
+    });
+  };
+
+  var handlerSaveCheck = function handlerSaveCheck() {
+    sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
+      title: "Save?",
+      text: "Checked packages will be saved!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true
+    }).then(function (willDelete) {
+      if (willDelete) {
+        fetch(url_general + 'package-delivery/confirmation-check').then(function (response) {
+          return response.json();
+        }).then(function (response) {
+          sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Correct!', 'Correct process', 'success');
+          listReportDispatch(1, RouteSearch, StateSearch);
+        });
+      }
+    });
+  };
+
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("section", {
+    className: "section",
+    children: [modalViewImages, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "row",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-lg-12",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "row form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-12 form-group",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "row form-group",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                      className: "col-lg-2",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                        htmlFor: "",
+                        children: "Fecha de inicio:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
+                        value: dateInit,
+                        onChange: function onChange(e) {
+                          return handlerChangeDateInit(e.target.value);
+                        },
+                        className: "form-control"
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                      className: "col-lg-2",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                        htmlFor: "",
+                        children: "Fecha final:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
+                        value: dateEnd,
+                        onChange: function onChange(e) {
+                          return handlerChangeDateEnd(e.target.value);
+                        },
+                        className: "form-control"
+                      })]
+                    }), roleUser == 'Administrador' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-2",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "TEAM"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return listAllDriverByTeam(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listTeamSelect]
+                          })]
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-2",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "DRIVER"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return setIdDriver(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listDriverSelect]
+                          })]
+                        })
+                      })]
+                    }) : '', roleUser == 'Team' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-3",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "DRIVER"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return setIdDriver(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listDriverSelect]
+                          })]
+                        })
+                      })
+                    }) : '', /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-2",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                        className: "row",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: "State :"
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                            isMulti: true,
+                            onChange: function onChange(e) {
+                              return handlerChangeState(e);
+                            },
+                            options: optionsStateSearch
+                          })
+                        })]
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-2",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                        className: "row",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: "Route :"
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                            isMulti: true,
+                            onChange: function onChange(e) {
+                              return handlerChangeRoute(e);
+                            },
+                            options: optionsRoleSearch
+                          })
+                        })]
+                      })
+                    })]
+                  })
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                className: "row",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-2",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("b", {
+                    className: "alert-success",
+                    style: {
+                      borderRadius: '10px',
+                      padding: '10px',
+                      fontSize: '14px'
+                    },
+                    children: ["Delivery: ", quantityDispatch]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-2",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+                    className: "btn btn-primary form-control",
+                    onClick: function onClick() {
+                      return handlerSaveCheck();
+                    },
+                    children: "Save Checks"
+                  })
+                })]
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "row form-group table-responsive",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-12",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("table", {
+                  className: "table table-hover table-condensed table-bordered",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("thead", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "DATE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "HOUR"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                          children: "TEAM"
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                          children: "DRIVER"
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "PACKAGE ID"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CLIENT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CONTACT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ADDREESS"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CITY"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "STATE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ZIP CODE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "WEIGHT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ROUTE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "TASK ONFLEET"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "IMAGE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {})]
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tbody", {
+                    children: listReportTable
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-12",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_js_pagination__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                  activePage: page,
+                  totalItemsCount: totalPackage,
+                  itemsCountPerPage: totalPage,
+                  onChange: function onChange(pageNumber) {
+                    return handlerChangePage(pageNumber);
+                  },
+                  itemClass: "page-item",
+                  linkClass: "page-link",
+                  firstPageText: "Primero",
+                  lastPageText: "\xDAltimo"
+                })
+              })]
+            })]
+          })
+        })
+      })
+    })]
+  });
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PackageCheckDelivery);
+
+if (document.getElementById('packageCheckDelivery')) {
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PackageCheckDelivery, {}), document.getElementById('packageCheckDelivery'));
+}
+
+/***/ }),
+
 /***/ "./resources/js/components/PackageDelivery.jsx":
 /*!*****************************************************!*\
   !*** ./resources/js/components/PackageDelivery.jsx ***!
@@ -13509,6 +14362,874 @@ function PackageDispatch() {
 
 if (document.getElementById('packageDispatch')) {
   react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PackageDispatch, {}), document.getElementById('packageDispatch'));
+}
+
+/***/ }),
+
+/***/ "./resources/js/components/PackageFinance.jsx":
+/*!****************************************************!*\
+  !*** ./resources/js/components/PackageFinance.jsx ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_js_pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-js-pagination */ "./node_modules/react-js-pagination/dist/Pagination.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+
+
+
+
+
+
+
+
+
+
+function PackageFinance() {
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState2 = _slicedToArray(_useState, 2),
+      listReport = _useState2[0],
+      setListReport = _useState2[1];
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      listDeliveries = _useState4[0],
+      setListDeliveries = _useState4[1];
+
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState6 = _slicedToArray(_useState5, 2),
+      listTeam = _useState6[0],
+      setListTeam = _useState6[1];
+
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState8 = _slicedToArray(_useState7, 2),
+      listDriver = _useState8[0],
+      setListDriver = _useState8[1];
+
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState10 = _slicedToArray(_useState9, 2),
+      roleUser = _useState10[0],
+      setRoleUser = _useState10[1];
+
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState12 = _slicedToArray(_useState11, 2),
+      quantityDispatch = _useState12[0],
+      setQuantityDispatch = _useState12[1];
+
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState14 = _slicedToArray(_useState13, 2),
+      listRoute = _useState14[0],
+      setListRoute = _useState14[1];
+
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState16 = _slicedToArray(_useState15, 2),
+      listState = _useState16[0],
+      setListState = _useState16[1];
+
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
+      _useState18 = _slicedToArray(_useState17, 2),
+      dateInit = _useState18[0],
+      setDateInit = _useState18[1];
+
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(auxDateInit),
+      _useState20 = _slicedToArray(_useState19, 2),
+      dateEnd = _useState20[0],
+      setDateEnd = _useState20[1];
+
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState22 = _slicedToArray(_useState21, 2),
+      idTeam = _useState22[0],
+      setIdTeam = _useState22[1];
+
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState24 = _slicedToArray(_useState23, 2),
+      idDriver = _useState24[0],
+      setIdDriver = _useState24[1];
+
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+      _useState26 = _slicedToArray(_useState25, 2),
+      checked = _useState26[0],
+      setChecked = _useState26[1];
+
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+      _useState28 = _slicedToArray(_useState27, 2),
+      RouteSearch = _useState28[0],
+      setRouteSearch = _useState28[1];
+
+  var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all'),
+      _useState30 = _slicedToArray(_useState29, 2),
+      StateSearch = _useState30[0],
+      setStateSearch = _useState30[1];
+
+  var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+      _useState32 = _slicedToArray(_useState31, 2),
+      page = _useState32[0],
+      setPage = _useState32[1];
+
+  var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState34 = _slicedToArray(_useState33, 2),
+      totalPage = _useState34[0],
+      setTotalPage = _useState34[1];
+
+  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState36 = _slicedToArray(_useState35, 2),
+      totalPackage = _useState36[0],
+      setTotalPackage = _useState36[1];
+
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState38 = _slicedToArray(_useState37, 2),
+      file = _useState38[0],
+      setFile = _useState38[1];
+
+  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState40 = _slicedToArray(_useState39, 2),
+      btnDisplay = _useState40[0],
+      setbtnDisplay = _useState40[1];
+
+  var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('none'),
+      _useState42 = _slicedToArray(_useState41, 2),
+      viewButtonSave = _useState42[0],
+      setViewButtonSave = _useState42[1];
+
+  var inputFileRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef();
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (String(file) == 'undefined' || file == '') {
+      setViewButtonSave('none');
+    } else {
+      setViewButtonSave('block');
+    }
+  }, [file]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    listAllTeam();
+    listAllRoute();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    listReportDispatch(1, RouteSearch, StateSearch);
+  }, [dateInit, dateEnd, idTeam, idDriver, checked]);
+
+  var listReportDispatch = function listReportDispatch(pageNumber, routeSearch, stateSearch) {
+    setListReport([]);
+    fetch(url_general + 'package-delivery/list-finance/' + dateInit + '/' + dateEnd + '/' + idTeam + '/' + idDriver + '/' + checked + '/' + routeSearch + '/' + stateSearch + '?page=' + pageNumber).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListReport(response.reportList.data);
+      setListDeliveries(response.listDeliveries);
+      setTotalPackage(response.reportList.total);
+      setTotalPage(response.reportList.per_page);
+      setPage(response.reportList.current_page);
+      setQuantityDispatch(response.reportList.total);
+      setRoleUser(response.roleUser);
+      setListState(response.listState);
+
+      if (listState.length == 0) {
+        listOptionState(response.listState);
+      }
+
+      if (response.roleUser == 'Administrador') {
+        listAllTeam();
+      } else {
+        listAllDriverByTeam(idUserGeneral);
+        setIdTeam(idUserGeneral);
+      }
+    });
+  };
+
+  var listAllTeam = function listAllTeam() {
+    fetch(url_general + 'team/listall').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListTeam(response.listTeam);
+    });
+  };
+
+  var listAllDriverByTeam = function listAllDriverByTeam(idTeam) {
+    setListDriver([]);
+    setIdTeam(idTeam);
+    setIdDriver(0);
+    fetch(url_general + 'driver/team/list/' + idTeam).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListDriver(response.listDriver);
+    });
+  };
+
+  var listAllRoute = function listAllRoute() {
+    setListRoute([]);
+    fetch(url_general + 'routes/getAll').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      setListRoute(response.routeList);
+      listOptionRoute(response.routeList);
+    });
+  };
+
+  var handlerChangeDateInit = function handlerChangeDateInit(date) {
+    setDateInit(date);
+  };
+
+  var handlerChangeDateEnd = function handlerChangeDateEnd(date) {
+    setDateEnd(date);
+  };
+
+  var handlerChangePage = function handlerChangePage(pageNumber) {
+    listReportDispatch(pageNumber, RouteSearch, StateSearch);
+  };
+
+  var handlerExport = function handlerExport() {
+    location.href = url_general + 'report/export/delivery/' + dateInit + '/' + dateEnd + '/' + idTeam + '/' + idDriver + '/' + RouteSearch + '/' + StateSearch;
+  };
+
+  var handlerCheckbox = function handlerCheckbox(Reference_Number_1) {
+    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var formData = new FormData();
+    formData.append('Reference_Number_1', Reference_Number_1);
+    fetch(url_general + 'package-delivery/insert-for-check', {
+      headers: {
+        "X-CSRF-TOKEN": token
+      },
+      method: 'post',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      LoadingHide();
+    });
+    console.log(e);
+  };
+
+  var listReportTable = listReport.map(function (packageDelivery, i) {
+    var imgs = '';
+    var urlImage = '';
+    var photoHttp = false;
+
+    if (!packageDelivery.idOnfleet) {
+      photoHttp = true;
+    } else if (packageDelivery.idOnfleet && packageDelivery.photoUrl == '') {
+      photoHttp = true;
+    }
+
+    if (photoHttp) {
+      var team = '';
+      var driver = '';
+      listDeliveries.forEach(function (delivery) {
+        if (packageDelivery.Reference_Number_1 == delivery.taskDetails) {
+          urlImage = delivery.photoUrl;
+
+          if (urlImage) {
+            urlImage = urlImage.split('https');
+
+            if (urlImage.length == 2) {
+              imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: 'https' + urlImage[1],
+                width: "100"
+              });
+            } else if (urlImage.length >= 3) {
+              imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: 'https' + urlImage[1],
+                  width: "50",
+                  style: {
+                    border: '2px solid red'
+                  }
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: 'https' + urlImage[2],
+                  width: "50",
+                  style: {
+                    border: '2px solid red'
+                  }
+                })]
+              });
+            }
+          }
+
+          urlImage = delivery.photoUrl;
+        }
+      });
+
+      if (packageDelivery.driver) {
+        if (packageDelivery.driver.nameTeam) {
+          team = packageDelivery.driver.nameTeam;
+          driver = packageDelivery.driver.name + ' ' + packageDelivery.driver.nameOfOwner;
+        } else {
+          team = packageDelivery.driver.name;
+        }
+      }
+    } else if (packageDelivery.idOnfleet && packageDelivery.photoUrl) {
+      var idsImages = packageDelivery.photoUrl.split(',');
+
+      if (idsImages.length == 1) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+          src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
+          width: "100"
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png';
+      } else if (idsImages.length >= 2) {
+        imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png',
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png',
+            width: "50",
+            style: {
+              border: '2px solid red'
+            }
+          })]
+        });
+        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png';
+      }
+    }
+
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+        style: {
+          width: '100px'
+        },
+        children: [packageDelivery.updated_at.substring(5, 7), "-", packageDelivery.updated_at.substring(8, 10), "-", packageDelivery.updated_at.substring(0, 4)]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.updated_at.substring(11, 19)
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.recipientNotes
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.workerName
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+          children: packageDelivery.Reference_Number_1
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Contact_Name
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Contact_Phone_Number
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Address_Line_1
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_City
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Province
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Dropoff_Postal_Code
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Weight
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.Route
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        children: packageDelivery.taskOnfleet
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+        onClick: function onClick() {
+          return viewImages(urlImage);
+        },
+        style: {
+          cursor: 'pointer'
+        },
+        children: imgs
+      })]
+    }, i);
+  });
+
+  var _useState43 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState44 = _slicedToArray(_useState43, 2),
+      listViewImages = _useState44[0],
+      setListViewImages = _useState44[1];
+
+  var viewImages = function viewImages(urlImage) {
+    setListViewImages(urlImage.split('https'));
+    var myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+      keyboard: true
+    });
+    myModal.show();
+  };
+
+  var listViewImagesModal = listViewImages.map(function (image, i) {
+    if (i > 0) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+        src: 'https' + image,
+        className: "img-fluid mt-2"
+      });
+    }
+  });
+
+  var modalViewImages = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "modal fade",
+      id: "modalViewImages",
+      tabindex: "-1",
+      "aria-labelledby": "exampleModalLabel",
+      "aria-hidden": "true",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "modal-dialog",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "modal-header",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h5", {
+              className: "modal-title text-primary",
+              id: "exampleModalLabel",
+              children: "View Images"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+              type: "button",
+              className: "btn-close",
+              "data-bs-dismiss": "modal",
+              "aria-label": "Close"
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "modal-body",
+            children: listViewImagesModal
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "modal-footer",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+              type: "button",
+              className: "btn btn-secondary",
+              "data-bs-dismiss": "modal",
+              children: "Cerrar"
+            })
+          })]
+        })
+      })
+    })
+  });
+
+  var listTeamSelect = listTeam.map(function (team, i) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+      value: team.id,
+      children: team.name
+    });
+  });
+  var listDriverSelect = listDriver.map(function (driver, i) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+      value: driver.id,
+      children: driver.name + ' ' + driver.nameOfOwner
+    });
+  });
+
+  var handlerChangeRoute = function handlerChangeRoute(routes) {
+    if (routes.length != 0) {
+      var routesSearch = '';
+      routes.map(function (route) {
+        routesSearch = routesSearch == '' ? route.value : routesSearch + ',' + route.value;
+      });
+      setRouteSearch(routesSearch);
+      listReportDispatch(1, routesSearch, StateSearch);
+    } else {
+      setRouteSearch('all');
+      listReportDispatch(1, 'all', StateSearch);
+    }
+  };
+
+  var _useState45 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState46 = _slicedToArray(_useState45, 2),
+      optionsRoleSearch = _useState46[0],
+      setOptionsRoleSearch = _useState46[1];
+
+  var listOptionRoute = function listOptionRoute(listRoutes) {
+    setOptionsRoleSearch([]);
+    listRoutes.map(function (route, i) {
+      optionsRoleSearch.push({
+        value: route.name,
+        label: route.name
+      });
+      setOptionsRoleSearch(optionsRoleSearch);
+    });
+  };
+
+  var handlerChangeState = function handlerChangeState(states) {
+    if (states.length != 0) {
+      var statesSearch = '';
+      states.map(function (state) {
+        statesSearch = statesSearch == '' ? state.value : statesSearch + ',' + state.value;
+      });
+      setStateSearch(statesSearch);
+      listReportDispatch(page, RouteSearch, statesSearch);
+    } else {
+      setStateSearch('all');
+      listReportDispatch(page, RouteSearch, 'all');
+    }
+  };
+
+  var _useState47 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState48 = _slicedToArray(_useState47, 2),
+      optionsStateSearch = _useState48[0],
+      setOptionsStateSearch = _useState48[1];
+
+  var listOptionState = function listOptionState(listState) {
+    setOptionsStateSearch([]);
+    listState.map(function (state, i) {
+      optionsStateSearch.push({
+        value: state.Dropoff_Province,
+        label: state.Dropoff_Province
+      });
+      setOptionsStateSearch(optionsStateSearch);
+    });
+  };
+
+  var handlerImport = function handlerImport(e) {
+    e.preventDefault();
+    var formData = new FormData();
+    formData.append('file', file);
+    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    LoadingShow();
+    fetch(url_general + 'package-delivery/import', {
+      headers: {
+        "X-CSRF-TOKEN": token
+      },
+      method: 'post',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      if (response.stateAction) {
+        sweetalert__WEBPACK_IMPORTED_MODULE_3___default()("Se importó el archivo!", {
+          icon: "success"
+        });
+        document.getElementById('fileImport').value = '';
+        listAllPackage();
+        setbtnDisplay('none');
+      }
+
+      LoadingHide();
+    });
+  };
+
+  var onBtnClickFile = function onBtnClickFile() {
+    setViewButtonSave('none');
+    inputFileRef.current.click();
+  };
+
+  var _useState49 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState50 = _slicedToArray(_useState49, 2),
+      messageUpdateOnfleet = _useState50[0],
+      setMessageUpdateOnfleet = _useState50[1];
+
+  var linkUpdateOnfleet = function linkUpdateOnfleet() {
+    setMessageUpdateOnfleet('Updating onfleet...');
+    fetch(url_general + 'package-delivery/updatedOnfleet').then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      if (response.stateAction == 'onfleet') {
+        setMessageUpdateOnfleet(response.quantityOnfleet + ' packages have been updated as delivered'); //swal('Update Complete!', response.quantityOnfleet +' packages have been updated as delivered', 'success');
+
+        listReportDispatch(1, RouteSearch, StateSearch);
+      }
+
+      LoadingHide();
+    });
+  };
+
+  var handlerSaveCheck = function handlerSaveCheck() {
+    sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
+      title: "Save?",
+      text: "Checked packages will be saved!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true
+    }).then(function (willDelete) {
+      if (willDelete) {
+        fetch(url_general + 'package-delivery/confirmation-check').then(function (response) {
+          return response.json();
+        }).then(function (response) {
+          sweetalert__WEBPACK_IMPORTED_MODULE_3___default()('Correct!', 'Correct process', 'success');
+          listReportDispatch(1, RouteSearch, StateSearch);
+        });
+      }
+    });
+  };
+
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("section", {
+    className: "section",
+    children: [modalViewImages, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      className: "row",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "col-lg-12",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          className: "card",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "card-body",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("h5", {
+              className: "card-title",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "row form-group",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-12 form-group",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                    className: "row form-group",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                      className: "col-lg-2",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                        htmlFor: "",
+                        children: "Fecha de inicio:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
+                        value: dateInit,
+                        onChange: function onChange(e) {
+                          return handlerChangeDateInit(e.target.value);
+                        },
+                        className: "form-control"
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                      className: "col-lg-2",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                        htmlFor: "",
+                        children: "Fecha final:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                        type: "date",
+                        value: dateEnd,
+                        onChange: function onChange(e) {
+                          return handlerChangeDateEnd(e.target.value);
+                        },
+                        className: "form-control"
+                      })]
+                    }), roleUser == 'Administrador' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-2",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "TEAM"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return listAllDriverByTeam(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listTeamSelect]
+                          })]
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-2",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "DRIVER"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return setIdDriver(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listDriverSelect]
+                          })]
+                        })
+                      })]
+                    }) : '', roleUser == 'Team' ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                        className: "col-lg-3",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                          className: "form-group",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                            htmlFor: "",
+                            children: "DRIVER"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                            name: "",
+                            id: "",
+                            className: "form-control",
+                            onChange: function onChange(e) {
+                              return setIdDriver(e.target.value);
+                            },
+                            required: true,
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                              value: "0",
+                              children: "Todos"
+                            }), listDriverSelect]
+                          })]
+                        })
+                      })
+                    }) : '', /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-3",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                        className: "form-group",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+                          htmlFor: "",
+                          children: "CHECKEDS"
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("select", {
+                          name: "",
+                          id: "",
+                          className: "form-control",
+                          onChange: function onChange(e) {
+                            return setChecked(e.target.value);
+                          },
+                          required: true,
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                            value: "all",
+                            children: "All"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                            value: "1",
+                            children: "Correct"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
+                            value: "0",
+                            children: "Incorrect"
+                          })]
+                        })]
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-2",
+                      style: {
+                        display: 'none'
+                      },
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                        className: "row",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: "State :"
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                            isMulti: true,
+                            onChange: function onChange(e) {
+                              return handlerChangeState(e);
+                            },
+                            options: optionsStateSearch
+                          })
+                        })]
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                      className: "col-lg-2",
+                      style: {
+                        display: 'none'
+                      },
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                        className: "row",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: "Route :"
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                          className: "col-lg-12",
+                          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                            isMulti: true,
+                            onChange: function onChange(e) {
+                              return handlerChangeRoute(e);
+                            },
+                            options: optionsRoleSearch
+                          })
+                        })]
+                      })
+                    })]
+                  })
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "row",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                  className: "col-lg-8 form-group",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("b", {
+                    className: "alert-success",
+                    style: {
+                      borderRadius: '10px',
+                      padding: '10px',
+                      fontSize: '14px'
+                    },
+                    children: ["CHECK DELIVERY: ", quantityDispatch]
+                  })
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "row form-group table-responsive",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-12",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("table", {
+                  className: "table table-hover table-condensed table-bordered",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("thead", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "DATE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "HOUR"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                          children: "TEAM"
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+                          children: "DRIVER"
+                        })
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "PACKAGE ID"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CLIENT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CONTACT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ADDREESS"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "CITY"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "STATE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ZIP CODE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "WEIGHT"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "ROUTE"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "TASK ONFLEET"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("th", {
+                        children: "IMAGE"
+                      })]
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("tbody", {
+                    children: listReportTable
+                  })]
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+                className: "col-lg-12",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_js_pagination__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                  activePage: page,
+                  totalItemsCount: totalPackage,
+                  itemsCountPerPage: totalPage,
+                  onChange: function onChange(pageNumber) {
+                    return handlerChangePage(pageNumber);
+                  },
+                  itemClass: "page-item",
+                  linkClass: "page-link",
+                  firstPageText: "Primero",
+                  lastPageText: "\xDAltimo"
+                })
+              })]
+            })]
+          })
+        })
+      })
+    })]
+  });
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PackageFinance);
+
+if (document.getElementById('packageFinance')) {
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(PackageFinance, {}), document.getElementById('packageFinance'));
 }
 
 /***/ }),

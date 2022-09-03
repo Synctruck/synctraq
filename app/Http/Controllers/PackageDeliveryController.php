@@ -63,6 +63,195 @@ class PackageDeliveryController extends Controller
         return ['packageListDelivery' => $packageListDelivery, 'listDeliveries' => $listDeliveries, 'quantityDelivery' => $quantityDelivery];
     }
 
+    public function IndexForCheck()
+    {
+        return view('package.deliverycheck');
+    }
+
+    public function ListForCheck($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
+                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                ->where('confirmCheckPayment', 50)
+                                ->where('status', 'Delivery');
+
+        if(Session::get('user')->role->name == 'Team')
+        {
+            $idsUser = User::where('idTeam', $idTeam)->get('id');
+
+            $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+        }
+        elseif(Session::get('user')->role->name == 'Driver')
+        {
+            $idsUser = User::where('idTeam', $idTeam)->get('id');
+
+            $listAll = $listAll->whereIn('idUserDispatch', $idsUser)->orWhere('idUserDispatch', $idTeam);
+        }
+        else
+        {
+            if($idTeam && $idDriver)
+            {
+                $listAll = $listAll->where('idUserDispatch', $idDriver);
+            }
+            elseif($idTeam)
+            {
+                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
+
+                $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+            }
+
+            $listAll = $listAll->orderBy('Date_Delivery', 'desc');
+        }
+
+        if($route != 'all') 
+        {
+            $listAll = $listAll->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }
+
+        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(2);
+
+        $Reference_Number_1s = [];
+
+        foreach($listAll as $delivery)
+        {
+            array_push($Reference_Number_1s, $delivery->Reference_Number_1);
+        }
+
+        $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)
+                                        ->orderBy('updated_at', 'desc')
+                                        ->get();
+
+        $roleUser = Session::get('user')->role->name;
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('dispatch', 1)
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
+    }
+
+    public function InsertForCheck(Request $request)
+    {
+        $packageDelivery = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        $packageDelivery->idUserCheckPayment = $packageDelivery->checkPayment ? 0 : Session::get('user')->id;
+        $packageDelivery->checkPayment       = $packageDelivery->checkPayment ? false : true;
+
+        $packageDelivery->save();
+
+        return ['stateAction' => true];
+    }
+
+    public function ConfirmationCheck()
+    {
+        $listPackageDelivery = PackageDispatch::where('checkPayment', 1)
+                                            ->where('confirmCheckPayment', 0)
+                                            ->where('idUserCheckPayment', Session::get('user')->id)
+                                            ->update(['confirmCheckPayment' => 1]);
+
+        return ['stateAction' => true];
+    }
+
+    public function IndexFinance()
+    {
+        return view('package.deliveryfinance');
+    }
+
+    public function ListFinance($dateInit, $dateEnd, $idTeam, $idDriver, $checked, $route, $state)
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
+                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                ->where('status', 'Delivery');
+
+        if($checked == 1)
+        {
+            $listAll = $listAll->where('checkPayment', 1)->where('confirmCheckPayment', 1);
+        }
+        elseif($checked != 'all')
+        {
+            $listAll = $listAll->where('confirmCheckPayment', 0);
+        }
+
+        if(Session::get('user')->role->name == 'Team')
+        {
+            $idsUser = User::where('idTeam', $idTeam)->get('id');
+
+            $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+        }
+        elseif(Session::get('user')->role->name == 'Driver')
+        {
+            $idsUser = User::where('idTeam', $idTeam)->get('id');
+
+            $listAll = $listAll->whereIn('idUserDispatch', $idsUser)->orWhere('idUserDispatch', $idTeam);
+        }
+        else
+        {
+            if($idTeam && $idDriver)
+            {
+                $listAll = $listAll->where('idUserDispatch', $idDriver);
+            }
+            elseif($idTeam)
+            {
+                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
+
+                $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+            }
+
+            $listAll = $listAll->orderBy('Date_Delivery', 'desc');
+        }
+
+
+        /*if($route != 'all') 
+        {
+            $listAll = $listAll->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }*/
+
+        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(50);
+
+        $Reference_Number_1s = [];
+
+        foreach($listAll as $delivery)
+        {
+            array_push($Reference_Number_1s, $delivery->Reference_Number_1);
+        }
+
+        $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)
+                                        ->orderBy('updated_at', 'desc')
+                                        ->get();
+
+        $roleUser = Session::get('user')->role->name;
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('dispatch', 1)
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
+    }
+
     public function Import(Request $request)
     {
         $file = $request->file('file');

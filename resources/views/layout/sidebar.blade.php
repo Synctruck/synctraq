@@ -102,6 +102,15 @@
                         </li>
                     @endif
 
+                    @if(Session::get('user')->role->name == 'Administrador')
+                        <li >
+                            <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
+                                <i class="bx bxs-check-circle"></i>
+                                <span>DELIVERY CHECK</span>
+                            </a>
+                        </li>
+                    @endif
+
                     {{-- @if(Session::get('user')->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">
@@ -256,6 +265,13 @@
                             </a>
                         </li>
                     </ul>
+                </li>
+
+                <li>
+                    <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
+                        <i class="bx bxs-dollar-circle"></i>
+                        <span>FINANCE</span>
+                    </a>
                 </li>
 
                 <li class="nav-item">
