@@ -78,7 +78,8 @@ class PackageDeliveryController extends Controller
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
                                 ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                ->where('confirmCheckPayment', 50)
+                                ->where('confirmCheckPayment', 0)
+                                ->where('photoUrl', 'like' , '%,%')
                                 ->where('status', 'Delivery');
 
         if(Session::get('user')->role->name == 'Team')
@@ -119,7 +120,7 @@ class PackageDeliveryController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(2);
+        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(50);
 
         $Reference_Number_1s = [];
 

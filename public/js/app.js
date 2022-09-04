@@ -10759,8 +10759,8 @@ function PackageCheckDelivery() {
 
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
       _useState12 = _slicedToArray(_useState11, 2),
-      quantityDispatch = _useState12[0],
-      setQuantityDispatch = _useState12[1];
+      quantityDelivery = _useState12[0],
+      setQuantityDelivery = _useState12[1];
 
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState14 = _slicedToArray(_useState13, 2),
@@ -10858,7 +10858,7 @@ function PackageCheckDelivery() {
       setTotalPackage(response.reportList.total);
       setTotalPage(response.reportList.per_page);
       setPage(response.reportList.current_page);
-      setQuantityDispatch(response.reportList.total);
+      setQuantityDelivery(response.reportList.total);
       setRoleUser(response.roleUser);
       setListState(response.listState);
 
@@ -10941,6 +10941,7 @@ function PackageCheckDelivery() {
   var listReportTable = listReport.map(function (packageDelivery, i) {
     var imgs = '';
     var urlImage = '';
+    var quantityImage = 0;
     var photoHttp = false;
 
     if (!packageDelivery.idOnfleet) {
@@ -10964,6 +10965,7 @@ function PackageCheckDelivery() {
                 src: 'https' + urlImage[1],
                 width: "100"
               });
+              quantityImage = 1;
             } else if (urlImage.length >= 3) {
               imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
@@ -10980,6 +10982,7 @@ function PackageCheckDelivery() {
                   }
                 })]
               });
+              quantityImage = 2;
             }
           }
 
@@ -11004,6 +11007,7 @@ function PackageCheckDelivery() {
           width: "100"
         });
         urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png';
+        quantityImage = 1;
       } else if (idsImages.length >= 2) {
         imgs = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
@@ -11021,63 +11025,66 @@ function PackageCheckDelivery() {
           })]
         });
         urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[0] + '/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/' + idsImages[1] + '/800x.png';
+        quantityImage = 2;
       }
     }
 
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
-        style: {
-          width: '100px'
-        },
-        children: [packageDelivery.updated_at.substring(5, 7), "-", packageDelivery.updated_at.substring(8, 10), "-", packageDelivery.updated_at.substring(0, 4)]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.updated_at.substring(11, 19)
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.recipientNotes
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.workerName
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
-          children: packageDelivery.Reference_Number_1
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_Contact_Name
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_Contact_Phone_Number
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_Address_Line_1
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_City
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_Province
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Dropoff_Postal_Code
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Weight
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.Route
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: packageDelivery.taskOnfleet
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        onClick: function onClick() {
-          return viewImages(urlImage);
-        },
-        style: {
-          cursor: 'pointer'
-        },
-        children: imgs
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
-          "class": "form-check-input",
-          type: "checkbox",
-          id: 'idCheck' + packageDelivery.Reference_Number_1,
-          defaultChecked: packageDelivery.checkPayment,
-          onChange: function onChange(e) {
-            return handlerCheckbox(packageDelivery.Reference_Number_1);
-          }
-        })
-      })]
-    }, i);
+    if (quantityImage > 1) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("td", {
+          style: {
+            width: '100px'
+          },
+          children: [packageDelivery.updated_at.substring(5, 7), "-", packageDelivery.updated_at.substring(8, 10), "-", packageDelivery.updated_at.substring(0, 4)]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.updated_at.substring(11, 19)
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.recipientNotes
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.workerName
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("b", {
+            children: packageDelivery.Reference_Number_1
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_Contact_Name
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_Contact_Phone_Number
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_Address_Line_1
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_City
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_Province
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Dropoff_Postal_Code
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Weight
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.Route
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: packageDelivery.taskOnfleet
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          onClick: function onClick() {
+            return viewImages(urlImage);
+          },
+          style: {
+            cursor: 'pointer'
+          },
+          children: imgs
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+            "class": "form-check-input",
+            type: "checkbox",
+            id: 'idCheck' + packageDelivery.Reference_Number_1,
+            defaultChecked: packageDelivery.checkPayment,
+            onChange: function onChange(e) {
+              return handlerCheckbox(packageDelivery.Reference_Number_1);
+            }
+          })
+        })]
+      }, i);
+    }
   });
 
   var _useState41 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
@@ -11309,7 +11316,7 @@ function PackageCheckDelivery() {
                       className: "col-lg-2",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
                         htmlFor: "",
-                        children: "Fecha de inicio:"
+                        children: "Start date:"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
                         type: "date",
                         value: dateInit,
@@ -11322,7 +11329,7 @@ function PackageCheckDelivery() {
                       className: "col-lg-2",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
                         htmlFor: "",
-                        children: "Fecha final:"
+                        children: "End date:"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
                         type: "date",
                         value: dateEnd,
@@ -11349,7 +11356,7 @@ function PackageCheckDelivery() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listTeamSelect]
                           })]
                         })
@@ -11370,7 +11377,7 @@ function PackageCheckDelivery() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listDriverSelect]
                           })]
                         })
@@ -11393,7 +11400,7 @@ function PackageCheckDelivery() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listDriverSelect]
                           })]
                         })
@@ -11448,7 +11455,7 @@ function PackageCheckDelivery() {
                       padding: '10px',
                       fontSize: '14px'
                     },
-                    children: ["Delivery: ", quantityDispatch]
+                    children: ["Delivery: ", quantityDelivery]
                   })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "col-lg-2",
@@ -15019,7 +15026,7 @@ function PackageFinance() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listTeamSelect]
                           })]
                         })
@@ -15040,7 +15047,7 @@ function PackageFinance() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listDriverSelect]
                           })]
                         })
@@ -15063,7 +15070,7 @@ function PackageFinance() {
                             required: true,
                             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("option", {
                               value: "0",
-                              children: "Todos"
+                              children: "All"
                             }), listDriverSelect]
                           })]
                         })

@@ -544,7 +544,7 @@ function PackageFinance() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listTeamSelect }
                                                                 </select>
                                                             </div>
@@ -553,7 +553,7 @@ function PackageFinance() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -571,7 +571,7 @@ function PackageFinance() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>

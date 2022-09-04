@@ -13,7 +13,7 @@ function PackageCheckDelivery() {
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
 
-    const [quantityDispatch, setQuantityDispatch] = useState(0);
+    const [quantityDelivery, setQuantityDelivery] = useState(0);
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
@@ -77,7 +77,7 @@ function PackageCheckDelivery() {
             setTotalPackage(response.reportList.total);
             setTotalPage(response.reportList.per_page);
             setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
+            setQuantityDelivery(response.reportList.total);
 
             setRoleUser(response.roleUser);
             setListState(response.listState);
@@ -180,10 +180,10 @@ function PackageCheckDelivery() {
 
     const listReportTable = listReport.map( (packageDelivery, i) => {
 
-        let imgs = '';
-        let urlImage = '';
-
-        let photoHttp = false;
+        let imgs          = '';
+        let urlImage      = '';
+        let quantityImage = 0;
+        let photoHttp     = false;
 
         if(!packageDelivery.idOnfleet)
         {
@@ -212,6 +212,8 @@ function PackageCheckDelivery() {
                         if(urlImage.length == 2)
                         {
                             imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+
+                            quantityImage = 1;
                         }
                         else if(urlImage.length >= 3)
                         {
@@ -219,6 +221,8 @@ function PackageCheckDelivery() {
                                         <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
                                         <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
                                     </>
+
+                            quantityImage = 2;
                         }
                     }
 
@@ -247,7 +251,8 @@ function PackageCheckDelivery() {
             {
                 imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                urlImage      = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                quantityImage = 1;
             }
             else if(idsImages.length >= 2)
             {
@@ -256,39 +261,43 @@ function PackageCheckDelivery() {
                             <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
                         </>
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                urlImage      = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png';
+                quantityImage = 2;
             }
         }
 
-        return (
+        if(quantityImage > 1)
+        {
+            return (
 
-            <tr key={i}>
-                <td style={ { width: '100px'} }>
-                    { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
-                </td>
-                <td>
-                    { packageDelivery.updated_at.substring(11, 19) }
-                </td>
-                <td>{ packageDelivery.recipientNotes }</td>
-                <td>{ packageDelivery.workerName }</td>
-                <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
-                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
-                <td>{ packageDelivery.Dropoff_City }</td>
-                <td>{ packageDelivery.Dropoff_Province }</td>
-                <td>{ packageDelivery.Dropoff_Postal_Code }</td>
-                <td>{ packageDelivery.Weight }</td>
-                <td>{ packageDelivery.Route }</td>
-                <td>{ packageDelivery.taskOnfleet }</td>
-                <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
-                    { imgs }
-                </td>
-                <td>
-                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageDelivery.Reference_Number_1 } defaultChecked={ packageDelivery.checkPayment } onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1) }/>
-                </td>
-            </tr>
-        );
+                <tr key={i}>
+                    <td style={ { width: '100px'} }>
+                        { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
+                    </td>
+                    <td>
+                        { packageDelivery.updated_at.substring(11, 19) }
+                    </td>
+                    <td>{ packageDelivery.recipientNotes }</td>
+                    <td>{ packageDelivery.workerName }</td>
+                    <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
+                    <td>{ packageDelivery.Dropoff_Contact_Name }</td>
+                    <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
+                    <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
+                    <td>{ packageDelivery.Dropoff_City }</td>
+                    <td>{ packageDelivery.Dropoff_Province }</td>
+                    <td>{ packageDelivery.Dropoff_Postal_Code }</td>
+                    <td>{ packageDelivery.Weight }</td>
+                    <td>{ packageDelivery.Route }</td>
+                    <td>{ packageDelivery.taskOnfleet }</td>
+                    <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
+                        { imgs }
+                    </td>
+                    <td>
+                        <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageDelivery.Reference_Number_1 } defaultChecked={ packageDelivery.checkPayment } onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1) }/>
+                    </td>
+                </tr>
+            );
+        }
     });
 
     const [listViewImages, setListViewImages] = useState([]);
@@ -531,11 +540,11 @@ function PackageCheckDelivery() {
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha de inicio:</label>
+                                                <label htmlFor="">Start date:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha final:</label>
+                                                <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
                                             {
@@ -546,7 +555,7 @@ function PackageCheckDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listTeamSelect }
                                                                 </select>
                                                             </div>
@@ -555,7 +564,7 @@ function PackageCheckDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -573,7 +582,7 @@ function PackageCheckDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -608,7 +617,7 @@ function PackageCheckDelivery() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDelivery }</b>
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-primary form-control" onClick={ () => handlerSaveCheck() }>Save Checks</button>
