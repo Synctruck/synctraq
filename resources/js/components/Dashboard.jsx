@@ -6,44 +6,12 @@ import swal from 'sweetalert'
 
 function Dashboard() {
 
-    // const [quantityManifest, setQuantityManifest]   = useState(0);
-    // const [quantityInbound, setQuantityInbound]     = useState(0);
-    // const [quantityNotExists, setQuantityNotExists] = useState(0);
-    // const [quantityDispatch, setQuantityDispatch]   = useState(0);
-    // const [quantityReturn, setQuantityReturn]       = useState(0);
-    // const [quantityDelivery, setQuantityDelivery]   = useState(0);
-
     const [quantityManifest, setQuantityManifest]   = useState(0);
     const [quantityInbound, setQuantityInbound]     = useState(0);
     const [quantityDispatch, setQuantityDispatch]   = useState(0);
     const [quantityDelivery, setQuantityDelivery]   = useState(0);
     const [quantityWarehouse, setQuantityWarehouse]   = useState(0);
     const [quantityFailed, setQuantityFailed]   = useState(0);
-
-    const [listColorsForManifest, setListColorsForManifest] = useState([]);
-    const [listRoutesForManifest, setListRoutesForManifest] = useState([]);
-    const [lisValuesForManifest, setLisValuesForManifest] = useState([]);
-
-    const [listColorsForInbound, setListColorsForInbound] = useState([]);
-    const [listRoutesForInbound, setListRoutesForInbound] = useState([]);
-    const [lisValuesForInbound, setLisValuesForInbound] = useState([]);
-
-    const [listColorsForDispatch, setListColorsForDispatch] = useState([]);
-    const [listRoutesForDispatch, setListRoutesForDispatch] = useState([]);
-    const [lisValuesForDispatch, setLisValuesForDispatch] = useState([]);
-
-    const [listColorsForFailed, setListColorsForFailed] = useState([]);
-    const [listRoutesForFailed, setListRoutesForFailed] = useState([]);
-    const [lisValuesForFailed, setLisValuesForFailed] = useState([]);
-
-    const [listColorsForDelivery, setListColorsForDelivery] = useState([]);
-    const [listRoutesForDelivery, setListRoutesForDelivery] = useState([]);
-    const [lisValuesForDelivery, setLisValuesForDelivery] = useState([]);
-
-    const [listColorsForWarehouse, setListColorsForWarehouse] = useState([]);
-    const [listRoutesForWarehouse, setListRoutesForWarehouse] = useState([]);
-    const [lisValuesForWarehouse, setLisValuesForWarehouse] = useState([]);
-
 
 
     const [listDataPie, setListDataPie] = useState([]);
@@ -53,16 +21,12 @@ function Dashboard() {
     const [loading, setLoading] = useState('block');
     const [dateStart, setDateStart] = useState(auxDateStart);
     const [dateEnd, setDateEnd] = useState(auxDateStart);
+    const [dateStartReport, setDateStartReport] = useState(auxDateStart);
+    const [listDataPerDay, setListDataPerDay] = useState([]);
+    const [listPackageTotal, setListPackageTotal]     = useState({});
     const [card, setCart] = useState('none');
 
-
     var chartPie;
-    var chartPieManifest;
-    var chartPieInbound;
-    var chartPieDispatch;
-    var chartPieFailed;
-    var chartPieDelivery;
-    var chartPieWarehouse;
 
     var pieOptions = {
         responsive: true,
@@ -85,33 +49,25 @@ function Dashboard() {
         }
       }
 
-    useEffect(() => {
 
-    }, []);
     useEffect(() => {
-
         getAllQuantityStatusPackage();
         return () => {}
     }, [dateStart,dateEnd]);
 
     useEffect(() => {
+
+        getDataPerDate();
+        return () => {}
+    }, [dateStartReport]);
+
+    useEffect(() => {
         initPieChart();
-        initPieChartManifest();
-        initPieChartInbound();
-        initPieChartDispatch();
-        initPieChartFailed();
-        initPieChartDelivery();
-        initPieChartWarehouse();
         return () => {
             chartPie.destroy();
-            chartPieManifest.destroy();
-            chartPieInbound.destroy();
-            chartPieDispatch.destroy();
-            chartPieFailed.destroy();
-            chartPieDelivery.destroy();
-            chartPieWarehouse.destroy();
+
         }
-    },[listDataPie,listColorsForManifest,listColorsForInbound,listColorsForDispatch,listColorsForFailed,listColorsForDelivery,listColorsForWarehouse]);
+    },[listDataPie]);
 
     const getAllQuantityStatusPackage = async () => {
 
@@ -129,108 +85,79 @@ function Dashboard() {
             setQuantityFailed(response.quantityFailed);
             setQuantityDelivery(response.quantityDelivery);
 
-            //asignando valores al pie general
-            setListDataPie([]);
-            let dataPie = [];
-            dataPie.push(response.quantityManifest);
-            dataPie.push(response.quantityInbound);
-            dataPie.push(response.quantityWarehouse);
-            dataPie.push(response.quantityDispatch);
-            dataPie.push(response.quantityFailed);
-            dataPie.push(response.quantityDelivery);
-            setListDataPie(dataPie);
-
-            let arrayNamesRoutesManifest = [];
-            let arrayValuesRoutesManifest = [];
-            let arrayColorsRoutesManifest = [];
-            response.quantityManifestByRoutes.forEach(element => {
-                arrayNamesRoutesManifest.push(element.Route);
-                arrayValuesRoutesManifest.push(element.total);
-                arrayColorsRoutesManifest.push(generarColorAleatorio());
-            });
-
-            setListRoutesForManifest(arrayNamesRoutesManifest);
-            setLisValuesForManifest(arrayValuesRoutesManifest);
-            setListColorsForManifest(arrayColorsRoutesManifest);
-            //fin
-
-            //inicion
-            let arrayNamesRoutesInbound = [];
-            let arrayValuesRoutesInbound = [];
-            let arrayColorsRoutesInbound = [];
-            response.quantityInboundByRoutes.forEach(element => {
-                arrayNamesRoutesInbound.push(element.Route);
-                arrayValuesRoutesInbound.push(element.total);
-                arrayColorsRoutesInbound.push(generarColorAleatorio());
-            });
-
-            setListRoutesForInbound(arrayNamesRoutesInbound);
-            setLisValuesForInbound(arrayValuesRoutesInbound);
-            setListColorsForInbound(arrayColorsRoutesInbound);
-             //fin
-
-            //inicion
-            let arrayNamesRoutesDispatch = [];
-            let arrayValuesRoutesDispatch = [];
-            let arrayColorsRoutesDispatch = [];
-            response.quantityDispatchByRoutes.forEach(element => {
-                arrayNamesRoutesDispatch.push(element.Route);
-                arrayValuesRoutesDispatch.push(element.total);
-                arrayColorsRoutesDispatch.push(generarColorAleatorio());
-            });
-
-            setListRoutesForDispatch(arrayNamesRoutesDispatch);
-            setLisValuesForDispatch(arrayValuesRoutesDispatch);
-            setListColorsForDispatch(arrayColorsRoutesDispatch);
-            //fin
-
-            //inicion
-            let arrayNamesRoutesFailed = [];
-            let arrayValuesRoutesFailed = [];
-            let arrayColorsRoutesFailed = [];
-            response.quantityFailedByRoutes.forEach(element => {
-                arrayNamesRoutesFailed.push(element.Route);
-                arrayValuesRoutesFailed.push(element.total);
-                arrayColorsRoutesFailed.push(generarColorAleatorio());
-            });
-
-            setListRoutesForFailed(arrayNamesRoutesFailed);
-            setLisValuesForFailed(arrayValuesRoutesFailed);
-            setListColorsForFailed(arrayColorsRoutesFailed);
-
-             //fin
-
-            //inicion
-            let arrayNamesRoutesDelivery = [];
-            let arrayValuesRoutesDelivery = [];
-            let arrayColorsRoutesDelivery = [];
-            response.quantityDeliveryByRoutes.forEach(element => {
-                arrayNamesRoutesDelivery.push(element.Route);
-                arrayValuesRoutesDelivery.push(element.total);
-                arrayColorsRoutesDelivery.push(generarColorAleatorio());
-            });
-
-            setListRoutesForDelivery(arrayNamesRoutesDelivery);
-            setLisValuesForDelivery(arrayValuesRoutesDelivery);
-            setListColorsForDelivery(arrayColorsRoutesDelivery);
-             //fin
-
-            //inicion
-            let arrayNamesRoutesWarehouse = [];
-            let arrayValuesRoutesWarehouse = [];
-            let arrayColorsRoutesWarehouse = [];
-            response.quantityWarehouseByRoutes.forEach(element => {
-                arrayNamesRoutesWarehouse.push(element.Route);
-                arrayValuesRoutesWarehouse.push(element.total);
-                arrayColorsRoutesWarehouse.push(generarColorAleatorio());
-            });
-
-            setListRoutesForWarehouse(arrayNamesRoutesWarehouse);
-            setLisValuesForWarehouse(arrayValuesRoutesWarehouse);
-            setListColorsForWarehouse(arrayColorsRoutesWarehouse);
 
         });
     }
+
+    const getDataPerDate = async () => {
+
+        setLoading('block');
+        setCart('none');
+
+        await  fetch(`${url_general}dashboard/getDataPerDate/${dateStartReport}/`)
+        .then(res => res.json())
+        .then((response) => {
+            console.log('nuevaData:',response);
+
+            let totalInbound = 0;
+            let totalReinbound = 0;
+            let totalDispatch = 0;
+            let totalFailed = 0;
+            let totalDelivery = 0;
+
+            response.dataPerRoutes.forEach(element => {
+
+                totalInbound += element.total_inbound;
+                totalReinbound += element.total_reinbound;
+                totalDispatch += element.total_dispatch;
+                totalFailed += element.total_failed;
+                totalDelivery += element.total_delivery;
+            });
+
+            let dataPie = [];
+            dataPie.push(totalInbound);
+            dataPie.push(totalReinbound);
+            dataPie.push(totalDispatch);
+            dataPie.push(totalFailed);
+            dataPie.push(totalDelivery);
+            setListDataPie(dataPie);
+
+            let totaPackages = {
+                                inbound: totalInbound,
+                                reinbound: totalReinbound,
+                                dispatch: totalDispatch,
+                                failed: totalFailed,
+                                delivery: totalDelivery
+                            };
+
+            setListPackageTotal(totaPackages);
+            setListDataPerDay(response.dataPerRoutes);
+
+              //asignando valores al pie general
+
+
+        });
+    }
+
+    const listDataTablePerDay = listDataPerDay.map( (item, j) => {
+
+        return (
+
+            <tr key={j+'r'}>
+                <td>
+                    {j+1}
+                </td>
+                <td>
+                    { item.Route }
+                </td>
+                <td>{ item.total_inbound }</td>
+                <td>{ item.total_reinbound }</td>
+                <td>{ item.total_dispatch }</td>
+                <td>{ item.total_failed }</td>
+                <td>{ item.total_delivery }</td>
+            </tr>
+        );
+    });
 
     function colorAleatorio(inferior,superior){
         let numPosibilidades = superior - inferior
@@ -261,133 +188,26 @@ function Dashboard() {
             datasets: [{
               data: listDataPie,
               backgroundColor: [
-                '#0d6efd',//manifest
                 '#198754',//inbound
-                '#5b0672',//warehouse
+                '#0d6efd',//re-inbound
                 '#ffc107',//dispatch
                 '#4B79EA',//failed
                 '#00c0ef'//delivery
               ],
             }],
             labels: [
-              'Manifest',
               'Inbound',
+              'Re-Inbound',
               'Dispatch',
+              'Failed',
               'Delivery',
-              'Warehouse'
             ]
           },
           options: pieOptions
         });
     }
 
-    function initPieChartManifest() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartManifest");
-        chartPieManifest = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForManifest,
-              backgroundColor: listColorsForManifest,
-            }],
-            labels: listRoutesForManifest,
-          },
-          options: pieOptions
-        });
-    }
 
-    function initPieChartInbound() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartInbound");
-        chartPieInbound = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForInbound,
-              backgroundColor: listColorsForInbound,
-            }],
-            labels: listRoutesForInbound,
-          },
-          options: pieOptions
-        });
-    }
-
-    function initPieChartDispatch() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartDispatch");
-        chartPieDispatch = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForDispatch,
-              backgroundColor: listColorsForDispatch,
-            }],
-            labels: listRoutesForDispatch,
-          },
-          options: pieOptions
-        });
-    }
-
-    function initPieChartFailed() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartFailed");
-        chartPieFailed = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForFailed,
-              backgroundColor: listColorsForFailed,
-            }],
-            labels: listRoutesForFailed,
-          },
-          options: pieOptions
-        });
-    }
-
-    function initPieChartDelivery() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartDelivery");
-        chartPieDelivery = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForDelivery,
-              backgroundColor: listColorsForDelivery,
-            }],
-            labels: listRoutesForDelivery,
-          },
-          options: pieOptions
-        });
-    }
-
-    function initPieChartWarehouse() {
-        //-------------
-        //- PIE CHART Manifest-
-        //-------------
-        var ctx = document.getElementById("pieChartWarehouse");
-        chartPieWarehouse = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: lisValuesForWarehouse,
-              backgroundColor: listColorsForWarehouse,
-            }],
-            labels: listRoutesForWarehouse,
-          },
-          options: pieOptions
-        });
-    }
 
 
 
@@ -496,65 +316,62 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-            <div className='row justify-content-center' style={ {display: 'none'} }>
-                <div className='col-4'>
+
+            {/* inicion segunda seccion */}
+            <div className='row justify-content-center'>
+                <div className='col-12'>
                     <div className='card'>
                         <div className='card-body'>
-                            <h5 className="card-title">Report <span>/General</span></h5>
-                            <canvas className="chart w-100" id="pieChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+                            <div className='card-title'>
+                                Report per date
+                            </div>
+                            <div className='row justify-content-center '>
+                                <div className='col-4'>
+                                   <div className='row'>
+                                        <div className="col-lg-12">
+                                            <div className="row">
+                                                <div className="col-lg-12">
+                                                    Date:
+                                                </div>
+                                                <div className="col-lg-12">
+                                                    <input type="date" className='form-control' value={ dateStartReport } onChange={ (e) => setDateStartReport(e.target.value) }/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='col-12 mt-2'>
+                                            <h6 className="card-title"> <span>CHART PER DAY </span></h6>
+                                            <canvas className="chart w-100" id="pieChart"></canvas>
+                                        </div>
+                                   </div>
 
-                <div className='col-4'>
-                    <div className='card'>
-                        <div className='card-body'>
-                            <h5 className="card-title">Report <span>/Manifest</span></h5>
-                            <canvas className="chart w-100" id="pieChartManifest"></canvas>
+                                </div>
+                                <div className='col-8'>
+                                    <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
+                                    <div className="row form-group table-responsive">
+                                        <div className="col-lg-12">
+                                            <table className="table table-hover table-condensed table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>ROUTE</th>
+                                                            <th>INBOUND</th>
+                                                            <th>RE-INBOUND</th>
+                                                            <th>DISPATCH</th>
+                                                            <th>FAILED</th>
+                                                            <th>DELIVERY</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        { listDataTablePerDay }
+                                                    </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className='col-4'>
-                    <div className='card'>
-                        < div className='card-body'>
-                            <h5 className="card-title">Report <span>/Inbound</span></h5>
-                            <canvas className="chart w-100" id="pieChartInbound"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div className='col-4'>
-                    <div className='card'>
-                        < div className='card-body'>
-                            <h5 className="card-title">Report <span>/Dispatch</span></h5>
-                            <canvas className="chart w-100" id="pieChartDispatch"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div className='col-4'>
-                    <div className='card'>
-                        < div className='card-body'>
-                            <h5 className="card-title">Report <span>/Failed</span></h5>
-                            <canvas className="chart w-100" id="pieChartFailed"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div className='col-4'>
-                    <div className='card'>
-                        < div className='card-body'>
-                            <h5 className="card-title">Report <span>/Delivery</span></h5>
-                            <canvas className="chart w-100" id="pieChartDelivery"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div className='col-4'>
-                    <div className='card'>
-                        < div className='card-body'>
-                            <h5 className="card-title">Report <span>/Warehouse</span></h5>
-                            <canvas className="chart w-100" id="pieChartWarehouse"></canvas>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </section>
     );

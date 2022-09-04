@@ -50,23 +50,17 @@ class IndexController extends Controller
                                                 ->get()
                                                 ->count();
 
-        $quantityManifestByRoutes =  PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
-                                                    ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                    ->where('status', 'On hold')
-                                                    ->groupBy('Route')
-                                                    ->get();
+        // $quantityManifestByRoutes =  PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+        //                                             ->select('Route', DB::raw('COUNT(id) AS total'))
+        //                                             ->where('status', 'On hold')
+        //                                             ->groupBy('Route')
+        //                                             ->get();
 
         $quantityInbound = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Inbound')
                                                 // ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
-
-        $quantityInboundByRoutes = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
-                                                ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                ->where('status', 'Inbound')
-                                                ->groupBy('Route')
-                                                ->get();
 
 
         $quantityDispatch = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
@@ -75,44 +69,24 @@ class IndexController extends Controller
                                                 ->get()
                                                 ->count();
 
-        $quantityDispatchByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
-                                                ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                ->where('status', 'Dispatch')
-                                                ->groupBy('Route')
-                                                ->get();
-
         $quantityDelivery = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Delivery')
                                                 ->get()
                                                 ->count();
 
-        $quantityDeliveryByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
-                                                ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                ->where('status', 'Delivery')
-                                                ->groupBy('Route')
-                                                ->get();
+
 
         $quantityFailed = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Failed')
                                                 ->get()
                                                 ->count();
 
-        $quantityFailedByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
-                                                ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                ->where('status', 'Failed')
-                                                ->groupBy('Route')
-                                                ->get();
 
         $quantityWarehouse = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 
-        $quantityWarehouseByRoutes = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
-                                                ->select('Route', DB::raw('COUNT(id) AS total'))
-                                                ->where('status', 'Warehouse')
-                                                ->groupBy('Route')
-                                                ->get();
 
         return [
             'quantityManifest' => $quantityManifest,
@@ -121,13 +95,46 @@ class IndexController extends Controller
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
             'quantityFailed' => $quantityFailed,
-
-            'quantityManifestByRoutes' => $quantityManifestByRoutes,
-            'quantityInboundByRoutes' => $quantityInboundByRoutes,
-            'quantityDispatchByRoutes' => $quantityDispatchByRoutes,
-            'quantityDeliveryByRoutes' => $quantityDeliveryByRoutes,
-            'quantityWarehouseByRoutes' => $quantityWarehouseByRoutes,
-            'quantityFailedByRoutes' => $quantityFailedByRoutes
         ];
+    }
+
+    public function GetDataPerDate(Request $request, $date)
+    {
+        $leastOneDayStartDate =date("Y-m-d",strtotime($date."- 1 days")).' 00:00:00';
+        $leastOneDayEndDate =date("Y-m-d",strtotime($date."- 1 days")).' 23:59:59';
+        $startDate = $date.' 00:00:00';
+        $endDate  = $date.' 23:59:59';
+
+
+        $dataPerRoutes = DB::select("SELECT
+                            p.Route,
+                            ( SELECT count(*)
+                                FROM packagehistory p2
+                                WHERE (p2.created_at BETWEEN '$leastOneDayStartDate' AND '$leastOneDayEndDate') AND p2.status ='Inbound' AND p2.Route = p.Route
+                            ) as total_inbound,
+                            (SELECT count(*)
+                                FROM packagehistory p3
+                                WHERE (p3.created_at BETWEEN '$startDate' AND '$endDate') AND p3.status ='ReInbound' AND p3.Route = p.Route
+                            ) as total_reinbound,
+                            (SELECT count(*)
+                                FROM packagehistory p4
+                                WHERE (p4.created_at BETWEEN '$startDate' AND '$endDate') AND p4.status ='Dispatch' AND p4.Route = p.Route
+                            ) as total_dispatch,
+                            (SELECT count(*)
+                                FROM packagehistory p5
+                                WHERE (p5.created_at BETWEEN '$startDate' AND '$endDate') AND p5.status ='Failed' AND p5.Route = p.Route
+                            ) as total_failed,
+                            (SELECT count(*)
+                                FROM packagehistory p6
+                                WHERE (p6.created_at BETWEEN '$startDate' AND '$endDate') AND p6.status ='Delivery' AND p6.Route = p.Route
+                            ) as total_delivery
+                            FROM packagehistory p
+                            WHERE (created_at BETWEEN '$leastOneDayStartDate' AND '$leastOneDayEndDate') AND status IN ('Inbound','ReInbound','Delivery','Dispatch','Failed')
+                            GROUP  BY p.Route");
+
+       return [
+        'dataPerRoutes' => $dataPerRoutes
+       ];
+
     }
 }
