@@ -25,8 +25,13 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
+        "@emotion/react": "^11.10.4",
+        "@emotion/styled": "^11.10.4",
+        "@mui/material": "^5.10.3",
+        "@mui/x-date-pickers": "^5.0.0",
         "chart.js": "^3.9.1",
-        "react-js-pagination": "^3.0.3",
+        "dayjs": "^1.11.5",
+        "react-js-pagination": "^3.0.2",
         "react-select": "^5.3.0",
         "sweetalert": "^2.1.2"
     }

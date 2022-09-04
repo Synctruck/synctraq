@@ -3,8 +3,16 @@ import ReactDOM from 'react-dom'
 import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
+//mui
+import dayjs from 'dayjs';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 
 function Dashboard() {
+
+    const [valueCalendar, setValueCalendar] = useState(auxDateStart);
 
     const [quantityManifest, setQuantityManifest]   = useState(0);
     const [quantityInbound, setQuantityInbound]     = useState(0);
@@ -23,7 +31,13 @@ function Dashboard() {
     const [dateEnd, setDateEnd] = useState(auxDateStart);
     const [dateStartReport, setDateStartReport] = useState(auxDateStart);
     const [listDataPerDay, setListDataPerDay] = useState([]);
-    const [listPackageTotal, setListPackageTotal]     = useState({});
+    const [listPackageTotal, setListPackageTotal]     = useState({
+        inbound: 0,
+        reinbound: 0,
+        dispatch: 0,
+        failed: 0,
+        delivery: 0
+    });
     const [card, setCart] = useState('none');
 
     var chartPie;
@@ -56,10 +70,10 @@ function Dashboard() {
     }, [dateStart,dateEnd]);
 
     useEffect(() => {
-
+        console.log('valueCalendar: ',valueCalendar)
         getDataPerDate();
         return () => {}
-    }, [dateStartReport]);
+    }, [valueCalendar]);
 
     useEffect(() => {
         initPieChart();
@@ -94,7 +108,7 @@ function Dashboard() {
         setLoading('block');
         setCart('none');
 
-        await  fetch(`${url_general}dashboard/getDataPerDate/${dateStartReport}/`)
+        await  fetch(`${url_general}dashboard/getDataPerDate/${valueCalendar}/`)
         .then(res => res.json())
         .then((response) => {
             console.log('nuevaData:',response);
@@ -150,11 +164,11 @@ function Dashboard() {
                 <td>
                     { item.Route }
                 </td>
-                <td>{ item.total_inbound }</td>
-                <td>{ item.total_reinbound }</td>
-                <td>{ item.total_dispatch }</td>
-                <td>{ item.total_failed }</td>
-                <td>{ item.total_delivery }</td>
+                <td className='text-end'>{ item.total_inbound }</td>
+                <td className='text-end'>{ item.total_reinbound }</td>
+                <td className='text-end'>{ item.total_dispatch }</td>
+                <td className='text-end'>{ item.total_failed }</td>
+                <td className='text-end'>{ item.total_delivery }</td>
             </tr>
         );
     });
@@ -189,9 +203,9 @@ function Dashboard() {
               data: listDataPie,
               backgroundColor: [
                 '#198754',//inbound
-                '#0d6efd',//re-inbound
+                '#38D9A1',//re-inbound
                 '#ffc107',//dispatch
-                '#4B79EA',//failed
+                '#dc3545',//failed
                 '#00c0ef'//delivery
               ],
             }],
@@ -330,11 +344,24 @@ function Dashboard() {
                                    <div className='row'>
                                         <div className="col-lg-12">
                                             <div className="row">
-                                                <div className="col-lg-12">
+                                                {/* <div className="col-lg-12">
                                                     Date:
-                                                </div>
+                                                </div> */}
                                                 <div className="col-lg-12">
-                                                    <input type="date" className='form-control' value={ dateStartReport } onChange={ (e) => setDateStartReport(e.target.value) }/>
+                                                    {/* <input type="date" className='form-control' value={ dateStartReport } onChange={ (e) => setDateStartReport(e.target.value) }/> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <StaticDatePicker
+                                                            orientation="landscape"
+                                                            openTo="day"
+                                                            value={valueCalendar}
+                                                            // shouldDisableDate={isWeekend}
+                                                            onChange={(newValue) => {
+                                                            setValueCalendar(newValue);
+                                                            }}
+                                                            renderInput={(params) => <TextField {...params} />}
+                                                        />
+                                                    </LocalizationProvider>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -352,16 +379,25 @@ function Dashboard() {
                                             <table className="table table-hover table-condensed table-bordered">
                                                     <thead>
                                                         <tr>
-                                                            <th>#</th>
-                                                            <th>ROUTE</th>
-                                                            <th>INBOUND</th>
-                                                            <th>RE-INBOUND</th>
-                                                            <th>DISPATCH</th>
-                                                            <th>FAILED</th>
-                                                            <th>DELIVERY</th>
+                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
+                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
+                                                            <th className='bg-success'>INBOUND</th>
+                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff'}}>RE-INBOUND</th>
+                                                            <th className='bg-warning'>DISPATCH</th>
+                                                            <th className='bg-danger'>FAILED</th>
+                                                            <th className='bg-info'>DELIVERY</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
+                                                            <td></td>
+                                                            <td><b>   TOTAL:</b></td>
+                                                            <td className='text-end'><b>{listPackageTotal.inbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageTotal.reinbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageTotal.dispatch}</b></td>
+                                                            <td className='text-end'><b>{listPackageTotal.failed}</b></td>
+                                                            <td className='text-end'><b>{listPackageTotal.delivery}</b></td>
+                                                        </tr>
                                                         { listDataTablePerDay }
                                                     </tbody>
                                             </table>
