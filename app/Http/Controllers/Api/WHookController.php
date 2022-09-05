@@ -200,6 +200,7 @@ class WHookController extends Controller
                 $packageHistory->Weight                       = $packageDispatch->Weight;
                 $packageHistory->Route                        = $packageDispatch->Route;
                 $packageHistory->Name                         = $packageDispatch->Name;
+                $packageHistory->idTeam                       = $packageDispatch->idTeam;
                 $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                 $packageHistory->idUser                       = $user->id;
                 $packageHistory->Description_Onfleet          = $Description_Onfleet;
@@ -236,7 +237,7 @@ class WHookController extends Controller
 
         if($driver)
         {
-            $team = User::where('idTeam', $driver->idTeam)->first();
+            $team = User::where('id', $driver->idTeam)->first();
 
             if(!$team)
             {
