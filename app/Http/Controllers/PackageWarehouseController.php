@@ -416,6 +416,7 @@ class PackageWarehouseController extends Controller
                     $packageReturn->Route                        = $packageDispatch->Route;
                     $packageReturn->Name                         = $packageDispatch->Name;
                     $packageReturn->idUser                       = Session::get('user')->id;
+                    $packageReturn->idTeam                       = $packageDispatch->idTeam;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageReturn->Date_Return                  = $Date_Return;
                     $packageReturn->Description_Return           = $Description_Return;
@@ -466,6 +467,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
                     $packageHistory->Name                         = $packageDispatch->Name;
+                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                    $packageHistory->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = Session::get('user')->id;
                     $packageHistory->idUserInbound                = Session::get('user')->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');

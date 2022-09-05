@@ -343,6 +343,7 @@ class PackageDeliveryController extends Controller
                                 $packageHistory->Weight                       = $packageDispatch->Weight;
                                 $packageHistory->Route                        = $packageDispatch->Route;
                                 $packageHistory->Name                         = $packageDispatch->Name;
+                                $packageHistory->idTeam                       = $packageDispatch->idTeam;
                                 $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                                 $packageHistory->idUser                       = Session::get('user')->id;
                                 $packageHistory->idUserDelivery               = Session::get('user')->id;
@@ -535,6 +536,7 @@ class PackageDeliveryController extends Controller
                                     $packageHistory->Weight                       = $packageDispatch->Weight;
                                     $packageHistory->Route                        = $packageDispatch->Route;
                                     $packageHistory->Name                         = $packageDispatch->Name;
+                                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
                                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                                     $packageHistory->idUser                       = 64;
                                     $packageHistory->idUserDelivery               = 64;

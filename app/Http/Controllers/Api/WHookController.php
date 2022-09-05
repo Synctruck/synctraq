@@ -94,6 +94,7 @@ class WHookController extends Controller
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
                     $packageHistory->Name                         = $packageDispatch->Name;
+                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
@@ -361,6 +362,7 @@ class WHookController extends Controller
                     $packageDispatch->Route                        = $package->Route;
                     $packageDispatch->Name                         = $package->Name;
                     $packageDispatch->idUser                       = 64;
+                    $packageDispatch->idTeam                       = $team->id;
                     $packageDispatch->idUserDispatch               = $driver->id;
                     $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                     $packageDispatch->status                       = 'Dispatch';
@@ -406,6 +408,7 @@ class WHookController extends Controller
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
                     $packageHistory->idUser                       = 64;
+                    $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                     $packageHistory->dispatch                     = 1;
@@ -487,6 +490,7 @@ class WHookController extends Controller
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->Name                         = $package->Name;
                             $packageHistory->idUser                       = 64;
+                            $packageHistory->idTeam                       = $team->id;
                             $packageHistory->idUserDispatch               = $driver->id;
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                             $packageHistory->dispatch                     = 1;

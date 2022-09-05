@@ -424,6 +424,7 @@ class PackageDispatchController extends Controller
                 $packageDispatch->Route                        = $package->Route;
                 $packageDispatch->Name                         = $package->Name;
                 $packageDispatch->idUser                       = Session::get('user')->id;
+                $packageDispatch->idTeam                       = $request->get('idTeam');
                 $packageDispatch->idUserDispatch               = $idUserDispatch;
                 $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                 $packageDispatch->status                       = 'Dispatch';
@@ -469,6 +470,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->idUser                       = Session::get('user')->id;
+                $packageHistory->idTeam                       = $request->get('idTeam');
                 $packageHistory->idUserDispatch               = $idUserDispatch;
                 $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                 $packageHistory->dispatch                     = 1;
@@ -821,6 +823,7 @@ class PackageDispatchController extends Controller
                             $packageDispatch->Route                        = $package->Route;
                             $packageDispatch->Name                         = $package->Name;
                             $packageDispatch->idUser                       = Session::get('user')->id;
+                            $packageDispatch->idTeam                       = $request->get('idTeam');
                             $packageDispatch->idUserDispatch               = $idUserDispatch;
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                             $packageDispatch->status                       = 'Dispatch';
@@ -864,6 +867,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->Name                         = $package->Name;
                             $packageHistory->idUser                       = Session::get('user')->id;
+                            $packageHistory->idTeam                       = $request->get('idTeam');
                             $packageHistory->idUserDispatch               = $idUserDispatch;
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                             $packageHistory->dispatch                     = 1;
@@ -1008,6 +1012,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->Route                        = $packageDispatch->Route;
                     $packageReturn->Name                         = $packageDispatch->Name;
                     $packageReturn->idUser                       = Session::get('user')->id;
+                    $packageReturn->idTeam                       = $packageDispatch->idTeam;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageReturn->Date_Return                  = $Date_Return;
                     $packageReturn->Description_Return           = $Description_Return;
