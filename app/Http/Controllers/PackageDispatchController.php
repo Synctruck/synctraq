@@ -751,11 +751,13 @@ class PackageDispatchController extends Controller
                         $package = PackageWarehouse::find($row[0]);
                     }
 
-                    Log::info($package->Reference_Number_1);
+                    
                     $packageDispatch = PackageDispatch::find($row[0]);
 
                     if($package && $packageDispatch == null)
                     {
+                        Log::info("=========== IMPORT DISPATCH ===========");
+                        Log::info($package->Reference_Number_1);
                         $validationRoute = true;
 
                         if($request->get('RouteSearch'))

@@ -34,7 +34,7 @@
                 @endif
 
                 @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
-                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->permissionDispatch)
+                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Driver')
                         <li >
                             <a class="nav-link {{Request::is('package-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch')}}">
                                 <i class="bx bx-car"></i>
