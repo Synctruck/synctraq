@@ -53,8 +53,7 @@ class PackageDispatchController extends Controller
 
         if(Session::get('user')->role->name == 'Driver')
         {
-            $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
-                                                    ->where('idUserDispatch', Session::get('user')->id)
+            $packageDispatchList = PackageDispatch::where('idUserDispatch', Session::get('user')->id)
                                                     ->where('status', 'Dispatch');
 
             $roleUser = 'Driver';
@@ -78,8 +77,7 @@ class PackageDispatchController extends Controller
         }
         else
         {
-            $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
-                                                ->where('status', 'Dispatch');
+            $packageDispatchList = PackageDispatch::where('status', 'Dispatch');
 
             $roleUser = 'Administrador';
         }
@@ -111,8 +109,9 @@ class PackageDispatchController extends Controller
             $packageDispatchList = $packageDispatchList->whereIn('Route', $routes);
         }
 
-        $packageDispatchList = $packageDispatchList->orderBy('Date_Dispatch', 'desc')
-                                                   ->paginate(50);
+        $packageDispatchList = $packageDispatchList->with(['team', 'driver'])
+                                                    ->orderBy('Date_Dispatch', 'desc')
+                                                    ->paginate(50);
 
         $quantityDispatch = $packageDispatchList->total();
 

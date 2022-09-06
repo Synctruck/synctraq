@@ -16,6 +16,11 @@ class PackageReturn extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function team()
+    {
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
+    }
+
     public function driver()
     {
         return $this->belongsTo('App\Models\User', 'idUserReturn', 'id');

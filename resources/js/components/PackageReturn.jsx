@@ -238,6 +238,9 @@ function PackageReturn() {
             }
         }
 
+        let team   = (packageReturn.team ? packageReturn.team.name : '');
+        let driver = (packageReturn.driver ? packageReturn.driver.name +' '+ packageReturn.driver.nameOfOwner : '');
+        
         return (
 
             <tr key={i} className={ packageReturn.statusOnfleet == 3 || packageReturn.statusOnfleet == 1 ? 'alert-warning' : 'alert-danger' }>
@@ -248,8 +251,8 @@ function PackageReturn() {
                 <td>
                     { packageReturn.Date_Return ? packageReturn.Date_Return.substring(11, 19):'' }
                 </td>
-                <td>{ packageReturn.team }</td>
-                <td>{ packageReturn.workerName }</td>
+                <td>{ team }</td>
+                <td>{ driver }</td>
                 <td><b>{ packageReturn.Reference_Number_1 }</b></td>
                 <td>{ packageReturn.Description_Return }</td>
                 <td>{ packageReturn.Description_Onfleet }</td>

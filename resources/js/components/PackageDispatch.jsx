@@ -706,6 +706,9 @@ function PackageDispatch() {
 
     const listPackageDispatchTable = listPackageDispatch.map( (packageDispatch, i) => {
 
+        let team   = (packageDispatch.team ? packageDispatch.team.name : '');
+        let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+
         return (
 
             <tr key={i}>
@@ -723,14 +726,19 @@ function PackageDispatch() {
                 {
                     roleUser == 'Administrador'
                     ?
-                        packageDispatch.driver ? parseInt(packageDispatch.driver.idTeam) == 0 || packageDispatch.driver.idTeam == null ? <><td><b>{ packageDispatch.driver.name }</b></td><td><b></b></td></> : <><td><b>{ packageDispatch.driver.nameTeam }</b></td><td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td></> : ''
+                        <>
+                            <td><b>{ team }</b></td>
+                            <td><b>{ driver }</b></td>
+                        </>
+                            
+                        
                     :
                         ''
                 }
                 {
                     roleUser == 'Team'
                     ?
-                        packageDispatch.driver.idTeam ? <td><b>{ packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner }</b></td> : <td></td>
+                        <td><b>{ driver }</b></td>
                     :
                         ''
                 }

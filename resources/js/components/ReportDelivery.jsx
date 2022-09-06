@@ -156,18 +156,18 @@ function ReportDelivery() {
         location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
-    const listReportTable = listReport.map( (packageDispatch, i) => {
+    const listReportTable = listReport.map( (packageDelivery, i) => {
 
         let imgs = '';
         let urlImage = '';
 
         let photoHttp = false;
 
-        if(!packageDispatch.idOnfleet)
+        if(!packageDelivery.idOnfleet)
         {
             photoHttp = true;
         }
-        else if(packageDispatch.idOnfleet && packageDispatch.photoUrl == '')
+        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
         {
             photoHttp = true;
         }
@@ -179,7 +179,7 @@ function ReportDelivery() {
 
             listDeliveries.forEach( delivery => {
 
-                if(packageDispatch.Reference_Number_1 == delivery.taskDetails)
+                if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
                 {
                     urlImage = delivery.photoUrl;
 
@@ -204,22 +204,22 @@ function ReportDelivery() {
                 }
             });
 
-            if(packageDispatch.driver)
+            if(packageDelivery.driver)
             {
-                if(packageDispatch.driver.nameTeam)
+                if(packageDelivery.driver.nameTeam)
                 {
-                    team   = packageDispatch.driver.nameTeam;
-                    driver = packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner;
+                    team   = packageDelivery.driver.nameTeam;
+                    driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
                 }
                 else
                 {
-                    team   = packageDispatch.driver.name;
+                    team   = packageDelivery.driver.name;
                 }
             }
         }
-        else if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
         {
-            let idsImages = packageDispatch.photoUrl.split(',');
+            let idsImages = packageDelivery.photoUrl.split(',');
 
             if(idsImages.length == 1)
             {
@@ -238,27 +238,30 @@ function ReportDelivery() {
             }
         }
 
+        let team   = (packageDelivery.team ? packageDelivery.team.name : '');
+        let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
+
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDispatch.updated_at.substring(5, 7) }-{ packageDispatch.updated_at.substring(8, 10) }-{ packageDispatch.updated_at.substring(0, 4) }
+                    { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.updated_at.substring(11, 19) }
+                    { packageDelivery.updated_at.substring(11, 19) }
                 </td>
-                <td>{ packageDispatch.recipientNotes }</td>
-                <td>{ packageDispatch.workerName }</td>
-                <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
-                <td>{ packageDispatch.Dropoff_Contact_Name }</td>
-                <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
-                <td>{ packageDispatch.Dropoff_City }</td>
-                <td>{ packageDispatch.Dropoff_Province }</td>
-                <td>{ packageDispatch.Dropoff_Postal_Code }</td>
-                <td>{ packageDispatch.Weight }</td>
-                <td>{ packageDispatch.Route }</td>
-                <td>{ packageDispatch.taskOnfleet }</td>
+                <td>{ team }</td>
+                <td>{ driver }</td>
+                <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
+                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
+                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDelivery.Dropoff_City }</td>
+                <td>{ packageDelivery.Dropoff_Province }</td>
+                <td>{ packageDelivery.Dropoff_Postal_Code }</td>
+                <td>{ packageDelivery.Weight }</td>
+                <td>{ packageDelivery.Route }</td>
+                <td>{ packageDelivery.taskOnfleet }</td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
                 </td>
