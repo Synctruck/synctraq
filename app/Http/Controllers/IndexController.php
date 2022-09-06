@@ -102,8 +102,8 @@ class IndexController extends Controller
     {
         $leastOneDayStartDate =date("Y-m-d",strtotime($date."- 1 days")).' 00:00:00';
         $leastOneDayEndDate =date("Y-m-d",strtotime($date."- 1 days")).' 23:59:59';
-        $startDate = $date.' 00:00:00';
-        $endDate  = $date.' 23:59:59';
+        $startDate =date("Y-m-d",strtotime($date)).' 00:00:00';
+        $endDate  = date("Y-m-d",strtotime($date)).' 23:59:59';
 
 
         $dataPerRoutes = DB::select("SELECT
@@ -129,11 +129,35 @@ class IndexController extends Controller
                                 WHERE (p6.created_at BETWEEN '$startDate' AND '$endDate') AND p6.status ='Delivery' AND p6.Route = p.Route
                             ) as total_delivery
                             FROM packagehistory p
-                            WHERE (created_at BETWEEN '$leastOneDayStartDate' AND '$leastOneDayEndDate') AND status IN ('Inbound','ReInbound','Delivery','Dispatch','Failed')
+                            WHERE (created_at BETWEEN '$leastOneDayStartDate' AND '$leastOneDayEndDate') AND status IN ('Inbound')
                             GROUP  BY p.Route");
 
+        $dataPerTeams = DB::select("SELECT
+                                p.idTeam, u.name,
+                                (SELECT count(*)
+                                FROM packagedispatch p2
+                                where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status ='Dispatch' AND p2.idTeam  = p.idTeam
+                                ) as total_dispatch,
+                                (SELECT count(*)
+                                FROM packagereturn p3
+                                where (p3.created_at  BETWEEN '$startDate' AND '$endDate')  AND p3.idTeam  = p.idTeam
+                                ) as total_reinbound,
+                                (SELECT count(*)
+                                FROM packagehistory p4
+                                where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
+                                ) as total_failed,
+                                (SELECT count(*)
+                                FROM packagedispatch p5
+                                where (p5.Date_Delivery BETWEEN '$startDate' AND '$endDate') AND p5.status ='Delivery' AND p5.idTeam  = p.idTeam
+                                ) as total_delivery
+                                FROM packagehistory p
+                                JOIN `user` u ON u.id = p.idTeam
+                                WHERE (p.created_at BETWEEN '$startDate' AND '$endDate' )
+                                GROUP  BY p.idTeam ");
+
        return [
-        'dataPerRoutes' => $dataPerRoutes
+        'dataPerRoutes' => $dataPerRoutes,
+        'dataPerTeams' => $dataPerTeams
        ];
 
     }

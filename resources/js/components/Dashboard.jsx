@@ -30,9 +30,16 @@ function Dashboard() {
     const [dateStart, setDateStart] = useState(auxDateStart);
     const [dateEnd, setDateEnd] = useState(auxDateStart);
     const [dateStartReport, setDateStartReport] = useState(auxDateStart);
-    const [listDataPerDay, setListDataPerDay] = useState([]);
-    const [listPackageTotal, setListPackageTotal]     = useState({
+    const [listDataPerRoute, setListDataPerRoute] = useState([]);
+    const [listDataPerTeam, setListDataPerTeam] = useState([]);
+    const [listPackageRouteTotal, setListPackageRouteTotal]     = useState({
         inbound: 0,
+        reinbound: 0,
+        dispatch: 0,
+        failed: 0,
+        delivery: 0
+    });
+    const [listPackageTeamTotal, setListPackageTeamTotal]     = useState({
         reinbound: 0,
         dispatch: 0,
         failed: 0,
@@ -63,6 +70,9 @@ function Dashboard() {
         }
       }
 
+    useEffect(() => {
+        getDataPerDate();
+    },[]);
 
     useEffect(() => {
         getAllQuantityStatusPackage();
@@ -70,7 +80,6 @@ function Dashboard() {
     }, [dateStart,dateEnd]);
 
     useEffect(() => {
-        console.log('valueCalendar: ',valueCalendar)
         getDataPerDate();
         return () => {}
     }, [valueCalendar]);
@@ -79,7 +88,6 @@ function Dashboard() {
         initPieChart();
         return () => {
             chartPie.destroy();
-
         }
     },[listDataPie]);
 
@@ -98,8 +106,6 @@ function Dashboard() {
             setQuantityDispatch(response.quantityDispatch);
             setQuantityFailed(response.quantityFailed);
             setQuantityDelivery(response.quantityDelivery);
-
-
         });
     }
 
@@ -111,49 +117,73 @@ function Dashboard() {
         await  fetch(`${url_general}dashboard/getDataPerDate/${valueCalendar}/`)
         .then(res => res.json())
         .then((response) => {
-            console.log('nuevaData:',response);
 
-            let totalInbound = 0;
-            let totalReinbound = 0;
-            let totalDispatch = 0;
-            let totalFailed = 0;
-            let totalDelivery = 0;
+            let totalInboundRoute = 0;
+            let totalReinboundRoute = 0;
+            let totalDispatchRoute = 0;
+            let totalFailedRoute = 0;
+            let totalDeliveryRoute = 0;
 
             response.dataPerRoutes.forEach(element => {
 
-                totalInbound += element.total_inbound;
-                totalReinbound += element.total_reinbound;
-                totalDispatch += element.total_dispatch;
-                totalFailed += element.total_failed;
-                totalDelivery += element.total_delivery;
+                totalInboundRoute += element.total_inbound;
+                totalReinboundRoute += element.total_reinbound;
+                totalDispatchRoute += element.total_dispatch;
+                totalFailedRoute += element.total_failed;
+                totalDeliveryRoute += element.total_delivery;
             });
 
             let dataPie = [];
-            dataPie.push(totalInbound);
-            dataPie.push(totalReinbound);
-            dataPie.push(totalDispatch);
-            dataPie.push(totalFailed);
-            dataPie.push(totalDelivery);
+            dataPie.push(totalInboundRoute);
+            dataPie.push(totalReinboundRoute);
+            dataPie.push(totalDispatchRoute);
+            dataPie.push(totalFailedRoute);
+            dataPie.push(totalDeliveryRoute);
             setListDataPie(dataPie);
 
-            let totaPackages = {
-                                inbound: totalInbound,
-                                reinbound: totalReinbound,
-                                dispatch: totalDispatch,
-                                failed: totalFailed,
-                                delivery: totalDelivery
+            let totalPackagesRoute = {
+                                inbound: totalInboundRoute,
+                                reinbound: totalReinboundRoute,
+                                dispatch: totalDispatchRoute,
+                                failed: totalFailedRoute,
+                                delivery: totalDeliveryRoute
                             };
 
-            setListPackageTotal(totaPackages);
-            setListDataPerDay(response.dataPerRoutes);
+            setListPackageRouteTotal(totalPackagesRoute);
+            setListDataPerRoute(response.dataPerRoutes);
 
-              //asignando valores al pie general
+              //asignando valores para data por teams
+
+            let totalReinboundTeam = 0;
+            let totalDispatchTeam = 0;
+            let totalFailedTeam = 0;
+            let totalDeliveryTeam = 0;
+
+            response.dataPerTeams.forEach(element => {
+
+                totalReinboundTeam += element.total_reinbound;
+                totalDispatchTeam += element.total_dispatch;
+                totalFailedTeam += element.total_failed;
+                totalDeliveryTeam += element.total_delivery;
+            });
+
+
+
+            let totalPackagesTeam = {
+                                reinbound: totalReinboundTeam,
+                                dispatch: totalDispatchTeam,
+                                failed: totalFailedTeam,
+                                delivery: totalDeliveryTeam
+                            };
+
+            setListPackageTeamTotal(totalPackagesTeam);
+            setListDataPerTeam(response.dataPerTeams);
 
 
         });
     }
 
-    const listDataTablePerDay = listDataPerDay.map( (item, j) => {
+    const listDataTablePerRoute = listDataPerRoute.map( (item, j) => {
 
         return (
 
@@ -165,6 +195,24 @@ function Dashboard() {
                     { item.Route }
                 </td>
                 <td className='text-end'>{ item.total_inbound }</td>
+                <td className='text-end'>{ item.total_reinbound }</td>
+                <td className='text-end'>{ item.total_dispatch }</td>
+                <td className='text-end'>{ item.total_failed }</td>
+                <td className='text-end'>{ item.total_delivery }</td>
+            </tr>
+        );
+    });
+    const listDataTablePerTeam = listDataPerTeam.map( (item, k) => {
+
+        return (
+
+            <tr key={k+'r'}>
+                <td>
+                    {k+1}
+                </td>
+                <td>
+                    { item.name }
+                </td>
                 <td className='text-end'>{ item.total_reinbound }</td>
                 <td className='text-end'>{ item.total_dispatch }</td>
                 <td className='text-end'>{ item.total_failed }</td>
@@ -337,7 +385,7 @@ function Dashboard() {
                     <div className='card'>
                         <div className='card-body'>
                             <div className='card-title'>
-                                Report per date
+                                REPORT PER DATE
                             </div>
                             <div className='row justify-content-center '>
                                 <div className='col-4'>
@@ -369,6 +417,37 @@ function Dashboard() {
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
                                             <canvas className="chart w-100" id="pieChart"></canvas>
                                         </div>
+                                        <div className='col-12 mt-2'>
+                                            <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
+                                            <div className="row form-group table-responsive">
+                                                <div className="col-lg-12">
+                                                    <table className="table table-hover table-condensed table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
+                                                                    <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
+
+                                                                    <th style={{backgroundColor: '#38D9A1',color: '#fff'}}>RE-INBOUND</th>
+                                                                    <th className='bg-warning'>DISPATCH</th>
+                                                                    <th className='bg-danger'>FAILED</th>
+                                                                    <th className='bg-info'>DELIVERY</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
+                                                                    <td></td>
+                                                                    <td><b>   TOTAL:</b></td>
+                                                                    <td className='text-end'><b>{listPackageTeamTotal.reinbound}</b></td>
+                                                                    <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
+                                                                    <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
+                                                                    <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
+                                                                </tr>
+                                                                { listDataTablePerTeam }
+                                                            </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                    </div>
 
                                 </div>
@@ -392,13 +471,13 @@ function Dashboard() {
                                                         <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
                                                             <td></td>
                                                             <td><b>   TOTAL:</b></td>
-                                                            <td className='text-end'><b>{listPackageTotal.inbound}</b></td>
-                                                            <td className='text-end'><b>{listPackageTotal.reinbound}</b></td>
-                                                            <td className='text-end'><b>{listPackageTotal.dispatch}</b></td>
-                                                            <td className='text-end'><b>{listPackageTotal.failed}</b></td>
-                                                            <td className='text-end'><b>{listPackageTotal.delivery}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.reinbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.dispatch}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.failed}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.delivery}</b></td>
                                                         </tr>
-                                                        { listDataTablePerDay }
+                                                        { listDataTablePerRoute }
                                                     </tbody>
                                             </table>
                                         </div>
