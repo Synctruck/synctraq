@@ -97,7 +97,12 @@ Route::group(['middleware' => 'login'], function() {
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);
 	Route::get('/package-delivery/updatedDeliverFields', [PackageDeliveryController::class, 'UpdatedDeliverFields']);
-
+	Route::get('/package-delivery/check', [PackageDeliveryController::class, 'IndexForCheck']);
+	Route::get('/package-delivery/list-for-check/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageDeliveryController::class, 'ListForCheck']);
+	Route::post('/package-delivery/insert-for-check', [PackageDeliveryController::class, 'InsertForCheck']);
+	Route::get('/package-delivery/confirmation-check', [PackageDeliveryController::class, 'ConfirmationCheck']);
+	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance']);
+	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);
