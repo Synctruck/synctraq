@@ -51,7 +51,7 @@ function States() {
 
     useEffect(() => {
 
-        listAllClient(pageClient);
+        //listAllClient(pageClient);
 
     }, [textSearchClient])
 
@@ -62,6 +62,7 @@ function States() {
 
     const handlerChangePageManifest = (pageNumber) => {
 
+        setPageManifest(pageNumber);
         listAllManifest(pageNumber);
     }
 
@@ -395,13 +396,44 @@ function States() {
         );
     });
 
+    const handlerCheckbox = (Reference_Number_1, filter) => {
+
+        if(filter == 1)
+        {
+            document.getElementById('idCheck'+ Reference_Number_1).checked = false;
+        }
+        else
+        {
+            document.getElementById('idCheck'+ Reference_Number_1).checked = true;
+        }
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+
+        fetch(url_general +'package-manifest/filter-check', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                LoadingHide();
+                listAllManifest(pageManifest);
+            },
+        );
+    }
+
     const listManifestTable = listManifest.map( (packageManifest, i) => {
 
         return (
 
             <tr key={i}>
                 <td>
-                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageManifest.Reference_Number_1 } name="checkAntiScanManifest" value={ packageManifest.Reference_Number_1 } defaultChecked={ packageManifest.filter ? true : false }/>
+                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageManifest.Reference_Number_1 } checked={ packageManifest.filter == 1 ? true : false } onChange={ () => handlerCheckbox(packageManifest.Reference_Number_1, packageManifest.filter) }/>
                 </td>
                 <td>{ packageManifest.Reference_Number_1 }</td>
             </tr>
@@ -732,7 +764,7 @@ function States() {
                                     </div>
                                 </div>
                                 <div className="row form-group">
-                                    <div className="col-lg-12">
+                                    <div className="col-lg-12" style={ {display: 'none'} }>
                                         <button className="btn btn-primary" onClick={ () => handlerUpdateManifest() }>Update ANTI SCAN</button>
                                     </div>
                                     <div className="col-lg-12">
