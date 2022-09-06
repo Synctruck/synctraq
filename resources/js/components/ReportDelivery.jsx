@@ -250,8 +250,8 @@ function ReportDelivery() {
                 <td>
                     { packageDelivery.updated_at.substring(11, 19) }
                 </td>
-                <td>{ team }</td>
-                <td>{ driver }</td>
+                <td><b>{ team }</b></td>
+                <td><b>{ driver }</b></td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
                 <td>{ packageDelivery.Dropoff_Contact_Name }</td>
                 <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>

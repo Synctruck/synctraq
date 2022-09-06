@@ -76,8 +76,7 @@ class PackageDeliveryController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
                                 ->where('confirmCheckPayment', 0)
                                 ->where('photoUrl', 'like' , '%,%')
                                 ->where('status', 'Delivery');
@@ -120,7 +119,9 @@ class PackageDeliveryController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(50);
+        $listAll = $listAll->with(['team', 'driver'])
+                            ->orderBy('Date_Delivery', 'desc')
+                            ->paginate(50);
 
         $Reference_Number_1s = [];
 
@@ -178,9 +179,8 @@ class PackageDeliveryController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                ->where('status', 'Delivery');
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                    ->where('status', 'Delivery');
 
         if($checked == 1)
         {
@@ -230,7 +230,9 @@ class PackageDeliveryController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }*/
 
-        $listAll = $listAll->orderBy('Date_Delivery', 'desc')->paginate(50);
+        $listAll = $listAll->with(['team', 'driver'])
+                            ->orderBy('Date_Delivery', 'desc')
+                            ->paginate(50);
 
         $Reference_Number_1s = [];
 

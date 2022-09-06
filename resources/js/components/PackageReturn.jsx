@@ -251,8 +251,8 @@ function PackageReturn() {
                 <td>
                     { packageReturn.Date_Return ? packageReturn.Date_Return.substring(11, 19):'' }
                 </td>
-                <td>{ team }</td>
-                <td>{ driver }</td>
+                <td><b>{ team }</b></td>
+                <td><b>{ driver }</b></td>
                 <td><b>{ packageReturn.Reference_Number_1 }</b></td>
                 <td>{ packageReturn.Description_Return }</td>
                 <td>{ packageReturn.Description_Onfleet }</td>
