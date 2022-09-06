@@ -243,6 +243,17 @@ class PackageManifestController extends Controller
         return response()->json(["stateAction" => true], 200);
     }
 
+    public function CheckFilter(Request $request)
+    {
+        $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
+
+        $packageManifest->filter = $packageManifest->filter == 1 ? 0 : 1;
+
+        $packageManifest->save();
+
+        return ['stateAction' => true];
+    }
+
     public function UpdateFilter(Request $request)
     {
         try
@@ -257,7 +268,7 @@ class PackageManifestController extends Controller
 
                 $packageManifest->filter = 0;
 
-                $packageManifest->save();
+                $packageManifest->save(); 
             }
 
             $valuesCheck = $request->get('valuesCheck') != '' ? explode(",", $request->get('valuesCheck')) : [];
