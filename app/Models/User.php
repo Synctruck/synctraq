@@ -34,9 +34,14 @@ class User extends Model
         return $this->hasMany('App\Models\TeamRoute', 'idTeam');
     }
 
+    public function teams()
+    {
+        return $this->hasMany('App\Models\User', 'idTeam');
+    }
+
     public function drivers()
     {
-        return $this->hasMany('App\Models\Driver', 'idTeam');
+        return $this->hasMany('App\Models\Driver', 'idUserDispatch');
     }
 
     public function inbounds()

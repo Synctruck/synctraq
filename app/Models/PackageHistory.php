@@ -41,6 +41,11 @@ class PackageHistory extends Model
         return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
     }
 
+    public function team()
+    {
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
+    }
+
     public function driver()
     {
         return $this->belongsTo('App\Models\User', 'idUserDispatch', 'id');

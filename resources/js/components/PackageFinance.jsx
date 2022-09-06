@@ -261,6 +261,9 @@ function PackageFinance() {
             }
         }
 
+        let team   = (packageDelivery.team ? packageDelivery.team.name : '');
+        let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
+
         return (
 
             <tr key={i}>
@@ -270,8 +273,8 @@ function PackageFinance() {
                 <td>
                     { packageDelivery.updated_at.substring(11, 19) }
                 </td>
-                <td>{ packageDelivery.recipientNotes }</td>
-                <td>{ packageDelivery.workerName }</td>
+                <td><b>{ team }</b></td>
+                <td><b>{ driver }</b></td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
                 <td>{ packageDelivery.Dropoff_Contact_Name }</td>
                 <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>

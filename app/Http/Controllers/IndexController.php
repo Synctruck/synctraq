@@ -19,7 +19,7 @@ class IndexController extends Controller
 
     public function Index()
     {
-        if(Session::get('user')->role->name == 'Administrador')
+        /*if(Session::get('user')->role->name == 'Administrador')
         {
             return redirect('dashboard');
         }
@@ -38,10 +38,9 @@ class IndexController extends Controller
         elseif(Session::get('user')->role->name == 'View')
         {
             return redirect('package-manifest');
-        }
-
-        dd(Session::get('user'));
-        return view('home.index');
+        }*/
+        
+        return redirect('dashboard');
     }
 
     public function IndexPublic()
