@@ -65,6 +65,7 @@ Route::group(['middleware' => 'login'], function() {
 	Route::post('/package-manifest/insert', [PackageManifestController::class, 'Insert']);
 	Route::get('/package-manifest/get/{PACKAGE_ID}', [PackageManifestController::class, 'Get']);
 	Route::post('/package-manifest/update', [PackageManifestController::class, 'Update']);
+	Route::post('/package-manifest/filter-check', [PackageManifestController::class, 'CheckFilter']);
 	Route::post('/package-manifest/update/filter', [PackageManifestController::class, 'UpdateFilter']);
 	Route::post('/package-manifest/import', [PackageManifestController::class, 'Import']);
 	Route::get('/package-manifest/delete-duplicate', [PackageManifestController::class, 'DeleteDuplicate']);

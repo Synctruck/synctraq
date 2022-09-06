@@ -25079,8 +25079,7 @@ function States() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     listAllManifest(pageManifest);
   }, [textSearchManifest]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    listAllClient(pageClient);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {//listAllClient(pageClient);
   }, [textSearchClient]);
 
   var handlerChangePageState = function handlerChangePageState(pageNumber) {
@@ -25088,6 +25087,7 @@ function States() {
   };
 
   var handlerChangePageManifest = function handlerChangePageManifest(pageNumber) {
+    setPageManifest(pageNumber);
     listAllManifest(pageNumber);
   };
 
@@ -25362,6 +25362,31 @@ function States() {
       })]
     }, i);
   });
+
+  var handlerCheckbox = function handlerCheckbox(Reference_Number_1, filter) {
+    if (filter == 1) {
+      document.getElementById('idCheck' + Reference_Number_1).checked = false;
+    } else {
+      document.getElementById('idCheck' + Reference_Number_1).checked = true;
+    }
+
+    var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var formData = new FormData();
+    formData.append('Reference_Number_1', Reference_Number_1);
+    fetch(url_general + 'package-manifest/filter-check', {
+      headers: {
+        "X-CSRF-TOKEN": token
+      },
+      method: 'post',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (response) {
+      LoadingHide();
+      listAllManifest(pageManifest);
+    });
+  };
+
   var listManifestTable = listManifest.map(function (packageManifest, i) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("tr", {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
@@ -25369,9 +25394,10 @@ function States() {
           "class": "form-check-input",
           type: "checkbox",
           id: 'idCheck' + packageManifest.Reference_Number_1,
-          name: "checkAntiScanManifest",
-          value: packageManifest.Reference_Number_1,
-          defaultChecked: packageManifest.filter ? true : false
+          checked: packageManifest.filter == 1 ? true : false,
+          onChange: function onChange() {
+            return handlerCheckbox(packageManifest.Reference_Number_1, packageManifest.filter);
+          }
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("td", {
         children: packageManifest.Reference_Number_1
@@ -25802,6 +25828,9 @@ function States() {
                 className: "row form-group",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                   className: "col-lg-12",
+                  style: {
+                    display: 'none'
+                  },
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
                     className: "btn btn-primary",
                     onClick: function onClick() {
