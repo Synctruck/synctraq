@@ -388,14 +388,14 @@ function Dashboard() {
                                 REPORT PER DATE
                             </div>
                             <div className='row justify-content-center '>
-                                <div className='col-4'>
+                                <div className='col-lg-4 col-sm-12'>
                                    <div className='row'>
-                                        <div className="col-lg-12">
+                                        <div className="col-sm-12">
                                             <div className="row">
                                                 {/* <div className="col-lg-12">
                                                     Date:
                                                 </div> */}
-                                                <div className="col-lg-12">
+                                                <div className="col-sm-12">
                                                     {/* <input type="date" className='form-control' value={ dateStartReport } onChange={ (e) => setDateStartReport(e.target.value) }/> */}
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <StaticDatePicker
@@ -413,14 +413,14 @@ function Dashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='col-12 mt-2'>
+                                        <div className='col-sm-12 mt-2'>
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
                                             <canvas className="chart w-100" id="pieChart"></canvas>
                                         </div>
-                                        <div className='col-12 mt-2'>
+                                        <div className='col-sm-12 mt-2'>
                                             <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                             <div className="row form-group table-responsive">
-                                                <div className="col-lg-12">
+                                                <div className="col-sm-12 table-responsive">
                                                     <table className="table table-hover table-condensed table-bordered">
                                                             <thead>
                                                                 <tr>
@@ -451,10 +451,10 @@ function Dashboard() {
                                    </div>
 
                                 </div>
-                                <div className='col-8'>
+                                <div className='col-lg-4 col-sm-12'>
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                     <div className="row form-group table-responsive">
-                                        <div className="col-lg-12">
+                                        <div className="col-sm-12">
                                             <table className="table table-hover table-condensed table-bordered">
                                                     <thead>
                                                         <tr>
