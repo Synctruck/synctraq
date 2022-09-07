@@ -393,7 +393,7 @@ function Dashboard() {
                     <div className='card'>
                         <div className='card-body'>
                             <div className='card-title'>
-                                REPORT PER DATE <span>{moment(valueCalendar).format('LL')}</span>
+                                REPORT PER DATE
                             </div>
                             <div className='row justify-content-center '>
                                 <div className='col-lg-4 col-sm-12'>
