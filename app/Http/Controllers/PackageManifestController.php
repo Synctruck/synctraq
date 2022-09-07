@@ -104,77 +104,72 @@ class PackageManifestController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        if(substr($request->get('Reference_Number_1'), 0, 6) == 'INLAND' || substr($request->get('Reference_Number_1'), 0, 5) == '67660')
-        {
-            $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+        $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                     ->where('status', 'On hold')
                                                     ->first();
 
-            if(!$packageHistory)
+        if(!$packageHistory)
+        {
+            try
             {
-                try
+                DB::beginTransaction();
+
+                $package = new PackageManifest();
+
+                $package->Reference_Number_1           = $request->get('Reference_Number_1');
+                $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+                $package->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+                $package->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+                $package->Dropoff_City                 = $request->get('Dropoff_City');
+                $package->Dropoff_Province             = $request->get('Dropoff_Province');
+                $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+                $package->Weight                       = $request->get('Weight');
+                $package->Route                        = $request->get('Route');
+                $package->status                       = 'On hold';
+
+                $package->save();
+
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $request->get('Reference_Number_1');
+                $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+                $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+                $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+                $packageHistory->Dropoff_City                 = $request->get('Dropoff_City');
+                $packageHistory->Dropoff_Province             = $request->get('Dropoff_Province');
+                $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+                $packageHistory->Weight                       = $request->get('Weight');
+                $packageHistory->Route                        = $request->get('Route');
+                $packageHistory->status                       = $request->get('status');
+                $packageHistory->idUser                       = Session::get('user')->id;
+                $packageHistory->idUserManifest               = Session::get('user')->id;
+                $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
+                $packageHistory->Description                  = 'On hold - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->status                       = 'On hold';
+
+                $packageHistory->save();
+
+                $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
+
+                if($packageNotExists)
                 {
-                    DB::beginTransaction();
-
-                    $package = new PackageManifest();
-
-                    $package->Reference_Number_1           = $request->get('Reference_Number_1');
-                    $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
-                    $package->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
-                    $package->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
-                    $package->Dropoff_City                 = $request->get('Dropoff_City');
-                    $package->Dropoff_Province             = $request->get('Dropoff_Province');
-                    $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
-                    $package->Weight                       = $request->get('Weight');
-                    $package->Route                        = $request->get('Route');
-                    $package->status                       = 'On hold';
-
-                    $package->save();
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $request->get('Reference_Number_1');
-                    $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
-                    $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
-                    $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
-                    $packageHistory->Dropoff_City                 = $request->get('Dropoff_City');
-                    $packageHistory->Dropoff_Province             = $request->get('Dropoff_Province');
-                    $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
-                    $packageHistory->Weight                       = $request->get('Weight');
-                    $packageHistory->Route                        = $request->get('Route');
-                    $packageHistory->status                       = $request->get('status');
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserManifest               = Session::get('user')->id;
-                    $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'On hold - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
-                    $packageHistory->status                       = 'On hold';
-
-                    $packageHistory->save();
-
-                    $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
-
-                    if($packageNotExists)
-                    {
-                        $packageNotExists->delete();
-                    }
-
-                    DB::commit();
-
-                    return response()->json(["stateAction" => true], 200);    
+                    $packageNotExists->delete();
                 }
-                catch(Exception $e)
-                {
-                    DB::rollback();
 
-                    return response()->json(["stateAction" => false], 200); 
-                }
+                DB::commit();
+
+                return response()->json(["stateAction" => true], 200);    
             }
+            catch(Exception $e)
+            {
+                DB::rollback();
 
-            return ['stateAction' => 'exists'];
+                return response()->json(["stateAction" => false], 200); 
+            }
         }
 
-        return ['stateAction' => 'notInland'];
+        return ['stateAction' => 'exists'];
     }
 
     public function Get($Reference_Number_1)

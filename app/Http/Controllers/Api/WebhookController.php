@@ -24,7 +24,6 @@ class WebhookController extends Controller
     {
         try
         {
-
             DB::beginTransaction();
 
             $Reference_Number_1      = $request['data']['task']['notes'];

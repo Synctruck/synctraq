@@ -22,6 +22,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use DB;
+use Log;
 use Session;
 
 class PackageInboundController extends Controller
@@ -190,6 +191,8 @@ class PackageInboundController extends Controller
                 return ['stateAction' => 'validatedFilterState'];
             }
 
+            $this->SendStatusToInland($packageManifest);
+
             try
             {
                 DB::beginTransaction();
@@ -325,6 +328,45 @@ class PackageInboundController extends Controller
 
             return ['stateAction' => 'notExists'];
         }
+    }
+
+    public function SendStatusToInland($package)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "status": "scan_in_mc",
+                "metadata": [
+                    {
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: SHZX2ER-4YCM907-MM958YS-11GT162',
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $response = json_decode($response);
+
+        curl_close($curl);
+        
+        Log::info('===========  INLAND - STATUS UPDATE');
+        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+        Log::info('REPONSE STATUS: '. ( isset($response->status) ? $response->status : 'error SERVER') );
     }
 
     public function Get($Reference_Number_1)
