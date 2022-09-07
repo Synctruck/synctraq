@@ -107,10 +107,9 @@ class ReportController extends Controller
         $routes = explode(',', $route); 
         $states = explode(',', $state);
 
-        $listAll = PackageHistory::with('driver')
-                                ->whereBetween('Date_Dispatch', [$dateInit, $dateEnd])
-                                ->where('status', 'Dispatch')
-                                ->where('dispatch', 1);
+        $listAll = PackageHistory::whereBetween('Date_Dispatch', [$dateInit, $dateEnd])
+                                    ->where('status', 'Dispatch')
+                                    ->where('dispatch', 1);
 
         if(Session::get('user')->role->name == 'Team')
         {
@@ -150,7 +149,9 @@ class ReportController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->paginate(50);
+        $listAll = $listAll->with(['team', 'driver'])
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(50);
 
         $roleUser = Session::get('user')->role->name;
 
@@ -175,9 +176,8 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('updated_at', [$dateInit, $dateEnd])
-                                ->where('status', 'Delivery');
+        $listAll = PackageDispatch::whereBetween('updated_at', [$dateInit, $dateEnd])
+                                    ->where('status', 'Delivery');
 
         if(Session::get('user')->role->name == 'Team')
         {
@@ -217,7 +217,9 @@ class ReportController extends Controller
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->orderBy('updated_at', 'desc')->paginate(50);
+        $listAll = $listAll->with(['team', 'driver'])
+                            ->orderBy('updated_at', 'desc')
+                            ->paginate(50);
 
         $Reference_Number_1s = [];
 
@@ -227,13 +229,13 @@ class ReportController extends Controller
         }
 
         $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)
-                                        ->orderBy('updated_at', 'desc')
+                                        ->orderBy('created_at', 'desc')
                                         ->get();
 
         $roleUser = Session::get('user')->role->name;
 
-        $listState = PackageHistory::select('Dropoff_Province')
-                                    ->where('dispatch', 1)
+        $listState = PackageDispatch::select('Dropoff_Province')
+                                    ->where('status', 'Delivery')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 

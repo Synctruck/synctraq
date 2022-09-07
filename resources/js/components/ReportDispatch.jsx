@@ -134,42 +134,50 @@ function ReportDispatch() {
         location.href = url_general +'report/export/dispatch/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
-    const listReportTable = listReport.map( (pack, i) => {
+    const listReportTable = listReport.map( (packageDispatch, i) => {
 
-        if(pack.dispatch == 1)
+        if(packageDispatch.dispatch == 1)
         {
+            let team   = (packageDispatch.team ? packageDispatch.team.name : '');
+            let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+
             return (
 
-                <tr key={i} className="alert-success">
+                <tr key={i}>
                     <td>
-                        { pack.Date_Dispatch.substring(5, 7) }-{ pack.Date_Dispatch.substring(8, 10) }-{ pack.Date_Dispatch.substring(0, 4) }
+                        { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
                     </td>
                     <td>
-                        { pack.Date_Dispatch.substring(11, 19) }
+                        { packageDispatch.Date_Dispatch.substring(11, 19) }
                     </td>
                     {
                         roleUser == 'Administrador'
                         ?
-                            pack.driver ? parseInt(pack.driver.idTeam) == 0 || pack.driver.idTeam == null ? <><td><b>{ pack.driver.name }</b></td><td><b></b></td></> : <><td><b>{ pack.driver.nameTeam }</b></td><td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td></> : ''
+                            <>
+                                <td><b>{ team }</b></td>
+                                <td><b>{ driver }</b></td>
+                            </>
+                                
+                            
                         :
                             ''
                     }
                     {
                         roleUser == 'Team'
                         ?
-                            pack.driver.idTeam ? <td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td> : <td></td>
+                            <td><b>{ driver }</b></td>
                         :
                             ''
                     }
-                    <td><b>{ pack.Reference_Number_1 }</b></td>
-                    <td>{ pack.Dropoff_Contact_Name }</td>
-                    <td>{ pack.Dropoff_Contact_Phone_Number }</td>
-                    <td>{ pack.Dropoff_Address_Line_1 }</td>
-                    <td>{ pack.Dropoff_City }</td>
-                    <td>{ pack.Dropoff_Province }</td>
-                    <td>{ pack.Dropoff_Postal_Code }</td>
-                    <td>{ pack.Weight }</td>
-                    <td>{ pack.Route }</td>
+                    <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                    <td>{ packageDispatch.Dropoff_Contact_Name }</td>
+                    <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
+                    <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
+                    <td>{ packageDispatch.Dropoff_City }</td>
+                    <td>{ packageDispatch.Dropoff_Province }</td>
+                    <td>{ packageDispatch.Dropoff_Postal_Code }</td>
+                    <td>{ packageDispatch.Weight }</td>
+                    <td>{ packageDispatch.Route }</td>
                 </tr>
             );
         }

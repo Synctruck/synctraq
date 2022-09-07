@@ -910,10 +910,9 @@ class PackageController extends Controller
 
         if(Session::get('user')->role->name == 'Driver')
         {
-            $packageReturnList = PackageReturn::with(['driver.role', 'driver'])
-                                                    ->where('idUserReturn', Session::get('user')->id)
-                                                    ->where('status', 'Return')
-                                                    ->orderBy('created_at', 'desc');
+            $packageReturnList = PackageReturn::where('idUserReturn', Session::get('user')->id)
+                                                ->where('status', 'Return')
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Driver';
         }
@@ -921,8 +920,7 @@ class PackageController extends Controller
         {
             $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
 
-            $packageReturnList = PackageReturn::with(['driver.role', 'driver'])
-                                                ->whereIn('idUserReturn', $drivers)
+            $packageReturnList = PackageReturn::whereIn('idUserReturn', $drivers)
                                                 ->orWhere('idUserReturn', Session::get('user')->id)
                                                 ->where('status', 'Return')
                                                 ->orderBy('created_at', 'desc');
@@ -931,8 +929,7 @@ class PackageController extends Controller
         }
         else
         {
-            $packageReturnList = PackageReturn::with(['driver.role', 'driver'])
-                                                ->where('status', 'Return')
+            $packageReturnList = PackageReturn::where('status', 'Return')
                                                 ->orderBy('created_at', 'desc');
 
             $roleUser = 'Administrador';
@@ -948,7 +945,7 @@ class PackageController extends Controller
             $packageReturnList = $packageReturnList->whereIn('Dropoff_Province', $states);
         }
 
-        $packageReturnList = $packageReturnList->paginate(50);
+        $packageReturnList = $packageReturnList->with(['team', 'driver'])->paginate(50);
         
         $quantityReturn = $packageReturnList->total();
 

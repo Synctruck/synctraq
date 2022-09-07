@@ -581,7 +581,7 @@ function PackageInbound() {
                 <td>
                     { pack.created_at.substring(11, 19) }
                 </td>
-                <td>{ pack.user.name +' '+ pack.user.nameOfOwner }</td>
+                <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
                 <td>{ pack.TRUCK }</td>
                 <td>{ pack.CLIENT }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
