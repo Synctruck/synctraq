@@ -307,81 +307,87 @@ function Dashboard() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-8 mt-4'>
-                                    <h4> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h4>
-                                </div>
+
                             </div>
                             <div className="row justify-content-center">
+                                <div className="col-lg-4">
+                                    <div className="row justify-content-center">
+                                        <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).subtract(1,'days').format('LL')} And {moment(dateEnd).subtract(1,'days').format('LL')}</h6></div>
+                                        <div className="col-lg-6 text-center form-group">
+                                            <div className="card text-white bg-primary mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header bg-primary text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Manifest</div>
+                                                <div className="card-body">
+                                                    <h3 className=" text-white text-start">{ quantityManifest }</h3>
+                                                </div>
+                                                <a className="card-footer text-end bg-primary text-white" href="/package-manifest">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-6 text-center form-group">
+                                            <div className="card text-white bg-success mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header bg-success text-white text-start">  <i className="bx bx-barcode-reader" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Inbound </div>
+                                                <div className="card-body">
+                                                    <h3 className=" text-white text-start">{ quantityInbound}</h3>
+                                                </div>
+                                                <a className="card-footer text-end bg-success text-white" href="/package-inbound">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-lg-8">
+                                    <div className="row justify-content-center">
+                                        <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h6></div>
 
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white bg-primary mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header bg-primary text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Manifest</div>
-                                        <div className="card-body">
-                                            <h3 className=" text-white text-start">{ quantityManifest }</h3>
+                                        <div className="col-lg-3 text-center form-group">
+                                            <div className="card text-white bg-warning mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header bg-warning text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Dispatch</div>
+                                                <div className="card-body">
+                                                    <h3 className=" text-white text-start">{ quantityDispatch}</h3>
+                                                </div>
+                                                <a className="card-footer text-end bg-warning text-white" href="/package-dispatch">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
                                         </div>
-                                        <a className="card-footer text-end bg-primary text-white" href="/package-manifest">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
+                                        <div className="col-lg-3 text-center form-group">
+                                            <div className="card text-white bg-danger mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header bg-danger text-white text-start">  <i className="bx bxs-error-alt" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Failed</div>
+                                                <div className="card-body">
+                                                    <h3 className=" text-white text-start">{ quantityFailed}</h3>
+                                                </div>
+                                                <a className="card-footer text-end bg-danger text-white" href="/package-dispatch">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3 text-center form-group">
+                                            <div className="card text-white bg-info mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header bg-info text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Delivery</div>
+                                                <div className="card-body">
+                                                    <h3 className=" text-white text-start">{ quantityDelivery }</h3>
+                                                </div>
+                                                <a className="card-footer text-end bg-info text-white" href="#">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3 text-center form-group">
+                                            <div className="card text-white mb-3" style={{maxWidth: '18rem'}} >
+                                                <div className="card-header  text-white text-start" style={{background:'#5b0672'}}>  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: '',background:'#5b0672'} }></i> Warehouse</div>
+                                                <div className="card-body" style={{background:'#5b0672'}}>
+                                                    <h3 className=" text-white text-start">{ quantityWarehouse }</h3>
+                                                </div>
+                                                <a className="card-footer text-end text-white" style={{background:'#5b0672'}} href="/package-warehouse">
+                                                    More info <i className='bi bi-arrow-right-circle'></i>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white bg-success mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header bg-success text-white text-start">  <i className="bx bx-barcode-reader" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Inbound </div>
-                                        <div className="card-body">
-                                            <h3 className=" text-white text-start">{ quantityInbound}</h3>
-                                        </div>
-                                        <a className="card-footer text-end bg-success text-white" href="/package-inbound">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white bg-warning mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header bg-warning text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Dispatch</div>
-                                        <div className="card-body">
-                                            <h3 className=" text-white text-start">{ quantityDispatch}</h3>
-                                        </div>
-                                        <a className="card-footer text-end bg-warning text-white" href="/package-dispatch">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white bg-danger mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header bg-danger text-white text-start">  <i className="bx bxs-error-alt" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Failed</div>
-                                        <div className="card-body">
-                                            <h3 className=" text-white text-start">{ quantityFailed}</h3>
-                                        </div>
-                                        <a className="card-footer text-end bg-danger text-white" href="/package-dispatch">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white bg-info mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header bg-info text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Delivery</div>
-                                        <div className="card-body">
-                                            <h3 className=" text-white text-start">{ quantityDelivery }</h3>
-                                        </div>
-                                        <a className="card-footer text-end bg-info text-white" href="#">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-2 text-center form-group">
-                                    <div className="card text-white mb-3" style={{maxWidth: '18rem'}} >
-                                        <div className="card-header  text-white text-start" style={{background:'#5b0672'}}>  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: '',background:'#5b0672'} }></i> Warehouse</div>
-                                        <div className="card-body" style={{background:'#5b0672'}}>
-                                            <h3 className=" text-white text-start">{ quantityWarehouse }</h3>
-                                        </div>
-                                        <a className="card-footer text-end text-white" style={{background:'#5b0672'}} href="/package-warehouse">
-                                            More info <i className='bi bi-arrow-right-circle'></i>
-                                        </a>
-                                    </div>
-                                </div>
-
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -404,22 +410,9 @@ function Dashboard() {
                                                 <div className="col-lg-12">
 
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    {/* <Grid item xs={12} md={12}>
-                                                    <StaticDatePicker
-                                                        orientation="landscape"
-                                                        openTo="day"
-                                                        value={valueCalendar}
-                                                        // shouldDisableDate={isWeekend}
-                                                        onChange={(newValue) => {
-                                                            setValueCalendar(newValue);
-                                                        }}
-                                                        renderInput={(params) => <TextField {...params} />}
-                                                    />
-                                                    </Grid> */}
-
                                                         <Grid item xs={12} md={6}>
                                                             <CalendarPicker date={valueCalendar} onChange={(newDate) => setValueCalendar(newDate)} />
-                                                            </Grid>
+                                                        </Grid>
                                                     </LocalizationProvider>
                                                 </div>
                                             </div>
