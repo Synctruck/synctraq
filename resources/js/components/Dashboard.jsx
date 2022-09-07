@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { Modal } from 'react'
+
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 //mui
@@ -9,10 +10,16 @@ import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import moment from 'moment';
+import { Grid } from '@mui/material'
+import { CalendarPicker } from '@mui/x-date-pickers'
+
+// moment().format();
 
 function Dashboard() {
 
-    const [valueCalendar, setValueCalendar] = useState(auxDateStart);
+    const [valueCalendar, setValueCalendar] = React.useState(dayjs());
+    // const [days, setDays] = useState(dayjs(auxDateStart));
 
     const [quantityManifest, setQuantityManifest]   = useState(0);
     const [quantityInbound, setQuantityInbound]     = useState(0);
@@ -92,7 +99,6 @@ function Dashboard() {
     },[listDataPie]);
 
     const getAllQuantityStatusPackage = async () => {
-
         setLoading('block');
         setCart('none');
 
@@ -110,7 +116,6 @@ function Dashboard() {
     }
 
     const getDataPerDate = async () => {
-
         setLoading('block');
         setCart('none');
 
@@ -302,6 +307,9 @@ function Dashboard() {
                                         </div>
                                     </div>
                                 </div>
+                                <div className='col-lg-8 mt-4'>
+                                    <h4> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h4>
+                                </div>
                             </div>
                             <div className="row justify-content-center">
 
@@ -385,42 +393,45 @@ function Dashboard() {
                     <div className='card'>
                         <div className='card-body'>
                             <div className='card-title'>
-                                REPORT PER DATE
+                                REPORT PER DATE <span>{moment(valueCalendar).format('LL')}</span>
                             </div>
                             <div className='row justify-content-center '>
                                 <div className='col-lg-4 col-sm-12'>
                                    <div className='row'>
-                                        <div className="col-sm-12">
+                                        <div className="col-lg-12">
                                             <div className="row">
-                                                {/* <div className="col-lg-12">
-                                                    Date:
-                                                </div> */}
-                                                <div className="col-sm-12">
-                                                    {/* <input type="date" className='form-control' value={ dateStartReport } onChange={ (e) => setDateStartReport(e.target.value) }/> */}
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <StaticDatePicker
-                                                            orientation="landscape"
-                                                            openTo="day"
-                                                            value={valueCalendar}
-                                                            // shouldDisableDate={isWeekend}
-                                                            onChange={(newValue) => {
-                                                            setValueCalendar(newValue);
-                                                            }}
-                                                            renderInput={(params) => <TextField {...params} />}
-                                                        />
-                                                    </LocalizationProvider>
 
+                                                <div className="col-lg-12">
+
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    {/* <Grid item xs={12} md={12}>
+                                                    <StaticDatePicker
+                                                        orientation="landscape"
+                                                        openTo="day"
+                                                        value={valueCalendar}
+                                                        // shouldDisableDate={isWeekend}
+                                                        onChange={(newValue) => {
+                                                            setValueCalendar(newValue);
+                                                        }}
+                                                        renderInput={(params) => <TextField {...params} />}
+                                                    />
+                                                    </Grid> */}
+
+                                                        <Grid item xs={12} md={6}>
+                                                            <CalendarPicker date={valueCalendar} onChange={(newDate) => setValueCalendar(newDate)} />
+                                                            </Grid>
+                                                    </LocalizationProvider>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='col-sm-12 mt-2'>
+                                        <div className='col-12 col-sm-12 mt-2'>
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
                                             <canvas className="chart w-100" id="pieChart"></canvas>
                                         </div>
-                                        <div className='col-sm-12 mt-2'>
+                                        <div className='col-12 mt-2'>
                                             <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                             <div className="row form-group table-responsive">
-                                                <div className="col-sm-12 table-responsive">
+                                                <div className="col-lg-12">
                                                     <table className="table table-hover table-condensed table-bordered">
                                                             <thead>
                                                                 <tr>
@@ -451,10 +462,10 @@ function Dashboard() {
                                    </div>
 
                                 </div>
-                                <div className='col-lg-4 col-sm-12'>
+                                <div className='col-lg-8 col-sm-12'>
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                     <div className="row form-group table-responsive">
-                                        <div className="col-sm-12">
+                                        <div className="col-lg-12">
                                             <table className="table table-hover table-condensed table-bordered">
                                                     <thead>
                                                         <tr>
