@@ -475,7 +475,26 @@ function PackageInbound() {
                     }
                     else if(response.stateAction == 'validatedFilterPackage')
                     {
-                        setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
+                        //setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
+
+                        swal({
+                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                            text: 'I will close in 3 seconds.',
+                            timer: 3000,
+                            showCancelButton: false,
+                            showConfirmButton: false
+                        })
+                        .then(
+                            function () {},
+                            function (dismiss)
+                            {
+                                if(dismiss === 'timer')
+                                {
+                                  //console.log('I was closed by the timer')
+                                }
+                            }
+                        )
+
                         setTypeMessage('primary');
                         setNumberPackage('');
 

@@ -547,6 +547,7 @@
             .then(response => response.json())
             .then(response => {
 
+                let packageBlocked     = response.packageBlocked;
                 let packageHistoryList = response.packageHistoryList;
                 let packageDelivery    = response.packageDelivery;
                 let packageDispatch    = response.packageDispatch;
@@ -563,6 +564,17 @@
 
                 let tr = '';
 
+                if(packageBlocked)
+                {
+                    tr =    '<tr>'+ 
+                                '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
+                                '<td>PACKAGE BLOCKED</td>'+
+                                '<td>'+ packageBlocked.comment +'</td>'+
+                            '</tr>';
+
+                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                }
+                
                 packageHistoryList.forEach( package =>  {
 
                     let Description        = '';

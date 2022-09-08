@@ -29,6 +29,7 @@
         "@emotion/styled": "^11.10.4",
         "@mui/material": "^5.10.3",
         "@mui/x-date-pickers": "^5.0.0",
+        "autoprefixer": "10.4.5",
         "chart.js": "^3.9.1",
         "dayjs": "^1.11.5",
         "moment": "^2.29.4",

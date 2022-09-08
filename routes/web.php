@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +18,11 @@ Route::get('/home/public', [IndexController::class, 'IndexPublic']);
 //============ User Login - Logout
 Route::get('/', [UserController::class, 'Login']);
 Route::post('/user/login', [UserController::class, 'ValidationLogin']);
+
+Route::get('package-blocked', [PackageBlockedController::class, 'Index']);
+Route::get('package-blocked/list', [PackageBlockedController::class, 'List']);
+Route::post('package-blocked/insert', [PackageBlockedController::class, 'Insert']);
+Route::get('package-blocked/delete/{Reference}', [PackageBlockedController::class, 'Delete']);
 
 Route::group(['middleware' => 'login'], function() {
 

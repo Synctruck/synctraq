@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageAux, PackageHistory, PackageManifest, PackageNotExists, Routes};
+use App\Models\{PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -365,7 +365,9 @@ class PackageManifestController extends Controller
                         
                         if(in_array($row[0], $packageIDsValidate))
                         {
-                            if(substr($row[0], 0, 6) == 'INLAND' || substr($row[0], 0, 5) == '67660')
+                            $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
+
+                            if($packageBlocked == null)
                             {
                                 $package = new PackageManifest();
 
