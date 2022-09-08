@@ -17,7 +17,6 @@ class PackageManifest extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-
     //observers
     protected static function booted()
     {
@@ -29,5 +28,10 @@ class PackageManifest extends Model
         static::updating(function ($user) {
             $user->updated_at = date('Y-m-d H:i:s');
         });
+    }
+
+    public function company_data()
+    {
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
     }
 }

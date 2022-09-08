@@ -180,6 +180,8 @@ class PackageWarehouseController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageWarehouse->idCompany;
+                $packageHistory->company                      = $packageWarehouse->company;
                 $packageHistory->Reference_Number_2           = $packageWarehouse->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageWarehouse->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageWarehouse->Ready_At;
@@ -275,6 +277,8 @@ class PackageWarehouseController extends Controller
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -383,6 +387,8 @@ class PackageWarehouseController extends Controller
 
                     $packageReturn->id                           = uniqid();
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageReturn->idCompany                    = $packageDispatch->idCompany;
+                    $packageReturn->company                      = $packageDispatch->company;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -435,6 +441,8 @@ class PackageWarehouseController extends Controller
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -494,6 +502,8 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse = new PackageWarehouse();
 
                 $packageWarehouse->Reference_Number_1           = $package->Reference_Number_1;
+                $packageWarehouse->idCompany                    = $package->idCompany;
+                $packageWarehouse->company                      = $package->company;
                 $packageWarehouse->Reference_Number_2           = $package->Reference_Number_2;
                 $packageWarehouse->Reference_Number_3           = $package->Reference_Number_3;
                 $packageWarehouse->Ready_At                     = $package->Ready_At;
@@ -535,6 +545,8 @@ class PackageWarehouseController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;

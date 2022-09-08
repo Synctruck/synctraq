@@ -9,6 +9,8 @@ use App\Models\{Configuration, Driver, Package, PackageDelivery, PackageDispatch
 
 use App\Http\Controllers\PackageDispatchController;
 
+use App\Http\Controllers\Api\PackageController;
+
 use DB;
 use Log;
 
@@ -46,22 +48,24 @@ class WHookController extends Controller
                     {
                         if($user->nameTeam)
                         {
-                            $description = 'Delivery - for: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                            $description = 'For: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                         }
                         else
                         {
-                            $description = 'Delivery - for: Team 1 to '. $user->name;
+                            $description = 'For: Team 1 to '. $user->name;
                         }
                     }
                     else
                     {
-                        $description = 'Delivery - for: Not exist Team';
+                        $description = 'For: Not exist Team';
                     }
 
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -123,12 +127,15 @@ class WHookController extends Controller
                     $packageDispatch->status        = 'Delivery';
 
                     $packageDispatch->save();
+
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl)[0]);
+                    //end data for inland
                 }
             }
 
             DB::commit();
-
-
         }
         catch(Exception $e)
         {
@@ -168,6 +175,8 @@ class WHookController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                $packageHistory->company                      = $packageDispatch->company;
                 $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -288,6 +297,8 @@ class WHookController extends Controller
 
                         $packageHistory->id                           = uniqid();
                         $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                        $packageHistory->idCompany                    = $package->idCompany;
+                        $packageHistory->company                      = $package->company;
                         $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                         $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                         $packageHistory->Ready_At                     = $package->Ready_At;
@@ -330,6 +341,8 @@ class WHookController extends Controller
                     $packageDispatch = new PackageDispatch();
 
                     $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageDispatch->idCompany                    = $package->idCompany;
+                    $packageDispatch->company                      = $package->company;
                     $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                     $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                     $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -376,6 +389,8 @@ class WHookController extends Controller
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->Ready_At                     = $package->Ready_At;
@@ -458,6 +473,8 @@ class WHookController extends Controller
 
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->idCompany                    = $package->idCompany;
+                            $packageHistory->company                      = $package->company;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -577,6 +594,8 @@ class WHookController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;

@@ -15,6 +15,8 @@ use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
+use App\Http\Controllers\Api\PackageController;
+
 use DB;
 use Log;
 use Session;
@@ -341,10 +343,12 @@ class PackageDispatchController extends Controller
 
                 if($package->status == 'On hold' && $registerTask == 200)
                 {
-                    $packageHistory = new PackageHistory();
+                    /*$packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->Ready_At                     = $package->Ready_At;
@@ -384,12 +388,19 @@ class PackageDispatchController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
 
-                    $packageHistory->save();
+                    $packageHistory->save();*/
                 }
 
-                $packageDispatch = new PackageDispatch();
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($package, 'Dispatch');
+                //end data for inland
+
+                /*$packageDispatch = new PackageDispatch();
 
                 $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                $packageDispatch->idCompany                    = $package->idCompany;
+                $packageDispatch->company                      = $package->company;
                 $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                 $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                 $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -430,12 +441,14 @@ class PackageDispatchController extends Controller
                 $packageDispatch->idOnfleet                    = $idOnfleet;
                 $packageDispatch->taskOnfleet                  = $taskOnfleet;
 
-                $packageDispatch->save();
+                $packageDispatch->save();*/
 
-                $packageHistory = new PackageHistory();
+                /*$packageHistory = new PackageHistory();
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;
@@ -476,7 +489,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Description                  = $description;
                 $packageHistory->status                       = 'Dispatch';
 
-                $packageHistory->save();
+                $packageHistory->save();*/
 
                 $package->delete();
 
@@ -791,6 +804,8 @@ class PackageDispatchController extends Controller
                             $packageDispatch = new PackageDispatch();
 
                             $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageDispatch->idCompany                    = $package->idCompany;
+                            $packageDispatch->company                      = $package->company;
                             $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                             $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                             $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -835,6 +850,8 @@ class PackageDispatchController extends Controller
 
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->idCompany                    = $package->idCompany;
+                            $packageHistory->company                      = $package->company;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -980,6 +997,8 @@ class PackageDispatchController extends Controller
 
                     $packageReturn->id                           = uniqid();
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageReturn->idCompany                    = $packageDispatch->idCompany;
+                    $packageReturn->company                      = $packageDispatch->company;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -1052,6 +1071,8 @@ class PackageDispatchController extends Controller
                     $packageInbound = new PackageInbound();
 
                     $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageInbound->idCompany                    = $packageDispatch->idCompany;
+                    $packageInbound->company                      = $packageDispatch->company;
                     $packageInbound->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageInbound->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageInbound->Ready_At                     = $packageDispatch->Ready_At;
@@ -1094,6 +1115,8 @@ class PackageDispatchController extends Controller
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;

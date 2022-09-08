@@ -28,6 +28,11 @@ class Company extends Model
         return $this->hasMany('App\Models\PackageHistory', 'idCompany');
     }
 
+    public function manifest()
+    {
+        return $this->hasMany('App\Models\PackageManifest', 'idCompany');
+    }
+
 
     //observers
     protected static function booted()

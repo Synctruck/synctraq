@@ -313,6 +313,8 @@ class PackageDeliveryController extends Controller
 
                                 $packageHistory->id                           = uniqid();
                                 $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                                $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                                $packageHistory->company                      = $packageDispatch->company;
                                 $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                                 $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                                 $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -506,6 +508,8 @@ class PackageDeliveryController extends Controller
 
                                     $packageHistory->id                           = uniqid();
                                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                                    $packageHistory->company                      = $packageDispatch->company;
                                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;

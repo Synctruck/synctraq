@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\{Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists};
 
 use DB;
+use Log;
 use Session;
 
 class PackageController extends Controller
@@ -206,6 +207,7 @@ class PackageController extends Controller
 
                     $package = new PackageManifest();
 
+                    $package->idCompany                     = $company->id;
                     $package->company                       = $company->name;
                     $package->Reference_Number_1            = $data['Reference_Number_1'];
                     $package->Dropoff_Contact_Name          = $data['Dropoff_Contact_Name'];
@@ -244,6 +246,7 @@ class PackageController extends Controller
 
                     $packageHistory->id                            = uniqid();
                     $packageHistory->idCompany                     = $company->id;
+                    $packageHistory->company                       = $company->name;
                     $packageHistory->Reference_Number_1            = $data['Reference_Number_1'];
                     $packageHistory->Dropoff_Contact_Name          = $data['Dropoff_Contact_Name'];
                     $packageHistory->Dropoff_Contact_Phone_Number  = $data['Dropoff_Contact_Phone_Number'];
@@ -415,131 +418,58 @@ class PackageController extends Controller
         }
     }
 
-    public function IndexHola(Request $request)
-    {   
-        dd("");
-        return response($request->check, 200)
-            ->header('Content-Type', 'text/plain');
-    }
-
-    public function UpdateStatusOnfleet(Request $request)
+    public function SendStatusToInland($package, $status, $idPhoto = null)
     {
-        try
+        $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
+                                                ->first();
+
+        $pod_url = "";
+
+        if($status == 'Delivery')
         {
-
-            DB::beginTransaction();
-
-            $Reference_Number_1      = $request['data']['task']['notes'];
-            $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
-            $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
-            $photoUploadIds          = $request['data']['task']['completionDetails']['photoUploadIds'];
-            $photoUploadId           = $request['data']['task']['completionDetails']['photoUploadId'];
-
-            if($completionDetailsStatus == true)
-            {
-                $packageDispatch = PackageDispatch::find($Reference_Number_1);
-
-                if($packageDispatch)
-                {
-                    $user = User::find($packageDispatch->idUserDispatch);
-
-                    if($user)
-                    {
-                        if($user->nameTeam)
-                        {
-                            $description = 'Delivery - for: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
-                        }
-                        else
-                        {
-                            $description = 'Delivery - for: Team 1 to '. $user->name;
-                        }
-                    }
-                    else
-                    {
-                        $description = 'Delivery - for: Not exist Team';
-                    }
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                    $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                    $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->Name                         = $packageDispatch->Name;
-                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageHistory->idUser                       = 64;
-                    $packageHistory->idUserDelivery               = 64;
-                    $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
-                    $packageHistory->Description                  = $description;
-                    $packageHistory->status                       = 'Delivery';
-
-                    $packageHistory->save();
-
-                    $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                    $packageDispatch->workerName         = $user->name .' '. $user->nameOfOwner;
-                    $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageDispatch->recipientNotes     = $user->nameTeam;
-
-                    if(count($photoUploadIds) > 0)
-                    {
-                        $photoUrl = implode(",", $photoUploadIds);
-                    }
-                    else
-                    {
-                        $photoUrl   = $photoUploadId;
-                    }
-
-                    $packageDispatch->photoUrl           = $photoUrl;
-                    $packageDispatch->Date_Delivery      = date('Y-m-d H:i:s', $Date_Delivery / 1000);
-
-                    $packageDispatch->status = 'Delivery';
-
-                    if($packageDispatch->save())
-                    {
-                        $quantityOnfleet++;
-                    }
-                }
-            }
-
-            DB::commit();
-
-            Log::info("success update webook");
+            $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
         }
-        catch(Exception $e)
-        {
-            DB::rollback();
 
-            Log::info($e->getMessage());
-        }
+        Log::info($pod_url);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "status": "'. $companyStatus->statusCodeCompany .'",
+                '. $pod_url .'
+                "metadata": [
+                    {
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: '. $companyStatus->company->key_webhook,
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $response = json_decode($response, true);
+
+        curl_close($curl);
+        
+        Log::info('===========  INLAND - STATUS UPDATE');
+        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+        Log::info('UPDATED STATUS: '. $companyStatus->statusCodeCompany .'[ '. $status .' ]');
+        Log::info('REPONSE STATUS: '. $response['status']);
+        Log::info('============INLAND - END STATUS UPDATE');
     }
 }

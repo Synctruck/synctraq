@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
+use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -20,6 +20,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
+
+use App\Http\Controllers\Api\PackageController;
 
 use DB;
 use Log;
@@ -191,17 +193,20 @@ class PackageInboundController extends Controller
                 return ['stateAction' => 'validatedFilterState'];
             }
 
-            $this->SendStatusToInland($packageManifest);
-
             try
             {
                 DB::beginTransaction();
 
-                //$this->GenerateBarCode($packageManifest->Reference_Number_1);
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageManifest, 'Inbound');
+                //end data for inland
 
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageInbound->idCompany                    = $packageManifest->idCompany;
+                $packageInbound->company                      = $packageManifest->company;
                 $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -245,6 +250,8 @@ class PackageInboundController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageManifest->idCompany;
+                $packageHistory->company                      = $packageManifest->company;
                 $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -329,46 +336,7 @@ class PackageInboundController extends Controller
             return ['stateAction' => 'notExists'];
         }
     }
-
-    public function SendStatusToInland($package)
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'{
-                "status": "scan_in_mc",
-                "metadata": [
-                    {
-                        "label": "",
-                        "value": ""
-                    }
-                ]
-            }',
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: SHZX2ER-4YCM907-MM958YS-11GT162',
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        $response = json_decode($response);
-
-        curl_close($curl);
-        
-        Log::info('===========  INLAND - STATUS UPDATE');
-        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-        Log::info('REPONSE STATUS: '. ( isset($response->status) ? $response->status : 'error SERVER') );
-    }
-
+    
     public function Get($Reference_Number_1)
     {
         $packageInbound = packageInbound::find($Reference_Number_1);
@@ -509,6 +477,8 @@ class PackageInboundController extends Controller
                                     $packageInbound = new PackageInbound();
 
                                     $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                                    $packageInbound->idCompany                    = $packageManifest->idCompany;
+                                    $packageInbound->company                      = $packageManifest->company;
                                     $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                                     $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                                     $packageInbound->Ready_At                     = $packageManifest->Ready_At;
@@ -550,6 +520,8 @@ class PackageInboundController extends Controller
 
                                     $packageHistory->id                           = uniqid();
                                     $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                                    $packageHistory->idCompany                    = $packageManifest->idCompany;
+                                    $packageHistory->company                      = $packageManifest->company;
                                     $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
                                     $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                                     $packageHistory->Ready_At                     = $packageManifest->Ready_At;
