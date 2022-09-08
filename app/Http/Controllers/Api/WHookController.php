@@ -525,9 +525,12 @@ class WHookController extends Controller
 
                             $package->save();
 
+                            $packageController = new PackageController();
+                            $packageController->SendStatusToInland($package, 'Dispatch', null);
+
                             DB::commit();
 
-                            Log::info('==== UPDATE TASK CREATED');      
+                            Log::info('==== UPDATE TASK CREATED');
                         }
                         catch(Exception $e)
                         {

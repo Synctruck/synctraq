@@ -199,7 +199,7 @@ class PackageInboundController extends Controller
 
                 //data for INLAND
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageManifest, 'Inbound');
+                $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                 //end data for inland
 
                 $packageInbound = new PackageInbound();
