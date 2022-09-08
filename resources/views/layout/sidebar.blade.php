@@ -3,6 +3,13 @@
         <li >
             <div id="google_translate_element" class="google"></div>
         </li>
+        <li class="nav-heading"></li>
+        <li >
+            <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
+                <i class="bx bx-block"></i>
+                <span>PACKAGE BLOCKED</span>
+            </a>
+        </li>
         @if(Session::has('user'))
             @if(Session::get('user')->role->name == 'Administrador')
                 <li class="nav-heading"></li>

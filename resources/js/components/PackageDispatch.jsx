@@ -466,30 +466,19 @@ function PackageDispatch() {
 
                     if(response.stateAction == 'validatedFilterPackage')
                     {
-                        //setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
-
-                        swal({
+                        Swal.fire({
+                            icon: 'error',
                             title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: 'I will close in 3 seconds.',
-                            timer: 3000,
-                            showCancelButton: false,
-                            showConfirmButton: false
+                            text: '',
+                            showConfirmButton: false,
+                            timer: 20000
                         })
-                        .then(
-                            function () {},
-                            function (dismiss)
-                            {
-                                if(dismiss === 'timer')
-                                {
-                                  //console.log('I was closed by the timer')
-                                }
-                            }
-                        )
+                        //setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
 
                         setTypeMessage('primary');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
+                        document.getElementById('soundPitidoBlocked').play();
                     }
                     else if(response.stateAction == 'notInbound')
                     {
@@ -1726,6 +1715,7 @@ function PackageDispatch() {
                                         <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                         <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                         <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                     </div>
                                 </div>
 
