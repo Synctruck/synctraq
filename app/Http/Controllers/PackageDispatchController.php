@@ -257,10 +257,13 @@ class PackageDispatchController extends Controller
         {
            $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-           if($package->filter)
-            {
-                return ['stateAction' => 'validatedFilterPackage'];
-            }
+           if($package)
+           {
+                if($package->filter)
+                {
+                    return ['stateAction' => 'validatedFilterPackage'];
+                }
+           }
         }
 
         if(!$package)
