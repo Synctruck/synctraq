@@ -466,16 +466,34 @@ function PackageDispatch() {
 
                     if(response.stateAction == 'validatedFilterPackage')
                     {
+                        let packageBlocked  = response.packageBlocked;
                         let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+
+                        if(packageManifest)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                                showConfirmButton: false,
+                                timer: 2000,
+                            })
+                        }
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                            showConfirmButton: false,
-                            timer: 2000,
-                        })
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                        
 
                         setTypeMessage('primary');
                         setNumberPackage('');

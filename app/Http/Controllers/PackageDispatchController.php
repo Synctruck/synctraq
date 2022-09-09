@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -253,19 +253,29 @@ class PackageDispatchController extends Controller
 
         $package = PackageInbound::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
+        if($package)
+        {
+            $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageBlocked)
+            {
+                return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+            }
+        }
+
         if(!$package)
         {
            $package = PackageManifest::with('blockeds')
                                     ->where('Reference_Number_1', $request->get('Reference_Number_1'))
                                     ->first();
 
-           if($package)
-           {
+            if($package)
+            {
                 if($package->filter || count($package->blockeds) > 0)
                 {
-                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package];
+                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package, 'packageBlocked' => null];
                 }
-           }
+            }
         }
 
         if(!$package)
