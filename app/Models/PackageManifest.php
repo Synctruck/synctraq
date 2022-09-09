@@ -17,6 +17,10 @@ class PackageManifest extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function blockeds()
+    {
+        return $this->hasMany('App\Models\PackageBlocked', 'Reference_Number_1');
+    }
 
     //observers
     protected static function booted()

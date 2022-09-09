@@ -17,6 +17,11 @@ class PackageBlocked extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function manifest()
+    {
+        return $this->belongsTo('App\Models\PackageManifest', 'Reference_Number_1');
+    }
+
     //observers
     protected static function booted()
     {

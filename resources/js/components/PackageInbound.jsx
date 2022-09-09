@@ -475,12 +475,13 @@ function PackageInbound() {
                     }
                     else if(response.stateAction == 'validatedFilterPackage')
                     {
-                        //setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
+                        let packageManifest = response.packageManifest;
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                         Swal.fire({
                             icon: 'error',
                             title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: '',
+                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
                             showConfirmButton: false,
                             timer: 2000,
                         })

@@ -255,13 +255,15 @@ class PackageDispatchController extends Controller
 
         if(!$package)
         {
-           $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+           $package = PackageManifest::with('blockeds')
+                                    ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                    ->first();
 
            if($package)
            {
-                if($package->filter)
+                if($package->filter || count($package->blockeds) > 0)
                 {
-                    return ['stateAction' => 'validatedFilterPackage'];
+                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package];
                 }
            }
         }

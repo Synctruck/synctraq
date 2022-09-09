@@ -172,13 +172,13 @@ class PackageInboundController extends Controller
             return ['stateAction' => 'validatedWarehouse', 'packageWarehouse' => $packageWarehouse];
         }
 
-        $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
+        $packageManifest = PackageManifest::with('blockeds')->find($request->get('Reference_Number_1'));
 
         if($packageManifest)
         {
-            if($packageManifest->filter)
+            if($packageManifest->filter || count($packageManifest->blockeds) > 0)
             {
-                return ['stateAction' => 'validatedFilterPackage'];
+                return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $packageManifest];
             }
 
             $state = States::where('name', $packageManifest->Dropoff_Province)
