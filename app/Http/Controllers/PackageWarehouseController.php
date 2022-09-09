@@ -8,6 +8,8 @@ use App\Models\{Configuration, PackageHistory, PackageInbound, PackageDispatch, 
 
 use Illuminate\Support\Facades\Validator;
 
+use App\Http\Controllers\Api\PackageController;
+
 use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -249,7 +251,9 @@ class PackageWarehouseController extends Controller
 
         if($packageInbound == null)
         {
-            $packageDispatch = PackageDispatch::find($request->get('Reference_Number_1'));
+            $packageDispatch = PackageDispatch::where('status', 'Dispatch')
+                                                ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                ->first();
         }
 
         if($packageManifest || $packageInbound || $packageDispatch)
@@ -270,7 +274,7 @@ class PackageWarehouseController extends Controller
                 {
                     $package = $packageDispatch;
                 }
-                
+                 
                 if($packageManifest)
                 {
                     $packageHistory = new PackageHistory();
@@ -321,6 +325,11 @@ class PackageWarehouseController extends Controller
                     $packageHistory->status                       = 'Inbound';
 
                     $packageHistory->save();
+
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
+                    //end data for inland
                 }
 
                 if($packageDispatch)
@@ -351,35 +360,32 @@ class PackageWarehouseController extends Controller
                     $Description_Return  = $request->get('Description_Return');
                     $Description_Onfleet = ''; 
 
-                    if(env('APP_ENV') == 'local' && $packageDispatch->idOnfleet)
+                    $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+
+                    if($onfleet)
                     {
-                        $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+                        $idOnfleet           = $packageDispatch->idOnfleet;
+                        $taskOnfleet         = $packageDispatch->taskOnfleet;
+                        $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
+                        $Date_Return         = date('Y-m-d H:i:s');
 
-                        if($onfleet)
+                        if($onfleet['state'] == 3)
                         {
-                            $idOnfleet           = $packageDispatch->idOnfleet;
-                            $taskOnfleet         = $packageDispatch->taskOnfleet;
-                            $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
-                            $Date_Return         = date('Y-m-d H:i:s');
+                            $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
+                            $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
 
-                            if($onfleet['state'] == 3)
+                            if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
                             {
-                                $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
-                                $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
-
-                                if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
-                                {
-                                    $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
-                                }
-                                else
-                                {
-                                    $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
-                                }
+                                $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
                             }
-                            elseif($onfleet['state'] == 1)
+                            else
                             {
-                                $statusOnfleet = 1;
+                                $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
                             }
+                        }
+                        elseif($onfleet['state'] == 1)
+                        {
+                            $statusOnfleet = 1;
                         }
                     }
 
