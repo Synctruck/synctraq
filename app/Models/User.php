@@ -1,9 +1,9 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
     protected $table      = 'user';
     protected $primaryKey = 'id';
@@ -19,6 +19,11 @@ class User extends Model
 
     protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at'];
 
+     /** Relaciones */
+    public function permissions()
+    {
+        return $this->belongsToMany('App\Models\Permission','permission_user','user_id','permission_id');
+    }
     public function role()
     {
         return $this->belongsTo('App\Models\Role', 'idRole', 'id');
@@ -67,6 +72,21 @@ class User extends Model
     public function assigneds()
     {
         return $this->hasMany('App\Models\Assigned', 'idTeam');
+    }
+
+    //obtiene todos los permisos por rol y por usuario
+    public static function allPermisions($id_user,$id_role)
+    {
+        return DB::select("SELECT p.id, p.name, p.slug
+                            FROM t_permission p
+                            INNER JOIN t_permission_user pu
+                            ON p.id = pu.permission_id
+                            WHERE pu.user_id = $id_user
+                            UNION
+                            SELECT permiss.id, permiss.name, permiss.slug
+                            FROM permission_role pr
+                            INNER JOIN permission permiss ON permiss.id = pr.permission_id
+                            WHERE pr.role_id = $id_role");
     }
 
     //observers

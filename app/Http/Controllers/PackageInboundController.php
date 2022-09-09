@@ -22,6 +22,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageInboundController extends Controller
@@ -39,12 +40,12 @@ class PackageInboundController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Session::get('user')->role->name == 'Validador')
+        if(Auth::user()->role->name == 'Validador')
         {
-            $packageListInbound = PackageInbound::with('user')->where('idUser', Session::get('user')->id)
+            $packageListInbound = PackageInbound::with('user')->where('idUser', Auth::user()->id)
                                                 ->where('status', 'Inbound');
         }
-        else if(Session::get('user')->role->name == 'Administrador')
+        else if(Auth::user()->role->name == 'Administrador')
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
@@ -93,12 +94,12 @@ class PackageInboundController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Session::get('user')->role->name == 'Validador')
+        if(Auth::user()->role->name == 'Validador')
         {
-            $packageListInbound = PackageInbound::with('user')->where('idUser', Session::get('user')->id)
+            $packageListInbound = PackageInbound::with('user')->where('idUser', Auth::user()->id)
                                                 ->where('status', 'Inbound');
         }
-        else if(Session::get('user')->role->name == 'Administrador')
+        else if(Auth::user()->role->name == 'Administrador')
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
@@ -233,7 +234,7 @@ class PackageInboundController extends Controller
                 $packageInbound->Weight                       = $packageManifest->Weight;
                 $packageInbound->Route                        = $packageManifest->Route;
                 $packageInbound->Name                         = $packageManifest->Name;
-                $packageInbound->idUser                       = Session::get('user')->id;
+                $packageInbound->idUser                       = Auth::user()->id;
                 $packageInbound->status                       = 'Inbound';
 
                 $packageInbound->save();
@@ -276,10 +277,10 @@ class PackageInboundController extends Controller
                 $packageHistory->Weight                       = $packageManifest->Weight;
                 $packageHistory->Route                        = $packageManifest->Route;
                 $packageHistory->Name                         = $packageManifest->Name;
-                $packageHistory->idUser                       = Session::get('user')->id;
-                $packageHistory->idUserInbound                = Session::get('user')->id;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->inbound                      = 1;
                 $packageHistory->status                       = 'Inbound';
 
@@ -317,7 +318,7 @@ class PackageInboundController extends Controller
                 $packageNotExists = new PackageNotExists();
 
                 $packageNotExists->Reference_Number_1 = $request->get('Reference_Number_1');
-                $packageNotExists->idUser             = Session::get('user')->id;
+                $packageNotExists->idUser             = Auth::user()->id;
                 $packageNotExists->Date_Inbound       = date('Y-m-d H:s:i');
 
                 $packageNotExists->save();
@@ -499,7 +500,7 @@ class PackageInboundController extends Controller
                                     $packageInbound->Weight                       = $packageManifest->Weight;
                                     $packageInbound->Route                        = $packageManifest->Route;
                                     $packageInbound->Name                         = $packageManifest->Name;
-                                    $packageInbound->idUser                       = Session::get('user')->id;
+                                    $packageInbound->idUser                       = Auth::user()->id;
                                     $packageInbound->status                       = 'Inbound';
 
                                     $packageInbound->save();
@@ -540,10 +541,10 @@ class PackageInboundController extends Controller
                                     $packageHistory->Weight                       = $packageManifest->Weight;
                                     $packageHistory->Route                        = $packageManifest->Route;
                                     $packageHistory->Name                         = $packageManifest->Name;
-                                    $packageHistory->idUser                       = Session::get('user')->id;
-                                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                                    $packageHistory->idUser                       = Auth::user()->id;
+                                    $packageHistory->idUserInbound                = Auth::user()->id;
                                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                                    $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                                    $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                                     $packageHistory->inbound                      = 1;
                                     $packageHistory->status                       = 'Inbound';
 
@@ -560,7 +561,7 @@ class PackageInboundController extends Controller
                                         $packageNotExists = new PackageNotExists();
 
                                         $packageNotExists->Reference_Number_1 = $row[0];
-                                        $packageNotExists->idUser             = Session::get('user')->id;
+                                        $packageNotExists->idUser             = Auth::user()->id;
                                         $packageNotExists->Date_Inbound       = date('Y-m-d H:i:s');
 
                                         $packageNotExists->save();

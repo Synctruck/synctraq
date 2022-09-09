@@ -229,7 +229,7 @@ class ViewerController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $user = User::find(Session::get('user')->id);
+        $user = User::find(Auth::user()->id);
 
         if(!Hash::check($request->get('oldPassword'), $user->password))
         {

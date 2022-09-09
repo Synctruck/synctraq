@@ -16,6 +16,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageReturnCompanyController extends Controller
@@ -39,7 +40,7 @@ class PackageReturnCompanyController extends Controller
     }
 
     public function Index()
-    {        
+    {
         return view('report.indexreturncompany');
     }
 
@@ -47,7 +48,7 @@ class PackageReturnCompanyController extends Controller
     {
         $routes   = explode(',', $route);
         $states   = explode(',', $state);
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $packageReturnCompanyList = PackageReturnCompany::whereBetween('created_at', [$dateInit, $dateEnd]);
 
@@ -62,7 +63,7 @@ class PackageReturnCompanyController extends Controller
         }
 
         $packageReturnCompanyList = $packageReturnCompanyList->paginate(50);
-        
+
         $quantityReturn = $packageReturnCompanyList->total();
 
         $listState = PackageReturnCompany::select('Dropoff_Province')
@@ -75,7 +76,7 @@ class PackageReturnCompanyController extends Controller
     public function Insert(Request $request)
     {
         $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
-        
+
         if($packageInbound == null)
         {
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
@@ -130,15 +131,15 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Weight                       = $request->get('Description_Return');
                 $packageReturnCompany->Route                        = $packageInbound->Route;
                 $packageReturnCompany->Name                         = $packageInbound->Name;
-                $packageReturnCompany->idUser                       = Session::get('user')->id;
-                $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s'); 
+                $packageReturnCompany->idUser                       = Auth::user()->id;
+                $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
                 $packageReturnCompany->measures                     = $request->get('measures');
                 $packageReturnCompany->status                       = 'ReturnCompany';
 
                 $packageReturnCompany->save();
-                
+
                 //regsister history
 
                 $packageHistory = new PackageHistory();
@@ -177,15 +178,15 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Weight                       = $packageInbound->Weight;
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->Name                         = $packageInbound->Name;
-                $packageHistory->idUser                       = Session::get('user')->id;
-                $packageHistory->idUserInbound                = Session::get('user')->id;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'Return Company - for: user ('. Session::get('user')->email .')';
+                $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
 
                 $packageHistory->save();
-                
+
                 $packageInbound->delete();
 
                 DB::commit();
@@ -207,15 +208,15 @@ class PackageReturnCompanyController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Return Company " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'Description Return', 'Client', 'Weight', 'Measures');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -224,7 +225,7 @@ class PackageReturnCompanyController extends Controller
 
         $listPackageReturnCompany = PackageReturnCompany::with('driver')
                                                         ->whereBetween('created_at', [$dateInit, $dateEnd]);
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listPackageReturnCompany = $listPackageReturnCompany->whereIn('Route', $routes);
         }
@@ -235,7 +236,7 @@ class PackageReturnCompanyController extends Controller
         }
 
         $listPackageReturnCompany = $listPackageReturnCompany->get();
-        
+
         foreach($listPackageReturnCompany as $packageReturnCompany)
         {
             $lineData = array(
@@ -258,12 +259,12 @@ class PackageReturnCompanyController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
@@ -296,7 +297,7 @@ class PackageReturnCompanyController extends Controller
                         if($package->status == 'On hold' || $package->status == 'Inbound')
                         {
                             $package->Inbound       = 1;
-                            $package->idUserInbound = Session::get('user')->id;
+                            $package->idUserInbound = Auth::user()->id;
                             $package->Date_Inbound  = date('Y-m-d H:i:s');
                             $package->status        = 'Inbound';
 
@@ -307,7 +308,7 @@ class PackageReturnCompanyController extends Controller
                             $packageHistory->id          = uniqid();
                             $packageHistory->idPackage   = $row[0];
                             $packageHistory->description = 'Validación Inbound';
-                            $packageHistory->user        = Session::get('user')->email;
+                            $packageHistory->user        = Auth::user()->email;
                             $packageHistory->status      = 'Inbound';
 
                             $packageHistory->save();
@@ -318,13 +319,13 @@ class PackageReturnCompanyController extends Controller
                         $packageNotExists = new PackageNotExists();
 
                         $packageNotExists->Reference_Number_1 = $row[0];
-                        $packageNotExists->idUser             = Session::get('user')->id;
+                        $packageNotExists->idUser             = Auth::user()->id;
                         $packageNotExists->Date_Inbound       = date('Y-m-d H:i:s');
 
                         $packageNotExists->save();
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -332,7 +333,7 @@ class PackageReturnCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -342,5 +343,5 @@ class PackageReturnCompanyController extends Controller
         }
     }
 
-    
+
 }

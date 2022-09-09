@@ -4,7 +4,7 @@
             <div id="google_translate_element" class="google"></div>
         </li>
         @if(Session::has('user'))
-            @if(Session::get('user')->role->name == 'Administrador')
+            @if(Auth::user()->role->name == 'Administrador')
                 <li class="nav-heading"></li>
                 <li >
                     <a class="nav-link {{Request::is('dashboard') ? 'active' : 'collapsed'}}" href="{{url('dashboard')}}">
@@ -13,7 +13,7 @@
                     </a>
                 </li>
             @endif
-            @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'View')
+            @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'View')
                 <li >
                     <a class="nav-link {{Request::is('package-manifest') ? 'active' : 'collapsed'}}" href="{{url('package-manifest')}}">
                         <i class="bx bxs-box"></i>
@@ -22,9 +22,9 @@
                 </li>
             @endif
 
-            @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team' || Session::get('user')->role->name == 'Driver' || Session::get('user')->role->name == 'Validador')
+            @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Team' || Auth::user()->role->name == 'Driver' || Auth::user()->role->name == 'Validador')
                 {{-- <li class="nav-heading">* PROCESSES</li> --}}
-                @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Validador')
+                @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Validador')
                     <li >
                         <a class="nav-link {{Request::is('package-inbound') ? 'show' : 'collapsed'}}" href="{{url('/package-inbound')}}">
                             <i class="bx bx-barcode-reader"></i>
@@ -33,8 +33,8 @@
                     </li>
                 @endif
 
-                @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
-                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Driver')
+                @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Team')
+                    @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Driver')
                         <li >
                             <a class="nav-link {{Request::is('package-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch')}}">
                                 <i class="bx bx-car"></i>
@@ -44,8 +44,8 @@
                     @endif
                 @endif
 
-                @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
-                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->permissionDispatch)
+                @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Team')
+                    @if(Auth::user()->role->name == 'Administrador' || Auth::user()->permissionDispatch)
                         <li >
                             <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
                                 <i class="bx bx-barcode-reader"></i>
@@ -55,7 +55,7 @@
                     @endif
                 @endif
 
-                {{-- @if(Session::get('user')->role->name == 'Administrador')
+                {{-- @if(Auth::user()->role->name == 'Administrador')
                     <li >
                         <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
                             <i class="bx bx-user"></i>
@@ -63,7 +63,7 @@
                         </a>
                     </li>
                 @endif --}}
-                @if(Session::get('user')->role->name == 'Administrador')
+                @if(Auth::user()->role->name == 'Administrador')
                     <li style="display: none;">
                         <a class="nav-link {{Request::is('package-delivery') ? 'show' : 'collapsed'}}" href="{{url('package-delivery')}}">
                             <i class="bx bx-car"></i>
@@ -73,9 +73,9 @@
                 @endif
 
 
-                @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
+                @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Team')
                     {{-- <li class="nav-heading">* DESELECT</li> --}}
-                    {{-- @if(Session::get('user')->role->name == 'Administrador')
+                    {{-- @if(Auth::user()->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
                                 <i class="bx bx-barcode-reader"></i>
@@ -84,7 +84,7 @@
                         </li>
                     @endif --}}
 
-                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->permissionDispatch)
+                    @if(Auth::user()->role->name == 'Administrador' || Auth::user()->permissionDispatch)
                         <li >
                             <a class="nav-link {{Request::is('package/return') ? 'show' : 'collapsed'}}" href="{{url('/package/return')}}">
                                 <i class="bx bx-car"></i>
@@ -93,7 +93,7 @@
                         </li>
                     @endif
 
-                    @if(Session::get('user')->role->name == 'Administrador')
+                    @if(Auth::user()->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/package-warehouse')}}">
                                 <i class="bx bx-car"></i>
@@ -102,7 +102,7 @@
                         </li>
                     @endif
 
-                    {{-- @if(Session::get('user')->role->name == 'Administrador')
+                    {{-- @if(Auth::user()->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">
                                 <i class="bx bx-user"></i>
@@ -112,7 +112,7 @@
                     @endif --}}
                 @endif
 
-                @if(Session::get('user')->role->name == 'Team')
+                @if(Auth::user()->role->name == 'Team')
                     <li >
                         <a class="nav-link {{Request::is('assignedTeam') ? 'show' : 'collapsed'}}" href="{{url('/assignedTeam')}}">
                             <i class="bx bx-user"></i>
@@ -128,7 +128,7 @@
                 @endif
             @endif
 
-            @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'View' || Session::get('user')->role->name == 'Team')
+            @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'View' || Auth::user()->role->name == 'Team')
                 <li class="nav-heading">Reports</li>
                 <li class="nav-item">
                     <a class="nav-link
@@ -217,7 +217,7 @@
                 </li>
             @endif
 
-            @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
+            @if(Auth::user()->role->name == 'Administrador' || Auth::user()->role->name == 'Team')
 
                 <li class="nav-heading">Maintenances</li>
                 <li class="nav-item">
@@ -263,7 +263,7 @@
                       <i class="bi bi-person"></i><span>CONFIGURATION GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="configuration-nav" class="nav-content collapse {{(Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
-                        @if(Session::get('user')->role->name == 'Administrador')
+                        @if(Auth::user()->role->name == 'Administrador')
                         <li >
                             <a class="nav-link {{Request::is('routes') ? 'show' : 'collapsed'}}" href="{{url('routes')}}">
                                 <i class="bx bx-command"></i>
@@ -277,7 +277,7 @@
                                 <span>Comments</span>
                             </a>
                         </li>
-                        @if(Session::get('user')->role->name == 'Administrador')
+                        @if(Auth::user()->role->name == 'Administrador')
                             <li >
                                 <a class="nav-link {{Request::is('company') ? 'show' : 'collapsed'}}" href="{{url('company')}}">
                                     <i class="bx bx-home-alt"></i>
@@ -306,7 +306,7 @@
                             </a>
                         </li>
 
-                        @if(Session::get('user')->role->name == 'Administrador')
+                        @if(Auth::user()->role->name == 'Administrador')
                             <li>
                                 <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
                                     <i class="bx bxs-dollar-circle"></i>

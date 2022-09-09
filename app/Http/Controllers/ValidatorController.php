@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use Ixudra\Curl\Facades\Curl;
@@ -256,7 +256,7 @@ class ValidatorController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $user = User::find(Session::get('user')->id);
+        $user = User::find(Auth::user()->id);
 
         if(!Hash::check($request->get('oldPassword'), $user->password))
         {

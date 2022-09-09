@@ -14,6 +14,8 @@ use Ixudra\Curl\Facades\Curl;
 
 use Session;
 use DB;
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
     public $paginate = 50;
@@ -200,8 +202,7 @@ class UserController extends Controller
         {
             if(Hash::check($request->get('password'), $user->password))
             {
-                Session::put('user', $user);
-
+                Auth::login($user);
                 return ['stateAction' => true];
             }
         }
@@ -211,7 +212,7 @@ class UserController extends Controller
 
     public function Logout()
     {
-        Session::flush();
+        Auth::logout();
 
         return redirect('/');
     }
@@ -244,7 +245,7 @@ class UserController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $user = User::find(Session::get('user')->id);
+        $user = User::find(Auth::user()->id);
 
         if(!Hash::check($request->get('oldPassword'), $user->password))
         {

@@ -51,7 +51,7 @@
         position: fixed;
         left: 0px;
         top: 0px;
-        width: 100%; 
+        width: 100%;
         height: 100%;
         z-index: 9999;
         background: url('{{asset("cargando.gif")}}') 50% 50% no-repeat rgb(0,0,0);
@@ -84,7 +84,7 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-        @if(Session::has('user'))
+        @if(Auth::check())
             <div class="row">
                 <div class="col-lg-6">
                     <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
@@ -268,26 +268,26 @@
 
         <li class="nav-item dropdown pe-3">
 
-            @if(Session::has('user'))
+            @if(Auth::check())
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                 <img src="{{asset('admin/assets/img/profile-img.jpg')}}" alt="Profile" class="rounded-circle">
-                @if(Session::get('user')->role->name != 'Team')
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Session::get('user')->name .' '. Session::get('user')->nameOfOwner}}</span>
+                @if(Auth::user()->role->name != 'Team')
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
                 @else
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Session::get('user')->name}}</span>
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
                 @endif
-                
+
               </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        @if(Session::get('user')->role->name != 'Team')
-                            <h6>{{Session::get('user')->name .' '. Session::get('user')->nameOfOwner}}</h6>
+                        @if(Auth::user()->role->name != 'Team')
+                            <h6>{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</h6>
                         @else
-                            <h6>{{Session::get('user')->name}}</h6>
+                            <h6>{{Auth::user()->name}}</h6>
                         @endif
 
-                        <span>{{Session::get('user')->role->name}}</span>
+                        <span>{{Auth::user()->role->name}}</span>
                     </li>
                     <li>
                       <hr class="dropdown-divider">
@@ -311,7 +311,7 @@
                     </li>
                 </ul><!-- End Profile Dropdown Items -->
             @endif
-          
+
         </li><!-- End Profile Nav -->
 
       </ul>
@@ -324,7 +324,7 @@
 
     <main id="main" class="main">
         <div id="loader"></div>
-        
+
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -494,7 +494,7 @@
         <!--Contenid -->
         @yield('content')
     </main><!-- End #main -->
-    
+
     <!-- ======= Footer ======= -->
     <footer id="footer" class="footer">
         <div class="copyright" style="display: none;">
@@ -567,10 +567,10 @@
 
                     let Description        = '';
                     let Description_Return = '';
-                    
+
                     if(package.Description_Return != '')
                     {
-                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>'; 
+                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
 
                     if(package.status == 'Failed')
@@ -582,7 +582,7 @@
                         Description = package.Description;
                     }
 
-                    tr =    '<tr>'+ 
+                    tr =    '<tr>'+
                                 '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
                                 '<td>'+ package.status +'</td>'+
                                 '<td>'+ Description + Description_Return +'</td>'+
@@ -602,7 +602,7 @@
 
                             let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
 
-                            tr =    '<tr>'+ 
+                            tr =    '<tr>'+
                                         '<td colspan="3"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                     '</tr>';
 
@@ -617,13 +617,13 @@
 
                             if(url)
                             {
-                                tr =    '<tr>'+ 
+                                tr =    '<tr>'+
                                             '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
                                         '</tr>';
 
                                 tableHistoryPackage.insertRow(-1).innerHTML = tr;
                             }
-                            
+
                         });
                     }
                 }
@@ -637,12 +637,12 @@
                 {
                     document.getElementById('idPackage').value      = packageHistoryList[0].Reference_Number_1;
                     document.getElementById('contactName').value    = packageHistoryList[0].Dropoff_Contact_Name;
-                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number; 
+                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number;
                     document.getElementById('contactAddress').value = packageHistoryList[0].Dropoff_Address_Line_1;
                     document.getElementById('contactCity').value    = packageHistoryList[0].Dropoff_City;
-                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province; 
+                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province;
                     document.getElementById('contactZipCode').value = packageHistoryList[0].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight; 
+                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value   = packageHistoryList[0].Route;
                 }
 
@@ -680,7 +680,7 @@
                     document.getElementById('contactOnfleetPhone').value   = onfleet['recipients'][0]['phone'];
                     document.getElementById('contactOnfleetAddress').value = onfleet['destination']['address']['apartment'] +' '+ onfleet['destination']['address']['country'] +' '+ onfleet['destination']['address']['number'] +' '+ onfleet['destination']['address']['postalCode'] +' '+ onfleet['destination']['address']['street'];
                     document.getElementById('contactOnfleetCity').value    = onfleet['destination']['address']['city'];
-                    document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state']; 
+                    document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state'];
                     document.getElementById('contactOnfleetZipCode').value = onfleet['destination']['address']['postalCode'];
                     document.getElementById('statusOnfleet').value  = onfleet['state'] +' success('+ onfleet['completionDetails']['success'] +')' ;
 
@@ -698,7 +698,7 @@
 
                             urlsPhoto.forEach( photoUploadId => {
 
-                                tr =    '<tr>'+ 
+                                tr =    '<tr>'+
                                             '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
                                         '</tr>';
 
@@ -709,14 +709,14 @@
                         {
                             let photoUploadId = onfleet['completionDetails']['photoUploadId'];
 
-                            tr =    '<tr>'+ 
+                            tr =    '<tr>'+
                                         '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
                                     '</tr>';
 
                             tableOnfleet.insertRow(-1).innerHTML = tr;
                         }
                     }
-                    
+
                     var myModal = new bootstrap.Modal(document.getElementById('exampleModalTask'), {
 
                         keyboard: false

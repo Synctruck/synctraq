@@ -16,6 +16,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageController extends Controller
@@ -38,7 +39,7 @@ class PackageController extends Controller
     }
 
     public function Index()
-    {        
+    {
         return view('package.index');
     }
 
@@ -47,7 +48,7 @@ class PackageController extends Controller
         $packageList = Package::where('status', 'On hold')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
-            
+
         $quantityPackage = Package::where('status', 'On hold')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
@@ -110,7 +111,7 @@ class PackageController extends Controller
         $package->Inbound = $request->get('status') ? 0 : 1;
         $package->Warehouse = 0;
         $package->Dispatch = 0;
-        $package->idUserInbound = Session::get('user')->id;
+        $package->idUserInbound = Auth::user()->id;
         $package->idUserWarehouse = 0;
         $package->idUserDispatch = 0;
         $package->Date_Inbound = $request->get('status') ? null : date('Y-m-d H:i:s');
@@ -123,7 +124,7 @@ class PackageController extends Controller
         $packageHistory->id          = date('Y-m-d H:i:s');
         $packageHistory->idPackage   = $request->get('Reference_Number_1');
         $packageHistory->description = 'Package agregado a través de Package Not Exists';
-        $packageHistory->user        = Session::get('user')->email;
+        $packageHistory->user        = Auth::user()->email;
         $packageHistory->status      = 'Inbound';
 
         $packageHistory->save();
@@ -218,7 +219,7 @@ class PackageController extends Controller
     }
 
     public function SearchTask($taskOnfleet)
-    { 
+    {
         $curl = curl_init("https://onfleet.com/api/v2/tasks/shortId/". $taskOnfleet);
 
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -243,7 +244,7 @@ class PackageController extends Controller
             {
                 $idOnfleet = $output['container']['worker'];
             }
-            
+
             $driverUser = User::where('idOnfleet', $idOnfleet)->first();
 
             if($output['state'] == 3 && $driverUser)
@@ -266,7 +267,7 @@ class PackageController extends Controller
     }
 
     public function IndexInbound()
-    {        
+    {
         return view('package.inbound');
     }
 
@@ -336,7 +337,7 @@ class PackageController extends Controller
                         $packageHistory->id = uniqid();
                         $packageHistory->idPackage = $row[0];
                         $packageHistory->description = 'Importación de Package';
-                        $packageHistory->user = Session::get('user')->email;
+                        $packageHistory->user = Auth::user()->email;
                         $packageHistory->status = 'On hold';
 
                         $packageHistory->save();
@@ -347,7 +348,7 @@ class PackageController extends Controller
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -355,7 +356,7 @@ class PackageController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -370,10 +371,10 @@ class PackageController extends Controller
         $dateInit  = date('Y-m-d') .' 00:00:00' ;
         $dateEnd   = date('Y-m-d', strtotime('+1 day')) .' 03:00:00';
 
-        if(Session::get('user')->role->name == 'Validador')
+        if(Auth::user()->role->name == 'Validador')
         {
             $packageList = Package::with('user_inbound')
-                                ->where('idUserInbound', Session::get('user')->id)
+                                ->where('idUserInbound', Auth::user()->id)
                                 ->where('Inbound', 1)
                                 ->where('Dispatch', 0)
                                 ->orderBy('Date_Inbound', 'desc')
@@ -387,8 +388,8 @@ class PackageController extends Controller
                                 ->orderBy('Date_Inbound', 'desc')
                                 ->get();
         }
-        
-        
+
+
         return ['packageList' => $packageList];
     }
 
@@ -406,7 +407,7 @@ class PackageController extends Controller
                 $package = Package::find($ids_package[$i]);
 
                 $package->Inbound       = 1;
-                $package->idUserInbound = Session::get('user')->id;
+                $package->idUserInbound = Auth::user()->id;
                 $package->Date_Inbound  = date('Y-m-d H:i:s');
                 $package->status        = 'Inbound';
 
@@ -417,7 +418,7 @@ class PackageController extends Controller
                 $packageHistory->id          = uniqid();
                 $packageHistory->idPackage   = $ids_package[$i];
                 $packageHistory->description = 'Validación Inbound';
-                $packageHistory->user        = Session::get('user')->email;
+                $packageHistory->user        = Auth::user()->email;
                 $packageHistory->status      = 'Inbound';
 
                 $packageHistory->save();
@@ -428,7 +429,7 @@ class PackageController extends Controller
                 $packageNotExists = new PackageNotExists();
 
                 $packageNotExists->Reference_Number_1 = $ids_package_not_exists[$i];
-                $packageNotExists->idUser             = Session::get('user')->id;
+                $packageNotExists->idUser             = Auth::user()->id;
                 $packageNotExists->Date_Inbound       = date('Y-m-d H:i:s');
 
                 $packageNotExists->save();
@@ -461,7 +462,7 @@ class PackageController extends Controller
                     DB::beginTransaction();
 
                     $package->Inbound = 1;
-                    $package->idUserInbound = Session::get('user')->id;
+                    $package->idUserInbound = Auth::user()->id;
                     $package->Date_Inbound = date('Y-m-d H:i:s');
                     $package->status = 'Inbound';
 
@@ -472,7 +473,7 @@ class PackageController extends Controller
                     $packageHistory->id = date('Y-m-d H:i:s');
                     $packageHistory->idPackage = $request->get('Reference_Number_1');
                     $packageHistory->description = 'Validación Inbound';
-                    $packageHistory->user = Session::get('user')->email;
+                    $packageHistory->user = Auth::user()->email;
                     $packageHistory->status = 'Inbound';
 
                     $packageHistory->save();
@@ -497,7 +498,7 @@ class PackageController extends Controller
                     $packageNotExists = new PackageNotExists();
 
                     $packageNotExists->Reference_Number_1 = $request->get('Reference_Number_1');
-                    $packageNotExists->idUser             = Session::get('user')->id;
+                    $packageNotExists->idUser             = Auth::user()->id;
 
                     $packageNotExists->save();
                 }
@@ -505,7 +506,7 @@ class PackageController extends Controller
                 return ['stateAction' => 'notExists'];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];*/
     }
 
@@ -538,7 +539,7 @@ class PackageController extends Controller
                         if($package->status == 'On hold' || $package->status == 'Inbound')
                         {
                             $package->Inbound       = 1;
-                            $package->idUserInbound = Session::get('user')->id;
+                            $package->idUserInbound = Auth::user()->id;
                             $package->Date_Inbound  = date('Y-m-d H:i:s');
                             $package->status        = 'Inbound';
 
@@ -549,7 +550,7 @@ class PackageController extends Controller
                             $packageHistory->id          = uniqid();
                             $packageHistory->idPackage   = $row[0];
                             $packageHistory->description = 'Validación Inbound';
-                            $packageHistory->user        = Session::get('user')->email;
+                            $packageHistory->user        = Auth::user()->email;
                             $packageHistory->status      = 'Inbound';
 
                             $packageHistory->save();
@@ -560,13 +561,13 @@ class PackageController extends Controller
                         $packageNotExists = new PackageNotExists();
 
                         $packageNotExists->Reference_Number_1 = $row[0];
-                        $packageNotExists->idUser             = Session::get('user')->id;
+                        $packageNotExists->idUser             = Auth::user()->id;
                         $packageNotExists->Date_Inbound       = date('Y-m-d H:i:s');
 
                         $packageNotExists->save();
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -574,7 +575,7 @@ class PackageController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -593,17 +594,17 @@ class PackageController extends Controller
     {
         $roleUser = '';
 
-        if(Session::get('user')->role->name == 'Driver')
+        if(Auth::user()->role->name == 'Driver')
         {
             $packageDispatchList = PackageDispatch::with(['package', 'driver.role', 'driver'])
-                                                    ->where('idUSer', Session::get('user')->id)
+                                                    ->where('idUSer', Auth::user()->id)
                                                     ->where('status', 'Dispatch');
 
             $roleUser = 'Driver';
         }
-        elseif(Session::get('user')->role->name == 'Team')
+        elseif(Auth::user()->role->name == 'Team')
         {
-            $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
+            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
 
             $idUsers = [];
 
@@ -612,7 +613,7 @@ class PackageController extends Controller
                 array_push($idUsers, $driver->id);
             }
 
-            array_push($idUsers, Session::get('user')->id);
+            array_push($idUsers, Auth::user()->id);
 
             $packageDispatchList = PackageDispatch::with(['package', 'driver.role', 'driver'])
                                                 ->whereIn('idUSer', $idUsers)
@@ -642,12 +643,12 @@ class PackageController extends Controller
             $packageDispatchList = $packageDispatchList->orderBy('created_at', 'desc')
                                                         ->get();
         }
-        
+
         return ['packageDispatchList' => $packageDispatchList, 'roleUser' => $roleUser];
     }
 
     public function ValidationDispatch(Request $request)
-    {        
+    {
         if(substr($request->get('Reference_Number_1'), 0, 6) == 'INLAND' || substr($request->get('Reference_Number_1'), 0, 5) == '67660')
         {
             $package = Package::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -661,7 +662,7 @@ class PackageController extends Controller
                     $packageNotExists = new PackageNotExists();
 
                     $packageNotExists->Reference_Number_1 = $request->get('Reference_Number_1');
-                    $packageNotExists->idUser             = Session::get('user')->id;
+                    $packageNotExists->idUser             = Auth::user()->id;
 
                     $packageNotExists->save();
                 }
@@ -671,17 +672,17 @@ class PackageController extends Controller
 
             if($package)
             {
-                if(Session::get('user')->role->name == 'Administrador')
+                if(Auth::user()->role->name == 'Administrador')
                 {
                     $listTeamRoutes = TeamRoute::with('route')->where('idTeam', $request->get('idTeam'))->get();
                 }
-                elseif(Session::get('user')->role->name == 'Driver')
+                elseif(Auth::user()->role->name == 'Driver')
                 {
-                    $listTeamRoutes = TeamRoute::with('route')->where('idTeam', Session::get('user')->idTeam)->get();
+                    $listTeamRoutes = TeamRoute::with('route')->where('idTeam', Auth::user()->idTeam)->get();
                 }
-                elseif(Session::get('user')->role->name == 'Team')
+                elseif(Auth::user()->role->name == 'Team')
                 {
-                    $listTeamRoutes = TeamRoute::with('route')->where('idTeam', Session::get('user')->id)->get();
+                    $listTeamRoutes = TeamRoute::with('route')->where('idTeam', Auth::user()->id)->get();
                 }
 
                 $validationRoute = false;
@@ -699,7 +700,7 @@ class PackageController extends Controller
                     return ['stateAction' => 'notValidatedRoute'];
                 }
 
-                if($package->Dispatch && Session::get('user')->role->name == 'Administrador')
+                if($package->Dispatch && Auth::user()->role->name == 'Administrador')
                 {
                     return ['stateAction' => 'validated'];
                 }
@@ -721,18 +722,18 @@ class PackageController extends Controller
 
                     $package->Dispatch = 1;
                     $package->Date_Dispatch = date('Y-m-d H:i:s');
-                    $package->idUserDispatch = Session::get('user')->role->name == 'Administrador' ? $idUser : Session::get('user')->id;
+                    $package->idUserDispatch = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
                     $package->status = 'Dispatch';
 
                     $package->save();
 
-                    if(Session::get('user')->role->name == 'Administrador')
+                    if(Auth::user()->role->name == 'Administrador')
                     {
                         $packageDispatch = new PackageDispatch();
 
                         $packageDispatch->id            = date('YmdHis');
                         $packageDispatch->idPackage     = $package->Reference_Number_1;
-                        $packageDispatch->idUser        = Session::get('user')->role->name == 'Administrador' ? $idUser : Session::get('user')->id;
+                        $packageDispatch->idUser        = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
                         $packageDispatch->Date_Dispatch = date('Y-m-d H:i:s');
                         $packageDispatch->status        = 'Dispatch';
 
@@ -740,7 +741,7 @@ class PackageController extends Controller
                     }
                     else
                     {
-                        $packageDispatch = PackageDispatch::where('idUser', Session::get('user')->id)
+                        $packageDispatch = PackageDispatch::where('idUser', Auth::user()->id)
                                                         ->where('status', 'Dispatch')
                                                         ->first();
 
@@ -758,11 +759,11 @@ class PackageController extends Controller
                     $packageHistory->id = date('Y-m-d H:i:s');
                     $packageHistory->idPackage = $request->get('Reference_Number_1');
                     $packageHistory->description = $user->idTeam ?  'Validación Dispatch asignado al driver: '. $user->name .' '. $user->nameOfOwner : 'Validación Dispatch asignado al equipo: '. $user->name;
-                    $packageHistory->user = Session::get('user')->email;
+                    $packageHistory->user = Auth::user()->email;
                     $packageHistory->status = 'Dispatch';
 
                     $packageHistory->save();
-                        
+
                     DB::commit();
 
                     return ['stateAction' => true];
@@ -779,7 +780,7 @@ class PackageController extends Controller
                 return ['stateAction' => false];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 
@@ -859,7 +860,7 @@ class PackageController extends Controller
                                         $packageHistory->id = uniqid();
                                         $packageHistory->idPackage = $row[0];
                                         $packageHistory->description = 'Validación Dispatch (Importación) asignado al driver: '. $driver->name .' '. $driver->nameOfOwner;
-                                        $packageHistory->user = Session::get('user')->email;
+                                        $packageHistory->user = Auth::user()->email;
                                         $packageHistory->status = 'Dispatch';
 
                                         $packageHistory->save();
@@ -869,7 +870,7 @@ class PackageController extends Controller
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -877,7 +878,7 @@ class PackageController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -892,7 +893,7 @@ class PackageController extends Controller
         $packageList = Package::orderBy('Pickup_Province', 'asc')
                                 ->where('status', 'Inbound')
                                 ->get();
-        
+
         return ['packageList' => $packageList];
     }
 
@@ -908,20 +909,20 @@ class PackageController extends Controller
 
         $roleUser = '';
 
-        if(Session::get('user')->role->name == 'Driver')
+        if(Auth::user()->role->name == 'Driver')
         {
-            $packageReturnList = PackageReturn::where('idUserReturn', Session::get('user')->id)
+            $packageReturnList = PackageReturn::where('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->orderBy('created_at', 'desc');
 
             $roleUser = 'Driver';
         }
-        elseif(Session::get('user')->role->name == 'Team')
+        elseif(Auth::user()->role->name == 'Team')
         {
-            $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
+            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
 
             $packageReturnList = PackageReturn::whereIn('idUserReturn', $drivers)
-                                                ->orWhere('idUserReturn', Session::get('user')->id)
+                                                ->orWhere('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->orderBy('created_at', 'desc');
 
@@ -946,7 +947,7 @@ class PackageController extends Controller
         }
 
         $packageReturnList = $packageReturnList->with(['team', 'driver'])->paginate(50);
-        
+
         $quantityReturn = $packageReturnList->total();
 
         $listState = PackageReturn::select('Dropoff_Province')
@@ -964,7 +965,7 @@ class PackageController extends Controller
 
         if($packageDispatch)
         {
-            if($packageDispatch->idUser == Session::get('user')->id || Session::get('user')->role->name == 'Administrador')
+            if($packageDispatch->idUser == Auth::user()->id || Auth::user()->role->name == 'Administrador')
             {
                 try
                 {
@@ -984,7 +985,7 @@ class PackageController extends Controller
                     $packageHistory->id = date('Y-m-d H:i:s');
                     $packageHistory->idPackage = $request->get('Reference_Number_1');
                     $packageHistory->description = 'Package retornado';
-                    $packageHistory->user = Session::get('user')->email;
+                    $packageHistory->user = Auth::user()->email;
                     $packageHistory->status = 'Return';
 
                     $packageHistory->save();
@@ -1014,14 +1015,14 @@ class PackageController extends Controller
     }
 
     public function IndexDelivery()
-    {        
+    {
         return view('package.delivery');
     }
 
     public function ListDelivery(Request $request)
     {
         $packageListDelivery = PackageDelivery::orderBy('created_at', 'desc')->get();
-        
+
         return ['packageListDelivery' => $packageListDelivery];
     }
 
@@ -1048,15 +1049,15 @@ class PackageController extends Controller
 
         $delimiter = ",";
         $filename  = "onfleet " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('Recipient_Name', 'Recipient_Phone', 'Address_Line1', 'Address_Line2', 'City/Town', 'State/Province', 'Postal_Code', 'Country', 'Task_Details', 'Team', 'Driver', 'Pickup', 'Recipient_Notes', 'Latitude', 'Longitude', 'Notification', 'completeAfter', 'completeBefore', 'Organization', 'Quantity', 'Merchant', 'ServiceTime');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         if($valuesCheck == 'all')
         {
             $listPackageDispatch = PackageHistory::with('driver')
@@ -1073,7 +1074,7 @@ class PackageController extends Controller
                                         ->where('dispatch', 1)
                                         ->where('status', 'Dispatch');
         }
-        
+
         if($idTeam && $idDriver)
         {
             $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
@@ -1119,12 +1120,12 @@ class PackageController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
 
     }
@@ -1152,16 +1153,16 @@ class PackageController extends Controller
 
         $delimiter = ",";
         $filename = "road warrior " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('Name', 'building/house', 'Street Name', 'City', 'State', 'Postal', 'Country', 'Color', 'Phone', 'Note', 'Latitude', 'Longitude', 'Visit Time');
 
 
         fputcsv($file, $fields, $delimiter);
-            
+
         if($valuesCheck == 'all')
         {
             $listPackageDispatch = PackageHistory::with('driver')
@@ -1221,12 +1222,12 @@ class PackageController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 }

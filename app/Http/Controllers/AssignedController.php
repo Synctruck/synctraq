@@ -27,7 +27,7 @@ class AssignedController extends Controller
 
     //@Listar paquetes asignadosss
     public function List(Request $request, $dataView, $idTeam)
-    {        
+    {
         $roleUser = '';
 
         if($dataView == 'today')
@@ -98,7 +98,7 @@ class AssignedController extends Controller
                     $teamRoute = TeamRoute::where('idTeam', $request->get('idTeam'))
                                             ->where('idRoute', $route->id)
                                             ->first();
- 
+
                     if(!$teamRoute)
                     {
                         return ['stateAction' => 'notRoute'];
@@ -107,7 +107,7 @@ class AssignedController extends Controller
 
                 $idTeam = $team->id;
 
-                $description = 'Assign - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $description = 'Assign - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
 
                 try
                 {
@@ -148,7 +148,7 @@ class AssignedController extends Controller
                     $assigned->Weight                       = $package->Weight;
                     $assigned->Route                        = $package->Route;
                     $assigned->Name                         = $package->Name;
-                    $assigned->idUser                       = Session::get('user')->id;
+                    $assigned->idUser                       = Auth::user()->id;
                     $assigned->idTeam                       = $idTeam;
                     $assigned->idDriver                     = 0;
                     $assigned->assignedDate                 = date('Y-m-d H:i:s');
@@ -194,14 +194,14 @@ class AssignedController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserDispatch               = 0;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Assigned';
 
                     $packageHistory->save();
-                        
+
                     DB::commit();
 
                     return ['stateAction' => true];
@@ -247,7 +247,7 @@ class AssignedController extends Controller
                         $packageNotExists = new PackageNotExists();
 
                         $packageNotExists->Reference_Number_1 = $request->get('Reference_Number_1');
-                        $packageNotExists->idUser             = Session::get('user')->id;
+                        $packageNotExists->idUser             = Auth::user()->id;
                         $packageNotExists->Date_Inbound       = date('Y-m-d H:s:i');
 
                         $packageNotExists->save();
@@ -259,7 +259,7 @@ class AssignedController extends Controller
                 return ['stateAction' => false];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 
@@ -381,7 +381,7 @@ class AssignedController extends Controller
             $packageHistory->Weight                       = $packageDispatch->Weight;
             $packageHistory->Route                        = $packageDispatch->Route;
             $packageHistory->Name                         = $packageDispatch->Name;
-            $packageHistory->idUser                       = Session::get('user')->id;
+            $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->idUserDispatch               = $request->get('idDriver');
             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
             $packageHistory->dispatch                     = 1;
@@ -509,18 +509,18 @@ class AssignedController extends Controller
                                     $packageHistory->id = uniqid();
                                     $packageHistory->idPackage = $package->Reference_Number_1;
                                     $packageHistory->description = 'Validación Dispatch (Importación) asignado al driver: '. $driver->name .' '. $driver->nameOfOwner;
-                                    $packageHistory->user = Session::get('user')->email;
+                                    $packageHistory->user = Auth::user()->email;
                                     $packageHistory->status = 'Dispatch';
 
                                     $packageHistory->save();
-                                    
+
                                     $package->delete();
                                 }
                             }
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -528,7 +528,7 @@ class AssignedController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -545,7 +545,7 @@ class AssignedController extends Controller
 
     public function ListAssignedTeam($dataView, $idTeam)
     {
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $assignedList = Assigned::with('driver')
                                 ->where('idTeam', $idTeam)
@@ -560,14 +560,14 @@ class AssignedController extends Controller
         if(substr($request->get('Reference_Number_1'), 0, 6) == 'INLAND' || substr($request->get('Reference_Number_1'), 0, 5) == '67660')
         {
             $assigned = Assigned::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                ->where('idTeam', Session::get('user')->id)
+                                ->where('idTeam', Auth::user()->id)
                                 ->first();
 
             if($assigned)
             {
                 $user = User::find($request->get('idDriver'));
 
-                $description = 'El Team ('. Session::get('user')->name .') asignó desde oficina virtual al Driver ('. $user->email .')';
+                $description = 'El Team ('. Auth::user()->name .') asignó desde oficina virtual al Driver ('. $user->email .')';
 
                 try
                 {
@@ -612,7 +612,7 @@ class AssignedController extends Controller
                     $packageDispatch->Weight                       = $assigned->Weight;
                     $packageDispatch->Route                        = $assigned->Route;
                     $packageDispatch->Name                         = $assigned->Name;
-                    $packageDispatch->idUser                       = Session::get('user')->id;
+                    $packageDispatch->idUser                       = Auth::user()->id;
                     $packageDispatch->idUserDispatch               = $user->id;
                     $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                     $packageDispatch->status                       = 'Dispatch';
@@ -655,7 +655,7 @@ class AssignedController extends Controller
                     $packageHistory->Weight                       = $assigned->Weight;
                     $packageHistory->Route                        = $assigned->Route;
                     $packageHistory->Name                         = $assigned->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserDispatch               = $user->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                     $packageHistory->dispatch                     = 1;
@@ -669,11 +669,11 @@ class AssignedController extends Controller
                     $packageHistory->id             = date('Y-m-d H:i:s');
                     $packageHistory->idPackage      = $request->get('Reference_Number_1');
                     $packageHistory->description    = $user->idTeam ?  'Validación Dispatch asignado al driver: '. $user->name .' '. $user->nameOfOwner : 'Validación Dispatch asignado al equipo: '. $user->name;
-                    $packageHistory->user           = Session::get('user')->email;
+                    $packageHistory->user           = Auth::user()->email;
                     $packageHistory->status         = 'Dispatch';
 
                     $packageHistory->save();*/
-                        
+
                     DB::commit();
 
                     return ['stateAction' => true];
@@ -690,7 +690,7 @@ class AssignedController extends Controller
                 return ['stateAction' => 'notAssigned'];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 }

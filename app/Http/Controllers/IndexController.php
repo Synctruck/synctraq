@@ -19,27 +19,27 @@ class IndexController extends Controller
 
     public function Index()
     {
-        /*if(Session::get('user')->role->name == 'Administrador')
+        /*if(Auth::user()->role->name == 'Administrador')
         {
             return redirect('dashboard');
         }
-        elseif(Session::get('user')->role->name == 'Validador')
+        elseif(Auth::user()->role->name == 'Validador')
         {
             return redirect('package-inbound');
         }
-        elseif(Session::get('user')->role->name == 'Team')
+        elseif(Auth::user()->role->name == 'Team')
         {
             return redirect('package-dispatch');
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif(Auth::user()->role->name == 'Driver')
         {
             return redirect('package-dispatch');
         }
-        elseif(Session::get('user')->role->name == 'View')
+        elseif(Auth::user()->role->name == 'View')
         {
             return redirect('package-manifest');
         }*/
-        
+
         return redirect('dashboard');
     }
 
