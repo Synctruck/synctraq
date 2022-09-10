@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists};
+use App\Models\{ Comment, Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists };
 
 use DB;
 use Log;
@@ -420,10 +420,26 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null)
     {
-        $companyStatus = CompanyStatus::with('company')
+        $statusCodeCompany = '';
+        $key_webhook       = '';
+
+        if($status == 'Return')
+        {
+            $company = Company::find($package->idCompany);
+
+            $statusCodeCompany = $idPhoto;
+            $key_webhook       = $company->key_webhook;
+        }
+        else
+        {
+            $companyStatus = CompanyStatus::with('company')
                                                 ->where('idCompany', $package->idCompany)
                                                 ->where('status', $status)
                                                 ->first();
+
+            $statusCodeCompany = $companyStatus->statusCodeCompany;
+            $key_webhook       = $companyStatus->company->key_webhook;
+        }
 
         $pod_url = "";
 
@@ -446,7 +462,7 @@ class PackageController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
-                "status": "'. $companyStatus->statusCodeCompany .'",
+                "status": "'. $statusCodeCompany .'",
                 '. $pod_url .'
                 "metadata": [
                     {
@@ -456,7 +472,7 @@ class PackageController extends Controller
                 ]
             }',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: '. $companyStatus->company->key_webhook,
+                'Authorization: '. $key_webhook,
                 'Content-Type: application/json'
             ),
         ));
@@ -468,7 +484,7 @@ class PackageController extends Controller
         
         Log::info('===========  INLAND - STATUS UPDATE');
         Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-        Log::info('UPDATED STATUS: '. $companyStatus->statusCodeCompany .'[ '. $status .' ]');
+        Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
         Log::info('REPONSE STATUS: '. $response['status']);
         Log::info('============INLAND - END STATUS UPDATE');
     }

@@ -60,7 +60,14 @@ function PackageReturn() {
 
         return (
 
-            <option key={ i } value={ comment.description } > {comment.description}</option>
+            (
+                comment.final == 1
+                ?
+                    <option key={ i } value={ comment.statusCode } style={ {background: 'red', color: 'white'} }> { comment.description }</option>
+                :
+                    <option key={ i } value={ comment.statusCode }> { comment.description }</option>
+            )
+            
         );
     });
 
@@ -486,7 +493,7 @@ function PackageReturn() {
                                                     <div className="form-group">
                                                         <label>RETURN COMMENT</label>
                                                         <div id="descriptionReturn" className="text-danger" style={ {display: 'none'} }></div>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) }>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
                                                             <option value="">Selection comment</option>
                                                             { optionsComment }
                                                         </select>
