@@ -41,6 +41,7 @@ class TeamController extends Controller
 
     public function List(Request $request)
     {
+
         $teamsList = User::with(['drivers', 'role', 'routes_team'])->orderBy('name', 'asc')
                             ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                             ->where('idRole', 3)

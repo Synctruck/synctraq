@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
 class User extends Authenticatable
 {
@@ -78,8 +79,8 @@ class User extends Authenticatable
     public static function allPermisions($id_user,$id_role)
     {
         return DB::select("SELECT p.id, p.name, p.slug
-                            FROM t_permission p
-                            INNER JOIN t_permission_user pu
+                            FROM permission p
+                            INNER JOIN permission_user pu
                             ON p.id = pu.permission_id
                             WHERE pu.user_id = $id_user
                             UNION
