@@ -19,7 +19,7 @@ class RoleController extends Controller
 
     public function getList(Request $request)
     {
-        $roles = Role::WhereRaw("name LIKE ?", ['%'.$request->name.'%'])->whereNotIn('id',[3])->paginate(10);
+        $roles = Role::WhereRaw("name LIKE ?", ['%'.$request->textSearch.'%'])->whereNotIn('id',[3])->paginate(10);
 
         return [
             'roles'=> $roles
@@ -75,7 +75,7 @@ class RoleController extends Controller
         ];
     }
 
-    public function update(Request $request,$id )
+    public function update(RoleUpdateRequest $request,$id )
     {
         try {
             DB::beginTransaction();

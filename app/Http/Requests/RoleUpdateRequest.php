@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RoleUpdateRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class RoleUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,9 +24,11 @@ class RoleUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $role_id = $this->segment(3);
 
         return [
-            //
+            'name'=>['required',Rule::unique('role')->ignore(($role_id))],
+            'permissions'=> ['required']
         ];
     }
 }
