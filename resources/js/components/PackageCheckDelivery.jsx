@@ -96,6 +96,12 @@ function PackageCheckDelivery() {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
             }
+
+            setTimeout( () => {
+
+                handlerCheckUncheckDelivery(response.reportList.data);
+
+            }, 100);
         });
     }
 
@@ -156,13 +162,14 @@ function PackageCheckDelivery() {
         location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
-    const handlerCheckbox = (Reference_Number_1) => {
+    const handlerCheckbox = (Reference_Number_1, checkPayment) => {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         let formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('checkPayment', checkPayment);
 
         fetch(url_general +'package-delivery/insert-for-check', {
             headers: { "X-CSRF-TOKEN": token },
@@ -175,14 +182,27 @@ function PackageCheckDelivery() {
                 LoadingHide();
             },
         );
-        console.log(e);
+    }
+
+    const handlerCheckUncheckDelivery = (listReportForCheck) => {
+
+        listReportForCheck.map( (packageDelivery, i) => {
+
+            if(packageDelivery.checkPayment == 1)
+            {
+                document.getElementById('checkCorrect'+ packageDelivery.Reference_Number_1).checked = true;
+            }
+            else if(packageDelivery.checkPayment == 0)
+            {
+                document.getElementById('checkIncorrect'+ packageDelivery.Reference_Number_1).checked = true;
+            }
+        });
     }
 
     const listReportTable = listReport.map( (packageDelivery, i) => {
 
         let imgs          = '';
         let urlImage      = '';
-        let quantityImage = 0;
         let photoHttp     = false;
 
         if(!packageDelivery.idOnfleet)
@@ -249,55 +269,62 @@ function PackageCheckDelivery() {
 
             if(idsImages.length == 1)
             {
-                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="200"/>;
 
                 urlImage      = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-                quantityImage = 1;
             }
             else if(idsImages.length >= 2)
             {
                 imgs =  <>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="200" style={ {border: '2px solid red'} }/>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="200" style={ {border: '2px solid red'} }/>
                         </>
 
                 urlImage      = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png';
-                quantityImage = 2;
             }
         }
 
-        if(quantityImage > 1)
-        {
-            return (
+        return (
 
-                <tr key={i}>
-                    <td style={ { width: '100px'} }>
-                        { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
-                    </td>
-                    <td>
-                        { packageDelivery.updated_at.substring(11, 19) }
-                    </td>
-                    <td>{ packageDelivery.recipientNotes }</td>
-                    <td>{ packageDelivery.workerName }</td>
-                    <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                    <td>{ packageDelivery.Dropoff_Contact_Name }</td>
-                    <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
-                    <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
-                    <td>{ packageDelivery.Dropoff_City }</td>
-                    <td>{ packageDelivery.Dropoff_Province }</td>
-                    <td>{ packageDelivery.Dropoff_Postal_Code }</td>
-                    <td>{ packageDelivery.Weight }</td>
-                    <td>{ packageDelivery.Route }</td>
-                    <td>{ packageDelivery.taskOnfleet }</td>
-                    <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
-                        { imgs }
-                    </td>
-                    <td>
-                        <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageDelivery.Reference_Number_1 } defaultChecked={ packageDelivery.checkPayment } onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1) }/>
-                    </td>
-                </tr>
-            );
-        }
+            <tr key={i}>
+                <td style={ { width: '100px'} }>
+                    { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
+                </td>
+                <td>
+                    { packageDelivery.updated_at.substring(11, 19) }
+                </td>
+                <td>{ packageDelivery.recipientNotes }</td>
+                <td>{ packageDelivery.workerName }</td>
+                <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
+                <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
+                    { imgs }
+                </td>
+                <td>
+                    <fieldset className="row mb-3">
+                        <div className="col-sm-10">
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" name={ 'checkDelivery'+ packageDelivery.Reference_Number_1} id={ 'checkCorrect'+ packageDelivery.Reference_Number_1 } value="1" onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1, e.target.value) }/>
+                                <label className="form-check-label" for={ 'checkCorrect'+ packageDelivery.Reference_Number_1 }>
+                                    <h4><b className="text-success">Correct</b></h4>
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input className="form-check-input" type="radio" name={ 'checkDelivery'+ packageDelivery.Reference_Number_1} id={ 'checkIncorrect'+ packageDelivery.Reference_Number_1 } value="0" onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1, e.target.value) }/>
+                                <label className="form-check-label" for={ 'checkIncorrect'+ packageDelivery.Reference_Number_1 }>
+                                    <h4><b className="text-danger">Incorrect</b></h4>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input class="form-check-input" style={ {display: 'none'} } type="checkbox" id={ 'idCheck'+ packageDelivery.Reference_Number_1 } defaultChecked={ packageDelivery.checkPayment } onChange={ (e) => handlerCheckbox(packageDelivery.Reference_Number_1) }/>
+                </td>
+                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
+                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDelivery.Dropoff_City }</td>
+                <td>{ packageDelivery.Dropoff_Province }</td>
+            </tr>
+        );
     });
 
     const [listViewImages, setListViewImages] = useState([]);
@@ -634,17 +661,13 @@ function PackageCheckDelivery() {
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
+                                                <th>IMAGE</th>
+                                                <th></th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
-                                                <th>ZIP CODE</th>
-                                                <th>WEIGHT</th>
-                                                <th>ROUTE</th>
-                                                <th>TASK ONFLEET</th>
-                                                <th>IMAGE</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>

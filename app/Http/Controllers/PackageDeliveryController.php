@@ -78,8 +78,6 @@ class PackageDeliveryController extends Controller
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
                                 ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                ->where('confirmCheckPayment', 0)
-                                ->where('photoUrl', 'like' , '%,%')
                                 ->where('status', 'Delivery');
 
         if(Session::get('user')->role->name == 'Team')
@@ -148,7 +146,7 @@ class PackageDeliveryController extends Controller
         $packageDelivery = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         $packageDelivery->idUserCheckPayment = $packageDelivery->checkPayment ? 0 : Session::get('user')->id;
-        $packageDelivery->checkPayment       = $packageDelivery->checkPayment ? false : true;
+        $packageDelivery->checkPayment       = $request->get('checkPayment');
 
         $packageDelivery->save();
 
