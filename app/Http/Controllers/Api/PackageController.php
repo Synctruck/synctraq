@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists};
+use App\Models\{Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists, Routes};
 
 use DB;
 use Session;
@@ -204,6 +204,10 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
+                    $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    
+                    $routeName = $route ? $route->name : $data['Route'];
+
                     $package = new PackageManifest();
 
                     $package->company                       = $company->name;
@@ -215,7 +219,7 @@ class PackageController extends Controller
                     $package->Dropoff_Province              = $data['Dropoff_Province'];
                     $package->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
                     $package->Weight                        = $data['Weight'];
-                    $package->Route                         = $data['Route'];
+                    $package->Route                         = $routeName;
                     $package->status                        = 'On hold';
                     $package->manifest_id                   = $data['manifest_id'];
                     $package->mixing_center_shortcode       = $data['mixing_center_shortcode'];
@@ -277,7 +281,7 @@ class PackageController extends Controller
                     $packageHistory->Description                   = 'On hold - for company: '. $company->name;
 
                     $packageHistory->save();
-
+ 
                     $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
 
                     if($packageNotExists)
@@ -541,5 +545,29 @@ class PackageController extends Controller
 
             Log::info($e->getMessage());
         }
+    }
+
+    public function UpdateManifestRouteByZipCode()
+    {
+        $initDate = date('Y-m-d') .' 00:00:00';
+        $endDate  = date('Y-m-d') .' 23:59:59';
+
+        $listPackageManifest = PackageManifest::whereBetween('created_at', [$initDate, $endDate])->get();
+        
+        foreach($listPackageManifest as $packageManifest)
+        {
+            $route = Routes::where('zipCode', $packageManifest->Dropoff_Postal_Code)->first();
+            
+            if($route)
+            {
+                $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+
+                $packageManifest->Route = $route->name;
+
+                $packageManifest->save();
+            }
+        }
+
+        echo "updated";
     }
 }
