@@ -647,7 +647,7 @@ function PackageCheckDelivery() {
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDelivery }</b>
                                     </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-primary form-control" onClick={ () => handlerSaveCheck() }>Save Checks</button>
+                                        <button className="btn btn-primary form-control" style={ {display: 'none'} } onClick={ () => handlerSaveCheck() }>Save Checks</button>
                                     </div>
                                 </div>
                             </h5>

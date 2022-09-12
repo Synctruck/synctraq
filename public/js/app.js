@@ -11598,6 +11598,9 @@ function PackageCheckDelivery() {
                   className: "col-lg-2",
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
                     className: "btn btn-primary form-control",
+                    style: {
+                      display: 'none'
+                    },
                     onClick: function onClick() {
                       return handlerSaveCheck();
                     },

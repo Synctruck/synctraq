@@ -178,15 +178,16 @@ class PackageDeliveryController extends Controller
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
                                 ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                ->where('checkPayment', '!=', null)
                                 ->where('status', 'Delivery');
 
         if($checked == 1)
         {
-            $listAll = $listAll->where('checkPayment', 1)->where('confirmCheckPayment', 1);
+            $listAll = $listAll->where('checkPayment', 1);
         }
         elseif($checked != 'all')
         {
-            $listAll = $listAll->where('confirmCheckPayment', 0);
+            $listAll = $listAll->where('checkPayment', 0);
         }
 
         if(Session::get('user')->role->name == 'Team')

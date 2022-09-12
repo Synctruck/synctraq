@@ -34,7 +34,7 @@
                 @endif
 
                 @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Team')
-                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->permissionDispatch)
+                    @if(Session::get('user')->role->name == 'Administrador' || Session::get('user')->role->name == 'Driver')
                         <li >
                             <a class="nav-link {{Request::is('package-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch')}}">
                                 <i class="bx bx-car"></i>
@@ -98,15 +98,6 @@
                             <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/package-warehouse')}}">
                                 <i class="bx bx-car"></i>
                                 <span>WAREHOUSE</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if(Session::get('user')->role->name == 'Administrador')
-                        <li >
-                            <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
-                                <i class="bx bxs-check-circle"></i>
-                                <span>DELIVERY CHECK</span>
                             </a>
                         </li>
                     @endif
@@ -267,13 +258,6 @@
                     </ul>
                 </li>
 
-                <li>
-                    <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
-                        <i class="bx bxs-dollar-circle"></i>
-                        <span>FINANCE</span>
-                    </a>
-                </li>
-
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan')) ? '' : 'collapsed'}}" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan') ? 'true' : 'false'}}">
                       <i class="bi bi-person"></i><span>CONFIGURATION GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -307,6 +291,29 @@
                                 <span>Anti-Scan</span>
                             </a>
                         </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#finance-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
+                      <i class="bx bxs-check-circle"></i><span>FINANZAS</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="finance-nav" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
+                        <li >
+                            <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
+                                <i class="bx bxs-check-circle"></i>
+                                <span>CHECK - UNCHECK DELIVERY</span>
+                            </a>
+                        </li>
+
+                        @if(Session::get('user')->role->name == 'Administrador')
+                            <li>
+                                <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
+                                    <i class="bx bxs-dollar-circle"></i>
+                                    <span>VALIDATE DELIVERY</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
             @endif
