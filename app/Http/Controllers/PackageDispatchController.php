@@ -1067,8 +1067,12 @@ class PackageDispatchController extends Controller
 
                     $comment = Comment::where('statusCode', $request->get('Description_Return'))->first();
 
+                    $statusReturn = 'Final';
+
                     if($comment->final == 0)
                     {
+                        $statusReinbound = 'ReInbound';
+
                         $packageInbound = new PackageInbound();
 
                         $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
@@ -1158,7 +1162,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
-                    $packageHistory->status                       = 'ReInbound';
+                    $packageHistory->status                       = $statusReturn;
 
                     $packageHistory->save();
 
