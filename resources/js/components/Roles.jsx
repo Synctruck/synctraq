@@ -8,6 +8,7 @@ function Roles() {
 
     const [id, setId]            = useState(0);
     const [name, setName]        = useState('');
+    const [status, setStatus]        = useState(1);
 
     const [rolesList, setRolesList] = useState([]);
     const [permissionsList, setPermissionsList] = useState([]);
@@ -121,11 +122,6 @@ function Roles() {
 
         e.preventDefault();
 
-        const formData = new FormData();
-
-        formData.append('name', name);
-        formData.append('permissions', rolePermissions);
-
         clearValidation();
         LoadingShow();
         let url = url_general +'roles/insert'
@@ -139,7 +135,7 @@ function Roles() {
         axios({
             method: method,
             url: url,
-            data: {name,permissions:rolePermissions}
+            data: {name,permissions:rolePermissions,status:status}
         })
         .then((response) => {
             swal("Role was recorded!", {
@@ -210,7 +206,7 @@ function Roles() {
                             id={item.id+'ck'}
                             checked={rolePermissions.includes(item.id)}
                             onChange={handleCheckPermissions}
-                             disabled= {(id == 1)?true:false}
+                            //  disabled= {(id == 1)?true:false}
                         />  <label htmlFor={item.id+'ck'}> { item.name }</label>
                     </div>;
         }
@@ -222,7 +218,7 @@ function Roles() {
                 id={item.id+'ck'}
                 checked={rolePermissions.includes(item.id)}
                 onChange={handleCheckPermissions}
-                disabled= {(id == 1)?true:false}
+                // disabled= {(id == 1)?true:false}
             />  <label htmlFor={item.id+'ck'} style={{fontWeight:'500'}}>  { item.name }</label>
         </div>
         }
@@ -256,11 +252,20 @@ function Roles() {
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
-
                                                             <div className="col-lg-12 form-group">
                                                                 <label>Role name</label>
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12 form-group">
+                                                                <label> Login Status</label>
+                                                                <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className='form-control' value={status} onChange={(e) => setStatus(e.target.value)}>
+                                                                    <option value="1">Enabled</option>
+                                                                    <option value="0">Disabled</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -281,7 +286,7 @@ function Roles() {
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        {id != 1 && <button className="btn btn-primary">{ textButtonSave }</button> }
+                                                        {1 == 1 && <button className="btn btn-primary">{ textButtonSave }</button> }
 
                                                     </div>
                                                 </div>

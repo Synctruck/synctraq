@@ -19,7 +19,7 @@ class RoleController extends Controller
 
     public function getList(Request $request)
     {
-        $roles = Role::WhereRaw("name LIKE ?", ['%'.$request->textSearch.'%'])->whereNotIn('id',[3])->paginate(10);
+        $roles = Role::WhereRaw("name LIKE ?", ['%'.$request->textSearch.'%'])->paginate(10);
 
         return [
             'roles'=> $roles

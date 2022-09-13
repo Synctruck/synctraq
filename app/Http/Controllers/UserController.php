@@ -198,7 +198,7 @@ class UserController extends Controller
     {
         $user = User::with(['role', 'routes_team.route'])->where('email', $request->get('email'))->first();
 
-        if($user)
+        if($user && $user->role->status ==1)
         {
             if(Hash::check($request->get('password'), $user->password))
             {

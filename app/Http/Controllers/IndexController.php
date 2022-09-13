@@ -66,7 +66,7 @@ class IndexController extends Controller
         $initDate = $startDate.' 00:00:00';
         $endDate  = $endDate.' 23:59:59';
 
-        $quantityManifest = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+        $quantityManifest = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'On hold')
                                                 ->get()
                                                 ->count();
@@ -77,34 +77,33 @@ class IndexController extends Controller
         //                                             ->groupBy('Route')
         //                                             ->get();
 
-        $quantityInbound = PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+        $quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Inbound')
                                                 // ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
 
 
-        $quantityDispatch = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+        $quantityDispatch = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Dispatch')
                                                 // ->where('dispatch', 1)
                                                 ->get()
                                                 ->count();
 
-        $quantityDelivery = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+        $quantityDelivery = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Delivery')
                                                 ->get()
                                                 ->count();
 
 
 
-        $quantityFailed = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
+        $quantityFailed = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Failed')
                                                 ->get()
                                                 ->count();
 
 
-        $quantityWarehouse = PackageHistory::whereBetween('created_at', [$initDate, $endDate])
-                                                ->where('status', 'Warehouse')
+        $quantityWarehouse = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 

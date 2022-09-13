@@ -28,7 +28,8 @@ class RoleUpdateRequest extends FormRequest
 
         return [
             'name'=>['required',Rule::unique('role')->ignore(($role_id))],
-            'permissions'=> ['required']
+            'status'=>['required','in:1,0'],
+            // 'permissions'=> ['required']
         ];
     }
 }

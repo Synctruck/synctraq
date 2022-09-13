@@ -124,8 +124,8 @@
             </li>
             @endif
 
-                <li class="nav-heading">Reports</li>
-                <li class="nav-item">
+                <li class="nav-heading" id="titleReports" >Reports</li>
+                <li class="nav-item" id="liUlReports">
                     <a class="nav-link
                             {{
                                 Request::is('report/failed') ||
@@ -140,11 +140,11 @@
                                     ''
                                 :
                                     'collapsed'
-                            }}" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#"
+                            }}" data-bs-target="#ulReports" data-bs-toggle="collapse" href="#"
                     >
                         <i class="bi bi-journal-text"></i><span>GENERAL REPORTS</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="forms-nav" class="nav-content
+                    <ul id="ulReports" class="nav-content
                             {{
                                 Request::is('report/failed') ||
                                 Request::is('report/assigns') ||
@@ -158,7 +158,7 @@
                                     'collapse show'
                                 :
                                     'collapse'
-                            }}" data-bs-parent="#sidebar-nav"
+                            }}" data-bs-parent="#ulReports"
                     >
                     @if(hasPermission('reportManifest.index'))
                         <li>
@@ -225,12 +225,12 @@
                 </li>
 
 
-                <li class="nav-heading">MAINTENANCES</li>
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer') || Request::is('roles') ) ? '' : 'collapsed'}}" data-bs-target="#maintenances-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('team') ? 'true' : 'false'}}">
+                <li class="nav-heading" id="titleMaintenances">MAINTENANCES</li>
+                <li class="nav-item" id="liUlUsers">
+                    <a class="nav-link {{ (Request::is('user') || Request::is('team') || Request::is('driver') || Request::is('validator')   || Request::is('viewer') || Request::is('roles') ) ? '' : 'collapsed'}}" data-bs-target="#ulUsers" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('team') ? 'true' : 'false'}}">
                       <i class="bi bi-person"></i><span>USERS GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="maintenances-nav" class="nav-content collapse {{Request::is('user') || Request::is('team') || Request::is('roles') || Request::is('driver') || Request::is('validator')   || Request::is('viewer')? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
+                    <ul id="ulUsers" class="nav-content collapse {{Request::is('user') || Request::is('team') || Request::is('roles') || Request::is('driver') || Request::is('validator')   || Request::is('viewer')? 'show' : ''}}" data-bs-parent="#ulUsers" style="">
 
                         @if(hasPermission('admin.index'))
                         <li >
@@ -284,11 +284,11 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan')) ? '' : 'collapsed'}}" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan') ? 'true' : 'false'}}">
+                <li class="nav-item" id="liUlConfiguration">
+                    <a class="nav-link {{ (Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan')) ? '' : 'collapsed'}}" data-bs-target="#ulConfiguration" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan') ? 'true' : 'false'}}">
                       <i class="bi bi-person"></i><span>CONFIGURATION GENERAL</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="configuration-nav" class="nav-content collapse {{(Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
+                    <ul id="ulConfiguration" class="nav-content collapse {{(Request::is('routes') || Request::is('comments') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#ulConfiguration" style="">
 
                         @if(hasPermission('route.index'))
                         <li >
@@ -326,11 +326,11 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#finance-nav" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
+                <li class="nav-item" id="liUlFinanzas">
+                    <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
                       <i class="bx bxs-check-circle"></i><span>FINANZAS</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="finance-nav" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#sidebar-nav" style="">
+                    <ul id="ulFinanzas" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#ulFinanzas" style="">
                         @if(hasPermission('checkDelivery.index'))
                         <li >
                             <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">

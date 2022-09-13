@@ -788,5 +788,40 @@
         }
     </script>
     <script src="{{ asset('js/app.js') }}?{{time()}}" defer></script>
+
+    <script>
+
+        //reports
+        var childsReport = document.getElementById('ulReports').children.length
+        console.log('report: ',childsReport);
+        if(childsReport==0){
+            console.log('reports es cero')
+            document.getElementById('liUlReports').style.display = 'none';
+            document.getElementById('titleReports').style.display = 'none';
+        }
+        //maintanences
+        var childsUsers = document.getElementById('ulUsers').children.length
+        console.log('users: ',childsUsers);
+        if(childsUsers==0){
+            document.getElementById('liUlUsers').style.display = 'none';
+        }
+        var childsConfiguration = document.getElementById('ulConfiguration').children.length
+        console.log('config: ',childsConfiguration);
+        if(childsConfiguration==0){
+            document.getElementById('liUlConfiguration').style.display = 'none';
+        }
+
+        //finanzas
+        var childsFinanzas = document.getElementById('ulFinanzas').children.length
+        console.log('finanzas: ',childsFinanzas);
+        if(childsFinanzas==0){
+            document.getElementById('liUlFinanzas').style.display = 'none';
+        }
+        if(childsUsers == 0 && childsFinanzas == 0 && childsConfiguration == 0){
+            document.getElementById('titleMaintenances').style.display = 'none';
+        }
+
+
+    </script>
 </body>
 </html>

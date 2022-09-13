@@ -23,7 +23,7 @@ function Login() {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
-        }) 
+        })
         .then(res => res.json()).
         then((response) => {
 
@@ -42,7 +42,7 @@ function Login() {
                 }
                 else
                 {
-                    swal("Incorrect data!", {
+                    swal("wrong credentials or blocked user", {
 
                         icon: "error"
                     });
