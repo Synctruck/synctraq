@@ -76,9 +76,8 @@ class PackageDeliveryController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                ->where('confirmCheckPayment', 0)
-                                ->where('photoUrl', 'like' , '%,%')
+        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
+                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
         if(Session::get('user')->role->name == 'Team')
@@ -109,7 +108,7 @@ class PackageDeliveryController extends Controller
             $listAll = $listAll->orderBy('Date_Delivery', 'desc');
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listAll = $listAll->whereIn('Route', $routes);
         }
@@ -149,7 +148,7 @@ class PackageDeliveryController extends Controller
         $packageDelivery = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         $packageDelivery->idUserCheckPayment = $packageDelivery->checkPayment ? 0 : Session::get('user')->id;
-        $packageDelivery->checkPayment       = $packageDelivery->checkPayment ? false : true;
+        $packageDelivery->checkPayment       = $request->get('checkPayment');
 
         $packageDelivery->save();
 
@@ -179,16 +178,18 @@ class PackageDeliveryController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                    ->where('status', 'Delivery');
+        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
+                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                ->where('checkPayment', '!=', null)
+                                ->where('status', 'Delivery');
 
         if($checked == 1)
         {
-            $listAll = $listAll->where('checkPayment', 1)->where('confirmCheckPayment', 1);
+            $listAll = $listAll->where('checkPayment', 1);
         }
         elseif($checked != 'all')
         {
-            $listAll = $listAll->where('confirmCheckPayment', 0);
+            $listAll = $listAll->where('checkPayment', 0);
         }
 
         if(Session::get('user')->role->name == 'Team')
@@ -220,7 +221,7 @@ class PackageDeliveryController extends Controller
         }
 
 
-        /*if($route != 'all') 
+        /*if($route != 'all')
         {
             $listAll = $listAll->whereIn('Route', $routes);
         }
@@ -286,7 +287,7 @@ class PackageDeliveryController extends Controller
                                                             ->first();
 
                         $packageDelivery = PackageDelivery::where('taskDetails', $row)->first();
-                        
+
                         if($packageDispatch && $packageDelivery == null)
                         {
                             $user = User::find($packageDispatch->idUserDispatch);

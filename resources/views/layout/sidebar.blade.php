@@ -309,7 +309,7 @@
                         <li >
                             <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
                                 <i class="bx bxs-check-circle"></i>
-                                <span>CHECK DELIVERY</span>
+                                <span>CHECK - UNCHECK DELIVERY</span>
                             </a>
                         </li>
 
@@ -317,7 +317,7 @@
                             <li>
                                 <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
                                     <i class="bx bxs-dollar-circle"></i>
-                                    <span>UNCHECK DELIVERY</span>
+                                    <span>VALIDATE DELIVERY</span>
                                 </a>
                             </li>
                         @endif
