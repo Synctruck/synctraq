@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
+use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -21,7 +21,10 @@ use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
+use App\Http\Controllers\Api\PackageController;
+
 use DB;
+use Log;
 use Session;
 
 class PackageInboundController extends Controller
@@ -194,11 +197,16 @@ class PackageInboundController extends Controller
             {
                 DB::beginTransaction();
 
-                //$this->GenerateBarCode($packageManifest->Reference_Number_1);
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
+                //end data for inland
 
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageInbound->idCompany                    = $packageManifest->idCompany;
+                $packageInbound->company                      = $packageManifest->company;
                 $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -242,6 +250,8 @@ class PackageInboundController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageManifest->idCompany;
+                $packageHistory->company                      = $packageManifest->company;
                 $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -326,7 +336,7 @@ class PackageInboundController extends Controller
             return ['stateAction' => 'notExists'];
         }
     }
-
+    
     public function Get($Reference_Number_1)
     {
         $packageInbound = packageInbound::find($Reference_Number_1);
@@ -467,6 +477,8 @@ class PackageInboundController extends Controller
                                     $packageInbound = new PackageInbound();
 
                                     $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                                    $packageInbound->idCompany                    = $packageManifest->idCompany;
+                                    $packageInbound->company                      = $packageManifest->company;
                                     $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                                     $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                                     $packageInbound->Ready_At                     = $packageManifest->Ready_At;
@@ -508,6 +520,8 @@ class PackageInboundController extends Controller
 
                                     $packageHistory->id                           = uniqid();
                                     $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                                    $packageHistory->idCompany                    = $packageManifest->idCompany;
+                                    $packageHistory->company                      = $packageManifest->company;
                                     $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
                                     $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                                     $packageHistory->Ready_At                     = $packageManifest->Ready_At;

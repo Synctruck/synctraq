@@ -34,4 +34,9 @@ class PackageManifest extends Model
             $user->updated_at = date('Y-m-d H:i:s');
         });
     }
+
+    public function company_data()
+    {
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
+    }
 }
