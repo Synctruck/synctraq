@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists, Routes};
+use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, Routes};
 
 use DB;
 use Session;
@@ -256,7 +256,7 @@ class PackageController extends Controller
                     $packageHistory->Dropoff_Province              = $data['Dropoff_Province'];
                     $packageHistory->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
                     $packageHistory->Weight                        = $data['Weight'];
-                    $packageHistory->Route                         = $data['Route'];
+                    $packageHistory->Route                         = $routeName;
                     $packageHistory->status                        = 'On hold';
                     $packageHistory->manifest_id                   = $data['manifest_id'];
                     $packageHistory->mixing_center_shortcode       = $data['mixing_center_shortcode'];
@@ -565,6 +565,27 @@ class PackageController extends Controller
                 $packageManifest->Route = $route->name;
 
                 $packageManifest->save();
+            }
+        }
+
+        echo "updated";
+    }
+
+    public function UpdateInboundRouteByZipCode()
+    {
+        $listPackageInbound = PackageInbound::where('Route', 'CO1')->get();
+        
+        foreach($listPackageInbound as $packageInbound)
+        {
+            $route = Routes::where('zipCode', $packageInbound->Dropoff_Postal_Code)->first();
+            
+            if($route)
+            {
+                $packageInbound = PackageInbound::find($packageInbound->Reference_Number_1);
+
+                $packageInbound->Route = $route->name;
+
+                $packageInbound->save();
             }
         }
 
