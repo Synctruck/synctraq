@@ -81,7 +81,7 @@ class RoleController extends Controller
             DB::beginTransaction();
 
             $role = Role::findOrFail($id);
-            $role->update(['name'=>$request->name]);
+            $role->update(['name'=>$request->name,'status'=>$request->status]);
             $role->permissions()->sync( $request->permissions);
 
             DB::commit();

@@ -168,6 +168,7 @@ function Roles() {
             let role = response.role;
             setId(role.id);
             setName(role.name);
+            setStatus(role.status);
             handlerOpenModal(role.id);
 
             let permissions = []
