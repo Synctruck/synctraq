@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Assigned, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -1091,7 +1091,7 @@ class PackageDispatchController extends Controller
 
                     if($comment->final == 0)
                     {
-                        $statusReinbound = 'ReInbound';
+                        $statusReturn = 'ReInbound';
 
                         $packageInbound = new PackageInbound();
 
