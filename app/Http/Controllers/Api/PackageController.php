@@ -457,7 +457,7 @@ class PackageController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
+            CURLOPT_URL => 'https://api.platform.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
