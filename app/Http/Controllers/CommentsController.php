@@ -21,7 +21,7 @@ class CommentsController extends Controller
 
     public function List(Request $request)
     {
-        $commentList = Comment::orderBy('final', 'asc')
+        $commentList = Comment::orderBy('finalStatus', 'asc')
                                 ->where('description', 'like', '%'. $request->get('textSearch') .'%')
                                 ->paginate($this->paginate);
         

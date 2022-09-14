@@ -1085,11 +1085,11 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
 
-                    $comment = Comment::where('statusCode', $request->get('Description_Return'))->first();
+                    $comment = Comment::where('description', $request->get('Description_Return'))->first();
 
                     $statusReturn = 'Final';
 
-                    if($comment->final == 0)
+                    if($comment->finalStatus == 0)
                     {
                         $statusReturn = 'ReInbound';
 
@@ -1207,7 +1207,7 @@ class PackageDispatchController extends Controller
                         $packageDispatch->delete();
                     }
 
-                    if($comment->final == 0)
+                    if($comment->finalStatus == 0)
                     {
                         //data for INLAND
                         $packageController = new PackageController();

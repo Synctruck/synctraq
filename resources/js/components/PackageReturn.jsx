@@ -61,11 +61,11 @@ function PackageReturn() {
         return (
 
             (
-                comment.final == 1
+                comment.finalStatus == 1
                 ?
-                    <option key={ i } value={ comment.statusCode } style={ {background: 'red', color: 'white'} }> { comment.description }</option>
+                    <option key={ i } value={ comment.description } style={ {background: 'red', color: 'white'} }> { comment.description }</option>
                 :
-                    <option key={ i } value={ comment.statusCode }> { comment.description }</option>
+                    <option key={ i } value={ comment.description }> { comment.description }</option>
             )
             
         );
