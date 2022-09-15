@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Configuration, Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Assigned, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -14,6 +14,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
+
+use App\Http\Controllers\Api\PackageController;
 
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -254,9 +256,29 @@ class PackageDispatchController extends Controller
 
         $package = PackageInbound::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
+        if($package)
+        {
+            $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageBlocked)
+            {
+                return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+            }
+        }
+
         if(!$package)
         {
-           $package = PackageManifest::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+           $package = PackageManifest::with('blockeds')
+                                    ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                    ->first();
+
+            if($package)
+            {
+                if($package->filter || count($package->blockeds) > 0)
+                {
+                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package, 'packageBlocked' => null];
+                }
+            }
         }
 
         if(!$package)
@@ -273,8 +295,6 @@ class PackageDispatchController extends Controller
             if($packageDispatch)
             {
                 $package = $packageDispatch;
-
-                $packageDispatch->delete();
             }
         }
 
@@ -342,10 +362,12 @@ class PackageDispatchController extends Controller
 
                 if($package->status == 'On hold' && $registerTask == 200)
                 {
-                    $packageHistory = new PackageHistory();
+                    /*$packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->Ready_At                     = $package->Ready_At;
@@ -385,12 +407,19 @@ class PackageDispatchController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
 
-                    $packageHistory->save();
+                    $packageHistory->save();*/
                 }
 
-                $packageDispatch = new PackageDispatch();
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($package, 'Dispatch', null);
+                //end data for inland
+
+                /*$packageDispatch = new PackageDispatch();
 
                 $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                $packageDispatch->idCompany                    = $package->idCompany;
+                $packageDispatch->company                      = $package->company;
                 $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                 $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                 $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -431,12 +460,14 @@ class PackageDispatchController extends Controller
                 $packageDispatch->idOnfleet                    = $idOnfleet;
                 $packageDispatch->taskOnfleet                  = $taskOnfleet;
 
-                $packageDispatch->save();
+                $packageDispatch->save();*/
 
-                $packageHistory = new PackageHistory();
+                /*$packageHistory = new PackageHistory();
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;
@@ -477,9 +508,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Description                  = $description;
                 $packageHistory->status                       = 'Dispatch';
 
-                $packageHistory->save();
-
-                $package->delete();
+                $packageHistory->save();*/
 
                 DB::commit();
 
@@ -792,6 +821,8 @@ class PackageDispatchController extends Controller
                             $packageDispatch = new PackageDispatch();
 
                             $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageDispatch->idCompany                    = $package->idCompany;
+                            $packageDispatch->company                      = $package->company;
                             $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                             $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                             $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -836,6 +867,8 @@ class PackageDispatchController extends Controller
 
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->idCompany                    = $package->idCompany;
+                            $packageHistory->company                      = $package->company;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -940,47 +973,50 @@ class PackageDispatchController extends Controller
                     $Description_Return  = $request->get('Description_Return');
                     $Description_Onfleet = '';
 
-                    if(env('APP_ENV') == 'local' && $packageDispatch->idOnfleet)
+                    $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+
+                    if($onfleet)
                     {
-                        $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+                        $idOnfleet           = $packageDispatch->idOnfleet;
+                        $taskOnfleet         = $packageDispatch->taskOnfleet;
+                        $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
+                        $Date_Return         = date('Y-m-d H:i:s');
 
-                        if($onfleet)
+                        if($onfleet['state'] == 3)
                         {
-                            $idOnfleet           = $packageDispatch->idOnfleet;
-                            $taskOnfleet         = $packageDispatch->taskOnfleet;
-                            $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
-                            $Date_Return         = date('Y-m-d H:i:s');
+                            $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
+                            $returnPackage = true;
+                            $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
 
-                            if($onfleet['state'] == 3)
+                            if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
                             {
-                                $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
-                                $returnPackage = true;
-                                $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
-
-                                if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
-                                {
-                                    $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
-                                }
-                                else
-                                {
-                                    $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
-                                }
+                                $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
                             }
-                            elseif($onfleet['state'] == 1)
+                            else
                             {
-                                $statusOnfleet = 1;
+                                $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
                             }
+                        }
+                        elseif($onfleet['state'] == 1)
+                        {
+                            $statusOnfleet = 1;
                         }
                     }
                     else
                     {
-                        $taskOnfleet        = '';
+                        $idOnfleet           = null;
+                        $taskOnfleet         = null;
+                        $Description_Onfleet = 'NONE:';
+                        $Date_Return         = date('Y-m-d H:i:s');
+                        $statusOnfleet       = 1;
                     }
 
                     $packageReturn = new PackageReturn();
 
                     $packageReturn->id                           = uniqid();
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageReturn->idCompany                    = $packageDispatch->idCompany;
+                    $packageReturn->company                      = $packageDispatch->company;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -1050,51 +1086,64 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
 
-                    $packageInbound = new PackageInbound();
+                    $comment = Comment::where('description', $request->get('Description_Return'))->first();
+                    $statusReturn = 'Final';
 
-                    $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageInbound->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageInbound->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageInbound->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageInbound->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageInbound->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageInbound->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageInbound->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageInbound->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageInbound->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageInbound->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageInbound->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageInbound->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageInbound->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageInbound->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageInbound->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                    $packageInbound->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageInbound->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageInbound->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageInbound->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageInbound->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageInbound->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageInbound->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageInbound->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageInbound->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageInbound->Service_Level                = $packageDispatch->Service_Level;
-                    $packageInbound->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageInbound->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                    $packageInbound->Notes                        = $packageDispatch->Notes;
-                    $packageInbound->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                    $packageInbound->Weight                       = $packageDispatch->Weight;
-                    $packageInbound->Route                        = $packageDispatch->Route;
-                    $packageInbound->Name                         = $packageDispatch->Name;
-                    $packageInbound->idUser                       = Auth::user()->id;
-                    $packageInbound->reInbound                    = 1;
-                    $packageInbound->status                       = 'Inbound';
 
-                    $packageInbound->save();
+                    if($comment->finalStatus == 0)
+                    {
+                        $statusReturn = 'ReInbound';
+
+                        $packageInbound = new PackageInbound();
+
+                        $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageInbound->idCompany                    = $packageDispatch->idCompany;
+                        $packageInbound->company                      = $packageDispatch->company;
+                        $packageInbound->Reference_Number_2           = $packageDispatch->Reference_Number_2;
+                        $packageInbound->Reference_Number_3           = $packageDispatch->Reference_Number_3;
+                        $packageInbound->Ready_At                     = $packageDispatch->Ready_At;
+                        $packageInbound->Del_Date                     = $packageDispatch->Del_Date;
+                        $packageInbound->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
+                        $packageInbound->Del_no_later_than            = $packageDispatch->Del_no_later_than;
+                        $packageInbound->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
+                        $packageInbound->Pickup_Company               = $packageDispatch->Pickup_Company;
+                        $packageInbound->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
+                        $packageInbound->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
+                        $packageInbound->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
+                        $packageInbound->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
+                        $packageInbound->Pickup_City                  = $packageDispatch->Pickup_City;
+                        $packageInbound->Pickup_Province              = $packageDispatch->Pickup_Province;
+                        $packageInbound->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
+                        $packageInbound->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageInbound->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageInbound->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageInbound->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageInbound->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageInbound->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageInbound->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageInbound->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageInbound->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageInbound->Service_Level                = $packageDispatch->Service_Level;
+                        $packageInbound->Carrier_Name                 = $packageDispatch->Carrier_Name;
+                        $packageInbound->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
+                        $packageInbound->Notes                        = $packageDispatch->Notes;
+                        $packageInbound->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
+                        $packageInbound->Weight                       = $packageDispatch->Weight;
+                        $packageInbound->Route                        = $packageDispatch->Route;
+                        $packageInbound->Name                         = $packageDispatch->Name;
+                        $packageInbound->idUser                       = Auth::user()->id;
+                        $packageInbound->reInbound                    = 1;
+                        $packageInbound->status                       = 'Inbound';
+
+                        $packageInbound->save();
+                    }
 
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -1134,20 +1183,44 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
-                    $packageHistory->status                       = 'ReInbound';
+                    $packageHistory->status                       = $statusReturn;
 
                     $packageHistory->save();
 
-                    $packageDispatch->delete();
+                    $package = $packageDispatch;
 
                     if($onfleet)
                     {
                         if($onfleet['state'] == 1)
                         {
-                            $statusOnfleet = 1;
-
-                            $onfleet = $this->DeleteOnfleet($packageDispatch->idOnfleet);
+                            if($packageDispatch->delete())
+                            {
+                                $onfleet = $this->DeleteOnfleet($packageDispatch->idOnfleet);
+                            }
                         }
+                        else
+                        {
+                            $packageDispatch->delete();
+                        }
+                    }
+                    else
+                    {
+                        $packageDispatch->delete();
+                    }
+
+                    if($comment->finalStatus == 0)
+                    {
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($package, 'ReInbound', null);
+                        //end data for inland
+                    }
+                    else
+                    {
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Return', $comment->statusCode);
+                        //end data for inland
                     }
 
                     DB::commit();

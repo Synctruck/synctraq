@@ -96,8 +96,8 @@ class PackageReturnCompanyController extends Controller
 
                 $packageReturnCompany = new PackageReturnCompany();
 
-                $packageReturnCompany->idCompany                    = $company->id;
-                $packageReturnCompany->company                      = $company->name;
+                $packageReturnCompany->idCompany                    = $packageInbound->idCompany;
+                $packageReturnCompany->company                      = $packageInbound->company;
                 $packageReturnCompany->Reference_Number_1           = $packageInbound->Reference_Number_1;
                 $packageReturnCompany->Reference_Number_2           = $packageInbound->Reference_Number_2;
                 $packageReturnCompany->Reference_Number_3           = $packageInbound->Reference_Number_3;
@@ -146,6 +146,8 @@ class PackageReturnCompanyController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageInbound->idCompany;
+                $packageHistory->company                      = $packageInbound->company;
                 $packageHistory->Reference_Number_2           = $packageInbound->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageInbound->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageInbound->Ready_At;

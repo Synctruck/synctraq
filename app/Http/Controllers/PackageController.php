@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -207,6 +207,8 @@ class PackageController extends Controller
 
     public function Search($Reference_Number_1)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+
         $packageHistoryList = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                             ->orderBy('created_at', 'asc')
                                             ->get();
@@ -215,7 +217,7 @@ class PackageController extends Controller
 
         $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
 
-        return ['packageHistoryList' => $packageHistoryList, 'packageDelivery' => $packageDelivery, 'packageDispatch' => $packageDispatch];
+        return ['packageBlocked' => $packageBlocked, 'packageHistoryList' => $packageHistoryList, 'packageDelivery' => $packageDelivery, 'packageDispatch' => $packageDispatch];
     }
 
     public function SearchTask($taskOnfleet)

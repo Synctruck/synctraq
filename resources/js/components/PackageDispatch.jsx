@@ -464,7 +464,43 @@ function PackageDispatch() {
             .then(res => res.json()).
             then((response) => {
 
-                    if(response.stateAction == 'notInbound')
+                    if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+
+                        if(packageManifest)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                                showConfirmButton: false,
+                                timer: 2000,
+                            })
+                        }
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                        
+
+                        setTypeMessage('primary');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'notInbound')
                     {
                         setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
@@ -1699,6 +1735,7 @@ function PackageDispatch() {
                                         <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                         <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                         <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                     </div>
                                 </div>
 

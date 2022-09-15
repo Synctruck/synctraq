@@ -475,11 +475,21 @@ function PackageInbound() {
                     }
                     else if(response.stateAction == 'validatedFilterPackage')
                     {
-                        setTextMessage("CHANGE LABEL #"+ Reference_Number_1);
+                        let packageManifest = response.packageManifest;
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                            showConfirmButton: false,
+                            timer: 2000,
+                        })
+
                         setTypeMessage('primary');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
+                        document.getElementById('soundPitidoBlocked').play();
                     }
                     else if(response.stateAction == 'validatedFilterState')
                     {
@@ -808,6 +818,7 @@ function PackageInbound() {
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
                                     </div>

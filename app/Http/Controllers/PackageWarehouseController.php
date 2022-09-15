@@ -8,6 +8,8 @@ use App\Models\{Configuration, PackageHistory, PackageInbound, PackageDispatch, 
 
 use Illuminate\Support\Facades\Validator;
 
+use App\Http\Controllers\Api\PackageController;
+
 use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -181,6 +183,8 @@ class PackageWarehouseController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageWarehouse->idCompany;
+                $packageHistory->company                      = $packageWarehouse->company;
                 $packageHistory->Reference_Number_2           = $packageWarehouse->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageWarehouse->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageWarehouse->Ready_At;
@@ -248,7 +252,9 @@ class PackageWarehouseController extends Controller
 
         if($packageInbound == null)
         {
-            $packageDispatch = PackageDispatch::find($request->get('Reference_Number_1'));
+            $packageDispatch = PackageDispatch::where('status', 'Dispatch')
+                                                ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                ->first();
         }
 
         if($packageManifest || $packageInbound || $packageDispatch)
@@ -269,13 +275,14 @@ class PackageWarehouseController extends Controller
                 {
                     $package = $packageDispatch;
                 }
-
                 if($packageManifest)
                 {
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -318,6 +325,11 @@ class PackageWarehouseController extends Controller
                     $packageHistory->status                       = 'Inbound';
 
                     $packageHistory->save();
+
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
+                    //end data for inland
                 }
 
                 if($packageDispatch)
@@ -348,35 +360,32 @@ class PackageWarehouseController extends Controller
                     $Description_Return  = $request->get('Description_Return');
                     $Description_Onfleet = '';
 
-                    if(env('APP_ENV') == 'local' && $packageDispatch->idOnfleet)
+                    $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+
+                    if($onfleet)
                     {
-                        $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+                        $idOnfleet           = $packageDispatch->idOnfleet;
+                        $taskOnfleet         = $packageDispatch->taskOnfleet;
+                        $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
+                        $Date_Return         = date('Y-m-d H:i:s');
 
-                        if($onfleet)
+                        if($onfleet['state'] == 3)
                         {
-                            $idOnfleet           = $packageDispatch->idOnfleet;
-                            $taskOnfleet         = $packageDispatch->taskOnfleet;
-                            $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
-                            $Date_Return         = date('Y-m-d H:i:s');
+                            $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
+                            $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
 
-                            if($onfleet['state'] == 3)
+                            if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
                             {
-                                $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
-                                $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
-
-                                if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
-                                {
-                                    $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
-                                }
-                                else
-                                {
-                                    $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
-                                }
+                                $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
                             }
-                            elseif($onfleet['state'] == 1)
+                            else
                             {
-                                $statusOnfleet = 1;
+                                $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
                             }
+                        }
+                        elseif($onfleet['state'] == 1)
+                        {
+                            $statusOnfleet = 1;
                         }
                     }
 
@@ -384,6 +393,8 @@ class PackageWarehouseController extends Controller
 
                     $packageReturn->id                           = uniqid();
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageReturn->idCompany                    = $packageDispatch->idCompany;
+                    $packageReturn->company                      = $packageDispatch->company;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -436,6 +447,8 @@ class PackageWarehouseController extends Controller
 
                     $packageHistory->id                           = uniqid();
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -495,6 +508,8 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse = new PackageWarehouse();
 
                 $packageWarehouse->Reference_Number_1           = $package->Reference_Number_1;
+                $packageWarehouse->idCompany                    = $package->idCompany;
+                $packageWarehouse->company                      = $package->company;
                 $packageWarehouse->Reference_Number_2           = $package->Reference_Number_2;
                 $packageWarehouse->Reference_Number_3           = $package->Reference_Number_3;
                 $packageWarehouse->Ready_At                     = $package->Ready_At;
@@ -536,6 +551,8 @@ class PackageWarehouseController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;

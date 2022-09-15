@@ -34,3 +34,6 @@ Route::post('packages-webhook-taskCreated', [WHookController::class, 'TaskCreate
 
 Route::get('packages-webhook-taskDelete', [WHookController::class, 'EndPointTaskDelete']);
 Route::post('packages-webhook-taskDelete', [WHookController::class, 'TaskDelete']);
+
+Route::get('packages-manifest', [PackageController::class, 'UpdateManifestRouteByZipCode']);
+Route::get('packages-inbound', [PackageController::class, 'UpdateInboundRouteByZipCode']);

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageAux, PackageHistory, PackageManifest, PackageNotExists, Routes};
+use App\Models\{PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -105,77 +105,74 @@ class PackageManifestController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        if(substr($request->get('Reference_Number_1'), 0, 6) == 'INLAND' || substr($request->get('Reference_Number_1'), 0, 5) == '67660')
-        {
-            $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+        $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                     ->where('status', 'On hold')
                                                     ->first();
 
-            if(!$packageHistory)
+        if(!$packageHistory)
+        {
+            try
             {
-                try
+                DB::beginTransaction();
+
+                $package = new PackageManifest();
+
+                $package->Reference_Number_1           = $request->get('Reference_Number_1');
+                $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+                $package->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+                $package->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+                $package->Dropoff_City                 = $request->get('Dropoff_City');
+                $package->Dropoff_Province             = $request->get('Dropoff_Province');
+                $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+                $package->Weight                       = $request->get('Weight');
+                $package->Route                        = $request->get('Route');
+                $package->status                       = 'On hold';
+
+                $package->save();
+
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $request->get('Reference_Number_1');
+                $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+                $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+                $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+                $packageHistory->Dropoff_City                 = $request->get('Dropoff_City');
+                $packageHistory->Dropoff_Province             = $request->get('Dropoff_Province');
+                $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+                $packageHistory->Weight                       = $request->get('Weight');
+                $packageHistory->Route                        = $request->get('Route');
+                $packageHistory->status                       = $request->get('status');
+                $packageHistory->idUser                       =  Auth::user()->id;
+                $packageHistory->idUserManifest               =  Auth::user()->id;
+                $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
+                $packageHistory->Description                  = 'On hold - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->status                       = 'On hold';
+
+                $packageHistory->save();
+
+                $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
+
+                if($packageNotExists)
                 {
-                    DB::beginTransaction();
-
-                    $package = new PackageManifest();
-
-                    $package->Reference_Number_1           = $request->get('Reference_Number_1');
-                    $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
-                    $package->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
-                    $package->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
-                    $package->Dropoff_City                 = $request->get('Dropoff_City');
-                    $package->Dropoff_Province             = $request->get('Dropoff_Province');
-                    $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
-                    $package->Weight                       = $request->get('Weight');
-                    $package->Route                        = $request->get('Route');
-                    $package->status                       = 'On hold';
-
-                    $package->save();
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $request->get('Reference_Number_1');
-                    $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
-                    $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
-                    $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
-                    $packageHistory->Dropoff_City                 = $request->get('Dropoff_City');
-                    $packageHistory->Dropoff_Province             = $request->get('Dropoff_Province');
-                    $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
-                    $packageHistory->Weight                       = $request->get('Weight');
-                    $packageHistory->Route                        = $request->get('Route');
-                    $packageHistory->status                       = $request->get('status');
-                    $packageHistory->idUser                       = Auth::user()->id;
-                    $packageHistory->idUserManifest               = Auth::user()->id;
-                    $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'On hold - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                    $packageHistory->status                       = 'On hold';
-
-                    $packageHistory->save();
-
-                    $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
-
-                    if($packageNotExists)
-                    {
-                        $packageNotExists->delete();
-                    }
-
-                    DB::commit();
-
-                    return response()->json(["stateAction" => true], 200);
+                    $packageNotExists->delete();
                 }
-                catch(Exception $e)
-                {
-                    DB::rollback();
 
-                    return response()->json(["stateAction" => false], 200);
-                }
+
+                DB::commit();
+
+                return response()->json(["stateAction" => true], 200);
+
             }
+            catch(\Exception $e)
+            {
+                DB::rollback();
 
-            return ['stateAction' => 'exists'];
+                return response()->json(["stateAction" => false], 200);
+            }
         }
 
-        return ['stateAction' => 'notInland'];
+        return ['stateAction' => 'exists'];
     }
 
     public function Get($Reference_Number_1)
@@ -366,106 +363,106 @@ class PackageManifestController extends Controller
 
                         if(in_array($row[0], $packageIDsValidate))
                         {
-                            if(substr($row[0], 0, 6) == 'INLAND' || substr($row[0], 0, 5) == '67660')
+                            $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
+
+                            $package = new PackageManifest();
+
+                            $package->Reference_Number_1 = $row[0];
+                            $package->Reference_Number_2 = $row[1];
+                            $package->Reference_Number_3 = $row[2];
+                            $package->Ready_At = $row[3];
+                            $package->Del_Date = $row[4];
+                            $package->Del_no_earlier_than = $row[5];
+                            $package->Del_no_later_than = $row[6];
+                            $package->Pickup_Contact_Name = $row[7];
+                            $package->Pickup_Company = $row[8];
+                            $package->Pickup_Contact_Phone_Number = $row[9];
+                            $package->Pickup_Contact_Email = $row[10];
+                            $package->Pickup_Address_Line_1 = $row[11];
+                            $package->Pickup_Address_Line_2 = $row[12];
+                            $package->Pickup_City = $row[13];
+                            $package->Pickup_Province = $row[14];
+                            $package->Pickup_Postal_Code = $row[15];
+                            $package->Dropoff_Contact_Name = $row[16];
+                            $package->Dropoff_Company = $row[17];
+                            $package->Dropoff_Contact_Phone_Number = $row[18];
+                            $package->Dropoff_Contact_Email = $row[19];
+                            $package->Dropoff_Address_Line_1 = $row[20];
+                            $package->Dropoff_Address_Line_2 = $row[21];
+                            $package->Dropoff_City = $row[22];
+                            $package->Dropoff_Province = $row[23];
+                            $package->Dropoff_Postal_Code = $row[24];
+                            $package->Service_Level = $row[25];
+                            $package->Carrier_Name = $row[26];
+                            $package->Vehicle_Type_Id = $row[27];
+                            $package->Notes = $row[28];
+                            $package->Number_Of_Pieces = $row[29];
+                            $package->Weight = $row[30];
+                            $package->Name = isset($row[32]) ? $row[32] : '';
+                            $package->filter = $packageBlocked ? 1 : 0;
+                            $package->status = 'On hold';
+
+                            $route = Routes::where('zipCode', $row[24])->first();
+
+                            if(!$route)
                             {
-                                $package = new PackageManifest();
+                                $route = new Routes();
 
-                                $package->Reference_Number_1 = $row[0];
-                                $package->Reference_Number_2 = $row[1];
-                                $package->Reference_Number_3 = $row[2];
-                                $package->Ready_At = $row[3];
-                                $package->Del_Date = $row[4];
-                                $package->Del_no_earlier_than = $row[5];
-                                $package->Del_no_later_than = $row[6];
-                                $package->Pickup_Contact_Name = $row[7];
-                                $package->Pickup_Company = $row[8];
-                                $package->Pickup_Contact_Phone_Number = $row[9];
-                                $package->Pickup_Contact_Email = $row[10];
-                                $package->Pickup_Address_Line_1 = $row[11];
-                                $package->Pickup_Address_Line_2 = $row[12];
-                                $package->Pickup_City = $row[13];
-                                $package->Pickup_Province = $row[14];
-                                $package->Pickup_Postal_Code = $row[15];
-                                $package->Dropoff_Contact_Name = $row[16];
-                                $package->Dropoff_Company = $row[17];
-                                $package->Dropoff_Contact_Phone_Number = $row[18];
-                                $package->Dropoff_Contact_Email = $row[19];
-                                $package->Dropoff_Address_Line_1 = $row[20];
-                                $package->Dropoff_Address_Line_2 = $row[21];
-                                $package->Dropoff_City = $row[22];
-                                $package->Dropoff_Province = $row[23];
-                                $package->Dropoff_Postal_Code = $row[24];
-                                $package->Service_Level = $row[25];
-                                $package->Carrier_Name = $row[26];
-                                $package->Vehicle_Type_Id = $row[27];
-                                $package->Notes = $row[28];
-                                $package->Number_Of_Pieces = $row[29];
-                                $package->Weight = $row[30];
-                                $package->Name = isset($row[32]) ? $row[32] : '';
-                                $package->status = 'On hold';
+                                $route->zipCode = $row[24];
+                                $route->name    = $row[31];
+                                $route->save();
 
-                                $route = Routes::where('zipCode', $row[24])->first();
-
-                                if(!$route)
-                                {
-                                    $route = new Routes();
-
-                                    $route->zipCode = $row[24];
-                                    $route->name    = $row[31];
-
-                                    $route->save();
-                                }
-
-                                $package->Route = $route->name;
-
-                                $package->save();
-
-                                $packageHistory = new PackageHistory();
-
-                                $packageHistory->id = uniqid();
-                                $packageHistory->Reference_Number_1 = $row[0];
-                                $packageHistory->Reference_Number_2 = $row[1];
-                                $packageHistory->Reference_Number_3 = $row[2];
-                                $packageHistory->Ready_At = $row[3];
-                                $packageHistory->Del_Date = $row[4];
-                                $packageHistory->Del_no_earlier_than = $row[5];
-                                $packageHistory->Del_no_later_than = $row[6];
-                                $packageHistory->Pickup_Contact_Name = $row[7];
-                                $packageHistory->Pickup_Company = $row[8];
-                                $packageHistory->Pickup_Contact_Phone_Number = $row[9];
-                                $packageHistory->Pickup_Contact_Email = $row[10];
-                                $packageHistory->Pickup_Address_Line_1 = $row[11];
-                                $packageHistory->Pickup_Address_Line_2 = $row[12];
-                                $packageHistory->Pickup_City = $row[13];
-                                $packageHistory->Pickup_Province = $row[14];
-                                $packageHistory->Pickup_Postal_Code = $row[15];
-                                $packageHistory->Dropoff_Contact_Name = $row[16];
-                                $packageHistory->Dropoff_Company = $row[17];
-                                $packageHistory->Dropoff_Contact_Phone_Number = $row[18];
-                                $packageHistory->Dropoff_Contact_Email = $row[19];
-                                $packageHistory->Dropoff_Address_Line_1 = $row[20];
-                                $packageHistory->Dropoff_Address_Line_2 = $row[21];
-                                $packageHistory->Dropoff_City = $row[22];
-                                $packageHistory->Dropoff_Province = $row[23];
-                                $packageHistory->Dropoff_Postal_Code = $row[24];
-                                $packageHistory->Service_Level = $row[25];
-                                $packageHistory->Carrier_Name = $row[26];
-                                $packageHistory->Vehicle_Type_Id = $row[27];
-                                $packageHistory->Notes = $row[28];
-                                $packageHistory->Number_Of_Pieces = $row[29];
-                                $packageHistory->Weight = $row[30];
-                                $packageHistory->Route = $route->name;
-                                $packageHistory->Name = isset($row[32]) ? $row[32] : '';
-                                $packageHistory->idUser = Auth::user()->id;
-                                $packageHistory->idUserManifest = Auth::user()->id;
-                                $packageHistory->Date_manifest = date('Y-m-d H:s:i');
-                                $packageHistory->Description = 'On hold - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                                $packageHistory->status = 'On hold';
-
-                                $packageHistory->save();
-
-                                $countSave++;
                             }
+
+                            $package->Route = $route->name;
+
+                            $package->save();
+
+                            $packageHistory = new PackageHistory();
+
+                            $packageHistory->id = uniqid();
+                            $packageHistory->Reference_Number_1 = $row[0];
+                            $packageHistory->Reference_Number_2 = $row[1];
+                            $packageHistory->Reference_Number_3 = $row[2];
+                            $packageHistory->Ready_At = $row[3];
+                            $packageHistory->Del_Date = $row[4];
+                            $packageHistory->Del_no_earlier_than = $row[5];
+                            $packageHistory->Del_no_later_than = $row[6];
+                            $packageHistory->Pickup_Contact_Name = $row[7];
+                            $packageHistory->Pickup_Company = $row[8];
+                            $packageHistory->Pickup_Contact_Phone_Number = $row[9];
+                            $packageHistory->Pickup_Contact_Email = $row[10];
+                            $packageHistory->Pickup_Address_Line_1 = $row[11];
+                            $packageHistory->Pickup_Address_Line_2 = $row[12];
+                            $packageHistory->Pickup_City = $row[13];
+                            $packageHistory->Pickup_Province = $row[14];
+                            $packageHistory->Pickup_Postal_Code = $row[15];
+                            $packageHistory->Dropoff_Contact_Name = $row[16];
+                            $packageHistory->Dropoff_Company = $row[17];
+                            $packageHistory->Dropoff_Contact_Phone_Number = $row[18];
+                            $packageHistory->Dropoff_Contact_Email = $row[19];
+                            $packageHistory->Dropoff_Address_Line_1 = $row[20];
+                            $packageHistory->Dropoff_Address_Line_2 = $row[21];
+                            $packageHistory->Dropoff_City = $row[22];
+                            $packageHistory->Dropoff_Province = $row[23];
+                            $packageHistory->Dropoff_Postal_Code = $row[24];
+                            $packageHistory->Service_Level = $row[25];
+                            $packageHistory->Carrier_Name = $row[26];
+                            $packageHistory->Vehicle_Type_Id = $row[27];
+                            $packageHistory->Notes = $row[28];
+                            $packageHistory->Number_Of_Pieces = $row[29];
+                            $packageHistory->Weight = $row[30];
+                            $packageHistory->Route = $route->name;
+                            $packageHistory->Name = isset($row[32]) ? $row[32] : '';
+                            $packageHistory->idUser =  Auth::user()->id;
+                            $packageHistory->idUserManifest =  Auth::user()->id;
+                            $packageHistory->Date_manifest = date('Y-m-d H:s:i');
+                            $packageHistory->Description = 'On hold - for: '.  Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                            $packageHistory->status = 'On hold';
+
+                            $packageHistory->save();
+
+                            $countSave++;
                         }
                     }
 

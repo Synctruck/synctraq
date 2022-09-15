@@ -216,16 +216,28 @@ function Comments() {
 
         return (
 
-            <tr key={i}>
-                <td>{ comment.description }</td>
+            <tr key={i} className={ (comment.final == 1 ? 'alert-danger' : '') }>
+                <td><b>{ comment.description }</b></td>
+                <td>{ comment.statusCode  }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getComment(comment.id) }>
-                        <i className="bx bx-edit-alt"></i>
-                    </button> &nbsp;
+                    {
+                        (
+                            comment.final == 0
+                            ? 
+                                 <>
+                                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getComment(comment.id) }>
+                                        <i className="bx bx-edit-alt"></i>
+                                    </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteComment(comment.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>
+                                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteComment(comment.id) }>
+                                        <i className="bx bxs-trash-alt"></i>
+                                    </button>
+                                 </>
+                            : 
+                                ''
+                        )
+
+                    }
                 </td>
             </tr>
         );
@@ -291,6 +303,7 @@ function Comments() {
                                         <thead>
                                             <tr>
                                                 <th>DESCRIPTION</th>
+                                                <th>STATUS CODE</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

@@ -14,6 +14,7 @@
     {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+
     <!-- Google Fonts -->
 
 
@@ -35,6 +36,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;500&display=swap" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="{{asset('js/barcode.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
   <!-- =======================================================
   * Template Name: NiceAdmin - v2.2.0
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -547,6 +550,7 @@
             .then(response => response.json())
             .then(response => {
 
+                let packageBlocked     = response.packageBlocked;
                 let packageHistoryList = response.packageHistoryList;
                 let packageDelivery    = response.packageDelivery;
                 let packageDispatch    = response.packageDispatch;
@@ -562,6 +566,17 @@
                 let tableHistoryPackage = document.getElementById('tableHistoryPackageTbody');
 
                 let tr = '';
+
+                if(packageBlocked)
+                {
+                    tr =    '<tr>'+
+                                '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
+                                '<td>PACKAGE BLOCKED</td>'+
+                                '<td>'+ packageBlocked.comment +'</td>'+
+                            '</tr>';
+
+                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                }
 
                 packageHistoryList.forEach( package =>  {
 

@@ -4,6 +4,13 @@
             <div id="google_translate_element" class="google"></div>
         </li>
 
+        <li class="nav-heading"></li>
+        <li >
+            <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
+                <i class="bx bx-block"></i>
+                <span>PACKAGE BLOCKED</span>
+            </a>
+        </li>
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >
@@ -335,7 +342,7 @@
                         <li >
                             <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
                                 <i class="bx bxs-check-circle"></i>
-                                <span>CHECK DELIVERY</span>
+                                <span>CHECK - UNCHECK DELIVERY</span>
                             </a>
                         </li>
                         @endif
@@ -343,7 +350,7 @@
                             <li>
                                 <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
                                     <i class="bx bxs-dollar-circle"></i>
-                                    <span>UNCHECK DELIVERY</span>
+                                    <span>VALIDATE DELIVERY</span>
                                 </a>
                             </li>
                         @endif
