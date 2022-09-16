@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
@@ -271,7 +272,7 @@ class UserController extends Controller
     {
         return view('user.profile');
     }
-    public function UpdateProfile(Request $request)
+    public function UpdateProfile(UpdateProfileRequest $request)
     {
         $user = User::find(Auth::user()->id);
 
