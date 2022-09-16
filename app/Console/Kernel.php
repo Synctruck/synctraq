@@ -5,6 +5,10 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+use App\Models\ScheduleTask;
+
+use Illuminate\Support\Facades\DB;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -13,6 +17,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+
+        Commands\TaskAmericanE::class
         //
     ];
 
@@ -24,6 +30,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('test:task-ae')->everyMinute();
+
+        /*$schedule->call(function(){
+
+            DB::table('schedule_task')->delete();
+
+        })->everyMinute();*/
+
         // $schedule->command('inspire')->hourly();
     }
 
