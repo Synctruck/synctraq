@@ -357,13 +357,13 @@
                     </ul>
                 </li>
 
-            <li class="nav-heading">----------------</li>
+            {{-- <li class="nav-heading">----------------</li>
             <li>
                 <a class="nav-link {{Request::is('user/changePassword') ? 'active' : 'collapsed'}}" href="{{url('user/changePassword')}}">
                     <i class="bx bxs-key"></i>
                     <span>Change Password</span>
                 </a>
-            </li>
+            </li> --}}
 
     </ul>
 </aside><!-- End Sidebar-->

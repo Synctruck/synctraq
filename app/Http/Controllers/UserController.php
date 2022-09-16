@@ -10,7 +10,10 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
 use App\Models\PackageHistory;
+use App\Models\Permission;
+use App\Models\Role;
 use Ixudra\Curl\Facades\Curl;
+use Illuminate\Support\Str;
 
 use Session;
 use DB;
@@ -262,5 +265,45 @@ class UserController extends Controller
         $user->save();
 
         return ['stateAction' => true];
+    }
+    //perfil
+    public function Profile()
+    {
+        return view('user.profile');
+    }
+    public function UpdateProfile(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+
+
+        $image = $request->file('image');
+        $oldRouteImage =  public_path('storage').'/avatar/'.$user->image;
+        if($image){
+            if($user->image != '' && file_exists($oldRouteImage)){
+                unlink($oldRouteImage);
+            }
+
+            $imageName = 'user_'.$user->id.'_'.Str::random(10).'.'.$image->getClientOriginalExtension();
+            $image->move( public_path('storage').'/avatar', $imageName);
+            $user->image = $imageName;
+        }
+
+        $user->name = $request->name;
+        $user->nameOfOwner = $request->nameOfOwner;
+        $user->address = $request->address;
+        $user->save();
+
+        $user = User::find(Auth::user()->id);
+
+        return [
+            'user'=>$user
+        ];
+    }
+    public function getProfile()
+    {
+        $permissions = Permission::OrderBy('position','ASC')->get();
+        $user = User::with(['role','role.permissions', 'routes_team.route'])->where('id',Auth::user()->id)->first();
+
+       return ['user'=> $user,'allPermissions'=> $permissions];
     }
 }

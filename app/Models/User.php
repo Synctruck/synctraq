@@ -17,6 +17,7 @@ class User extends Authenticatable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    protected $appends = ['url_image'];
 
     protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at'];
 
@@ -89,6 +90,16 @@ class User extends Authenticatable
                             INNER JOIN permission permiss ON permiss.id = pr.permission_id
                             WHERE pr.role_id = $id_role");
     }
+
+     //accessors
+     public function getUrlImageAttribute()
+     {
+         if($this->image == null || $this->image == ''){
+            return env('APP_URL').'/storage/avatar/default.png';
+         }
+         return env('APP_URL').'/storage/avatar/'.$this->image;
+     }
+
 
     //observers
     protected static function booted()

@@ -202,6 +202,7 @@ function Roles() {
         if(item.slug!='T' && item.parent_id !=null){
             return <div class="checkbox checkbox-primary mb-1" style={{paddingLeft:'30px'}} >
                         <input
+                            className="form-check-input"
                             type="checkbox"
                             value={item.id}
                             id={item.id+'ck'}
@@ -214,6 +215,7 @@ function Roles() {
         if(item.slug!='T' && item.parent_id ==null){
             return  <div class="checkbox checkbox-primary mt-1  mb-1" style={{paddingLeft:'10px'}}>
             <input
+                className="form-check-input"
                 type="checkbox"
                 value={item.id}
                 id={item.id+'ck'}
@@ -274,7 +276,7 @@ function Roles() {
                                                             <div class="col-md-12" >
                                                                 <div class="checkbox checkbox-primary mb-1">
                                                                     <label htmlFor="chkAll">
-                                                                        <input id='chkAll' type="checkbox" defaultChecked={checkAll} onChange={() => handleCheckedAll()} /> Select all
+                                                                        <input id='chkAll' className="form-check-input" type="checkbox" defaultChecked={checkAll} onChange={() => handleCheckedAll()} /> Select all
                                                                     </label>
                                                                 </div>
 

@@ -273,7 +273,7 @@
 
             @if(Auth::check())
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                <img src="{{asset('admin/assets/img/profile-img.jpg')}}" alt="Profile" class="rounded-circle">
+                <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
                 @if(Auth::user()->role->name != 'Team')
                     <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
                 @else
@@ -297,9 +297,9 @@
                     </li>
 
                     <li>
-                      <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                      <a class="dropdown-item d-flex align-items-center" href="{{url('/profile')}}">
                         <i class="bi bi-person"></i>
-                        <span>Mi Perfil</span>
+                        <span>My profile</span>
                       </a>
                     </li>
                     <li>
