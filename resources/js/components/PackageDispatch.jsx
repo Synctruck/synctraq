@@ -748,11 +748,6 @@ function PackageDispatch() {
         return (
 
             <tr key={i}>
-                <td>
-                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ packageDispatch.Reference_Number_1 } name="checkDispatch" value={ packageDispatch.Reference_Number_1 }/>
-                </td>
-                <td>{(quantityDispatch - i) - (20 * (page - 1))}</td>
-
                 <td style={ { width: '100px'} }>
                     { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
                 </td>
@@ -1803,10 +1798,6 @@ function PackageDispatch() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>
-                                                    <input class="form-check-input" type="checkbox" id="checkAllPackage" value="1" onChange={ () => hanldlerCheckAll() }/>
-                                                </th>
-                                                <th>#</th>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 {
