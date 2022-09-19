@@ -197,6 +197,13 @@ function Driver() {
                         icon: "warning",
                     });
                 }
+                else if(response.stateAction == 'userPackageDispatch')
+                {
+                    swal("The user cannot change Team because he has packages in dispatch", {
+
+                        icon: "warning",
+                    });
+                }
                 else if(response.stateAction == true)
                 {
                     listAllUser(1);

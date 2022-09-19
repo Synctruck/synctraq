@@ -136,51 +136,49 @@ function ReportDispatch() {
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
 
-        if(packageDispatch.dispatch == 1)
-        {
-            let team   = (packageDispatch.team ? packageDispatch.team.name : '');
-            let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+        let team   = (packageDispatch.team ? packageDispatch.team.name : '');
+        let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
 
-            return (
+        return (
 
-                <tr key={i}>
-                    <td>
-                        { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
-                    </td>
-                    <td>
-                        { packageDispatch.Date_Dispatch.substring(11, 19) }
-                    </td>
-                    {
-                        roleUser == 'Administrador'
-                        ?
-                            <>
-                                <td><b>{ team }</b></td>
-                                <td><b>{ driver }</b></td>
-                            </>
-                                
-                            
-                        :
-                            ''
-                    }
-                    {
-                        roleUser == 'Team'
-                        ?
+            <tr key={i}>
+                <td>
+                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                </td>
+                <td>
+                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                </td>
+                {
+                    roleUser == 'Administrador'
+                    ?
+                        <>
+                            <td><b>{ team }</b></td>
                             <td><b>{ driver }</b></td>
-                        :
-                            ''
-                    }
-                    <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
-                    <td>{ packageDispatch.Dropoff_Contact_Name }</td>
-                    <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
-                    <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
-                    <td>{ packageDispatch.Dropoff_City }</td>
-                    <td>{ packageDispatch.Dropoff_Province }</td>
-                    <td>{ packageDispatch.Dropoff_Postal_Code }</td>
-                    <td>{ packageDispatch.Weight }</td>
-                    <td>{ packageDispatch.Route }</td>
-                </tr>
-            );
-        }
+                        </>
+                            
+                        
+                    :
+                        ''
+                }
+                {
+                    roleUser == 'Team'
+                    ?
+                        <td><b>{ driver }</b></td>
+                    :
+                        ''
+                }
+                <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.Dropoff_Contact_Name }</td>
+                <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDispatch.Dropoff_City }</td>
+                <td>{ packageDispatch.Dropoff_Province }</td>
+                <td>{ packageDispatch.Dropoff_Postal_Code }</td>
+                <td>{ packageDispatch.Weight }</td>
+                <td>{ packageDispatch.Route }</td>
+                <td>{ packageDispatch.taskOnfleet }</td>
+            </tr>
+        );
     });
 
     const listTeamSelect = listTeam.map( (team, i) => {
@@ -234,8 +232,6 @@ function ReportDispatch() {
 
             setOptionsRoleSearch(optionsRoleSearch);
         });
-
-        console.log(optionsRoleSearch);
     }
 
     const handlerChangeState = (states) => {
@@ -482,6 +478,7 @@ function ReportDispatch() {
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>TASK ONFLEET</th>
                                             </tr>
                                         </thead>
                                         <tbody>

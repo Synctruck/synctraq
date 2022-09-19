@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Configuration, Driver, PackageHistory, TeamRoute, User};
+use App\Models\{Configuration, Driver, PackageDispatch, PackageHistory, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -174,6 +174,20 @@ class DriverController extends Controller
 
     public function Update(Request $request, $id)
     {
+        $user = Driver::find($id);
+
+        if($user->idTeam != $request->get('idTeam'))
+        {
+            $packageDispatchList = PackageDispatch::where('idUserDispatch', $id)
+                                    ->where('status', 'Dispatch')
+                                    ->get();
+
+            if(count($packageDispatchList) > 0)
+            {
+                return ['stateAction' => 'userPackageDispatch'];
+            }
+        }
+
         $validator = Validator::make($request->all(),
 
             [
@@ -246,8 +260,6 @@ class DriverController extends Controller
 
             if($updatedTeam)
             {
-                $user = Driver::find($id);
-
                 $request['nameTeam'] = $team->name;
 
                 $user->update($request->all());

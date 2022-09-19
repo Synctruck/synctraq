@@ -104,52 +104,36 @@ class ReportController extends Controller
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $routes = explode(',', $route); 
+        $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageHistory::whereBetween('Date_Dispatch', [$dateInit, $dateEnd])
-                                    ->where('status', 'Dispatch')
-                                    ->where('dispatch', 1);
+        $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd]);
 
-        if(Session::get('user')->role->name == 'Team')
+        if($idTeam && $idDriver)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam)
+                                                        ->where('idUserDispatch', $idDriver);
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif($idTeam)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listAll = $listAll->whereIn('idUserDispatch', $idsUser)->orWhere('idUserDispatch', $idTeam);
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam);
         }
-        else
+        elseif($idDriver)
         {
-            if($idTeam && $idDriver)
-            {
-                $listAll = $listAll->where('idUserDispatch', $idDriver);
-            }
-            elseif($idTeam)
-            {
-                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-                $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
-            }
-
-            $listAll = $listAll->orderBy('Date_Dispatch', 'desc');
+            $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
         }
 
-        if($route != 'all')
+        if($route != 'all') 
         {
-            $listAll = $listAll->whereIn('Route', $routes);
+            $listPackageDispatch = $listPackageDispatch->whereIn('Route', $routes);
         }
 
         if($state != 'all')
         {
-            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+            $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
         }
 
-        $listAll = $listAll->with(['team', 'driver'])
+        $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])
                             ->orderBy('created_at', 'desc')
                             ->paginate(50);
 
@@ -160,7 +144,7 @@ class ReportController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listAll, 'listState' => $listState, 'roleUser' => $roleUser];
+        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => $roleUser];
     }
 
     public function IndexDelivery()
@@ -176,35 +160,20 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::whereBetween('updated_at', [$dateInit, $dateEnd])
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
                                     ->where('status', 'Delivery');
 
-        if(Session::get('user')->role->name == 'Team')
+        if($idTeam && $idDriver)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
+            $listAll = $listAll->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif($idTeam)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listAll = $listAll->whereIn('idUserDispatch', $idsUser)->orWhere('idUserDispatch', $idTeam);
+            $listAll = $listAll->where('idTeam', $idTeam);
         }
-        else
+        elseif($idDriver)
         {
-            if($idTeam && $idDriver)
-            {
-                $listAll = $listAll->where('idUserDispatch', $idDriver);
-            }
-            elseif($idTeam)
-            {
-                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-                $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
-            }
-
-            $listAll = $listAll->orderBy('updated_at', 'desc');
+            $listAll = $listAll->where('idUserDispatch', $idDriver);
         }
 
         if($route != 'all') 
@@ -218,7 +187,7 @@ class ReportController extends Controller
         }
 
         $listAll = $listAll->with(['team', 'driver'])
-                            ->orderBy('updated_at', 'desc')
+                            ->orderBy('Date_Delivery', 'desc')
                             ->paginate(50);
 
         $Reference_Number_1s = [];
@@ -422,31 +391,20 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listPackageDispatch = PackageHistory::with('driver')
-                                ->whereBetween('Date_Dispatch', [$dateInit, $dateEnd])
-                                ->where('status', 'Dispatch')
-                                ->where('dispatch', 1);
+        $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd]);
 
-        if(Session::get('user')->role->name == 'Team')
+        if($idTeam && $idDriver)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listPackageDispatch = $listPackageDispatch->whereIn('idUserDispatch', $idsUser);
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam)
+                                                        ->where('idUserDispatch', $idDriver);
         }
-        else
+        elseif($idTeam)
         {
-            if($idTeam && $idDriver)
-            {
-                $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
-            }
-            elseif($idTeam)
-            {
-                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-                $listPackageDispatch = $listPackageDispatch->whereIn('idUserDispatch', $idsUser);
-            }
-
-            $listPackageDispatch = $listPackageDispatch->orderBy('Date_Dispatch', 'desc');
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
         }
 
         if($route != 'all') 
@@ -459,24 +417,16 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
         }
 
-        $listPackageDispatch = $listPackageDispatch->get();
+        $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])->get();
 
         foreach($listPackageDispatch as $packageDispatch)
         {
-            if($packageDispatch->driver && $packageDispatch->driver->idTeam)
-            {
-                $team   = $packageDispatch->driver->nameTeam;
-                $driver = $packageDispatch->driver->name .' '. $packageDispatch->driver->nameOfOwner;
-            }
-            else
-            {
-                $team   = $packageDispatch->driver ? $packageDispatch->driver->name : '';
-                $driver = '';
-            }
+            $team   = isset($packageDispatch->team) ? $packageDispatch->team->name : '';
+            $driver = isset($packageDispatch->driver) ? $packageDispatch->driver->name .' '. $packageDispatch->driver->nameOfOwner : '';
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDispatch->Date_Dispatch)),
-                                date('H:i:s', strtotime($packageDispatch->Date_Dispatch)),
+                                date('m-d-Y', strtotime($packageDispatch->created_at)),
+                                date('H:i:s', strtotime($packageDispatch->created_at)),
                                 $team,
                                 $driver,
                                 $packageDispatch->Reference_Number_1,
@@ -520,30 +470,21 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listPackageDelivery = PackageDispatch::with('driver')
+        $listPackageDelivery = PackageDispatch::with(['team', 'driver'])
                                 ->whereBetween('created_at', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
-        if(Session::get('user')->role->name == 'Team')
+        if($idTeam && $idDriver)
         {
-            $idsUser = User::where('idTeam', $idTeam)->get('id');
-
-            $listPackageDelivery = $listPackageDelivery->whereIn('idUserDispatch', $idsUser);
+            $listPackageDelivery = $listPackageDelivery->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);
         }
-        else
+        elseif($idTeam)
         {
-            if($idTeam && $idDriver)
-            {
-                $listPackageDelivery = $listPackageDelivery->where('idUserDispatch', $idDriver);
-            }
-            elseif($idTeam)
-            {
-                $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-                $listPackageDelivery = $listPackageDelivery->whereIn('idUserDispatch', $idsUser);
-            }
-
-            $listPackageDelivery = $listPackageDelivery->orderBy('Date_Dispatch', 'desc');
+            $listPackageDelivery = $listPackageDelivery->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $listPackageDelivery = $listPackageDelivery->where('idUserDispatch', $idDriver);
         }
 
         if($route != 'all') 
@@ -556,24 +497,16 @@ class ReportController extends Controller
             $listPackageDelivery = $listPackageDelivery->whereIn('Dropoff_Province', $states);
         }
 
-        $listPackageDelivery = $listPackageDelivery->get();
+        $listPackageDelivery = $listPackageDelivery->orderBy('Date_Delivery', 'desc')->get();
         
         foreach($listPackageDelivery as $packageDelivery)
         {
-            if($packageDelivery->driver && $packageDelivery->driver->idTeam)
-            {
-                $team   = $packageDelivery->driver->nameTeam;
-                $driver = $packageDelivery->driver->name .' '. $packageDelivery->driver->nameOfOwner;
-            }
-            else
-            {
-                $team   = $packageDelivery->driver ? $packageDelivery->driver->name : '';
-                $driver = '';
-            }
+            $team   = isset($packageDelivery->team) ? $packageDelivery->team->name : '';
+            $driver = isset($packageDelivery->driver) ? $packageDelivery->driver->name .' '. $packageDelivery->driver->nameOfOwner : '';
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDelivery->Date_Dispatch)),
-                                date('H:i:s', strtotime($packageDelivery->Date_Dispatch)),
+                                date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
+                                date('H:i:s', strtotime($packageDelivery->Date_Delivery)),
                                 $team,
                                 $driver,
                                 $packageDelivery->Reference_Number_1,
