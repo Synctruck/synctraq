@@ -417,7 +417,9 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
         }
 
-        $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])->get();
+        $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])
+                                                    ->orderBy('created_at', 'desc')
+                                                    ->get();
 
         foreach($listPackageDispatch as $packageDispatch)
         {
