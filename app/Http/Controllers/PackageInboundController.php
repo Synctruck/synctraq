@@ -34,7 +34,7 @@ class PackageInboundController extends Controller
         return view('package.inbound');
     }
 
-    public function List(Request $request, $dateStart,$dateEnd, $route, $state)
+    public function List($idCompany, $dateStart,$dateEnd, $route, $state)
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -62,6 +62,11 @@ class PackageInboundController extends Controller
         if($state != 'all')
         {
             $packageListInbound = $packageListInbound->whereIn('Dropoff_Province', $states);
+        }
+
+        if($idCompany)
+        {
+            $packageListInbound = $packageListInbound->where('idCompany', $idCompany);
         }
 
         $packageListInbound = $packageListInbound->where('reInbound', 0)

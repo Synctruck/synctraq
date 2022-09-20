@@ -19,6 +19,7 @@ function PackageInbound() {
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
+    const [idCompany, setCompany]                = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -60,7 +61,7 @@ function PackageInbound() {
 
         listAllPackageInbound(page, RouteSearch, StateSearch);
 
-    }, [dateStart,dateEnd]);
+    }, [idCompany, dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -75,13 +76,15 @@ function PackageInbound() {
         else
         {
             setViewButtonSave('block');
-        }
+        } 
 
     }, [file]);
 
     const listAllPackageInbound = (pageNumber, route, state) => {
 
-        fetch(url_general +'package-inbound/list/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        setListPackageInbound([]);
+
+        fetch(url_general +'package-inbound/list/'+ idCompany +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -694,7 +697,7 @@ function PackageInbound() {
 
     const optionCompany = listCompany.map( (company, i) => {
 
-        return <option value={company.name}>{company.name}</option>
+        return <option value={company.id}>{company.name}</option>
     })
 
     const onBtnClickFile = () => {
@@ -828,15 +831,6 @@ function PackageInbound() {
                                             <input id="Reference_Number_1" type="text" className="form-control" value={ Truck } onChange={ (e) => setTruck(e.target.value) } maxLength="20"/>
                                         </div>
                                     </div>
-                                    <div className="col-lg-3 form-group" style={ {display: 'none'} }>
-                                        <div className="form-group">
-                                            <label htmlFor="">CLIENT</label>
-                                            <select className="form-control" onChange={ (e) => setClient(e.target.value) }>
-                                                <option value="" style={ {display: 'none'} }>Select client</option>
-                                                { optionCompany }
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
@@ -855,11 +849,26 @@ function PackageInbound() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <div className="form-group">
                                             <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
                                         </div>
                                     </div>
+                                    <dvi className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">

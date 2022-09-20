@@ -78,7 +78,7 @@ Route::group(['middleware' => 'login'], function() {
 
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index']);
-	Route::get('/package-inbound/list/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'List']);
+	Route::get('/package-inbound/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'List']);
 	Route::get('/package-inbound/export/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'Export']);
 	Route::post('/package-inbound/insert', [PackageInboundController::class, 'Insert']);
 	Route::get('/package-inbound/get/{PACKAGE_ID}', [PackageInboundController::class, 'Get']);
