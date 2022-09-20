@@ -49,9 +49,7 @@ class TaskAmericanE extends Command
 
         $this->ReportStatusHistory($dateInit, $dateEnd, $contents);
 
-        Storage::disk('sftp')->put('tracking_in/'. $filename, $contents);
-
-        Storage::append("schedule.txt", $dateEnd);
+        Storage::disk('sftp')->putFileAs('tracking_in', $contents, $filename);
     }
 
     public function ReportStatusHistory($dateInit, $dateEnd, $contents)

@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
 
-        Commands\TaskAmericanE::class
+        Commands\TaskAmericanE::class,
+        Commands\TaskAmericanManifest::class,
         //
     ];
 
@@ -31,7 +32,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('test:task-ae')->everyMinute();
-
+        $schedule->command('task:ae-manifest')->everyMinute();
         /*$schedule->call(function(){
 
             DB::table('schedule_task')->delete();
