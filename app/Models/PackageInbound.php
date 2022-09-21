@@ -27,6 +27,11 @@ class PackageInbound extends Model
         return $this->hasMany('App\Models\PackageHistory', 'idPackage');
     }
 
+    public function company()
+    {
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
+    }
+
     //observers
     protected static function booted()
     {

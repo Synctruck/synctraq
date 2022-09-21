@@ -120,7 +120,7 @@ function ReportInbound() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/inbound/'+idCompany+'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
+        location.href = url_general +'report/export/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
     }
 
     const listReportTable = listReport.map( (pack, i) => {
@@ -134,7 +134,9 @@ function ReportInbound() {
                 <td>
                     { pack.Date_Inbound.substring(11, 19) }
                 </td>
+                <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.validator.name +' '+ pack.validator.nameOfOwner }</b></td>
+                <td>{ pack.TRUCK }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -279,6 +281,19 @@ function ReportInbound() {
                                                 <label htmlFor="">Fecha final:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -299,19 +314,6 @@ function ReportInbound() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -341,7 +343,9 @@ function ReportInbound() {
                                             <tr>
                                                 <th>FECHA</th>
                                                 <th>HORA</th>
+                                                <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
+                                                <th>TRUCK #</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>

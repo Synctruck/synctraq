@@ -71,7 +71,11 @@ class ReportController extends Controller
         $states = explode(',', $state);
         $trucks = explode(',', $truck);
 
-        $listAll = PackageHistory::with('validator')
+        $listAll = PackageHistory::with(
+                                [
+                                    'validator'=> function($query){ $query->select('id', 'name', 'nameOfOwner'); }, 
+
+                                ])
                                 ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
                                 ->where('status', 'Inbound');
 
@@ -93,17 +97,18 @@ class ReportController extends Controller
             $listAll = $listAll->where('idCompany', $idCompany);
         }
 
-
         $listAll = $listAll->orderBy('Date_Inbound', 'desc')->paginate(50);
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Inbound')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
+
         $listTruck = PackageHistory::select('TRUCK')
                                     ->where('status', 'Inbound')
                                     ->groupBy('TRUCK')
                                     ->get();
+
         return ['listAll' => $listAll, 'listState' => $listState,'listTruck'=>$listTruck];
     }
 
@@ -322,7 +327,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('FECHA', 'HORA', 'VALIDATOR', 'TRUCK #', 'CLIENT', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('FECHA', 'HORA', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -373,9 +378,9 @@ class ReportController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($packageInbound->created_at)),
                                 date('H:i:s', strtotime($packageInbound->created_at)),
+                                $packageInbound->company,
                                 $validator,
                                 $packageInbound->TRUCK,
-                                $packageInbound->CLIENT,
                                 $packageInbound->Reference_Number_1,
                                 $packageInbound->Dropoff_Contact_Name,
                                 $packageInbound->Dropoff_Contact_Phone_Number,
@@ -398,7 +403,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportDispatch($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Dispatch " . date('Y-m-d H:i:s') . ".csv";
@@ -407,7 +412,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('FECHA', 'HORA', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('FECHA', 'HORA', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -447,6 +452,7 @@ class ReportController extends Controller
         {
             $listPackageDispatch = $listPackageDispatch->where('idCompany', $idCompany);
         }
+
         $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])
                                                     ->orderBy('created_at', 'desc')
                                                     ->get();
@@ -459,6 +465,7 @@ class ReportController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($packageDispatch->created_at)),
                                 date('H:i:s', strtotime($packageDispatch->created_at)),
+                                $packageDispatch->company,
                                 $team,
                                 $driver,
                                 $packageDispatch->Reference_Number_1,

@@ -154,7 +154,7 @@ function ReportDispatch() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/dispatch/'+idCompany+'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'report/export/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
@@ -171,6 +171,7 @@ function ReportDispatch() {
                 <td>
                     { packageDispatch.Date_Dispatch.substring(11, 19) }
                 </td>
+                <td><b>{ packageDispatch.company }</b></td>
                 {
                     roleUser == 'Administrador'
                     ?
@@ -371,9 +372,9 @@ function ReportDispatch() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-2">
+                                            <div className="col-lg-2" style={ {display: 'none'} }>
                                                 <div className="form-group">
-                                                    <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
+                                                    <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-2">
@@ -393,6 +394,20 @@ function ReportDispatch() {
                                                 <label htmlFor="">Fecha final:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
+
                                             {
                                                 roleUser == 'Administrador'
                                                 ?
@@ -437,19 +452,7 @@ function ReportDispatch() {
                                                 :
                                                     ''
                                             }
-                                             <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
+                                            
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -489,6 +492,7 @@ function ReportDispatch() {
                                             <tr>
                                                 <th>FECHA</th>
                                                 <th>HORA</th>
+                                                <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?

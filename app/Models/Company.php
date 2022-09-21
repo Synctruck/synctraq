@@ -33,6 +33,11 @@ class Company extends Model
         return $this->hasMany('App\Models\PackageManifest', 'idCompany');
     }
 
+    public function inbound()
+    {
+        return $this->hasMany('App\Models\PackageInbound', 'idCompany');
+    }
+
 
     //observers
     protected static function booted()

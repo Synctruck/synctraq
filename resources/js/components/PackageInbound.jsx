@@ -594,6 +594,7 @@ function PackageInbound() {
                 <td>
                     { pack.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
                 <td>{ pack.TRUCK }</td>
                 <td>{ pack.CLIENT }</td>
@@ -975,6 +976,7 @@ function PackageInbound() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
                                                 <th>TRUCK #</th>
                                                 <th>CLIENT</th>
