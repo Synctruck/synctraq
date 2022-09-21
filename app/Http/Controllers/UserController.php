@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ PackageManifest, PackageHistory, Routes };
+use App\Models\{ Company, PackageManifest, PackageHistory, Routes };
 use Ixudra\Curl\Facades\Curl;
 
 use Session;

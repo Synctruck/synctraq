@@ -31,8 +31,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('test:task-ae')->everyMinute();
-        $schedule->command('task:ae-manifest')->everyMinute();
+        $schedule->command('test:task-ae');
+        $schedule->command('task:ae-manifest');
         /*$schedule->call(function(){
 
             DB::table('schedule_task')->delete();
