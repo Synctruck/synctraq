@@ -17,17 +17,17 @@ use Session;
 class ReportController extends Controller
 {
     public function Index()
-    {        
+    {
         return view('report.index');
     }
 
     public function IndexManifest()
-    {        
+    {
         return view('report.indexmanifest');
     }
 
     public function ListManifest($dateInit, $dateEnd, $route, $state)
-    {        
+    {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -58,17 +58,18 @@ class ReportController extends Controller
     }
 
     public function IndexInbound()
-    {        
+    {
         return view('report.indexinbound');
     }
 
-    public function ListInbound($dateInit, $dateEnd, $route, $state)
-    {        
+    public function ListInbound($idCompany, $dateInit, $dateEnd, $route, $state,$truck)
+    {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
         $routes = explode(',', $route);
         $states = explode(',', $state);
+        $trucks = explode(',', $truck);
 
         $listAll = PackageHistory::with('validator')
                                 ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
@@ -83,6 +84,15 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
+        if($truck != 'all')
+        {
+            $listAll = $listAll->whereIn('TRUCK', $trucks);
+        }
+        if($idCompany && $idCompany !=0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
+
 
         $listAll = $listAll->orderBy('Date_Inbound', 'desc')->paginate(50);
 
@@ -90,8 +100,11 @@ class ReportController extends Controller
                                     ->where('status', 'Inbound')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
-
-        return ['listAll' => $listAll, 'listState' => $listState];
+        $listTruck = PackageHistory::select('TRUCK')
+                                    ->where('status', 'Inbound')
+                                    ->groupBy('TRUCK')
+                                    ->get();
+        return ['listAll' => $listAll, 'listState' => $listState,'listTruck'=>$listTruck];
     }
 
     public function IndexDispatch()
@@ -99,7 +112,7 @@ class ReportController extends Controller
         return view('report.indexdispatch');
     }
 
-    public function ListDispatch($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ListDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -123,7 +136,7 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listPackageDispatch = $listPackageDispatch->whereIn('Route', $routes);
         }
@@ -131,6 +144,10 @@ class ReportController extends Controller
         if($state != 'all')
         {
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
+        }
+        if($idCompany && $idCompany !=0)
+        {
+            $listPackageDispatch = $listPackageDispatch->where('idCompany', $idCompany);
         }
 
         $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])
@@ -151,7 +168,7 @@ class ReportController extends Controller
     {
         return view('report.indexdelivery');
     }
- 
+
     public function ListDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $dateInit = $dateInit .' 00:00:00';
@@ -176,7 +193,7 @@ class ReportController extends Controller
             $listAll = $listAll->where('idUserDispatch', $idDriver);
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listAll = $listAll->whereIn('Route', $routes);
         }
@@ -280,12 +297,12 @@ class ReportController extends Controller
     }
 
     public function IndexNotExists()
-    {        
+    {
         return view('report.indexnotexists');
     }
 
     public function ListNotExists($dateInit, $dateEnd)
-    {        
+    {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -296,24 +313,25 @@ class ReportController extends Controller
         return ['reportList' => $reportList];
     }
 
-    public function ExportInbound($dateInit, $dateEnd, $route, $state)
+    public function ExportInbound($idCompany, $dateInit, $dateEnd, $route, $state,$truck)
     {
         $delimiter = ",";
         $filename = "Report Inbound " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'VALIDATOR', 'TRUCK #', 'CLIENT', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
-        
+
         $routes = explode(',', $route);
         $states = explode(',', $state);
+        $trucks = explode(',', $truck);
 
         $listPackageInbound = PackageHistory::with('validator')
                                 ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
@@ -327,6 +345,14 @@ class ReportController extends Controller
         if($state != 'all')
         {
             $listPackageInbound = $listPackageInbound->whereIn('Dropoff_Province', $states);
+        }
+        if($state != 'all')
+        {
+            $listPackageInbound = $listPackageInbound->whereIn('TRUCK', $trucks);
+        }
+        if($idCompany && $idCompany !=0)
+        {
+            $listPackageInbound = $listPackageInbound->where('idCompany', $idCompany);
         }
 
         $listPackageInbound = $listPackageInbound->orderBy('Date_Inbound', 'desc')->get();
@@ -348,7 +374,7 @@ class ReportController extends Controller
                                 date('m-d-Y', strtotime($packageInbound->created_at)),
                                 date('H:i:s', strtotime($packageInbound->created_at)),
                                 $validator,
-                                $packageInbound->TRUCK, 
+                                $packageInbound->TRUCK,
                                 $packageInbound->CLIENT,
                                 $packageInbound->Reference_Number_1,
                                 $packageInbound->Dropoff_Contact_Name,
@@ -363,28 +389,28 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
-    public function ExportDispatch($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Dispatch " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -407,7 +433,7 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listPackageDispatch = $listPackageDispatch->whereIn('Route', $routes);
         }
@@ -417,6 +443,10 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
         }
 
+        if($idCompany && $idCompany !=0)
+        {
+            $listPackageDispatch = $listPackageDispatch->where('idCompany', $idCompany);
+        }
         $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])
                                                     ->orderBy('created_at', 'desc')
                                                     ->get();
@@ -444,12 +474,12 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
@@ -457,15 +487,15 @@ class ReportController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Delivery " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', ' URL-IMAGES');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -489,7 +519,7 @@ class ReportController extends Controller
             $listPackageDelivery = $listPackageDelivery->where('idUserDispatch', $idDriver);
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listPackageDelivery = $listPackageDelivery->whereIn('Route', $routes);
         }
@@ -500,7 +530,7 @@ class ReportController extends Controller
         }
 
         $listPackageDelivery = $listPackageDelivery->orderBy('Date_Delivery', 'desc')->get();
-        
+
         foreach($listPackageDelivery as $packageDelivery)
         {
             $team   = isset($packageDelivery->team) ? $packageDelivery->team->name : '';
@@ -525,12 +555,12 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
@@ -538,15 +568,15 @@ class ReportController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Failed " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -579,7 +609,7 @@ class ReportController extends Controller
             $listPackageDispatch = $listPackageDispatch->orderBy('Date_Failed', 'desc');
         }
 
-        if($route != 'all') 
+        if($route != 'all')
         {
             $listPackageDispatch = $listPackageDispatch->whereIn('Route', $routes);
         }
@@ -622,12 +652,12 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
@@ -635,15 +665,15 @@ class ReportController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Manifest " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -683,12 +713,12 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
@@ -696,10 +726,10 @@ class ReportController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Not Exists " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'PACKAGE ID');
 
@@ -720,22 +750,22 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 
     public function IndexAssigns()
-    {        
+    {
         return view('report.indexassigns');
     }
 
     public function ListAssigns($dateInit, $dateEnd, $route, $state)
-    {        
+    {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -769,15 +799,15 @@ class ReportController extends Controller
     {
         $delimiter = ",";
         $filename = "Report Assigns " . date('Y-m-d H:i:s') . ".csv";
-        
+
         //create a file pointer
         $file = fopen('php://memory', 'w');
-        
+
         //set column headers
         $fields = array('FECHA', 'HORA', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
-        
+
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -817,12 +847,12 @@ class ReportController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
-        
+
         fpassthru($file);
     }
 }

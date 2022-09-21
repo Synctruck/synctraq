@@ -16,9 +16,14 @@ function ReportInbound() {
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
+    const [listTruck , setListTruck] = useState([]);
+
+    const [listCompany , setListCompany]  = useState([]);
+    const [idCompany, setCompany] = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [truckSearch, setTruckSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -27,19 +32,20 @@ function ReportInbound() {
     useEffect( () => {
 
         listAllRoute();
+        listAllCompany();
 
     }, []);
 
     useEffect(() => {
 
-        listReportInbound(page, RouteSearch, StateSearch);
+        listReportInbound(page, RouteSearch, StateSearch,truckSearch);
 
-    }, [dateInit, dateEnd]);
+    }, [dateInit, dateEnd,idCompany]);
 
 
-    const listReportInbound = (pageNumber, routeSearch, stateSearch) => {
+    const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
-        fetch(url_general +'report/list/inbound/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -50,13 +56,39 @@ function ReportInbound() {
             setQuantityInbound(response.listAll.total);
 
             setListState(response.listState);
+            setListTruck(response.listTruck);
 
             if(listState.length == 0)
             {
                 listOptionState(response.listState);
             }
+
+            if(listTruck.length == 0)
+            {
+                listOptionTruck(response.listTruck);
+            }
         });
     }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
+        });
+    }
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
 
     const listAllRoute = () => {
 
@@ -83,12 +115,12 @@ function ReportInbound() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listReportInbound(pageNumber, RouteSearch, StateSearch);
+        listReportInbound(pageNumber, RouteSearch, StateSearch,truckSearch);
     }
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/inbound/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'report/export/inbound/'+idCompany+'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
     }
 
     const listReportTable = listReport.map( (pack, i) => {
@@ -129,13 +161,13 @@ function ReportInbound() {
 
             setRouteSearch(routesSearch);
 
-            listReportInbound(1, routesSearch, StateSearch);
+            listReportInbound(1, routesSearch, StateSearch,truckSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listReportInbound(1, 'all', StateSearch);
+            listReportInbound(1, 'all', StateSearch,truckSearch);
         }
     };
 
@@ -168,17 +200,41 @@ function ReportInbound() {
 
             setStateSearch(statesSearch);
 
-            listReportInbound(1, RouteSearch, statesSearch);
+            listReportInbound(1, RouteSearch, statesSearch,truckSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listReportInbound(1, RouteSearch, 'all');
+            listReportInbound(1, RouteSearch, 'all',truckSearch);
+        }
+    };
+
+    const handlerChangeTruck = (items) => {
+
+        if(items.length != 0)
+        {
+            let trucksSearch = '';
+
+            items.map( (item) => {
+
+                trucksSearch = trucksSearch == '' ? item.value : trucksSearch +','+ item.value;
+            });
+
+            setTruckSearch(trucksSearch);
+
+            listReportInbound(1, RouteSearch, StateSearch, trucksSearch);
+        }
+        else
+        {
+            setTruckSearch('all');
+
+            listReportInbound(1, RouteSearch, StateSearch,'all');
         }
     };
 
     const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+    const [optionsTruckSearch, setOptionsTruckSearch] = useState([]);
 
     const listOptionState = (listState) => {
 
@@ -189,6 +245,18 @@ function ReportInbound() {
             optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
 
             setOptionsStateSearch(optionsStateSearch);
+        });
+    }
+
+    const listOptionTruck = (listTruck) => {
+
+        setOptionsTruckSearch([]);
+
+        listTruck.map( (item, i) => {
+
+            optionsTruckSearch.push({ value: item.TRUCK, label: item.TRUCK });
+
+            setOptionsTruckSearch(optionsTruckSearch);
         });
     }
 
@@ -203,15 +271,15 @@ function ReportInbound() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-2">
                                                 <label htmlFor="">Fecha de inicio:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-2">
                                                 <label htmlFor="">Fecha final:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
                                                         State :
@@ -221,7 +289,30 @@ function ReportInbound() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Truck :
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <Select isMulti onChange={ (e) => handlerChangeTruck(e) } options={ optionsTruckSearch } />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
+                                            <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
                                                         Route :

@@ -11,6 +11,8 @@ function ReportDispatch() {
     const [listTeam, setListTeam]     = useState([]);
     const [listDriver, setListDriver] = useState([]);
     const [roleUser, setRoleUser]     = useState([]);
+    const [listCompany , setListCompany]  = useState([]);
+    const [idCompany, setCompany] = useState(0);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -33,6 +35,7 @@ function ReportDispatch() {
 
         listAllTeam();
         listAllRoute();
+        listAllCompany();
 
     }, []);
 
@@ -40,14 +43,14 @@ function ReportDispatch() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam, idDriver]);
+    }, [dateInit, dateEnd, idTeam, idDriver,idCompany]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'report/list/dispatch/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -74,6 +77,22 @@ function ReportDispatch() {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
             }
+        });
+    }
+
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
         });
     }
 
@@ -118,6 +137,10 @@ function ReportDispatch() {
 
         setDateInit(date);
     }
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
 
     const handlerChangeDateEnd = (date) => {
 
@@ -131,7 +154,7 @@ function ReportDispatch() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/dispatch/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'report/export/dispatch/'+idCompany+'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
@@ -155,8 +178,8 @@ function ReportDispatch() {
                             <td><b>{ team }</b></td>
                             <td><b>{ driver }</b></td>
                         </>
-                            
-                        
+
+
                     :
                         ''
                 }
@@ -414,7 +437,19 @@ function ReportDispatch() {
                                                 :
                                                     ''
                                             }
-
+                                             <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
