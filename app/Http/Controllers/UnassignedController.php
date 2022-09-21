@@ -16,6 +16,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class UnassignedController extends Controller
@@ -26,7 +27,7 @@ class UnassignedController extends Controller
     }
 
     public function List(Request $request, $dataView, $idTeam)
-    {        
+    {
         $roleUser = '';
 
         if($dataView == 'today')
@@ -63,7 +64,7 @@ class UnassignedController extends Controller
 
             if($assigned)
             {
-                $description = 'Unassigned - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $description = 'Unassigned - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
 
                 try
                 {
@@ -105,7 +106,7 @@ class UnassignedController extends Controller
                     $unassigned->Weight                       = $assigned->Weight;
                     $unassigned->Route                        = $assigned->Route;
                     $unassigned->Name                         = $assigned->Name;
-                    $unassigned->idUser                       = Session::get('user')->id;
+                    $unassigned->idUser                       = Auth::user()->id;
                     $unassigned->idTeam                       = $assigned->team->id;
                     $unassigned->idDriver                     = 0;
                     $unassigned->unassignedDate                 = date('Y-m-d H:i:s');
@@ -149,14 +150,14 @@ class UnassignedController extends Controller
                     $packageHistory->Weight                       = $assigned->Weight;
                     $packageHistory->Route                        = $assigned->Route;
                     $packageHistory->Name                         = $assigned->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserDispatch               = 0;
                     $packageHistory->Date_Unassigned              = date('Y-m-d H:s:i');
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Unassigned';
 
                     $packageHistory->save();
-                    
+
                     $packageInbound = new PackageInbound();
 
                     $packageInbound->Reference_Number_1           = $assigned->Reference_Number_1;
@@ -192,7 +193,7 @@ class UnassignedController extends Controller
                     $packageInbound->Weight                       = $assigned->Weight;
                     $packageInbound->Route                        = $assigned->Route;
                     $packageInbound->Name                         = $assigned->Name;
-                    $packageInbound->idUser                       = Session::get('user')->id;
+                    $packageInbound->idUser                       = Auth::user()->id;
                     $packageInbound->status                       = 'Inbound';
 
                     $packageInbound->save();
@@ -233,10 +234,10 @@ class UnassignedController extends Controller
                     $packageHistory->Weight                       = $assigned->Weight;
                     $packageHistory->Route                        = $assigned->Route;
                     $packageHistory->Name                         = $assigned->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
 
@@ -260,7 +261,7 @@ class UnassignedController extends Controller
                 return ['stateAction' => 'notAssigned'];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 
@@ -434,18 +435,18 @@ class UnassignedController extends Controller
                                     $packageHistory->id = uniqid();
                                     $packageHistory->idPackage = $package->Reference_Number_1;
                                     $packageHistory->description = 'Validación Dispatch (Importación) asignado al driver: '. $driver->name .' '. $driver->nameOfOwner;
-                                    $packageHistory->user = Session::get('user')->email;
+                                    $packageHistory->user = Auth::user()->email;
                                     $packageHistory->status = 'Dispatch';
 
                                     $packageHistory->save();
-                                    
+
                                     $package->delete();
                                 }
                             }
                         }
                     }
                 }
-                
+
                 $lineNumber++;
             }
 
@@ -453,7 +454,7 @@ class UnassignedController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {
@@ -470,7 +471,7 @@ class UnassignedController extends Controller
 
     public function ListUnassigned()
     {
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $assignedList = Assigned::orderBy('created_at', 'desc')->paginate(20);
 
@@ -483,7 +484,7 @@ class UnassignedController extends Controller
     }
 
     public function ListUnassignedTeam(Request $request, $dataView, $idTeam)
-    {        
+    {
         $roleUser = '';
 
 
@@ -516,7 +517,7 @@ class UnassignedController extends Controller
         if(substr($request->get('Reference_Number_1'), 0, 6) == 'INLAND' || substr($request->get('Reference_Number_1'), 0, 5) == '67660')
         {
             $assigned = Assigned::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                ->where('idTeam', Session::get('user')->id)
+                                ->where('idTeam', Auth::user()->id)
                                 ->where('idDriver', '!=', 0)
                                 ->first();
 
@@ -524,7 +525,7 @@ class UnassignedController extends Controller
             {
                 $driver = User::find($assigned->idDriver);
 
-                $description = 'El Team ('. Session::get('user')->email .') quitó la asignación al Driver ('. $driver->email .')';
+                $description = 'El Team ('. Auth::user()->email .') quitó la asignación al Driver ('. $driver->email .')';
 
                 try
                 {
@@ -537,7 +538,7 @@ class UnassignedController extends Controller
                     //update dispatch
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->where('dispatch', 1)
-                                            ->first(); 
+                                            ->first();
 
                     $packageHistory->dispatch = 0;
 
@@ -579,14 +580,14 @@ class UnassignedController extends Controller
                     $packageHistory->Weight                       = $assigned->Weight;
                     $packageHistory->Route                        = $assigned->Route;
                     $packageHistory->Name                         = $assigned->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserDispatch               = 0;
                     $packageHistory->Date_Unassigned              = date('Y-m-d H:s:i');
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Unassigned';
 
                     $packageHistory->save();
-                    
+
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
                     $packageDispatch->delete();
@@ -607,7 +608,7 @@ class UnassignedController extends Controller
                 return ['stateAction' => 'notAssigned'];
             }
         }
-        
+
         return ['stateAction' => 'notInland'];
     }
 }

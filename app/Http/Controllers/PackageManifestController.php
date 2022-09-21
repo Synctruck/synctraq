@@ -16,12 +16,13 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageManifestController extends Controller
 {
     public function Index()
-    {        
+    {
         return view('package.index');
     }
 
@@ -31,7 +32,7 @@ class PackageManifestController extends Controller
         $states = explode(',', $state);
 
         $packageList = PackageManifest::where('status', 'On hold');
-            
+
         if($route != 'all')
         {
             $packageList = $packageList->whereIn('Route', $routes);
@@ -51,7 +52,7 @@ class PackageManifestController extends Controller
         {
             $packageList = $packageList->orderBy('created_at', 'desc');
         }
-        
+
         $packageList = $packageList->paginate(50);
 
         $quantityPackage = $packageList->total();
@@ -142,10 +143,10 @@ class PackageManifestController extends Controller
                 $packageHistory->Weight                       = $request->get('Weight');
                 $packageHistory->Route                        = $request->get('Route');
                 $packageHistory->status                       = $request->get('status');
-                $packageHistory->idUser                       = Session::get('user')->id;
-                $packageHistory->idUserManifest               = Session::get('user')->id;
+                $packageHistory->idUser                       =  Auth::user()->id;
+                $packageHistory->idUserManifest               =  Auth::user()->id;
                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'On hold - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->Description                  = 'On hold - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'On hold';
 
                 $packageHistory->save();
@@ -157,15 +158,17 @@ class PackageManifestController extends Controller
                     $packageNotExists->delete();
                 }
 
+
                 DB::commit();
 
-                return response()->json(["stateAction" => true], 200);    
+                return response()->json(["stateAction" => true], 200);
+
             }
-            catch(Exception $e)
+            catch(\Exception $e)
             {
                 DB::rollback();
 
-                return response()->json(["stateAction" => false], 200); 
+                return response()->json(["stateAction" => false], 200);
             }
         }
 
@@ -263,7 +266,7 @@ class PackageManifestController extends Controller
 
                 $packageManifest->filter = 0;
 
-                $packageManifest->save(); 
+                $packageManifest->save();
             }
 
             $valuesCheck = $request->get('valuesCheck') != '' ? explode(",", $request->get('valuesCheck')) : [];
@@ -322,7 +325,7 @@ class PackageManifestController extends Controller
 
                 $packageIDs = $packageIDs == '' ? $row[0] : $packageIDs .','. $row[0];
             }
-            
+
             $lineNumber++;
         }
 
@@ -357,7 +360,7 @@ class PackageManifestController extends Controller
                     if($lineNumber > 1)
                     {
                         $row = str_getcsv($raw_string);
-                        
+
                         if(in_array($row[0], $packageIDsValidate))
                         {
                             $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
@@ -407,10 +410,10 @@ class PackageManifestController extends Controller
 
                                 $route->zipCode = $row[24];
                                 $route->name    = $row[31];
-
                                 $route->save();
+
                             }
-                            
+
                             $package->Route = $route->name;
 
                             $package->save();
@@ -451,10 +454,10 @@ class PackageManifestController extends Controller
                             $packageHistory->Weight = $row[30];
                             $packageHistory->Route = $route->name;
                             $packageHistory->Name = isset($row[32]) ? $row[32] : '';
-                            $packageHistory->idUser = Session::get('user')->id;
-                            $packageHistory->idUserManifest = Session::get('user')->id;
+                            $packageHistory->idUser =  Auth::user()->id;
+                            $packageHistory->idUserManifest =  Auth::user()->id;
                             $packageHistory->Date_manifest = date('Y-m-d H:s:i');
-                            $packageHistory->Description = 'On hold - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                            $packageHistory->Description = 'On hold - for: '.  Auth::user()->name .' '. Auth::user()->nameOfOwner;
                             $packageHistory->status = 'On hold';
 
                             $packageHistory->save();
@@ -462,7 +465,7 @@ class PackageManifestController extends Controller
                             $countSave++;
                         }
                     }
-                    
+
                     $lineNumber++;
                 }
 
@@ -470,7 +473,7 @@ class PackageManifestController extends Controller
 
                 DB::commit();
 
-                return ['stateAction' => true];    
+                return ['stateAction' => true];
             }
             catch(Exception $e)
             {

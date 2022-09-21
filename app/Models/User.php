@@ -1,9 +1,10 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
-class User extends Model
+class User extends Authenticatable
 {
     protected $table      = 'user';
     protected $primaryKey = 'id';
@@ -16,9 +17,15 @@ class User extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    protected $appends = ['url_image'];
 
     protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at'];
 
+     /** Relaciones */
+    public function permissions()
+    {
+        return $this->belongsToMany('App\Models\Permission','permission_user','user_id','permission_id');
+    }
     public function role()
     {
         return $this->belongsTo('App\Models\Role', 'idRole', 'id');
@@ -68,6 +75,31 @@ class User extends Model
     {
         return $this->hasMany('App\Models\Assigned', 'idTeam');
     }
+
+    //obtiene todos los permisos por rol y por usuario
+    public static function allPermisions($id_user,$id_role)
+    {
+        return DB::select("SELECT p.id, p.name, p.slug
+                            FROM permission p
+                            INNER JOIN permission_user pu
+                            ON p.id = pu.permission_id
+                            WHERE pu.user_id = $id_user
+                            UNION
+                            SELECT permiss.id, permiss.name, permiss.slug
+                            FROM permission_role pr
+                            INNER JOIN permission permiss ON permiss.id = pr.permission_id
+                            WHERE pr.role_id = $id_role");
+    }
+
+     //accessors
+     public function getUrlImageAttribute()
+     {
+         if($this->image == null || $this->image == ''){
+            return env('APP_URL').'/storage/avatar/default.png';
+         }
+         return env('APP_URL').'/storage/avatar/'.$this->image;
+     }
+
 
     //observers
     protected static function booted()

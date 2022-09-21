@@ -12,7 +12,14 @@ class Role extends Model
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+    protected $guarded = [];
 
+
+    //relaciones
+    public function permissions()
+    {
+        return $this->belongsToMany('App\Models\Permission','permission_role','role_id','permission_id');
+    }
 
     public function users()
     {

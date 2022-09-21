@@ -11,13 +11,14 @@
     <meta name="csrf-token" content="{{csrf_token()}}">
 
     <!-- Favicons -->
-    <link href="assets/img/favicon.png" rel="icon">
-    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon"> 
+    {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
 
     <!-- Google Fonts -->
 
 
-    <!-- Vendor CSS Files --> 
+    <!-- Vendor CSS Files -->
     <link href="{{asset('admin/assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
@@ -53,7 +54,7 @@
         position: fixed;
         left: 0px;
         top: 0px;
-        width: 100%; 
+        width: 100%;
         height: 100%;
         z-index: 9999;
         background: url('{{asset("cargando.gif")}}') 50% 50% no-repeat rgb(0,0,0);
@@ -86,7 +87,7 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-        @if(Session::has('user'))
+        @if(Auth::check())
             <div class="row">
                 <div class="col-lg-6">
                     <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
@@ -220,7 +221,7 @@
 
             <li class="message-item">
               <a href="#">
-                <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                {{-- <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle"> --}}
                 <div>
                   <h4>Maria Hudson</h4>
                   <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
@@ -234,7 +235,7 @@
 
             <li class="message-item">
               <a href="#">
-                <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                {{-- <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle"> --}}
                 <div>
                   <h4>Anna Nelson</h4>
                   <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
@@ -248,7 +249,7 @@
 
             <li class="message-item">
               <a href="#">
-                <img src="assets/img/messages-3.jpg" alt="" class="rounded-circle">
+                {{-- <img src="assets/img/messages-3.jpg" alt="" class="rounded-circle"> --}}
                 <div>
                   <h4>David Muldon</h4>
                   <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
@@ -270,35 +271,35 @@
 
         <li class="nav-item dropdown pe-3">
 
-            @if(Session::has('user'))
+            @if(Auth::check())
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                <img src="{{asset('admin/assets/img/profile-img.jpg')}}" alt="Profile" class="rounded-circle">
-                @if(Session::get('user')->role->name != 'Team')
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Session::get('user')->name .' '. Session::get('user')->nameOfOwner}}</span>
+                <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
+                @if(Auth::user()->role->name != 'Team')
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
                 @else
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Session::get('user')->name}}</span>
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
                 @endif
-                
+
               </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        @if(Session::get('user')->role->name != 'Team')
-                            <h6>{{Session::get('user')->name .' '. Session::get('user')->nameOfOwner}}</h6>
+                        @if(Auth::user()->role->name != 'Team')
+                            <h6>{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</h6>
                         @else
-                            <h6>{{Session::get('user')->name}}</h6>
+                            <h6>{{Auth::user()->name}}</h6>
                         @endif
 
-                        <span>{{Session::get('user')->role->name}}</span>
+                        <span>{{Auth::user()->role->name}}</span>
                     </li>
                     <li>
                       <hr class="dropdown-divider">
                     </li>
 
                     <li>
-                      <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                      <a class="dropdown-item d-flex align-items-center" href="{{url('/profile')}}">
                         <i class="bi bi-person"></i>
-                        <span>Mi Perfil</span>
+                        <span>My profile</span>
                       </a>
                     </li>
                     <li>
@@ -313,7 +314,7 @@
                     </li>
                 </ul><!-- End Profile Dropdown Items -->
             @endif
-          
+
         </li><!-- End Profile Nav -->
 
       </ul>
@@ -326,7 +327,7 @@
 
     <main id="main" class="main">
         <div id="loader"></div>
-        
+
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -496,7 +497,7 @@
         <!--Contenid -->
         @yield('content')
     </main><!-- End #main -->
-    
+
     <!-- ======= Footer ======= -->
     <footer id="footer" class="footer">
         <div class="copyright" style="display: none;">
@@ -568,7 +569,7 @@
 
                 if(packageBlocked)
                 {
-                    tr =    '<tr>'+ 
+                    tr =    '<tr>'+
                                 '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
                                 '<td>PACKAGE BLOCKED</td>'+
                                 '<td>'+ packageBlocked.comment +'</td>'+
@@ -576,15 +577,15 @@
 
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 }
-                
+
                 packageHistoryList.forEach( package =>  {
 
                     let Description        = '';
                     let Description_Return = '';
-                    
+
                     if(package.Description_Return != '')
                     {
-                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>'; 
+                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
 
                     if(package.status == 'Failed')
@@ -596,7 +597,7 @@
                         Description = package.Description;
                     }
 
-                    tr =    '<tr>'+ 
+                    tr =    '<tr>'+
                                 '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
                                 '<td>'+ package.status +'</td>'+
                                 '<td>'+ Description + Description_Return +'</td>'+
@@ -616,7 +617,7 @@
 
                             let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
 
-                            tr =    '<tr>'+ 
+                            tr =    '<tr>'+
                                         '<td colspan="3"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                     '</tr>';
 
@@ -631,13 +632,13 @@
 
                             if(url)
                             {
-                                tr =    '<tr>'+ 
+                                tr =    '<tr>'+
                                             '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
                                         '</tr>';
 
                                 tableHistoryPackage.insertRow(-1).innerHTML = tr;
                             }
-                            
+
                         });
                     }
                 }
@@ -651,12 +652,12 @@
                 {
                     document.getElementById('idPackage').value      = packageHistoryList[0].Reference_Number_1;
                     document.getElementById('contactName').value    = packageHistoryList[0].Dropoff_Contact_Name;
-                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number; 
+                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number;
                     document.getElementById('contactAddress').value = packageHistoryList[0].Dropoff_Address_Line_1;
                     document.getElementById('contactCity').value    = packageHistoryList[0].Dropoff_City;
-                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province; 
+                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province;
                     document.getElementById('contactZipCode').value = packageHistoryList[0].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight; 
+                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value   = packageHistoryList[0].Route;
                 }
 
@@ -694,7 +695,7 @@
                     document.getElementById('contactOnfleetPhone').value   = onfleet['recipients'][0]['phone'];
                     document.getElementById('contactOnfleetAddress').value = onfleet['destination']['address']['apartment'] +' '+ onfleet['destination']['address']['country'] +' '+ onfleet['destination']['address']['number'] +' '+ onfleet['destination']['address']['postalCode'] +' '+ onfleet['destination']['address']['street'];
                     document.getElementById('contactOnfleetCity').value    = onfleet['destination']['address']['city'];
-                    document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state']; 
+                    document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state'];
                     document.getElementById('contactOnfleetZipCode').value = onfleet['destination']['address']['postalCode'];
                     document.getElementById('statusOnfleet').value  = onfleet['state'] +' success('+ onfleet['completionDetails']['success'] +')' ;
 
@@ -712,7 +713,7 @@
 
                             urlsPhoto.forEach( photoUploadId => {
 
-                                tr =    '<tr>'+ 
+                                tr =    '<tr>'+
                                             '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
                                         '</tr>';
 
@@ -723,14 +724,14 @@
                         {
                             let photoUploadId = onfleet['completionDetails']['photoUploadId'];
 
-                            tr =    '<tr>'+ 
+                            tr =    '<tr>'+
                                         '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
                                     '</tr>';
 
                             tableOnfleet.insertRow(-1).innerHTML = tr;
                         }
                     }
-                    
+
                     var myModal = new bootstrap.Modal(document.getElementById('exampleModalTask'), {
 
                         keyboard: false
@@ -802,5 +803,40 @@
         }
     </script>
     <script src="{{ asset('js/app.js') }}?{{time()}}" defer></script>
+
+    <script>
+
+        //reports
+        var childsReport = document.getElementById('ulReports').children.length
+        console.log('report: ',childsReport);
+        if(childsReport==0){
+            console.log('reports es cero')
+            document.getElementById('liUlReports').style.display = 'none';
+            document.getElementById('titleReports').style.display = 'none';
+        }
+        //maintanences
+        var childsUsers = document.getElementById('ulUsers').children.length
+        console.log('users: ',childsUsers);
+        if(childsUsers==0){
+            document.getElementById('liUlUsers').style.display = 'none';
+        }
+        var childsConfiguration = document.getElementById('ulConfiguration').children.length
+        console.log('config: ',childsConfiguration);
+        if(childsConfiguration==0){
+            document.getElementById('liUlConfiguration').style.display = 'none';
+        }
+
+        //finanzas
+        var childsFinanzas = document.getElementById('ulFinanzas').children.length
+        console.log('finanzas: ',childsFinanzas);
+        if(childsFinanzas==0){
+            document.getElementById('liUlFinanzas').style.display = 'none';
+        }
+        if(childsUsers == 0 && childsFinanzas == 0 && childsConfiguration == 0){
+            document.getElementById('titleMaintenances').style.display = 'none';
+        }
+
+
+    </script>
 </body>
 </html>

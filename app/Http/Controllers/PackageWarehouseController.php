@@ -15,6 +15,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageWarehouseController extends Controller
@@ -46,17 +47,17 @@ class PackageWarehouseController extends Controller
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $routes = explode(',', $route); 
+        $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Session::get('user')->role->name == 'Administrador')
+        if(Auth::user()->role->name == 'Administrador')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }
         else
         {
             $packageListWarehouse = PackageWarehouse::with('user')
-                                                    ->where('idUser', Session::get('user')->id);
+                                                    ->where('idUser', Auth::user()->id);
         }
 
         $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
@@ -105,11 +106,11 @@ class PackageWarehouseController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Session::get('user')->role->name == 'Validador')
+        if(Auth::user()->role->name == 'Validador')
         {
-            $packageListWarehouse = PackageWarehouse::with('user')->where('idUser', Session::get('user')->id);
+            $packageListWarehouse = PackageWarehouse::with('user')->where('idUser', Auth::user()->id);
         }
-        else if(Session::get('user')->role->name == 'Administrador')
+        else if(Auth::user()->role->name == 'Administrador')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }
@@ -120,7 +121,7 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
         }
-        
+
         if($route != 'all')
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Route', $routes);
@@ -216,8 +217,8 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Weight                       = $packageWarehouse->Weight;
                 $packageHistory->Route                        = $packageWarehouse->Route;
                 $packageHistory->Name                         = $packageWarehouse->Name;
-                $packageHistory->idUser                       = Session::get('user')->id;
-                $packageHistory->Description                  = 'For: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
 
                 $packageHistory->save();
@@ -274,7 +275,6 @@ class PackageWarehouseController extends Controller
                 {
                     $package = $packageDispatch;
                 }
-                 
                 if($packageManifest)
                 {
                     $packageHistory = new PackageHistory();
@@ -317,10 +317,10 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
 
@@ -338,11 +338,11 @@ class PackageWarehouseController extends Controller
 
                     if($user->nameTeam)
                     {
-                        $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                     }
                     else
                     {
-                        $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
+                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                     }
 
                     $idOnfleet     = '';
@@ -358,7 +358,7 @@ class PackageWarehouseController extends Controller
 
                     $Date_Return         = date('Y-m-d H:i:s');
                     $Description_Return  = $request->get('Description_Return');
-                    $Description_Onfleet = ''; 
+                    $Description_Onfleet = '';
 
                     $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
 
@@ -427,7 +427,7 @@ class PackageWarehouseController extends Controller
                     $packageReturn->Weight                       = $packageDispatch->Weight;
                     $packageReturn->Route                        = $packageDispatch->Route;
                     $packageReturn->Name                         = $packageDispatch->Name;
-                    $packageReturn->idUser                       = Session::get('user')->id;
+                    $packageReturn->idUser                       = Auth::user()->id;
                     $packageReturn->idTeam                       = $packageDispatch->idTeam;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageReturn->Date_Return                  = $Date_Return;
@@ -483,10 +483,10 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Name                         = $packageDispatch->Name;
                     $packageHistory->idTeam                       = $packageDispatch->idTeam;
                     $packageHistory->idUserReturn                 = $packageDispatch->idUserDispatch;
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
@@ -542,7 +542,7 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->Weight                       = $package->Weight;
                 $packageWarehouse->Route                        = $package->Route;
                 $packageWarehouse->Name                         = $package->Name;
-                $packageWarehouse->idUser                       = Session::get('user')->id;
+                $packageWarehouse->idUser                       = Auth::user()->id;
                 $packageWarehouse->status                       = 'Warehouse';
 
                 $packageWarehouse->save();
@@ -585,12 +585,12 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Name                         = $package->Name;
-                $packageHistory->idUser                       = Session::get('user')->id;
-                $packageHistory->Description                  = 'Warehouse - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->Description                  = 'Warehouse - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
 
                 $packageHistory->save();
-                
+
                 $package->delete();
 
                 DB::commit();
@@ -604,7 +604,7 @@ class PackageWarehouseController extends Controller
                 return ['stateAction' => true];
             }
         }
-        
+
         return ['stateAction' => 'notExists'];
     }
 

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\{Assigned, Package, PackageDelivery, PackageHistory, PackageInbound, PackageManifest, PackageDispatch, PackageNotExists, User};
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use Shuchkin\SimpleXLSXGen;
@@ -159,7 +159,7 @@ class ReportController extends Controller
                             ->orderBy('created_at', 'desc')
                             ->paginate(50);
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('dispatch', 1)
@@ -223,7 +223,7 @@ class ReportController extends Controller
                                         ->orderBy('created_at', 'desc')
                                         ->get();
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $listState = PackageDispatch::select('Dropoff_Province')
                                     ->where('status', 'Delivery')
@@ -251,13 +251,13 @@ class ReportController extends Controller
                                 ->whereBetween('Date_Failed', [$dateInit, $dateEnd])
                                 ->where('status', 'Failed');
 
-        if(Session::get('user')->role->name == 'Team')
+        if(Auth::user()->role->name == 'Team')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
             $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif(Auth::user()->role->name == 'Driver')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
@@ -291,7 +291,7 @@ class ReportController extends Controller
 
         $listAll = $listAll->paginate(50);
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Failed')
@@ -594,7 +594,7 @@ class ReportController extends Controller
                                 ->whereBetween('Date_Failed', [$dateInit, $dateEnd])
                                 ->where('status', 'Failed');
 
-        if(Session::get('user')->role->name == 'Team')
+        if(Auth::user()->role->name == 'Team')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 

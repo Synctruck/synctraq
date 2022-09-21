@@ -14,8 +14,8 @@
 
 		?>
 
-    	@if(count(Session::get('user')->routes_team) > 0)
-    		@foreach(Session::get('user')->routes_team as $routeTeam)
+    	@if(count(Auth::user()->routes_team) > 0)
+    		@foreach(Auth::user()->routes_team as $routeTeam)
     			<?php
 
     				$routesTeamGeneral = $routesTeamGeneral == '' ? $routeTeam->route->name : $routesTeamGeneral .'|'. $routeTeam->route->name;
@@ -25,7 +25,7 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let idUserGeneral     = '{{Session::get('user')->id}}';
+	let idUserGeneral     = '{{Auth::user()->id}}';
 	let routesTeamGeneral = '{{$routesTeamGeneral}}';
 </script>
 <script>

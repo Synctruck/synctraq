@@ -18,6 +18,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 use App\Http\Controllers\Api\PackageController;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Log;
 use Session;
 
@@ -53,16 +54,16 @@ class PackageDispatchController extends Controller
 
         $roleUser = '';
 
-        if(Session::get('user')->role->name == 'Driver')
+        if(Auth::user()->role->name == 'Driver')
         {
-            $packageDispatchList = PackageDispatch::where('idUserDispatch', Session::get('user')->id)
+            $packageDispatchList = PackageDispatch::where('idUserDispatch', Auth::user()->id)
                                                     ->where('status', 'Dispatch');
 
             $roleUser = 'Driver';
         }
-        elseif(Session::get('user')->role->name == 'Team')
+        elseif(Auth::user()->role->name == 'Team')
         {
-            $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
+            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
 
             $idUsers = [];
 
@@ -71,7 +72,7 @@ class PackageDispatchController extends Controller
                 array_push($idUsers, $driver->id);
             }
 
-            array_push($idUsers, Session::get('user')->id);
+            array_push($idUsers, Auth::user()->id);
 
             $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
 
@@ -140,15 +141,15 @@ class PackageDispatchController extends Controller
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        if(Session::get('user')->role->name == 'Driver')
+        if(Auth::user()->role->name == 'Driver')
         {
             $packageDispatchList = PackageDispatch::with(['driver.role', 'driver'])
-                                                    ->where('idUserDispatch', Session::get('user')->id)
+                                                    ->where('idUserDispatch', Auth::user()->id)
                                                     ->where('status', 'Dispatch');
         }
-        elseif(Session::get('user')->role->name == 'Team')
+        elseif(Auth::user()->role->name == 'Team')
         {
-            $drivers = Driver::where('idTeam', Session::get('user')->id)->get('id');
+            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
 
             $idUsers = [];
 
@@ -157,7 +158,7 @@ class PackageDispatchController extends Controller
                 array_push($idUsers, $driver->id);
             }
 
-            array_push($idUsers, Session::get('user')->id);
+            array_push($idUsers, Auth::user()->id);
 
             $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
         }
@@ -320,7 +321,7 @@ class PackageDispatchController extends Controller
                 $team   = User::find($request->get('idTeam'));
                 $driver = $user;
 
-                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
             }
             elseif($request->get('idTeam'))
             {
@@ -328,7 +329,7 @@ class PackageDispatchController extends Controller
 
                 $user = User::find($idUserDispatch);
 
-                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
+                $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
             }
 
             try
@@ -399,10 +400,10 @@ class PackageDispatchController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
 
@@ -451,7 +452,7 @@ class PackageDispatchController extends Controller
                 $packageDispatch->Weight                       = $package->Weight;
                 $packageDispatch->Route                        = $package->Route;
                 $packageDispatch->Name                         = $package->Name;
-                $packageDispatch->idUser                       = Session::get('user')->id;
+                $packageDispatch->idUser                       = Auth::user()->id;
                 $packageDispatch->idTeam                       = $request->get('idTeam');
                 $packageDispatch->idUserDispatch               = $idUserDispatch;
                 $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
@@ -499,7 +500,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Name                         = $package->Name;
-                $packageHistory->idUser                       = Session::get('user')->id;
+                $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->idTeam                       = $request->get('idTeam');
                 $packageHistory->idUserDispatch               = $idUserDispatch;
                 $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -575,7 +576,7 @@ class PackageDispatchController extends Controller
                     $packageNotExists = new PackageNotExists();
 
                     $packageNotExists->Reference_Number_1 = $request->get('Reference_Number_1');
-                    $packageNotExists->idUser             = Session::get('user')->id;
+                    $packageNotExists->idUser             = Auth::user()->id;
                     $packageNotExists->Date_Inbound       = date('Y-m-d H:s:i');
 
                     $packageNotExists->save();
@@ -726,7 +727,7 @@ class PackageDispatchController extends Controller
             $packageHistory->Weight                       = $packageDispatch->Weight;
             $packageHistory->Route                        = $packageDispatch->Route;
             $packageHistory->Name                         = $packageDispatch->Name;
-            $packageHistory->idUser                       = Session::get('user')->id;
+            $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->idUserDispatch               = $request->get('idDriver');
             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
             $packageHistory->dispatch                     = 1;
@@ -770,7 +771,7 @@ class PackageDispatchController extends Controller
             {
                 if($lineNumber > 1)
                 {
-                    $row = str_getcsv($raw_string); 
+                    $row = str_getcsv($raw_string);
 
                     $package = PackageInbound::find($row[0]);
 
@@ -779,7 +780,7 @@ class PackageDispatchController extends Controller
                         $package = PackageWarehouse::find($row[0]);
                     }
 
-                    
+
                     $packageDispatch = PackageDispatch::find($row[0]);
 
                     if($package && $packageDispatch == null)
@@ -806,7 +807,7 @@ class PackageDispatchController extends Controller
 
                                 $user = User::find($idUserDispatch);
 
-                                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                                $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                             }
                             elseif($request->get('idTeam'))
                             {
@@ -814,7 +815,7 @@ class PackageDispatchController extends Controller
 
                                 $user = User::find($idUserDispatch);
 
-                                $description = 'Dispatch - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
+                                $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                             }
 
                             $packageDispatch = new PackageDispatch();
@@ -854,7 +855,7 @@ class PackageDispatchController extends Controller
                             $packageDispatch->Weight                       = $package->Weight;
                             $packageDispatch->Route                        = $package->Route;
                             $packageDispatch->Name                         = $package->Name;
-                            $packageDispatch->idUser                       = Session::get('user')->id;
+                            $packageDispatch->idUser                       = Auth::user()->id;
                             $packageDispatch->idTeam                       = $request->get('idTeam');
                             $packageDispatch->idUserDispatch               = $idUserDispatch;
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
@@ -900,7 +901,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Weight                       = $package->Weight;
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->Name                         = $package->Name;
-                            $packageHistory->idUser                       = Session::get('user')->id;
+                            $packageHistory->idUser                       = Auth::user()->id;
                             $packageHistory->idTeam                       = $request->get('idTeam');
                             $packageHistory->idUserDispatch               = $idUserDispatch;
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -938,17 +939,17 @@ class PackageDispatchController extends Controller
 
         if($packageDispatch)
         {
-            if($packageDispatch->idUserDispatch == Session::get('user')->id || Session::get('user')->role->name == 'Administrador')
+            if($packageDispatch->idUserDispatch == Auth::user()->id || Auth::user()->role->name == 'Administrador')
             {
                 $user = User::find($packageDispatch->idUserDispatch);
 
                 if($user->nameTeam)
                 {
-                    $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                    $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                 }
                 else
                 {
-                    $description = 'Return - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner .' to '. $user->name;
+                    $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                 }
 
                 try
@@ -1048,7 +1049,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->Weight                       = $packageDispatch->Weight;
                     $packageReturn->Route                        = $packageDispatch->Route;
                     $packageReturn->Name                         = $packageDispatch->Name;
-                    $packageReturn->idUser                       = Session::get('user')->id;
+                    $packageReturn->idUser                       = Auth::user()->id;
                     $packageReturn->idTeam                       = $packageDispatch->idTeam;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageReturn->Date_Return                  = $Date_Return;
@@ -1086,8 +1087,8 @@ class PackageDispatchController extends Controller
                     }
 
                     $comment = Comment::where('description', $request->get('Description_Return'))->first();
-
                     $statusReturn = 'Final';
+
 
                     if($comment->finalStatus == 0)
                     {
@@ -1130,7 +1131,7 @@ class PackageDispatchController extends Controller
                         $packageInbound->Weight                       = $packageDispatch->Weight;
                         $packageInbound->Route                        = $packageDispatch->Route;
                         $packageInbound->Name                         = $packageDispatch->Name;
-                        $packageInbound->idUser                       = Session::get('user')->id;
+                        $packageInbound->idUser                       = Auth::user()->id;
                         $packageInbound->reInbound                    = 1;
                         $packageInbound->status                       = 'Inbound';
 
@@ -1175,10 +1176,10 @@ class PackageDispatchController extends Controller
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
                     $packageHistory->Name                         = $packageDispatch->Name;
-                    $packageHistory->idUser                       = Session::get('user')->id;
-                    $packageHistory->idUserInbound                = Session::get('user')->id;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Re-Inbound - for: '. Session::get('user')->name .' '. Session::get('user')->nameOfOwner;
+                    $packageHistory->Description                  = 'Re-Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
@@ -1238,7 +1239,7 @@ class PackageDispatchController extends Controller
         }
 
         return ['stateAction' => 'notDispatch'];
-    } 
+    }
 
     public function RegisterOnfleet($package, $team, $driver)
     {

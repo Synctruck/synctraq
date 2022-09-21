@@ -11,7 +11,7 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let idUserGeneral     = '{{Session::get('user')->id}}';
+	let idUserGeneral     = '{{Auth::user()->id}}';
 </script>
 <div id="unassignedTeam">
 </div>

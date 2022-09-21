@@ -16,6 +16,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class PackageDeliveryController extends Controller
@@ -80,13 +81,13 @@ class PackageDeliveryController extends Controller
                                 ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
-        if(Session::get('user')->role->name == 'Team')
+        if(Auth::user()->role->name == 'Team')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
             $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif(Auth::user()->role->name == 'Driver')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
@@ -133,7 +134,7 @@ class PackageDeliveryController extends Controller
                                         ->orderBy('updated_at', 'desc')
                                         ->get();
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('dispatch', 1)
@@ -147,8 +148,10 @@ class PackageDeliveryController extends Controller
     {
         $packageDelivery = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-        $packageDelivery->idUserCheckPayment = $packageDelivery->checkPayment ? 0 : Session::get('user')->id;
+
+        $packageDelivery->idUserCheckPayment = $packageDelivery->checkPayment ? 0 : Auth::user()->id;
         $packageDelivery->checkPayment       = $request->get('checkPayment');
+
 
         $packageDelivery->save();
 
@@ -159,7 +162,7 @@ class PackageDeliveryController extends Controller
     {
         $listPackageDelivery = PackageDispatch::where('checkPayment', 1)
                                             ->where('confirmCheckPayment', 0)
-                                            ->where('idUserCheckPayment', Session::get('user')->id)
+                                            ->where('idUserCheckPayment', Auth::user()->id)
                                             ->update(['confirmCheckPayment' => 1]);
 
         return ['stateAction' => true];
@@ -192,13 +195,13 @@ class PackageDeliveryController extends Controller
             $listAll = $listAll->where('checkPayment', 0);
         }
 
-        if(Session::get('user')->role->name == 'Team')
+        if(Auth::user()->role->name == 'Team')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
             $listAll = $listAll->whereIn('idUserDispatch', $idsUser);
         }
-        elseif(Session::get('user')->role->name == 'Driver')
+        elseif(Auth::user()->role->name == 'Driver')
         {
             $idsUser = User::where('idTeam', $idTeam)->get('id');
 
@@ -246,7 +249,7 @@ class PackageDeliveryController extends Controller
                                         ->orderBy('updated_at', 'desc')
                                         ->get();
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('dispatch', 1)
@@ -350,8 +353,8 @@ class PackageDeliveryController extends Controller
                                 $packageHistory->Name                         = $packageDispatch->Name;
                                 $packageHistory->idTeam                       = $packageDispatch->idTeam;
                                 $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                                $packageHistory->idUser                       = Session::get('user')->id;
-                                $packageHistory->idUserDelivery               = Session::get('user')->id;
+                                $packageHistory->idUser                       = Auth::user()->id;
+                                $packageHistory->idUserDelivery               = Auth::user()->id;
                                 $packageHistory->Date_Delivery                = date('Y-m-d H:s:i');
                                 $packageHistory->Description                  = $description;
                                 $packageHistory->status                       = 'Delivery';

@@ -11,6 +11,7 @@ use App\Models\{Configuration, Driver, PackageDispatch, PackageHistory, TeamRout
 use Illuminate\Support\Facades\Validator;
 
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
 class DriverController extends Controller
@@ -41,7 +42,7 @@ class DriverController extends Controller
 
     public function List(Request $request)
     {
-        if(Session::get('user')->role->name == 'Administrador')
+        if(Auth::user()->role->name == 'Administrador')
         {
             $userList = Driver::with(['dispatchs', 'role'])
                                 ->with('package_not_exists')
@@ -58,7 +59,7 @@ class DriverController extends Controller
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('idTeam', Session::get('user')->id)
+                                ->where('idTeam', Auth::user()->id)
                                 ->paginate($this->paginate);
         }
 
@@ -76,7 +77,7 @@ class DriverController extends Controller
             $user->history = ($history)?true:false;
         }
 
-        $roleUser = Session::get('user')->role->name;
+        $roleUser = Auth::user()->role->name;
 
         return ['userList' => $userList, 'roleUser' => $roleUser];
     }
