@@ -107,7 +107,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/list-for-check/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageDeliveryController::class, 'ListForCheck']);
 	Route::post('/package-delivery/insert-for-check', [PackageDeliveryController::class, 'InsertForCheck']);
 	Route::get('/package-delivery/confirmation-check', [PackageDeliveryController::class, 'ConfirmationCheck']);
-	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:uncheckDelivery.index');
+	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:validatedDelivery.index');
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
 
 	//============ Validation package not exists
