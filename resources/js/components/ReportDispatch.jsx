@@ -68,14 +68,14 @@ function ReportDispatch() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
-            {
-                listAllTeam();
-            }
-            else
+            if(response.roleUser == 'Team' || response.roleUser == 'Driver') 
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
+            }
+            else
+            {
+                listAllTeam();
             }
         });
     }

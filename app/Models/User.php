@@ -95,9 +95,9 @@ class User extends Authenticatable
      public function getUrlImageAttribute()
      {
          if($this->image == null || $this->image == ''){
-            return env('APP_URL').'/storage/avatar/default.png';
+            return env('APP_URL').'/avatar/default.png';
          }
-         return env('APP_URL').'/storage/avatar/'.$this->image;
+         return env('APP_URL').'/avatar/'.$this->image;
      }
 
 

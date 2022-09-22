@@ -278,14 +278,14 @@ class UserController extends Controller
 
 
         $image = $request->file('image');
-        $oldRouteImage =  public_path('storage').'/avatar/'.$user->image;
+        $oldRouteImage =  public_path('avatar').'/'.$user->image;
         if($image){
             if($user->image != '' && file_exists($oldRouteImage)){
                 unlink($oldRouteImage);
             }
 
             $imageName = 'user_'.$user->id.'_'.Str::random(10).'.'.$image->getClientOriginalExtension();
-            $image->move( public_path('storage').'/avatar', $imageName);
+            $image->move( public_path('avatar'), $imageName);
             $user->image = $imageName;
         }
 
