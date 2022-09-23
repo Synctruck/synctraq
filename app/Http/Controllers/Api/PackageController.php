@@ -426,6 +426,8 @@ class PackageController extends Controller
     {
         $statusCodeCompany = '';
         $key_webhook       = '';
+        $url_webhook       = '';
+        $pod_url           = "";
 
         if($status == 'Return')
         {
@@ -433,6 +435,8 @@ class PackageController extends Controller
 
             $statusCodeCompany = $idPhoto;
             $key_webhook       = $company->key_webhook;
+            $url_webhook       = $company->url_webhook;
+            $typeServices      = $company->typeServices;
         }
         else
         {
@@ -443,54 +447,58 @@ class PackageController extends Controller
 
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
+            $url_webhook       = $companyStatus->company->url_webhook;
+            $typeServices      = $companyStatus->typeServices;
         }
-
-        $pod_url = "";
-
-        if($status == 'Delivery')
-        {
-            $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
-        }
-
-        Log::info($pod_url);
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.platform.inlandlogistics.co/api/v6/shipments/'. $package->Reference_Number_1 .'/update-status',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'{
-                "status": "'. $statusCodeCompany .'",
-                '. $pod_url .'
-                "metadata": [
-                    {
-                        "label": "",
-                        "value": ""
-                    }
-                ]
-            }',
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: '. $key_webhook,
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $response = json_decode($response, true);
-
-        curl_close($curl);
         
-        Log::info('===========  INLAND - STATUS UPDATE');
-        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-        Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-        Log::info('REPONSE STATUS: '. $response['status']);
-        Log::info('============INLAND - END STATUS UPDATE');
+        if($typeServices == 'API')
+        {
+            if($status == 'Delivery')
+            {
+                $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
+            }
+
+            Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
+            Log::info($pod_url);
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $url_webhook . $package->Reference_Number_1 .'/update-status',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS =>'{
+                    "status": "'. $statusCodeCompany .'",
+                    '. $pod_url .'
+                    "metadata": [
+                        {
+                            "label": "",
+                            "value": ""
+                        }
+                    ]
+                }',
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $response = json_decode($response, true);
+
+            curl_close($curl);
+            
+            Log::info('===========  INLAND - STATUS UPDATE');
+            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+            Log::info('REPONSE STATUS: '. $response['status']);
+            Log::info('============INLAND - END STATUS UPDATE');
+        }
     }
 
     public function UpdateManifestRouteByZipCode()
