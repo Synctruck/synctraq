@@ -1,0 +1,7 @@
+shipment_id,status,date,hour,timezone,city_locality,state,"lat, lon",pod_url
+84670515651,"CAN'T LEAVE IT UNATTENDED",09-23-2022,12:40:08,America/New_York,,NY,,,
+84670515652,"CAN'T LEAVE IT UNATTENDED",09-23-2022,12:40:15,America/New_York,,NY,,,
+67660011023,Delivery,09-23-2022,12:40:19,America/New_York,,NY,,,https://d15p8tr8p0vffz.cloudfront.net/27bdcc9eba05e62c2d067b17/800x.png
+84670515651,Delivery,09-23-2022,12:41:05,America/New_York,,NY,,,https://d15p8tr8p0vffz.cloudfront.net/285eccfd4c9e8088f3fb7ab4/800x.png
+AT000240001000022310,"On hold",09-23-2022,12:43:23,America/New_York,,VA,,,
+AT000240001000022320,"On hold",09-23-2022,12:43:23,America/New_York,,CA,,,

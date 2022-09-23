@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, CompanyStatus, PackageHistory };
+use App\Models\{ Company, CompanyStatus, PackageDispatch, PackageHistory };
 
 class TaskAmericanE extends Command
 {
@@ -70,7 +70,7 @@ class TaskAmericanE extends Command
         $delimiter = ",";
 
         $file   = fopen($contents, 'w');
-        $fields = array('shipment_id', 'date', 'hour', 'status');
+        $fields = array('shipment_id', 'status', 'date', 'hour', 'timezone', 'city_locality', 'state', 'lat', 'lon', 'pod_url');
 
         fputcsv($file, $fields, $delimiter);
         
@@ -82,17 +82,43 @@ class TaskAmericanE extends Command
                                             ->where('status', $packageHistory->status)
                                             ->first();
 
-            if($companyStatus)
-            {
-                $lineData = array(
-                                $packageHistory->Reference_Number_1,
-                                date('m-d-Y', strtotime($packageHistory->created_at)),
-                                date('H:i:s', strtotime($packageHistory->created_at)),
-                                $companyStatus->statusCodeCompany,
-                            );
+            $shipment_id  = $packageHistory->Reference_Number_1;
+            $status       = $packageHistory->status;
+            $date         = date('m-d-Y', strtotime($packageHistory->created_at));
+            $hour         = date('H:i:s', strtotime($packageHistory->created_at));
+            $timeZone     = 'America/New_York';
+            $cityLocality = '';
+            $state        = $packageHistory->Dropoff_Province;
+            $lat          = '';
+            $lon          = '';
+            $podUrl       = '';
 
-                fputcsv($file, $lineData, $delimiter);
+            if($packageHistory->status == 'ReInbound')
+            {
+                $status = $packageHistory->Description_Return;
             }
+            elseif($packageHistory->status == 'Delivery')
+            {
+                $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
+
+                $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+            }
+
+            $lineData = array(
+
+                            $shipment_id,
+                            $status,
+                            $date,
+                            $hour,
+                            $timeZone,
+                            $cityLocality,
+                            $state,
+                            $lat,
+                            $lon,
+                            $podUrl,
+                        );
+
+            fputcsv($file, $lineData, $delimiter);
         }
         
         rewind($file);
