@@ -52,40 +52,10 @@ class PackageDispatchController extends Controller
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $roleUser = '';
+        $roleUser = Auth::user()->role->name;
 
-        if(Auth::user()->role->name == 'Driver')
-        {
-            $packageDispatchList = PackageDispatch::where('idUserDispatch', Auth::user()->id)
-                                                    ->where('status', 'Dispatch');
-
-            $roleUser = 'Driver';
-        }
-        elseif(Auth::user()->role->name == 'Team')
-        {
-            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
-
-            $idUsers = [];
-
-            foreach($drivers as $driver)
-            {
-                array_push($idUsers, $driver->id);
-            }
-
-            array_push($idUsers, Auth::user()->id);
-
-            $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
-
-            $roleUser = 'Team';
-        }
-        else
-        {
-            $packageDispatchList = PackageDispatch::where('status', 'Dispatch');
-
-            $roleUser = 'Administrador';
-        }
-
-        $packageDispatchList = $packageDispatchList->whereBetween('created_at', [$dateStart, $dateEnd]);
+        $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
+                                                ->where('status', 'Dispatch');
 
         if($idTeam && $idDriver)
         {
@@ -93,9 +63,11 @@ class PackageDispatchController extends Controller
         }
         elseif($idTeam)
         {
-            $idsUser = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-            $packageDispatchList = $packageDispatchList->whereIn('idUserDispatch', $idsUser);
+            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
         }
 
         if($state != 'all')
