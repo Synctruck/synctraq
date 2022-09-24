@@ -1215,13 +1215,21 @@ class PackageDispatchController extends Controller
 
     public function RegisterOnfleet($package, $team, $driver)
     {
+        //"unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
+
         $data = [   "destination" =>  [
                         "address" =>  [
-                            "unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
+                            "number" => "543",
+                            "street" => $package->Dropoff_Address_Line_1,
+                            "apartment" => "5th Floor",
+                            "city" => $package->Dropoff_City,
+                            "state" => $package->Dropoff_Province,
+                            "country" => "USA",
+                            "postalCode" => $package->Dropoff_Postal_Code,
                         ] ,
                         "notes" => "",
                     ],
-                    "recipients" =>  [
+                    "recipients" =>  [ 
                         [
                             "name"  => $package->Dropoff_Contact_Name,
                             "phone" => "+". $package->Dropoff_Contact_Phone_Number,
@@ -1255,6 +1263,8 @@ class PackageDispatchController extends Controller
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
+
+        Log::info($output);
 
         if($http_status == 200)
         {
