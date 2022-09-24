@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
-use App\Models\PackageHistory;
-use App\Models\Permission;
-use App\Models\Role;
-use App\Models\{ Company, PackageManifest, PackageHistory, Routes };
+
+use App\Models\{ Company, PackageManifest, PackageHistory, Permission, Role, Routes };
+
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Str;
 
+use Auth;
 use Session;
 use DB;
 use Log;

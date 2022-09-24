@@ -95,7 +95,7 @@ class TaskAmericanE extends Command
 
             if($packageHistory->status == 'ReInbound')
             {
-                $status = $packageHistory->Description_Return;
+                $status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
             }
             elseif($packageHistory->status == 'Delivery')
             {
@@ -107,7 +107,7 @@ class TaskAmericanE extends Command
             $lineData = array(
 
                             $shipment_id,
-                            $status,
+                            strtoupper($status),
                             $date,
                             $hour,
                             $timeZone,
