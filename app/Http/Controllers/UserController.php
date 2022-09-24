@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
@@ -13,12 +14,13 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\PackageHistory;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\{ Company, PackageManifest, PackageHistory, Routes };
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Str;
 
 use Session;
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Log;
 
 class UserController extends Controller
 {
@@ -167,34 +169,6 @@ class UserController extends Controller
 
     public function Login()
     {
-
-        //GET ALL
-        /*$apiKey = '87c91d7a9a0f7480c0467ade52c999be';
-
-        $base64 = base64_encode($apiKey .':');
-
-        $headers = [
-            'Authorization: Basic '. $base64,
-        ];
-        $ch = curl_init("https://onfleet.com/api/v2/tasks/all?from=1455072025000&state=3");
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $output = json_decode(curl_exec($ch), 1);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        dd($output);
-
-        dd(2);*/
-
-
-
-
-        //$curl -i -X GET "https://onfleet.com/api/v2/auth/test" \ -u "thisIsNotAValidAPIKey:";
-
-
         return view('user.login');
     }
 
