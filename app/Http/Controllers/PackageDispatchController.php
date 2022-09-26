@@ -1217,11 +1217,14 @@ class PackageDispatchController extends Controller
     {
         //"unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
 
+        $number = explode(' ', $package->Dropoff_Address_Line_1)[0];
+        $street = str_replace($number, '', $package->Dropoff_Address_Line_1);
+
         $data = [   "destination" =>  [
                         "address" =>  [
-                            "number" => "543",
-                            "street" => $package->Dropoff_Address_Line_1,
-                            "apartment" => "5th Floor",
+                            "number" => $number,
+                            "street" => $street,
+                            "apartment" => $package->Dropoff_Address_Line_2,
                             "city" => $package->Dropoff_City,
                             "state" => $package->Dropoff_Province,
                             "country" => "USA",
