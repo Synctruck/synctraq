@@ -521,13 +521,9 @@ function PackageReturn() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <div className="form-group">
-                                            <div className="col-lg-2">
-                                                <div className="form-group">
-                                                    <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
-                                                </div>
-                                            </div>
+                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
                                         </div>
                                     </div>
                                     <div className="col-lg-8 text-center">
