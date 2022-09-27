@@ -510,7 +510,7 @@ class ReportController extends Controller
         $states = explode(',', $state);
 
         $listPackageDelivery = PackageDispatch::with(['team', 'driver'])
-                                ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
         if($idTeam && $idDriver)
