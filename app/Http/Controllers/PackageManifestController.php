@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes};
+use App\Models\{ Company, PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -365,9 +365,13 @@ class PackageManifestController extends Controller
                         {
                             $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
 
+                            $company = Company::find($row[33]);
+
                             $package = new PackageManifest();
 
                             $package->Reference_Number_1 = $row[0];
+                            $package->idCompany          = $company->id;
+                            $package->company            = $company->name;
                             $package->Reference_Number_2 = $row[1];
                             $package->Reference_Number_3 = $row[2];
                             $package->Ready_At = $row[3];
@@ -422,6 +426,8 @@ class PackageManifestController extends Controller
 
                             $packageHistory->id = uniqid();
                             $packageHistory->Reference_Number_1 = $row[0];
+                            $packageHistory->idCompany          = $company->id;
+                            $packageHistory->company            = $company->name;
                             $packageHistory->Reference_Number_2 = $row[1];
                             $packageHistory->Reference_Number_3 = $row[2];
                             $packageHistory->Ready_At = $row[3];
