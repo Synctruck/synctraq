@@ -11,6 +11,8 @@ function PackageReInbound() {
     const [listPackageTotal, setListPackageTotal]     = useState([]);
     const [listState , setListState]                  = useState([]);
     const [listClient , setListClient]                = useState([]);
+    const [dateStart, setDateStart] = useState(auxDateInit);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
 
     const [listRoute, setListRoute]     = useState([]);
 
@@ -172,7 +174,7 @@ function PackageReInbound() {
         //clearValidation();
 
         setReadOnlyInput(true);
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
 
             keyboard: true
@@ -391,7 +393,7 @@ function PackageReInbound() {
     const handlerInsert = (e) => {
 
         e.preventDefault();
-        
+
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
@@ -435,7 +437,7 @@ function PackageReInbound() {
                     setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
                     setTextMessageDate(packageInbound.created_at);
                     setTypeMessage('warning');
-                    setNumberPackage(''); 
+                    setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -545,7 +547,7 @@ function PackageReInbound() {
                 <td>{ pack.Route }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -634,7 +636,7 @@ function PackageReInbound() {
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
-        
+
         inputFileRef.current.click();
     }
 
@@ -692,8 +694,8 @@ function PackageReInbound() {
                                             </div>
                                         </form>
                                     </div>
-                                    
-                                    <div className="col-lg-12 form-group text-center"> 
+
+                                    <div className="col-lg-12 form-group text-center">
                                         {
                                             typeMessage == 'success'
                                             ?
@@ -735,7 +737,7 @@ function PackageReInbound() {
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b> 
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -750,6 +752,30 @@ function PackageReInbound() {
                                                     <option value="all">All</option>
                                                     <option value="today" selected>Today</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Start date:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    End date :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
                                             </div>
                                         </div>
                                     </div>
@@ -782,7 +808,7 @@ function PackageReInbound() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>

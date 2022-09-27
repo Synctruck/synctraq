@@ -116,7 +116,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-not-exists/export-excel', [PackageNotExistsController::class, 'ExportExcel']);
 
 	Route::get('/package/return', [PackageController::class, 'IndexReturn'])->middleware('permission:reinbound.index');
-	Route::get('/package/list/return/{routes}/{states}', [PackageController::class, 'ListReturn']);
+	Route::get('/package/list/return/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturn']);
+	Route::get('/package/list/return/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
 	Route::post('/package/return/dispatch', [PackageDispatchController::class, 'Return']);
 	Route::get('/package/download/onfleet/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{day}/{dateInit}/{dateEnd}', [PackageController::class, 'DownloadOnfleet']);
 	Route::get('/package/download/roadwarrior/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{day}/{dateInit}/{dateEnd}', [PackageController::class, 'DownloadRoadWarrior']);

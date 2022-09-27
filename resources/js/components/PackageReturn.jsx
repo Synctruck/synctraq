@@ -12,6 +12,13 @@ function PackageReturn() {
     const [roleUser, setRoleUser]                   = useState([]);
     const [listRoute, setListRoute]                 = useState([]);
     const [listState , setListState]                = useState([]);
+    const [dateStart, setDateStart] = useState(auxDateInit);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
+    const [idTeam, setIdTeam] = useState(0);
+    const [idDriver, setIdDriver] = useState(0);
+
+    const [listTeam, setListTeam]                       = useState([]);
+    const [listDriver, setListDriver]                   = useState([]);
 
     const [readOnly, setReadOnly] = useState(false);
 
@@ -54,12 +61,11 @@ function PackageReturn() {
         listAllComment();
         listAllPackageReturn(page, RouteSearch, StateSearch);
 
-    }, []);
+    }, [idTeam, idDriver,dateStart,dateEnd]);
 
     const optionsComment = listComment.map( (comment, i) => {
 
         return (
-
             (
                 comment.finalStatus == 1
                 ?
@@ -67,13 +73,13 @@ function PackageReturn() {
                 :
                     <option key={ i } value={ comment.description }> { comment.description }</option>
             )
-            
+
         );
     });
 
     const listAllPackageReturn = (pageNumber, route, state) => {
 
-        fetch(url_general +'package/list/return/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'package/list/return/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -82,11 +88,21 @@ function PackageReturn() {
             setTotalPackage(response.packageReturnList.total);
             setTotalPage(response.packageReturnList.per_page);
             setPage(response.packageReturnList.current_page);
+            setRoleUser(response.roleUser);
             setListState(response.listState);
 
             if(listState.length == 0)
             {
                 listOptionState(response.listState);
+            }
+            if(response.roleUser == 'Administrador')
+            {
+                listAllTeam();
+            }
+            else
+            {
+                listAllDriverByTeam(idUserGeneral);
+                setIdTeam(idUserGeneral);
             }
         });
     }
@@ -156,7 +172,37 @@ function PackageReturn() {
             setOptionsRoleSearch(optionsRoleSearch);
         });
     }
+    const listAllTeam = () => {
 
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listAllDriverByTeam = (idTeam) => {
+
+        if(idTeam)
+        {
+            setIdTeam(idTeam);
+            setIdDriver(0);
+            setListDriver([]);
+
+            fetch(url_general +'driver/team/list/'+ idTeam)
+            .then(res => res.json())
+            .then((response) => {
+
+                setListDriver(response.listDriver);
+            });
+        }
+        else
+        {
+            setIdTeam(0);
+            setListDriver([]);
+        }
+    }
     const handlerChangeState = (states) => {
 
         if(states.length != 0)
@@ -193,6 +239,22 @@ function PackageReturn() {
             setOptionsStateSearch(optionsStateSearch);
         });
     }
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id }>{ team.name }</option>
+        );
+    });
+
+    const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
 
     const handlerChangePage = (pageNumber) => {
 
@@ -247,7 +309,7 @@ function PackageReturn() {
 
         let team   = (packageReturn.team ? packageReturn.team.name : '');
         let driver = (packageReturn.driver ? packageReturn.driver.name +' '+ packageReturn.driver.nameOfOwner : '');
-        
+
         return (
 
             <tr key={i} className={ packageReturn.statusOnfleet == 3 || packageReturn.statusOnfleet == 1 ? 'alert-warning' : 'alert-danger' }>
@@ -415,7 +477,17 @@ function PackageReturn() {
             },
         );
     }
+    const exportAllPackageReturn = (  route, state) => {
 
+
+        location.href = url_general +'package/list/return/export/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
+
+    }
+
+    const handlerExport = () => {
+        console.log('export!!!!');
+       exportAllPackageReturn(RouteSearch, StateSearch);
+    }
     const clearForm = () => {
 
         setReturnNumberPackage('');
@@ -451,7 +523,11 @@ function PackageReturn() {
                                 <div className="row form-group">
                                     <div className="col-lg-4">
                                         <div className="form-group">
-                                            List of Returned Packages <br/><br/>
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-lg-8 text-center">
@@ -482,14 +558,14 @@ function PackageReturn() {
                                     <div className="col-lg-12">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
-                                                <div className="col-lg-6">
+                                                <div className="col-lg-4">
                                                     <div className="form-group">
                                                         <label>PACKAGE ID</label>
                                                         <div id="returnReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                         <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="15" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-6">
+                                                <div className="col-lg-4">
                                                     <div className="form-group">
                                                         <label>RETURN COMMENT</label>
                                                         <div id="descriptionReturn" className="text-danger" style={ {display: 'none'} }></div>
@@ -500,6 +576,50 @@ function PackageReturn() {
                                                     </div>
                                                     <br/>
                                                 </div>
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">TEAM</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                                        <option value="0">All</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
+
+                                                {
+                                                    roleUser == 'Team'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) } required>
+                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
                                             </div>
                                         </form>
                                         <div className="col-lg-2 form-group">
@@ -513,6 +633,30 @@ function PackageReturn() {
                                     <div className="col-lg-2">
                                         <div className="form-group">
                                             <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Start date:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    End date :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -563,8 +707,7 @@ function PackageReturn() {
 
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
-                                                <th>TEAM</th>
-                                                <th>DRIVER</th>
+
                                                 <th>PACKAGE ID</th>
                                                 <th>DESCRIPTION RETURN</th>
                                                 <th>DESCRIPTION ONFLEET</th>

@@ -904,8 +904,11 @@ class PackageController extends Controller
         return view('package.return');
     }
 
-    public function ListReturn($route, $state)
+    public function ListReturn($dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
     {
+        $dateStart =date("Y-m-d",strtotime($dateStart)).' 00:00:00';
+        $dateEnd  = date("Y-m-d",strtotime($dateEnd)).' 23:59:59';
+
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
@@ -915,7 +918,8 @@ class PackageController extends Controller
         {
             $packageReturnList = PackageReturn::where('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
-                                                ->orderBy('created_at', 'desc');
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
 
             $roleUser = 'Driver';
         }
@@ -926,16 +930,31 @@ class PackageController extends Controller
             $packageReturnList = PackageReturn::whereIn('idUserReturn', $drivers)
                                                 ->orWhere('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
-                                                ->orderBy('created_at', 'desc');
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
 
             $roleUser = 'Team';
         }
         else
         {
             $packageReturnList = PackageReturn::where('status', 'Return')
-                                                ->orderBy('created_at', 'desc');
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
 
             $roleUser = 'Administrador';
+        }
+
+        if($idTeam && $idDriver)
+        {
+            $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $packageReturnList = $packageReturnList->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
         }
 
         if($route != 'all')
@@ -957,6 +976,126 @@ class PackageController extends Controller
                                     ->get();
 
         return ['packageReturnList' => $packageReturnList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+    }
+
+
+    public function ListReturnExport($dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - RETURN " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE' ,'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $dateStart =date("Y-m-d",strtotime($dateStart)).' 00:00:00';
+        $dateEnd  = date("Y-m-d",strtotime($dateEnd)).' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $roleUser = '';
+
+        if(Auth::user()->role->name == 'Driver')
+        {
+            $packageReturnList = PackageReturn::where('idUserReturn', Auth::user()->id)
+                                                ->where('status', 'Return')
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
+
+            $roleUser = 'Driver';
+        }
+        elseif(Auth::user()->role->name == 'Team')
+        {
+            $drivers = Driver::where('idTeam', Auth::user()->id)->get('id');
+
+            $packageReturnList = PackageReturn::whereIn('idUserReturn', $drivers)
+                                                ->orWhere('idUserReturn', Auth::user()->id)
+                                                ->where('status', 'Return')
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
+
+            $roleUser = 'Team';
+        }
+        else
+        {
+            $packageReturnList = PackageReturn::where('status', 'Return')
+                                                ->whereBetween('Date_Return', [$dateStart, $dateEnd])
+                                                ->orderBy('created_at', 'ASC');
+
+            $roleUser = 'Administrador';
+        }
+
+        if($idTeam && $idDriver)
+        {
+            $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $packageReturnList = $packageReturnList->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
+        }
+
+        if($route != 'all')
+        {
+            $packageReturnList = $packageReturnList->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageReturnList = $packageReturnList->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageReturnList = $packageReturnList->with(['team', 'driver'])->orderBy('Date_Return', 'desc')->get();
+
+
+       foreach($packageReturnList as $packageReturn)
+        {
+
+            if($packageReturn->driver && $packageReturn->driver->idTeam)
+            {
+                $team   = $packageReturn->driver->nameTeam;
+                $driver = $packageReturn->driver->name .' '. $packageReturn->driver->nameOfOwner;
+            }
+            else
+            {
+                $team   = $packageReturn->driver ? $packageReturn->driver->name : '';
+                $driver = '';
+            }
+
+            $lineData = array(
+                date('m-d-Y', strtotime($packageReturn->Date_Return)),
+                date('H:i:s', strtotime($packageReturn->Date_Return)),
+                $team,
+                $driver,
+                $packageReturn->Reference_Number_1,
+                $packageReturn->Dropoff_Contact_Name,
+                $packageReturn->Dropoff_Contact_Phone_Number,
+                $packageReturn->Dropoff_Address_Line_1,
+                $packageReturn->Dropoff_City,
+                $packageReturn->Dropoff_Province,
+                $packageReturn->Dropoff_Postal_Code,
+                $packageReturn->Weight,
+                $packageReturn->Route,
+                $packageReturn->taskOnfleet
+            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 
     public function ReturnDispatch(Request $request)

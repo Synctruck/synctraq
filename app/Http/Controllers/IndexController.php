@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{PackageHistory, PackageDelivery, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, User};
+use App\Models\{PackageHistory, PackageDelivery, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -103,7 +103,7 @@ class IndexController extends Controller
                                                 ->count();
 
 
-        $quantityWarehouse = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->where('status', 'Warehouse')
+        $quantityWarehouse = PackageWarehouse::select(DB::raw('DISTINCT Reference_Number_1'))->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 
