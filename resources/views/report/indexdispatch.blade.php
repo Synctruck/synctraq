@@ -15,7 +15,16 @@
 	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
     let auth = @json(Auth::user());
-    console.log('auth: ',auth);
+    var id_team = 0;
+    var id_driver = 0;
+        if(auth.idRole == 4){
+            id_team = auth.idTeam
+            id_driver = auth.id;
+        }
+        if(auth.idRole == 3){
+            id_team = auth.id
+        }
+        console.log(id_team,id_driver)
 </script>
 <div id="reportDispatch">
 </div>

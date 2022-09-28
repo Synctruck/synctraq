@@ -21,8 +21,8 @@ function ReportDispatch() {
 
     const [dateInit, setDateInit] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
-    const [idTeam, setIdTeam]     = useState(0);
-    const [idDriver, setIdDriver] = useState(0);
+    const [idTeam, setIdTeam]     = useState(id_team);
+    const [idDriver, setIdDriver] = useState(id_driver);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -32,14 +32,8 @@ function ReportDispatch() {
     const [totalPackage, setTotalPackage] = useState(0);
 
     useEffect( () => {
-        if(auth.idRole == 4){
-            setIdTeam(auth.idTeam)
-            setIdDriver(auth.id);
-        }
-
         if(auth.idRole == 3){
             listAllDriverByTeam(auth.id);
-            setIdTeam(auth.id)
         }
         listAllTeam();
         listAllRoute();
@@ -54,15 +48,15 @@ function ReportDispatch() {
     }, [dateInit, dateEnd, idTeam, idDriver,idCompany]);
 
 
-    const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
+    const listReportDispatch = async (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'report/list/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
-        .then(res => res.json())
+        const responseData = await fetch(url_general +'report/list/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        .then(res =>  res.json())
         .then((response) => {
-
             setListReport(response.reportList.data);
+
             setTotalPackage(response.reportList.total);
             setTotalPage(response.reportList.per_page);
             setPage(response.reportList.current_page);
@@ -86,6 +80,8 @@ function ReportDispatch() {
             //     listAllTeam();
             // }
         });
+
+        console.log(responseData);
     }
 
 

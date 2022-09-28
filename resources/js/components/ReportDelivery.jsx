@@ -20,8 +20,8 @@ function ReportDelivery() {
 
     const [dateInit, setDateInit] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
-    const [idTeam, setIdTeam]     = useState(0);
-    const [idDriver, setIdDriver] = useState(0);
+    const [idTeam, setIdTeam]     = useState(id_team);
+    const [idDriver, setIdDriver] = useState(id_driver);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -51,15 +51,11 @@ function ReportDelivery() {
     }, [file]);
 
     useEffect( () => {
-        if(auth.idRole == 4){
-            setIdTeam(auth.idTeam)
-            setIdDriver(auth.id);
-        }
+
         listAllTeam();
         listAllRoute();
         if(auth.idRole == 3){
             listAllDriverByTeam(auth.id);
-            setIdTeam(auth.id)
         }
 
     }, []);
