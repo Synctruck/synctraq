@@ -14,6 +14,8 @@
 	let idUserGeneral = '{{Auth::user()->id}}';
 	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
+    let auth = @json(Auth::user());
+    console.log('auth: ',auth);
 </script>
 <div id="reportDelivery">
 </div>

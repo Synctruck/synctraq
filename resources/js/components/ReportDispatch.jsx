@@ -32,7 +32,15 @@ function ReportDispatch() {
     const [totalPackage, setTotalPackage] = useState(0);
 
     useEffect( () => {
+        if(auth.idRole == 4){
+            setIdTeam(auth.idTeam)
+            setIdDriver(auth.id);
+        }
 
+        if(auth.idRole == 3){
+            listAllDriverByTeam(auth.id);
+            setIdTeam(auth.id)
+        }
         listAllTeam();
         listAllRoute();
         listAllCompany();
@@ -68,15 +76,15 @@ function ReportDispatch() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Team' || response.roleUser == 'Driver') 
-            {
-                listAllDriverByTeam(idUserGeneral);
-                setIdTeam(idUserGeneral);
-            }
-            else
-            {
-                listAllTeam();
-            }
+            // if(response.roleUser == 'Team')
+            // {
+            //     listAllDriverByTeam(auth.id);
+            //     setIdTeam(auth.id);
+            // }
+            // else
+            // {
+            //     listAllTeam();
+            // }
         });
     }
 
@@ -452,7 +460,7 @@ function ReportDispatch() {
                                                 :
                                                     ''
                                             }
-                                            
+
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">

@@ -51,9 +51,16 @@ function ReportDelivery() {
     }, [file]);
 
     useEffect( () => {
-
+        if(auth.idRole == 4){
+            setIdTeam(auth.idTeam)
+            setIdDriver(auth.id);
+        }
         listAllTeam();
         listAllRoute();
+        if(auth.idRole == 3){
+            listAllDriverByTeam(auth.id);
+            setIdTeam(auth.id)
+        }
 
     }, []);
 
@@ -87,15 +94,15 @@ function ReportDelivery() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Team' || response.roleUser == 'Driver') 
-            {
-                listAllDriverByTeam(idUserGeneral);
-                setIdTeam(idUserGeneral);
-            }
-            else
-            {
-                listAllTeam();
-            }
+            // if(response.roleUser == 'Team' || response.roleUser == 'Driver')
+            // {
+            //     listAllDriverByTeam(idUserGeneral);
+            //     setIdTeam(idUserGeneral);
+            // }
+            // else
+            // {
+            //     listAllTeam();
+            // }
         });
     }
 
@@ -110,7 +117,7 @@ function ReportDelivery() {
     }
 
     const listAllDriverByTeam = (idTeam) => {
-
+        console.log('listando driver por team')
         setListDriver([]);
         setIdTeam(idTeam);
         setIdDriver(0);

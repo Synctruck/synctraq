@@ -73,7 +73,7 @@ class ReportController extends Controller
 
         $listAll = PackageHistory::with(
                                 [
-                                    'validator'=> function($query){ $query->select('id', 'name', 'nameOfOwner'); }, 
+                                    'validator'=> function($query){ $query->select('id', 'name', 'nameOfOwner'); },
 
                                 ])
                                 ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
@@ -160,13 +160,14 @@ class ReportController extends Controller
                             ->paginate(50);
 
         $roleUser = Auth::user()->role->name;
+        $idUser = Auth::user()->id;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('dispatch', 1)
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => $roleUser];
+        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => $roleUser,'idUser'=>$idUser];
     }
 
     public function IndexDelivery()
