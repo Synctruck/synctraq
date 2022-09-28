@@ -181,7 +181,7 @@ class UserController extends Controller
             if(Hash::check($request->get('password'), $user->password))
             {
                 Auth::login($user);
-                return ['stateAction' => true];
+                return ['stateAction' => true,'user'=>$user];
             }
         }
 

@@ -29,14 +29,18 @@ function Login() {
 
                 if(response.stateAction)
                 {
+                    console.log(response.user);
                     swal("Correct data!", {
 
                         icon: "success",
                     });
-
                     setTimeout( () => {
+                        if(response.user.idRole == 3 || response.user.idRole == 4){
+                            location.href = '/profile'
 
-                        location.href = './home'
+                        }else{
+                            location.href = './home'
+                        }
 
                     }, 1500);
                 }
