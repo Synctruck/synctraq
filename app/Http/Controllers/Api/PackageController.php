@@ -448,7 +448,7 @@ class PackageController extends Controller
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
             $url_webhook       = $companyStatus->company->url_webhook;
-            $typeServices      = $companyStatus->typeServices;
+            $typeServices      = $companyStatus->company->typeServices;
         }
         
         if($typeServices == 'API')
