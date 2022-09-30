@@ -170,6 +170,7 @@ class PackageController extends Controller
                 $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
+                $package->internal_comment             = $request->internal_comment;
 
                 $package->save();
             }
@@ -179,7 +180,6 @@ class PackageController extends Controller
             foreach($packageHistoryList as $packageHistory)
             {
                 $packageHistory = PackageHistory::find($packageHistory->id);
-
                 $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
                 $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
                 $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
@@ -189,6 +189,7 @@ class PackageController extends Controller
                 $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $packageHistory->Weight                       = $request->get('Weight');
                 $packageHistory->Route                        = $request->get('Route');
+                $packageHistory->internal_comment                    = $request->internal_comment;
 
                 $packageHistory->save();
             }

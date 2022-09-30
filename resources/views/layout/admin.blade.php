@@ -364,6 +364,10 @@
                                     <label for="contactCity">CITY</label>
                                     <input type="text" id="contactCity" name="contactCity" class="form-control" required>
                                 </div>
+                                 <div class="col-lg-12 form-group">
+                                    <label for="contactState">INTERNAL COMMENT</label>
+                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
+                                </div>
                                 <div class="col-lg-3 form-group">
                                     <label for="contactState">STATE</label>
                                     <input type="text" id="contactState" name="contactState" class="form-control" required>
@@ -659,6 +663,7 @@
                     document.getElementById('contactZipCode').value = packageHistoryList[0].Dropoff_Postal_Code;
                     document.getElementById('contactWeight').value  = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value   = packageHistoryList[0].Route;
+                    document.getElementById('internalComment').value   = packageHistoryList[0].internal_comment;
                 }
 
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
@@ -763,6 +768,7 @@
             formData.append('Dropoff_Postal_Code', document.getElementById('contactZipCode').value);
             formData.append('Weight', document.getElementById('contactWeight').value);
             formData.append('Route', document.getElementById('contactRoute').value);
+            formData.append('internal_comment', document.getElementById('internalComment').value);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
