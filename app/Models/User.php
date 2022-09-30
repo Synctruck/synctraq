@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\PackageInbound', 'idUser');
     }
 
+    public function histories()
+    { 
+        return $this->hasMany('App\Models\PackageHistory', 'idUser');
+    }
+
     public function dispatchs_user()
     {
         return $this->hasMany('App\Models\Package', 'idUserDispatch');
