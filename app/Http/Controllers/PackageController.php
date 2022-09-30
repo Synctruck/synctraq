@@ -170,8 +170,6 @@ class PackageController extends Controller
                 $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
-                $package->internal_comment             = $request->internal_comment;
-
                 $package->save();
             }
 
