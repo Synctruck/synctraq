@@ -31,6 +31,11 @@ class User extends Authenticatable
         return $this->belongsTo('App\Models\Role', 'idRole', 'id');
     }
 
+    public function aux_dispatch()
+    {
+        return $this->hasMany('App\Models\AuxDispatchUser', 'idUser');
+    }
+
     public function dispatchs()
     {
         return $this->hasMany('App\Models\PackageDispatch', 'idUser');
