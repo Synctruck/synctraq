@@ -130,11 +130,6 @@ class PackageController extends Controller
                     "Dropoff_Postal_Code" => ["required"],
                     "Weight" => ["required"],
 
-                    "manifest_id" => ["required"],
-                    "mixing_center_shortcode" => ["required"],
-
-                    "company" => ["required"],
-
                     "address_type" => ["required"],
                     "address_residential_indicator" => ["required", "boolean"],
 
@@ -162,13 +157,7 @@ class PackageController extends Controller
 
                     "Weight.required" => "The field is required",
 
-                    "manifest_id.required" => "The field is required",
-
-                    "mixing_center_shortcode.required" => "The field is required",
-
                     "ship_date.required" => "The field is required",
-
-                    "company.required" => "The field is required",
 
                     "address_type.required" => "The field is required",
 

@@ -558,7 +558,7 @@ function PackageReturn() {
                                                     <div className="form-group">
                                                         <label>PACKAGE ID</label>
                                                         <div id="returnReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                        <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="15" required readOnly={ readOnly }/>
+                                                        <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-4">

@@ -134,8 +134,9 @@ class TaskAmericanManifest extends Command
 
                     $fileImport = new FileImport();
 
-                    $fileImport->id   = uniqid();
-                    $fileImport->name = $fileTracking;
+                    $fileImport->id        = uniqid();
+                    $fileImport->idCompany = 10;
+                    $fileImport->name      = $fileTracking;
 
                     $fileImport->save();
 
