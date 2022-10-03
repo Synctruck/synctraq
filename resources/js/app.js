@@ -39,6 +39,10 @@ require('./components/PackageCheckDelivery');
 require('./components/PackageFinance');
 require('./components/Roles');
 require('./components/PackageBlocked');
-
-
 require('./components/Login');
+
+//rutas públicas (usuarios externos a la empresa)
+
+require('./components/landing/LoginCompany');
+
+

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
+// import logo from './../../../public/img/logo.PNG'
+
 function Login() {
 
     const [email, setEmail] = useState('');
@@ -66,7 +68,7 @@ function Login() {
                 <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
                   <div className="d-flex justify-content-center py-4">
-                    <img src="./img/logo.PNG" width="200" alt=""/>
+                    {/* <img src={logo} /> */}
                   </div>
 
                   <div className="card mb-3">
