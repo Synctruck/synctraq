@@ -13,7 +13,11 @@ class Trackcontroller extends Controller
 
     public function trackDetail(Request $request,$package_id){
 
-        $packageHistoryList = PackageHistory::where('Reference_Number_1', $package_id)->whereIn('status',['On Hold','Inbound','Dispatch','Delivery'])->orderBy('created_at','DESC') ->get();
+        $packageHistoryList = PackageHistory::where('Reference_Number_1', $package_id)
+                                            ->whereIn('status',['On Hold','Inbound','Dispatch','Delivery'])
+                                            ->groupBy('status')
+                                            ->orderBy('Dispatch','DESC')
+                                            ->orderBy('created_at','DESC')->get();
 
         return [
             "details" =>$packageHistoryList

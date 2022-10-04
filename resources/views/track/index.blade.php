@@ -42,15 +42,15 @@
 
 <body>
     <main>
-        <div class="container">
+        <div class="container-fluid">
 
             <section class="section register min-vh-100 d-flex flex-column align-items-center ">
                 <div class="container-fluid">
                     <div class="row justify-content-center">
-                        <div class="col-lg-12">
-                            <div class="d-flex justify-content-center py-4">
+                        <div class="col-lg-12 pt-4">
+                            {{-- <div class="d-flex justify-content-center py-4">
                                 <a href="{{url('/')}}"><img src="{{asset('img/logo.PNG')}}" width="200" alt=""/></a>
-                            </div>
+                            </div> --}}
 
                             <div id="track">
                             </div>

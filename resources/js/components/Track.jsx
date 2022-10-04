@@ -57,7 +57,7 @@ function Track() {
                 <div className="card-body">
                     <div className=" pb-2">
                         <h5 className="card-title text-center pb-0 fs-4">Order tracking</h5>
-                        <p className="text-center small">NOTE: Package ID is the entire package identifier under the barcode on your package. Package ID Example: 22223400492</p>
+                        <p className="text-center small">NOTE: Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492</p>
                         <div className="col-lg-12">
                             <form onSubmit={getDetail}>
                                 <div className="form-group">
@@ -70,7 +70,7 @@ function Track() {
                                         value={packageId}
                                         onChange={(e) => setPackageId(e.target.value)}
                                         /><br />
-                                    <button className='btn btn-warning' type='submit'> Search</button>
+                                    <button className='btn btn-warning text-white' type='submit'> Search</button>
                                 </div>
                             </form>
                         </div>
