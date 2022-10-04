@@ -74,7 +74,7 @@ function Track() {
                                 </div>
                             </form>
                         </div>
-                        <h6 className="pt-4">Traking details </h6><hr />
+                        <h6 className="pt-4">Traking details </h6><hr />traking details
                         <div className="col-lg-6">
 
                             <table className='table'>

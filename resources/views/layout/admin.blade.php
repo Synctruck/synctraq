@@ -364,10 +364,7 @@
                                     <label for="contactCity">CITY</label>
                                     <input type="text" id="contactCity" name="contactCity" class="form-control" required>
                                 </div>
-                                 <div class="col-lg-12 form-group">
-                                    <label for="contactState">INTERNAL COMMENT</label>
-                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
-                                </div>
+
                                 <div class="col-lg-3 form-group">
                                     <label for="contactState">STATE</label>
                                     <input type="text" id="contactState" name="contactState" class="form-control" required>
@@ -384,11 +381,15 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
-                                <div class="col-lg-3 form-group">
+                                <div class="col-lg-6 form-group">
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
                                 <div class="col-lg-3 form-group">
                                     <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="contactState">INTERNAL COMMENT</label>
+                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
                                 </div>
                             </div>
                             <hr>
