@@ -122,7 +122,7 @@ class TaskAmericanManifest extends Command
                                 $packageHistory->height                       = $row[30];
                                 $packageHistory->status                       = 'On hold';
                                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                                $packageHistory->Description                  = 'On hold - for: schedule task';
+                                $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
                                 $packageHistory->status                       = 'On hold';
 
                                 $packageHistory->save();
@@ -134,8 +134,9 @@ class TaskAmericanManifest extends Command
 
                     $fileImport = new FileImport();
 
-                    $fileImport->id   = uniqid();
-                    $fileImport->name = $fileTracking;
+                    $fileImport->id        = uniqid();
+                    $fileImport->idCompany = 10;
+                    $fileImport->name      = $fileTracking;
 
                     $fileImport->save();
 

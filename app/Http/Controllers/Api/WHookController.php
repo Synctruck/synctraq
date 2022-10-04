@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User};
+use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
 
 use App\Http\Controllers\PackageDispatchController;
 
@@ -47,7 +47,7 @@ class WHookController extends Controller
                     {
                         if($user->nameTeam)
                         {
-                            $description = 'For: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
+                            $description = 'For: '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                         }
                         else
                         {
@@ -99,7 +99,7 @@ class WHookController extends Controller
                     $packageHistory->Name                         = $packageDispatch->Name;
                     $packageHistory->idTeam                       = $packageDispatch->idTeam;
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
+                    $packageHistory->idUser                       = $packageDispatch->idUser;
                     $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
@@ -280,7 +280,7 @@ class WHookController extends Controller
                                             ->first();
             }
 
-            $descriptionDispatch = 'For: Onfleet[ '. $userCreatorOnfleet .' ] to '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+            $descriptionDispatch = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
 
             if($package && $packageDispatch == null)
             {
@@ -288,10 +288,12 @@ class WHookController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $descriptionInbound = 'For: Onfleet[ '. $userCreatorOnfleet .' ] to '. $team->name;
+                    $auxDispatchUser = AuxDispatchUser::with('user')->where('Reference_Number_1', $package->Reference_Number_1)->first();
 
                     if($package->status == 'On hold')
                     {
+                        $descriptionInbound = $auxDispatchUser ? 'For : '. $auxDispatchUser->user->name .' '. $auxDispatchUser->user->nameOfOwner : 'No user';
+
                         $packageHistory = new PackageHistory();
 
                         $packageHistory->id                           = uniqid();
@@ -332,6 +334,7 @@ class WHookController extends Controller
                         $packageHistory->Name                         = $package->Name;
                         $packageHistory->Description                  = $descriptionInbound;
                         $packageHistory->inbound                      = 1;
+                        $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
                         $packageHistory->status                       = 'Inbound';
 
                         $packageHistory->save();
@@ -374,7 +377,7 @@ class WHookController extends Controller
                     $packageDispatch->Weight                       = $package->Weight;
                     $packageDispatch->Route                        = $package->Route;
                     $packageDispatch->Name                         = $package->Name;
-                    $packageDispatch->idUser                       = 64;
+                    $packageDispatch->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
                     $packageDispatch->idTeam                       = $team->id;
                     $packageDispatch->idUserDispatch               = $driver->id;
                     $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
@@ -422,7 +425,7 @@ class WHookController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = 64;
+                    $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;;
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -433,6 +436,7 @@ class WHookController extends Controller
                     $packageHistory->save();
 
                     $package->delete();
+                    $auxDispatchUser->delete();
 
                     DB::commit();
 
@@ -467,6 +471,8 @@ class WHookController extends Controller
                         try
                         {
                             DB::beginTransaction();
+
+                            $auxDispatchUser = AuxDispatchUser::with('user')->where('Reference_Number_1', $package->Reference_Number_1)->first();
 
                             $packageHistory = new PackageHistory();
 
@@ -506,23 +512,28 @@ class WHookController extends Controller
                             $packageHistory->Weight                       = $package->Weight;
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->Name                         = $package->Name;
-                            $packageHistory->idUser                       = 64;
+                            $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 0;
                             $packageHistory->idTeam                       = $team->id;
                             $packageHistory->idUserDispatch               = $driver->id;
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                             $packageHistory->dispatch                     = 1;
-                            $packageHistory->Description                  = $descriptionDispatch;
+                            $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] '. $descriptionDispatch;
                             $packageHistory->status                       = 'Dispatch';
 
                             $packageHistory->save();
                             
-                            $package->Date_Dispatch                = date('Y-m-d H:i:s');
-                            $package->status                       = 'Dispatch';
-                            $package->idOnfleet                    = $idOnfleet;
-                            $package->taskOnfleet                  = $taskOnfleet;
-                            $package->created_at                   = date('Y-m-d H:i:s');
+                            $package->Date_Dispatch = date('Y-m-d H:i:s');
+                            $package->status        = 'Dispatch';
+                            $package->idOnfleet     = $idOnfleet;
+                            $package->taskOnfleet   = $taskOnfleet;
+                            $package->created_at    = date('Y-m-d H:i:s');
 
                             $package->save();
+
+                            if($auxDispatchUser)
+                            {
+                                $auxDispatchUser->delete();
+                            }
 
                             $packageController = new PackageController();
                             $packageController->SendStatusToInland($package, 'Dispatch', null);
@@ -630,7 +641,6 @@ class WHookController extends Controller
                 $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Name                         = $package->Name;
-                $packageHistory->idUser                       = 64;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
 

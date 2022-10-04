@@ -208,7 +208,12 @@ class PackageController extends Controller
     {
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
-        $packageHistoryList = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+        $packageHistoryList = PackageHistory::with([
+                                                'user' => function($query){
+                                                    $query->select('id', 'name', 'nameOfOwner');
+                                                }
+                                            ])
+                                            ->where('Reference_Number_1', $Reference_Number_1)
                                             ->orderBy('created_at', 'asc')
                                             ->get();
 

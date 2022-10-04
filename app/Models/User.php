@@ -31,6 +31,11 @@ class User extends Authenticatable
         return $this->belongsTo('App\Models\Role', 'idRole', 'id');
     }
 
+    public function aux_dispatch()
+    {
+        return $this->hasMany('App\Models\AuxDispatchUser', 'idUser');
+    }
+
     public function dispatchs()
     {
         return $this->hasMany('App\Models\PackageDispatch', 'idUser');
@@ -54,6 +59,11 @@ class User extends Authenticatable
     public function inbounds()
     {
         return $this->hasMany('App\Models\PackageInbound', 'idUser');
+    }
+
+    public function histories()
+    { 
+        return $this->hasMany('App\Models\PackageHistory', 'idUser');
     }
 
     public function dispatchs_user()

@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, CompanyStatus, PackageDispatch, PackageHistory };
+use App\Models\{ Company, CompanyStatus, FileSend, PackageDispatch, PackageHistory };
 
 class TaskAmericanE extends Command
 {
@@ -46,12 +46,12 @@ class TaskAmericanE extends Command
         if($company->startDateCSV == null)
         {
             $company->endDateCSV   = date('Y-m-d H:i:00');
-            $company->startDateCSV = date('Y-m-d H:i:01', strtotime('-30 minute', strtotime($company->endDateCSV)));
+            $company->startDateCSV = date('Y-m-d H:i:01', strtotime('-60 minute', strtotime($company->endDateCSV)));
         }
         else
         {
             $company->startDateCSV = date('Y-m-d H:i:s', strtotime('+ 1 second', strtotime($company->endDateCSV)));
-            $company->endDateCSV   = date('Y-m-d H:i:00', strtotime('+30 minute', strtotime($company->endDateCSV)));
+            $company->endDateCSV   = date('Y-m-d H:i:00', strtotime('+60 minute', strtotime($company->endDateCSV)));
         }
 
         $filename = "Report-" . date('m-d-H-i-s', strtotime($company->startDateCSV)) .'-'. date('m-d-H-i-s', strtotime($company->endDateCSV)) . ".csv";
@@ -121,6 +121,17 @@ class TaskAmericanE extends Command
             fputcsv($file, $lineData, $delimiter);
         }
         
+        $fileSend = new FileSend();
+
+        $fileSend->id              = uniqid();
+        $fileSend->idCompany       = 10;
+        $fileSend->fileName        = $filename;
+        $fileSend->numberOfRecords = count($packageListHisotry);
+        $fileSend->start_date      = $dateInit;
+        $fileSend->end_date        = $dateEnd;
+
+        $fileSend->save();
+
         rewind($file);
         fclose($file);
     }

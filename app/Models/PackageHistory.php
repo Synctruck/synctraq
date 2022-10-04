@@ -56,6 +56,11 @@ class PackageHistory extends Model
         return $this->belongsTo('App\Models\User', 'idUserInbound', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'idUser', 'id');
+    }
+
     //observers
     protected static function booted()
     {

@@ -586,7 +586,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
-                $packageHistory->Description                  = 'Warehouse - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
 
                 $packageHistory->save();
