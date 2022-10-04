@@ -39,6 +39,7 @@ require('./components/PackageCheckDelivery');
 require('./components/PackageFinance');
 require('./components/Roles');
 require('./components/PackageBlocked');
+require('./components/Track');
 
 
 require('./components/Login');

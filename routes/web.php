@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, DriverController, IndexController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +14,8 @@ use App\Http\Controllers\{AssignedController, ClientController, CommentsControll
 |
 */
 Route::get('/home/public', [IndexController::class, 'IndexPublic']);
+Route::get('/track', [Trackcontroller::class, 'index']);
+Route::get('/track/detail/{package_id}', [Trackcontroller::class, 'trackDetail']);
 
 //============ User Login - Logout
 Route::get('/', [UserController::class, 'Login']);
