@@ -94,8 +94,9 @@ class TaskAmericanE extends Command
             $podUrl       = '';
 
             if($packageHistory->status == 'ReInbound')
-            {
-                $status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
+            { 
+                //$status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
+                $status = 'MISS SORT';
             }
             elseif($packageHistory->status == 'Delivery')
             {
@@ -104,21 +105,25 @@ class TaskAmericanE extends Command
                 $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
             }
 
-            $lineData = array(
+            if($packageHistory->status == 'Inbound' || $packageHistory->status == 'Dispatch' || $packageHistory->status == 'ReInbound' || $packageHistory->status == 'Delivery')
+            {
+                $lineData = array(
 
-                            $shipment_id,
-                            strtoupper($status),
-                            $date,
-                            $hour,
-                            $timeZone,
-                            $cityLocality,
-                            $state,
-                            $lat,
-                            $lon,
-                            $podUrl,
-                        );
+                                $shipment_id,
+                                strtoupper($status),
+                                $date,
+                                $hour,
+                                $timeZone,
+                                $cityLocality,
+                                $state,
+                                $lat,
+                                $lon,
+                                $podUrl,
+                            );
 
-            fputcsv($file, $lineData, $delimiter);
+                fputcsv($file, $lineData, $delimiter);
+            }
+            
         }
         
         $fileSend = new FileSend();

@@ -11,8 +11,8 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let auxDateInit = '{{date('Y-m-01')}}';
-	let auxDateEnd  = '{{date('Y-m-t')}}';
+	let auxDateInit = '{{date('Y-m-d')}}';
+	let auxDateEnd  = '{{date('Y-m-d')}}';
 </script>
 <div id="packageReturn">
 </div>
