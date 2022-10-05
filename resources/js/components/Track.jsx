@@ -11,6 +11,7 @@ import { Steps } from 'rsuite';
 function Track() {
 
     const [packageId, setPackageId] = useState('');
+    const [client, setClient] = useState('');
     const [listDetails, setListDetails] = useState([]);
     const [step, setStep] = useState(null);
 
@@ -48,14 +49,17 @@ function Track() {
     }
 
     const handleStep =() => {
-        console.log('cambiando step');
         let finalStep = null;
         setOnholdDesc('');
         setInboundDesc('');
         setDeliveryDesc('');
         setDispatchDesc('');
+        setClient('');
 
         listDetails.map((item,i) => {
+            if(i==1){
+                setClient(item.Dropoff_Contact_Name)
+            }
             if(item.status == 'On hold'){
                 setOnholdDesc(moment(item.created_at).format('LL'))
             }
@@ -156,12 +160,12 @@ function Track() {
 
                         <h6 className="pt-4">Traking details </h6><hr />
                         <div className='row'>
-                             <h5 className='text-center'>PACKAGE ID: {packageId} </h5>
+                             <h5 className='text-center'>PACKAGE ID: {packageId} / CLIENT: {client.toUpperCase()} </h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
                                     <Steps.Item title="On hold" description={onholdDesc} />
                                     <Steps.Item title="Inbound" description={inboundDesc}/>
-                                    <Steps.Item title="Dispatch" description={dispatchDesc}/>
+                                    <Steps.Item title="Out of Delivery" description={dispatchDesc}/>
                                     <Steps.Item title="Delivery" description={deliveryDesc}/>
                                 </Steps>
                             </div>
