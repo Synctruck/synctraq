@@ -86,7 +86,7 @@ class PackageInboundController extends Controller
         return ['packageList' => $packageListInbound, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
     }
 
-    public function Export(Request $request, $dateStart,$dateEnd, $route, $state)
+    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv";
@@ -126,6 +126,11 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->whereIn('Dropoff_Province', $states);
         }
+        if($idCompany)
+        {
+            $packageListInbound = $packageListInbound->where('idCompany', $idCompany);
+        }
+
 
         $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')

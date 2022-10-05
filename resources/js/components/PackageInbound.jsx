@@ -76,7 +76,7 @@ function PackageInbound() {
         else
         {
             setViewButtonSave('block');
-        } 
+        }
 
     }, [file]);
 
@@ -101,10 +101,10 @@ function PackageInbound() {
             }
         });
     }
-    
+
     const exportAllPackageInbound = (route, state) => {
 
-        location.href = url_general +'package-inbound/export/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        location.href = url_general +'package-inbound/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
@@ -139,7 +139,7 @@ function PackageInbound() {
         .then(res => res.json())
         .then((response) => {
 
-            setListCompany(response.companyList);
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
         });
     }
 
