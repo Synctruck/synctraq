@@ -99,11 +99,11 @@ class TaskAmericanE extends Command
             { 
                 if($packageHistory->Description_Return == 'NOT DELIVERED ADDRESS NOT FOUND' || $packageHistory->Description_Return == 'NOT DELIVERED DAMAGED' || $packageHistory->Description_Return == 'NOT DELIVERED LOST' || $packageHistory->Description_Return == 'NOT DELIVERED OTHER' || $packageHistory->Description_Return == 'NOT DELIVERED REFUSED')
                 {
-                    $status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
+                    $status = str_replace(' ', '_', $packageHistory->Description_Return);
                 }
                 else
                 {
-                    $status = 'MISS SORT';
+                    $status = 'MISS_SORT';
                 }
             }
             elseif($packageHistory->status == 'Delivery')
