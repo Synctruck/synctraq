@@ -74,7 +74,9 @@ class TaskAmericanE extends Command
 
         fputcsv($file, $fields, $delimiter);
         
-        $packageListHisotry = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->get();
+        $packageListHisotry = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
+                                                ->where('idCompany', 10)
+                                                ->get();
 
         foreach($packageListHisotry as $packageHistory)
         {
@@ -87,19 +89,28 @@ class TaskAmericanE extends Command
             $date         = date('m-d-Y', strtotime($packageHistory->created_at));
             $hour         = date('H:i:s', strtotime($packageHistory->created_at));
             $timeZone     = 'America/New_York';
-            $cityLocality = '';
-            $state        = $packageHistory->Dropoff_Province;
+            $cityLocality = 'Carlstadt';
+            $state        = 'NJ';
             $lat          = '';
             $lon          = '';
             $podUrl       = '';
 
             if($packageHistory->status == 'ReInbound')
             { 
-                //$status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
-                $status = 'MISS SORT';
+                if($packageHistory->Description_Return == 'NOT DELIVERED ADDRESS NOT FOUND' || $packageHistory->Description_Return == 'NOT DELIVERED DAMAGED' || $packageHistory->Description_Return == 'NOT DELIVERED LOST' || $packageHistory->Description_Return == 'NOT DELIVERED OTHER' || $packageHistory->Description_Return == 'NOT DELIVERED REFUSED')
+                {
+                    $status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
+                }
+                else
+                {
+                    $status = 'MISS SORT';
+                }
             }
             elseif($packageHistory->status == 'Delivery')
             {
+                $cityLocality = $packageHistory->Dropoff_City;
+                $state        = $packageHistory->Dropoff_Province;
+
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
 
                 $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
