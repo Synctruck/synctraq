@@ -282,18 +282,6 @@ class PackageDispatchController extends Controller
             try
             {
                 DB::beginTransaction();
-                
-                $auxDispatchUser = AuxDispatchUser::find($request->get('Reference_Number_1'));
-
-                if($auxDispatchUser == null)
-                {
-                    $auxDispatchUser = new AuxDispatchUser();
-
-                    $auxDispatchUser->Reference_Number_1 = $request->get('Reference_Number_1');
-                    $auxDispatchUser->idUser             = Auth::user()->id;
-
-                    $auxDispatchUser->save();
-                }
 
                 $register = 0;
 

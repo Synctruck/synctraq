@@ -292,7 +292,7 @@ class WHookController extends Controller
 
                     if($package->status == 'On hold')
                     {
-                        $descriptionInbound = $auxDispatchUser ? 'For : '. $auxDispatchUser->user->name .' '. $auxDispatchUser->user->nameOfOwner : 'No user';
+                        $descriptionInbound = 'For: Onfleet[ API ]';
 
                         $packageHistory = new PackageHistory();
 
@@ -334,7 +334,7 @@ class WHookController extends Controller
                         $packageHistory->Name                         = $package->Name;
                         $packageHistory->Description                  = $descriptionInbound;
                         $packageHistory->inbound                      = 1;
-                        $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
+                        $packageHistory->idUser                       = 64;
                         $packageHistory->status                       = 'Inbound';
 
                         $packageHistory->save();
@@ -377,7 +377,7 @@ class WHookController extends Controller
                     $packageDispatch->Weight                       = $package->Weight;
                     $packageDispatch->Route                        = $package->Route;
                     $packageDispatch->Name                         = $package->Name;
-                    $packageDispatch->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
+                    $packageDispatch->idUser                       = 64;
                     $packageDispatch->idTeam                       = $team->id;
                     $packageDispatch->idUserDispatch               = $driver->id;
                     $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
@@ -425,7 +425,7 @@ class WHookController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
+                    $packageHistory->idUser                       = 64;
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -436,7 +436,6 @@ class WHookController extends Controller
                     $packageHistory->save();
 
                     $package->delete();
-                    $auxDispatchUser->delete();
 
                     DB::commit();
 
@@ -512,7 +511,7 @@ class WHookController extends Controller
                             $packageHistory->Weight                       = $package->Weight;
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->Name                         = $package->Name;
-                            $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 0;
+                            $packageHistory->idUser                       = 64;
                             $packageHistory->idTeam                       = $team->id;
                             $packageHistory->idUserDispatch               = $driver->id;
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -592,6 +591,8 @@ class WHookController extends Controller
 
         $Reference_Number_1 = $request['data']['task']['notes'];
         $userCreatorOnfleet = $request['actionContext']['type'];
+
+        Log::info('Reference_Number_1:'. $Reference_Number_1);
 
         $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
         
