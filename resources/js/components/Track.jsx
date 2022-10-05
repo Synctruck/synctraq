@@ -57,7 +57,7 @@ function Track() {
         setClient('');
 
         listDetails.map((item,i) => {
-            if(i==1){
+            if(i==0){
                 setClient(item.Dropoff_Contact_Name)
             }
             if(item.status == 'On hold'){
