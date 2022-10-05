@@ -425,7 +425,7 @@ class WHookController extends Controller
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
-                    $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;;
+                    $packageHistory->idUser                       = $auxDispatchUser ? $auxDispatchUser->user->id : 64;
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
