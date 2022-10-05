@@ -28,6 +28,7 @@
 
   <!-- Template Main CSS File -->
   <link href="{{asset('admin/assets/css/style.css')}}" rel="stylesheet">
+  <link href="{{asset('css/rsuit.css')}}" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: NiceAdmin - v2.2.0

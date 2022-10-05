@@ -6,7 +6,7 @@ import swal from 'sweetalert'
 import axios from 'axios';
 import moment from 'moment';
 import { Steps } from 'rsuite';
-import '../../css/rsuit.css';
+
 
 function Track() {
 
