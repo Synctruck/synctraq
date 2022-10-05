@@ -10,7 +10,9 @@ import '../../css/rsuit.css';
 
 function Track() {
 
-    const [packageId, setPackageId] = useState('');
+    const [packageId, setPackageId]         = useState('');
+    const [packageClient, setPackageClient] = useState('');
+
     const [listDetails, setListDetails] = useState([]);
     const [step, setStep] = useState(null);
 
@@ -37,9 +39,10 @@ function Track() {
             url: url
         })
         .then((response) => {
+
             console.log(response.data);
             setListDetails(response.data.details);
-
+            setPackageClient(response.data.details[0].Dropoff_Contact_Name);
         })
         .catch(function(error) {
            alert('Error:',error);
@@ -156,12 +159,12 @@ function Track() {
 
                         <h6 className="pt-4">Traking details </h6><hr />
                         <div className='row'>
-                             <h5 className='text-center'>PACKAGE ID: {packageId} </h5>
+                             <h5 className='text-center'>PACKAGE ID: {packageId}  / CLIENT: { packageClient }</h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
                                     <Steps.Item title="On hold" description={onholdDesc} />
                                     <Steps.Item title="Inbound" description={inboundDesc}/>
-                                    <Steps.Item title="Dispatch" description={dispatchDesc}/>
+                                    <Steps.Item title="Out of Delivery" description={dispatchDesc}/>
                                     <Steps.Item title="Delivery" description={deliveryDesc}/>
                                 </Steps>
                             </div>
