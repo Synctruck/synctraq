@@ -81,7 +81,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index'])->middleware('permission:inbound.index');
 	Route::get('/package-inbound/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'List']);
-	Route::get('/package-inbound/export/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'Export']);
+	Route::get('/package-inbound/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'Export']);
 	Route::post('/package-inbound/insert', [PackageInboundController::class, 'Insert']);
 	Route::get('/package-inbound/get/{PACKAGE_ID}', [PackageInboundController::class, 'Get']);
 	Route::post('/package-inbound/update', [PackageInboundController::class, 'Update']);
