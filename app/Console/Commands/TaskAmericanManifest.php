@@ -123,6 +123,7 @@ class TaskAmericanManifest extends Command
                                 $packageHistory->status                       = 'On hold';
                                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                                 $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
+                                $packageHistory->Route                        = $route ? $route->name : '';
                                 $packageHistory->status                       = 'On hold';
 
                                 $packageHistory->save();

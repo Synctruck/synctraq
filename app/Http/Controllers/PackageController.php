@@ -923,7 +923,7 @@ class PackageController extends Controller
             $packageReturnList = PackageReturn::where('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Driver';
         }
@@ -935,7 +935,7 @@ class PackageController extends Controller
                                                 ->orWhere('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Team';
         }
@@ -943,7 +943,7 @@ class PackageController extends Controller
         {
             $packageReturnList = PackageReturn::where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Administrador';
         }
