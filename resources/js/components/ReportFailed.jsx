@@ -11,6 +11,8 @@ function ReportFailed() {
     const [listTeam, setListTeam]     = useState([]);
     const [listDriver, setListDriver] = useState([]);
     const [roleUser, setRoleUser]     = useState([]);
+    const [listCompany , setListCompany]  = useState([]);
+    const [idCompany, setCompany] = useState(0);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -18,9 +20,9 @@ function ReportFailed() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateEnd);
-    const [idTeam, setIdTeam]     = useState(0);
-    const [idDriver, setIdDriver] = useState(0);
+    const [dateEnd, setDateEnd]   = useState(auxDateInit);
+    const [idTeam, setIdTeam]     = useState(id_team);
+    const [idDriver, setIdDriver] = useState(id_driver);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -29,34 +31,39 @@ function ReportFailed() {
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
 
-    useEffect( () => {
+    document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
+    useEffect( () => {
+        if(auth.idRole == 3){
+            listAllDriverByTeam(auth.id);
+        }
         listAllTeam();
         listAllRoute();
+        listAllCompany();
 
     }, []);
 
     useEffect(() => {
 
-        listReportFailed(1, RouteSearch, StateSearch);
+        listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam, idDriver]);
+    }, [dateInit, dateEnd, idTeam, idDriver,idCompany]);
 
 
-    const listReportFailed = (pageNumber, routeSearch, stateSearch) => {
+    const listReportDispatch = async (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'report/list/failed/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
-        .then(res => res.json())
+        const responseData = await fetch(url_general +'report/list/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        .then(res =>  res.json())
         .then((response) => {
-
             setListReport(response.reportList.data);
+
             setTotalPackage(response.reportList.total);
             setTotalPage(response.reportList.per_page);
             setPage(response.reportList.current_page);
             setQuantityDispatch(response.reportList.total);
-            
+
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -64,16 +71,24 @@ function ReportFailed() {
             {
                 listOptionState(response.listState);
             }
+        });
 
-            if(response.roleUser == 'Administrador')
-            {
-                listAllTeam();
-            }
-            else
-            {
-                listAllDriverByTeam(idUserGeneral);
-                setIdTeam(idUserGeneral);
-            }
+        console.log(responseData);
+    }
+
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
         });
     }
 
@@ -118,6 +133,10 @@ function ReportFailed() {
 
         setDateInit(date);
     }
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
 
     const handlerChangeDateEnd = (date) => {
 
@@ -126,49 +145,58 @@ function ReportFailed() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listReportFailed(pageNumber, RouteSearch, StateSearch);
+        listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
     const handlerExport = () => {
-        
-        location.href = url_general +'report/export/failed/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+
+        location.href = url_general +'report/export/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
-    const listReportTable = listReport.map( (pack, i) => {
+    const listReportTable = listReport.map( (packageDispatch, i) => {
+
+        let team   = (packageDispatch.team ? packageDispatch.team.name : '');
+        let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
 
         return (
 
-            <tr key={i} className="alert-success">
+            <tr key={i}>
                 <td>
-                    { pack.Date_Failed.substring(5, 7) }-{ pack.Date_Failed.substring(8, 10) }-{ pack.Date_Failed.substring(0, 4) }
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { pack.Date_Failed.substring(11, 19) }
+                    { packageDispatch.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador' 
+                    roleUser == 'Administrador'
                     ?
-                        pack.driver ? parseInt(pack.driver.idTeam) == 0 || pack.driver.idTeam == null ? <><td><b>{ pack.driver.name }</b></td><td><b></b></td></> : <><td><b>{ pack.driver.nameTeam }</b></td><td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td></> : ''
+                        <>
+                            <td><b>{ team }</b></td>
+                            <td><b>{ driver }</b></td>
+                        </>
+
+
                     :
                         ''
                 }
                 {
-                    roleUser == 'Team' 
+                    roleUser == 'Team'
                     ?
-                        pack.driver.idTeam ? <td><b>{ pack.driver.name +' '+ pack.driver.nameOfOwner }</b></td> : <td></td>
+                        <td><b>{ driver }</b></td>
                     :
                         ''
                 }
-                <td><b>{ pack.Reference_Number_1 }</b></td>
-                <td>{ pack.Dropoff_Contact_Name }</td>
-                <td>{ pack.Dropoff_Contact_Phone_Number }</td>
-                <td>{ pack.Dropoff_Address_Line_1 }</td>
-                <td>{ pack.Dropoff_City }</td>
-                <td>{ pack.Dropoff_Province }</td>
-                <td>{ pack.Dropoff_Postal_Code }</td>
-                <td>{ pack.Weight }</td>
-                <td>{ pack.Route }</td>
-            </tr> 
+                <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.Dropoff_Contact_Name }</td>
+                <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDispatch.Dropoff_City }</td>
+                <td>{ packageDispatch.Dropoff_Province }</td>
+                <td>{ packageDispatch.Dropoff_Postal_Code }</td>
+                <td>{ packageDispatch.Weight }</td>
+                <td>{ packageDispatch.Route }</td>
+            </tr>
         );
     });
 
@@ -201,13 +229,13 @@ function ReportFailed() {
 
             setRouteSearch(routesSearch);
 
-            listReportFailed(1, routesSearch, StateSearch);
+            listReportDispatch(1, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listReportFailed(1, 'all', StateSearch);
+            listReportDispatch(1, 'all', StateSearch);
         }
     };
 
@@ -223,8 +251,6 @@ function ReportFailed() {
 
             setOptionsRoleSearch(optionsRoleSearch);
         });
-
-        console.log(optionsRoleSearch);
     }
 
     const handlerChangeState = (states) => {
@@ -240,13 +266,13 @@ function ReportFailed() {
 
             setStateSearch(statesSearch);
 
-            listReportFailed(page, RouteSearch, statesSearch);
+            listReportDispatch(page, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listReportFailed(page, RouteSearch, 'all');
+            listReportDispatch(page, RouteSearch, 'all');
         }
     };
 
@@ -264,6 +290,39 @@ function ReportFailed() {
         });
     }
 
+    const handlerDownloadOnFleet = () => {
+
+        var checkboxes = document.getElementsByName('checkDispatch');
+
+        let countCheck = 0;
+
+        let valuesCheck = '';
+
+        for(var i = 0; i < checkboxes.length ; i++)
+        {
+            if(checkboxes[i].checked)
+            {
+                valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
+
+                countCheck++;
+            }
+        }
+
+        let type = 'all';
+
+        if(countCheck)
+        {
+            type = 'check'
+        }
+
+        if(valuesCheck == '')
+        {
+            valuesCheck = 'all';
+        }
+
+        location.href = url_general +'package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/day/'+ dateInit +'/'+ dateEnd;
+    }
+
     return (
 
         <section className="section">
@@ -275,6 +334,7 @@ function ReportFailed() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
+
                                             <div className="col-lg-2">
                                                 <label htmlFor="">Fecha de inicio:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
@@ -283,6 +343,20 @@ function ReportFailed() {
                                                 <label htmlFor="">Fecha final:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
+
                                             {
                                                 roleUser == 'Administrador'
                                                 ?
@@ -291,16 +365,16 @@ function ReportFailed() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listTeamSelect }
-                                                                </select> 
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -318,7 +392,7 @@ function ReportFailed() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option> 
+                                                                   <option value="0">Todos</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -327,7 +401,7 @@ function ReportFailed() {
                                                 :
                                                     ''
                                             }
-                                            
+
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -353,7 +427,7 @@ function ReportFailed() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b> 
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -363,10 +437,11 @@ function ReportFailed() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th>FECHA</th>
                                                 <th>HORA</th>
+                                                <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?
@@ -379,7 +454,7 @@ function ReportFailed() {
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
-                                                         
+
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>PACKAGE ID</th>

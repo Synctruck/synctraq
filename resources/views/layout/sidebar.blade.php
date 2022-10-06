@@ -192,12 +192,6 @@
                         </li>
                     @endif
                     @if(hasPermission('reportDelivery.index'))
-                        {{-- <li>
-                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Failed</span>
-                            </a>
-                        </li> --}}
                         <li>
                             <a class="nav-link {{Request::is('report/delivery') ? 'show' : 'collapsed'}}" href="{{url('/report/delivery')}}">
                                 <i class="bx bxs-report"></i>
@@ -205,6 +199,16 @@
                             </a>
                         </li>
                     @endif
+
+                    @if(hasPermission('reportFailed.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Failed</span>
+                            </a>
+                        </li>
+                    @endif
+
                     @if(hasPermission('reportNotexists.index'))
                         {{-- <li>
                             <a class="nav-link {{Request::is('report/assigns') ? 'show' : 'collapsed'}}" href="{{url('/report/assigns')}}">
