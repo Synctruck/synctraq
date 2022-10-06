@@ -655,16 +655,16 @@
 
                 if(packageHistoryList.length > 0)
                 {
-                    document.getElementById('idPackage').value      = packageHistoryList[0].Reference_Number_1;
-                    document.getElementById('contactName').value    = packageHistoryList[0].Dropoff_Contact_Name;
-                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number;
-                    document.getElementById('contactAddress').value = packageHistoryList[0].Dropoff_Address_Line_1;
-                    document.getElementById('contactCity').value    = packageHistoryList[0].Dropoff_City;
-                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province;
-                    document.getElementById('contactZipCode').value = packageHistoryList[0].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight;
-                    document.getElementById('contactRoute').value   = packageHistoryList[0].Route;
-                    document.getElementById('internalComment').value   = packageHistoryList[0].internal_comment;
+                    document.getElementById('idPackage').value       = packageHistoryList[0].Reference_Number_1;
+                    document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
+                    document.getElementById('contactPhone').value    = packageHistoryList[0].Dropoff_Contact_Phone_Number;
+                    document.getElementById('contactAddress').value  = packageHistoryList[0].Dropoff_Address_Line_1;
+                    document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
+                    document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
+                    document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;
+                    document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
+                    document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
+                    document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
                 }
 
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
