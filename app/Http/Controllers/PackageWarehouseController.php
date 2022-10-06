@@ -44,6 +44,19 @@ class PackageWarehouseController extends Controller
 
     public function List($idValidator, $dateStart,$dateEnd, $route, $state)
     {
+        $packageListWarehouse = $this->getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state);
+
+        $quantityWarehouse      = $packageListWarehouse->total();
+
+        $listState  = PackageWarehouse::select('Dropoff_Province')
+                                            ->groupBy('Dropoff_Province')
+                                            ->get();
+
+        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityWarehouse' => $quantityWarehouse];
+    }
+
+    private function getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
+
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -76,17 +89,15 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
         }
+        if($type == 'list'){
+            $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->paginate(50);
+        }
+        else{
+            $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->get();
+        }
 
-        $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->paginate(50);
-        $quantityWarehouse      = $packageListWarehouse->total();
-
-        $listState  = PackageWarehouse::select('Dropoff_Province')
-                                            ->groupBy('Dropoff_Province')
-                                            ->get();
-
-        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityWarehouse' => $quantityWarehouse];
+        return $packageListWarehouse;
     }
-
     public function Export($idValidator, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
@@ -100,39 +111,7 @@ class PackageWarehouseController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $dateStart = $dateStart .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        if(Auth::user()->role->name == 'Validador')
-        {
-            $packageListWarehouse = PackageWarehouse::with('user')->where('idUser', Auth::user()->id);
-        }
-        else if(Auth::user()->role->name == 'Administrador')
-        {
-            $packageListWarehouse = PackageWarehouse::with('user');
-        }
-
-        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
-
-        if($idValidator)
-        {
-            $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
-        }
-
-        if($route != 'all')
-        {
-            $packageListWarehouse = $packageListWarehouse->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
-        }
-
-        $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->get();
+        $packageListWarehouse = $this->getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {

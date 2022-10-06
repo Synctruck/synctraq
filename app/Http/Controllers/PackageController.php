@@ -1022,8 +1022,6 @@ class PackageController extends Controller
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'ASC');
-
-            $roleUser = 'Team';
         }
         else
         {
@@ -1031,7 +1029,6 @@ class PackageController extends Controller
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'ASC');
 
-            $roleUser = 'Administrador';
         }
 
         if($idTeam && $idDriver)
