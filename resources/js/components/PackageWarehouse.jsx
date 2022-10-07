@@ -558,7 +558,7 @@ function PackageWarehouse() {
                 </td>
             </tr>
         );
-    }); 
+    });
 
     const exportAllPackageWarehouse = (route, state) => {
 

@@ -532,8 +532,8 @@ function Driver() {
                         onChange={(pageNumber) => handlerChangePage(pageNumber)}
                         itemClass="page-item"
                         linkClass="page-link"
-                        firstPageText="Primero"
-                        lastPageText="Último"
+                        firstPageText="First"
+                        lastPageText="Last"
                     />
                 </div>
             </div>

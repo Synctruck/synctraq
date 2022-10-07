@@ -2,7 +2,7 @@
 @section('title', 'Non Existing Packages')
 @section('content')
 <div class="pagetitle">
-  	<h1>List of Non-Existing Packages</h1>
+  	<h1><b>LIST OF NON-EXISTING PACKAGES</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

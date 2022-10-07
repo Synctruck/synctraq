@@ -2,10 +2,10 @@
 @section('title', 'Dasboard')
 @section('content')
 <div class="pagetitle">
-  	<h1>Dasboard</h1>
+  	<h1><b>DASBOARD</b></h1>
   	<nav>
     	<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="#">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
 			<li class="breadcrumb-item active">Dasboard</li>
     	</ol>
   	</nav>

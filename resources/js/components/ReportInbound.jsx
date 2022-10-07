@@ -274,11 +274,11 @@ function ReportInbound() {
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha de inicio:</label>
+                                                <label htmlFor="">Start date:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha final:</label>
+                                                <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
                                             <dvi className="col-lg-2">
@@ -341,8 +341,8 @@ function ReportInbound() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>FECHA</th>
-                                                <th>HORA</th>
+                                                <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
                                                 <th>TRUCK #</th>
@@ -370,8 +370,8 @@ function ReportInbound() {
                                         onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                         itemClass="page-item"
                                         linkClass="page-link"
-                                        firstPageText="Primero"
-                                        lastPageText="Último"
+                                        firstPageText="First"
+                                        lastPageText="Last"
                                     />
                                 </div>
                             </div>

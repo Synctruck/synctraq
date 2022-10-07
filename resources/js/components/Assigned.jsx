@@ -30,7 +30,7 @@ function Assigned() {
     const [textMessage, setTextMessage] = useState('');
     const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
 
-    const [typeMessage, setTypeMessage] = useState(''); 
+    const [typeMessage, setTypeMessage] = useState('');
 
     const [file, setFile]             = useState('');
 
@@ -154,7 +154,7 @@ function Assigned() {
         //clearValidation();
 
         setReadOnlyInput(true);
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
 
             keyboard: true
@@ -477,7 +477,7 @@ function Assigned() {
                         setTextMessage("SUCCESSFULLY ASSIGNED #"+ Reference_Number_1);
                         setTypeMessageDispatch('success');
                         setNumberPackage('');
-                        
+
                         listAllAssigned(1, dataView);
 
                         document.getElementById('Reference_Number_1').focus();
@@ -588,14 +588,14 @@ function Assigned() {
                         setTextMessage('RE-ASSIGN PACKAGE #'+ Reference_Number);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
-                        
+
                         listAllAssigned(1, dataView);
 
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
                     },
                 );
-            } 
+            }
         });
     }
 
@@ -628,7 +628,7 @@ function Assigned() {
                 <td style={ {textAlign: 'center', display: 'none'} }>
                     { idUserGeneral == assigned.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ assigned.Reference_Number_1 } onClick={ (e) => changeReference(assigned.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(assigned.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -678,7 +678,7 @@ function Assigned() {
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         LoadingShow();
- 
+
         fetch(url_general +'package/return/dispatch', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
@@ -707,7 +707,7 @@ function Assigned() {
                     setTextMessage("Package was returned #"+ idPackage);
                     setTypeMessage('success');
                     setNumberPackage('');
-                    
+
                     document.getElementById('return_Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
 
@@ -905,7 +905,7 @@ function Assigned() {
         }
     }
 
-    return ( 
+    return (
 
         <section className="section">
             { modalPackageEdit }
@@ -915,7 +915,7 @@ function Assigned() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    
+
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-4">
@@ -963,11 +963,11 @@ function Assigned() {
                                                                 </button>
                                                             </div>
                                                         </form>
-                                                    </div> 
+                                                    </div>
                                                 :
-                                                    ''       
+                                                    ''
                                             }
-                                            
+
                                         </div>
                                         <div className="row form-group">
                                             <div className="col-lg-9">
@@ -979,14 +979,14 @@ function Assigned() {
                                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="15" required readOnly={ readOnly }/>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <div className="col-lg-4">
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
                                                                     <option value="">All</option>
                                                                     { listTeamSelect }
-                                                                </select> 
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1031,7 +1031,7 @@ function Assigned() {
                                 <div className="row">
                                     <div className="col-lg-8">
                                         <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Assigned: { quantityAssigned }</b> 
+                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Assigned: { quantityAssigned }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-4">
@@ -1054,14 +1054,14 @@ function Assigned() {
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th style={ {display: 'none'} }>
                                                     <input class="form-check-input" type="checkbox" id="checkAllPackage" value="1" onChange={ () => hanldlerCheckAll() }/>
                                                 </th>
                                                 <th>#</th>
-                                                <th>FECHA</th>
-                                                <th>HORA</th>
+                                                <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
