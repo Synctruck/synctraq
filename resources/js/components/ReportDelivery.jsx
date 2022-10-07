@@ -494,11 +494,11 @@ function ReportDelivery() {
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha de inicio:</label>
+                                                <label htmlFor="">Start date:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha final:</label>
+                                                <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
                                             {
@@ -509,7 +509,7 @@ function ReportDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listTeamSelect }
                                                                 </select>
                                                             </div>
@@ -518,7 +518,7 @@ function ReportDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -536,7 +536,7 @@ function ReportDelivery() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">Todos</option>
+                                                                   <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -634,8 +634,8 @@ function ReportDelivery() {
                                         onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                         itemClass="page-item"
                                         linkClass="page-link"
-                                        firstPageText="Primero"
-                                        lastPageText="Último"
+                                        firstPageText="First"
+                                        lastPageText="Last"
                                     />
                                 </div>
                             </div>

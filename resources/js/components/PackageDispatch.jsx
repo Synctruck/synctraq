@@ -113,7 +113,7 @@ function PackageDispatch() {
             {
                 listOptionState(response.listState);
             }
-            
+
             if(response.roleUser == 'Administrador')
             {
                 listAllTeam();
@@ -493,7 +493,7 @@ function PackageDispatch() {
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
-                        
+
 
                         setTypeMessage('primary');
                         setNumberPackage('');
@@ -770,8 +770,8 @@ function PackageDispatch() {
                             <td><b>{ team }</b></td>
                             <td><b>{ driver }</b></td>
                         </>
-                            
-                        
+
+
                     :
                         ''
                 }

@@ -2,7 +2,7 @@
 @section('title', 'User - Change Password')
 @section('content')
 <div class="pagetitle">
-  	<h1>User - Change Password</h1>
+  	<h1><b>USER - CHANGE PASSWORD</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

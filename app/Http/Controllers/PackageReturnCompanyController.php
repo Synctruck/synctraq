@@ -232,7 +232,7 @@ class PackageReturnCompanyController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('FECHA', 'HORA', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'Description Return', 'Client', 'Weight', 'Measures');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'DESCRIPTION RETURN', 'CLIENT', 'WEIGHT', 'MEASURES');
 
         fputcsv($file, $fields, $delimiter);
 

@@ -1,12 +1,12 @@
 @extends('layout.admin')
-@section('title', 'Reportes - Dispatch')
+@section('title', 'REPORTS -  Dispatch')
 @section('content')
 <div class="pagetitle">
-  	<h1>Reportes - Dispatch</h1>
+  	<h1><b>REPORTS -  DISPATCH</b></h1>
   	<nav>
     	<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="#">Inicio</a></li>
-			<li class="breadcrumb-item active">Reportes Dispatch</li>
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
+			<li class="breadcrumb-item active">Reports Dispatch</li>
     	</ol>
   	</nav>
 </div><!-- End Page Title -->

@@ -309,7 +309,7 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="{{url('user/logout')}}">
                             <i class="bi bi-box-arrow-right"></i>
-                            <span>Cerrar Sesión</span>
+                            <span>Logout</span>
                         </a>
                     </li>
                 </ul><!-- End Profile Dropdown Items -->

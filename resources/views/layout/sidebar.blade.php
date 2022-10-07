@@ -339,7 +339,7 @@
 
                 <li class="nav-item" id="liUlFinanzas">
                     <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
-                      <i class="bx bxs-check-circle"></i><span>FINANZAS</span><i class="bi bi-chevron-down ms-auto"></i>
+                      <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="ulFinanzas" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#ulFinanzas" style="">
                         @if(hasPermission('checkDelivery.index'))

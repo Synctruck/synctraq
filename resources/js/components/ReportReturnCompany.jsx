@@ -416,11 +416,11 @@ function ReportReturnCompany() {
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-3">
-                                                <label htmlFor="">Fecha de inicio:</label>
+                                                <label htmlFor="">Start date:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
                                             <div className="col-lg-3">
-                                                <label htmlFor="">Fecha final:</label>
+                                                <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
 

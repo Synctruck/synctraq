@@ -2,7 +2,7 @@
 @section('title', 'Package - Unassigned')
 @section('content')
 <div class="pagetitle">
-  	<h1>Package - Unassigned</h1>
+  	<h1><b>PACKAGE - UNASSIGNED</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

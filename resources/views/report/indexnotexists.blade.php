@@ -1,12 +1,12 @@
 @extends('layout.admin')
-@section('title', 'Reportes - Not Exists')
+@section('title', 'REPORTS -  Not Exists')
 @section('content')
 <div class="pagetitle">
-  	<h1>Reportes - Not Exists</h1>
+  	<h1><b>REPORTS -  NOT EXISTS</b></h1>
   	<nav>
     	<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="#">Inicio</a></li>
-			<li class="breadcrumb-item active">Reportes Not Exists</li>
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
+			<li class="breadcrumb-item active">Reports Not Exists</li>
     	</ol>
   	</nav>
 </div><!-- End Page Title -->
