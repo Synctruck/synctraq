@@ -230,7 +230,7 @@ class WHookController extends Controller
 
     public function TaskCreated(Request $request)
     {
-        Log::info('================================================');
+        /*Log::info('================================================');
         Log::info('============ START TASK CREATED ================');
         $userCreatorOnfleet = $request['actionContext']['type'];
         $idOnfleet          = $request['taskId'];
@@ -575,6 +575,7 @@ class WHookController extends Controller
 
         Log::info('============ END TASK CREATED ================');
         Log::info('==============================================');
+        */
     }
 
     //WEBHOOK - TASK - DELETE
