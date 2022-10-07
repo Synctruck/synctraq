@@ -334,35 +334,7 @@ function ReportDispatch() {
 
     const handlerDownloadRoadWarrior = () => {
 
-        var checkboxes = document.getElementsByName('checkDispatch');
-
-        let countCheck = 0;
-
-        let valuesCheck = '';
-
-        for(var i = 0; i < checkboxes.length ; i++)
-        {
-            if(checkboxes[i].checked)
-            {
-                valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
-
-                countCheck++;
-            }
-        }
-
-        let type = 'all';
-
-        if(countCheck)
-        {
-            type = 'check'
-        }
-
-        if(valuesCheck == '')
-        {
-            valuesCheck = 'all';
-        }
-
-        location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/day/'+ dateInit +'/'+ dateEnd;
+        location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ StateSearch;
     }
 
     return (
