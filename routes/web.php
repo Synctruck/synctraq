@@ -121,10 +121,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package/list/return/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturn']);
 	Route::get('/package/list/return/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
 	Route::post('/package/return/dispatch', [PackageDispatchController::class, 'Return']);
-	Route::get('/package/download/onfleet/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{day}/{dateInit}/{dateEnd}', [PackageController::class, 'DownloadOnfleet']);
-	Route::get('/package/download/roadwarrior/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{day}/{dateInit}/{dateEnd}', [PackageController::class, 'DownloadRoadWarrior']);
-	Route::get('/package/download/onfleet/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{dayNight}', [PackageController::class, 'DownloadOnfleet']);
-	Route::get('/package/download/roadwarrior/{idTeam}/{idDriver}/{type}/{valuesCheck}/{StateSearch}/{dayNight}', [PackageController::class, 'DownloadRoadWarrior']);
+	Route::get('/package/download/roadwarrior/{idTeam}/{idDriver}/{StateSearch}', [PackageController::class, 'DownloadRoadWarrior']);
+
 	Route::post('/package/dispatch/import', [PackageController::class, 'ImportDispatch']);
 
 	//============ Validation warehouse
