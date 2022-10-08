@@ -11,6 +11,7 @@
                 <span>PACKAGE BLOCKED</span>
             </a>
         </li>
+
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >
@@ -48,14 +49,14 @@
                 </li>
             @endif
 
-            @if(hasPermission('checkstop.index'))
+
                 <li >
                     <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
                         <i class="bx bx-barcode-reader"></i>
                         <span>CHECK STOP</span>
                     </a>
                 </li>
-            @endif
+
 
                 {{-- @if(Auth::user()->role->name == 'Administrador')
                     <li >

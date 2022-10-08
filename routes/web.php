@@ -266,7 +266,7 @@ Route::group(['middleware' => 'auth'], function() {
 });
 
 //============ Check Stop package
-Route::get('/package-check', [PackageCheckController::class, 'Index'])->middleware('permission:checkstop.index');
+Route::get('/package-check', [PackageCheckController::class, 'Index']);
 Route::post('/package-check/import', [PackageCheckController::class, 'Import']);
 
 Route::get('/package-delivery/updatedOnfleet', [PackageDeliveryController::class, 'UpdatedOnfleet']);
