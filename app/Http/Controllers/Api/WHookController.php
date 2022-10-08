@@ -587,18 +587,21 @@ class WHookController extends Controller
 
     public function TaskDelete(Request $request)
     {
-        Log::info('================================================');
-        Log::info('============ START TASK DELETE ================');
-
         $Reference_Number_1 = $request['data']['task']['notes'];
         $userCreatorOnfleet = $request['actionContext']['type'];
 
         Log::info('Reference_Number_1:'. $Reference_Number_1);
-
-        $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
         
+        $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
+                                    ->where('status', 'Dispatch')
+                                    ->first();
+
         if($package)
         {
+            Log::info('================================================');
+            Log::info('================================================');
+            Log::info('============ TASK DELETE - ONFLEET ================');
+
             try
             {
                 DB::beginTransaction();
@@ -655,20 +658,18 @@ class WHookController extends Controller
 
                 DB::commit();
 
-                Log::info('============ END TASK DELETE ================');
-                Log::info('==============================================');
+                Log::info('============ END TASK DELETE - ONFLEET ================');
+                Log::info('====================================================');
+                Log::info('====================================================');
             }
             catch(Exception $e)
             {
-                Log::info('========= ERROR PROCESS - TASK CREATED');
+                Log::info('========= ERROR PROCESS - TASK DELETE');
+                Log::info('====================================================');
+                Log::info('====================================================');
 
                 DB::rollback();
             }
-        }
-        else
-        {
-            Log::info('============ NO EXISTS PACKAGE ID - TASK DELETE ================');
-            Log::info('==============================================');
         }
     }
 }

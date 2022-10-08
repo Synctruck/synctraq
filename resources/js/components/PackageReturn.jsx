@@ -426,6 +426,15 @@ function PackageReturn() {
 
                     listAllPackageReturn(page, RouteSearch, StateSearch);
                 }
+                else if(response.stateAction == 'taskWasNotDelete')
+                {
+                    setTextMessage("The task was not deleted in Onfleet #"+ returnReference_Number_1);
+                    setTypeMessage('error');
+                    setReturnNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
                 else if(response.stateAction == 'notUser')
                 {
                     setTextMessage("El paquete N° "+ returnReference_Number_1 +" fue validado por otro Driver!");

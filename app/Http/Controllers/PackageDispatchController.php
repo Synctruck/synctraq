@@ -215,14 +215,9 @@ class PackageDispatchController extends Controller
 
         if(!$package)
         {
-            $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
+            $package = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                 ->where('status', 'Delete')
                                                 ->first();
-
-            if($packageDispatch)
-            {
-                $package = $packageDispatch;
-            }
         } 
 
         if($package)
@@ -245,14 +240,107 @@ class PackageDispatchController extends Controller
 
                 $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
 
-                try
+                if($package->status != 'Delete')
                 {
-                    DB::beginTransaction();
-
-                    $register = 0;
-
-                    if($package->status == 'On hold') 
+                    try
                     {
+                        DB::beginTransaction();
+
+                        $register = 0;
+
+                        if($package->status == 'On hold') 
+                        {
+                            $packageHistory = new PackageHistory();
+
+                            $packageHistory->id                           = uniqid();
+                            $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->idCompany                    = $package->idCompany;
+                            $packageHistory->company                      = $package->company;
+                            $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
+                            $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
+                            $packageHistory->Ready_At                     = $package->Ready_At;
+                            $packageHistory->Del_Date                     = $package->Del_Date;
+                            $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
+                            $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
+                            $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
+                            $packageHistory->Pickup_Company               = $package->Pickup_Company;
+                            $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
+                            $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
+                            $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
+                            $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
+                            $packageHistory->Pickup_City                  = $package->Pickup_City;
+                            $packageHistory->Pickup_Province              = $package->Pickup_Province;
+                            $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
+                            $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                            $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                            $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                            $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                            $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                            $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                            $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                            $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                            $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                            $packageHistory->Service_Level                = $package->Service_Level;
+                            $packageHistory->Carrier_Name                 = $package->Carrier_Name;
+                            $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
+                            $packageHistory->Notes                        = $package->Notes;
+                            $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
+                            $packageHistory->Weight                       = $package->Weight;
+                            $packageHistory->Route                        = $package->Route;
+                            $packageHistory->Name                         = $package->Name;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->idUserInbound                = Auth::user()->id;
+                            $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                            $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                            $packageHistory->inbound                      = 1;
+                            $packageHistory->status                       = 'Inbound';
+
+                            $packageHistory->save();
+                        }
+
+                        $packageDispatch = new PackageDispatch();
+
+                        $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                        $packageDispatch->idCompany                    = $package->idCompany;
+                        $packageDispatch->company                      = $package->company;
+                        $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
+                        $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
+                        $packageDispatch->Ready_At                     = $package->Ready_At;
+                        $packageDispatch->Del_Date                     = $package->Del_Date;
+                        $packageDispatch->Del_no_earlier_than          = $package->Del_no_earlier_than;
+                        $packageDispatch->Del_no_later_than            = $package->Del_no_later_than;
+                        $packageDispatch->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
+                        $packageDispatch->Pickup_Company               = $package->Pickup_Company;
+                        $packageDispatch->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
+                        $packageDispatch->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
+                        $packageDispatch->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
+                        $packageDispatch->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
+                        $packageDispatch->Pickup_City                  = $package->Pickup_City;
+                        $packageDispatch->Pickup_Province              = $package->Pickup_Province;
+                        $packageDispatch->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
+                        $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                        $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                        $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                        $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                        $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                        $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                        $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                        $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                        $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                        $packageDispatch->Service_Level                = $package->Service_Level;
+                        $packageDispatch->Carrier_Name                 = $package->Carrier_Name;
+                        $packageDispatch->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
+                        $packageDispatch->Notes                        = $package->Notes;
+                        $packageDispatch->Number_Of_Pieces             = $package->Number_Of_Pieces;
+                        $packageDispatch->Weight                       = $package->Weight;
+                        $packageDispatch->Route                        = $package->Route;
+                        $packageDispatch->Name                         = $package->Name;
+                        $packageDispatch->idUser                       = Auth::user()->id;
+                        $packageDispatch->idTeam                       = $request->get('idTeam');
+                        $packageDispatch->idUserDispatch               = $idUserDispatch;
+                        $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
+                        $packageDispatch->status                       = 'Dispatch';
+
                         $packageHistory = new PackageHistory();
 
                         $packageHistory->id                           = uniqid();
@@ -292,58 +380,76 @@ class PackageDispatchController extends Controller
                         $packageHistory->Route                        = $package->Route;
                         $packageHistory->Name                         = $package->Name;
                         $packageHistory->idUser                       = Auth::user()->id;
-                        $packageHistory->idUserInbound                = Auth::user()->id;
-                        $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                        $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                        $packageHistory->inbound                      = 1;
-                        $packageHistory->status                       = 'Inbound';
+                        $packageHistory->idTeam                       = $request->get('idTeam');
+                        $packageHistory->idUserDispatch               = $idUserDispatch;
+                        $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
+                        $packageHistory->dispatch                     = 1;
+                        $packageHistory->Description                  = $description;
+                        $packageHistory->status                       = 'Dispatch';
 
-                        $packageHistory->save();
+                        $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+
+                        if($registerTask['status'] == 200)
+                        {
+                            $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                            $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+
+                            $packageDispatch->idOnfleet   = $idOnfleet;
+                            $packageDispatch->taskOnfleet = $taskOnfleet;
+
+                            $packageDispatch->save();
+                            $packageHistory->save();
+                            $package->delete();
+
+                            $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
+
+                            $warnings = $dataTaskOnfleet['destination']['warnings'];
+
+                            Log::info('============ START TASK CREATED ================');
+                            Log::info("Reference_Number_1 :". $package->Reference_Number_1);
+                            Log::info("Warnings: ". count($warnings));
+                            Log::info($warnings);
+
+                            if(count($warnings) == 0)
+                            {
+                                DB::commit();
+
+                                //data for INLAND
+                                $packageController = new PackageController();
+                                $packageController->SendStatusToInland($package, 'Dispatch', null);
+                                //end data for inland
+
+                                Log::info('============ CREATED TASK COMPLETED ================');
+                                Log::info('====================================================');
+                                Log::info('====================================================');
+
+                                return ['stateAction' => true];
+                            }
+                            else
+                            {
+                                Log::info('============ DELETE TASK - SYNC ================');
+
+                                $deleteTask = $this->DeleteOnfleet($idOnfleet);
+
+                                Log::info('============ DELETE TASK COMPLETED - SYNC ================');
+
+                                return ['stateAction' => 'repairPackage'];
+                            }
+                        }
+                        else
+                        {
+                            return ['stateAction' => 'repairPackage'];
+                        }
                     }
+                    catch(Exception $e)
+                    {
+                        DB::rollback();
 
-                    $packageDispatch = new PackageDispatch();
-
-                    $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
-                    $packageDispatch->idCompany                    = $package->idCompany;
-                    $packageDispatch->company                      = $package->company;
-                    $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
-                    $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
-                    $packageDispatch->Ready_At                     = $package->Ready_At;
-                    $packageDispatch->Del_Date                     = $package->Del_Date;
-                    $packageDispatch->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                    $packageDispatch->Del_no_later_than            = $package->Del_no_later_than;
-                    $packageDispatch->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                    $packageDispatch->Pickup_Company               = $package->Pickup_Company;
-                    $packageDispatch->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                    $packageDispatch->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                    $packageDispatch->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                    $packageDispatch->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                    $packageDispatch->Pickup_City                  = $package->Pickup_City;
-                    $packageDispatch->Pickup_Province              = $package->Pickup_Province;
-                    $packageDispatch->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
-                    $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                    $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
-                    $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                    $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                    $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                    $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                    $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
-                    $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
-                    $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                    $packageDispatch->Service_Level                = $package->Service_Level;
-                    $packageDispatch->Carrier_Name                 = $package->Carrier_Name;
-                    $packageDispatch->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
-                    $packageDispatch->Notes                        = $package->Notes;
-                    $packageDispatch->Number_Of_Pieces             = $package->Number_Of_Pieces;
-                    $packageDispatch->Weight                       = $package->Weight;
-                    $packageDispatch->Route                        = $package->Route;
-                    $packageDispatch->Name                         = $package->Name;
-                    $packageDispatch->idUser                       = Auth::user()->id;
-                    $packageDispatch->idTeam                       = $request->get('idTeam');
-                    $packageDispatch->idUserDispatch               = $idUserDispatch;
-                    $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
-                    $packageDispatch->status                       = 'Dispatch';
-
+                        return ['stateAction' => true];
+                    }
+                }
+                elseif($package->status == 'Delete')
+                {
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -383,13 +489,13 @@ class PackageDispatchController extends Controller
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->Name                         = $package->Name;
                     $packageHistory->idUser                       = Auth::user()->id;
-                    $packageHistory->idTeam                       = $request->get('idTeam');
-                    $packageHistory->idUserDispatch               = $idUserDispatch;
+                    $packageHistory->idTeam                       = $team->id;
+                    $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                     $packageHistory->dispatch                     = 1;
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Dispatch';
-
+                    
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
                     if($registerTask['status'] == 200)
@@ -397,12 +503,14 @@ class PackageDispatchController extends Controller
                         $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
                         $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
 
-                        $packageDispatch->idOnfleet   = $idOnfleet;
-                        $packageDispatch->taskOnfleet = $taskOnfleet;
+                        $package->Date_Dispatch = date('Y-m-d H:i:s');
+                        $package->status        = 'Dispatch';
+                        $package->idOnfleet     = $idOnfleet;
+                        $package->taskOnfleet   = $taskOnfleet;
+                        $package->created_at    = date('Y-m-d H:i:s');
 
-                        $packageDispatch->save();
+                        $package->save();
                         $packageHistory->save();
-                        $package->delete();
 
                         $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
 
@@ -410,28 +518,39 @@ class PackageDispatchController extends Controller
 
                         Log::info('============ START TASK CREATED ================');
                         Log::info("Reference_Number_1 :". $package->Reference_Number_1);
-                        Log::info("Warnings: ".count($warnings));
+                        Log::info("Warnings: ". count($warnings));
                         Log::info($warnings);
-                        
-                        //data for INLAND
-                        $packageController = new PackageController();
-                        $packageController->SendStatusToInland($package, 'Dispatch', null);
-                        //end data for inland
 
-                        DB::commit();
+                        if(count($warnings) == 0)
+                        {
+                            DB::commit();
 
-                        return ['stateAction' => true];
+                            //data for INLAND
+                            $packageController = new PackageController();
+                            $packageController->SendStatusToInland($package, 'Dispatch', null);
+                            //end data for inland
+
+                            Log::info('============ CREATED TASK COMPLETED ================');
+                            Log::info('====================================================');
+                            Log::info('====================================================');
+
+                            return ['stateAction' => true];
+                        }
+                        else
+                        {
+                            Log::info('============ DELETE TASK - SYNC ================');
+
+                            $deleteTask = $this->DeleteOnfleet($idOnfleet);
+
+                            Log::info('============ DELETE TASK COMPLETED - SYNC ================');
+
+                            return ['stateAction' => 'repairPackage'];
+                        }
                     }
                     else
                     {
                         return ['stateAction' => 'repairPackage'];
                     }
-                }
-                catch(Exception $e)
-                {
-                    DB::rollback();
-
-                    return ['stateAction' => true];
                 }
             }
             else
@@ -859,34 +978,18 @@ class PackageDispatchController extends Controller
         {
             if($packageDispatch->idUserDispatch == Auth::user()->id || Auth::user()->role->name == 'Administrador')
             {
-                $user = User::find($packageDispatch->idUserDispatch);
-
-                if($user->nameTeam)
-                {
-                    $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
-                }
-                else
-                {
-                    $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
-                }
-
                 try
                 {
                     DB::beginTransaction();
-
-                    $returnPackage = false;
-
-                    $idOnfleet     = '';
-                    $taskOnfleet   = '';
-                    $team          = '';
-                    $workerName    = '';
-                    $photoUrl      = '';
-                    $statusOnfleet = '';
-                    $onfleet       = '';
-
-                    $team       = $user->nameTeam;
-                    $workerName = $user->name .' '. $user->nameOfOwner;
-
+                    
+                    $team                = User::find($packageDispatch->idTeam);
+                    $driver              = User::find($packageDispatch->idUserDispatch);
+                    $idOnfleet           = $packageDispatch->idOnfleet;
+                    $taskOnfleet         = $packageDispatch->taskOnfleet;
+                    $teamName            = $team->name;
+                    $workerName          = $driver->name .' '. $driver->nameOfOwner;
+                    $photoUrl            = '';
+                    $statusOnfleet       = '';
                     $Date_Return         = date('Y-m-d H:i:s');
                     $Description_Return  = $request->get('Description_Return');
                     $Description_Onfleet = '';
@@ -895,16 +998,11 @@ class PackageDispatchController extends Controller
 
                     if($onfleet)
                     {
-                        $idOnfleet           = $packageDispatch->idOnfleet;
-                        $taskOnfleet         = $packageDispatch->taskOnfleet;
                         $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
-                        $Date_Return         = date('Y-m-d H:i:s');
 
                         if($onfleet['state'] == 3)
                         {
                             $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
-                            $returnPackage = true;
-                            $Date_Return   = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
 
                             if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
                             {
@@ -924,8 +1022,7 @@ class PackageDispatchController extends Controller
                     {
                         $idOnfleet           = null;
                         $taskOnfleet         = null;
-                        $Description_Onfleet = 'NONE:';
-                        $Date_Return         = date('Y-m-d H:i:s');
+                        $Description_Onfleet = 'Task does not exist in onfleet';
                         $statusOnfleet       = 1;
                     }
 
@@ -975,7 +1072,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->Description_Onfleet          = $Description_Onfleet;
                     $packageReturn->idOnfleet                    = $idOnfleet;
                     $packageReturn->taskOnfleet                  = $taskOnfleet;
-                    $packageReturn->team                         = $team;
+                    $packageReturn->team                         = $teamName;
                     $packageReturn->workerName                   = $workerName;
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
@@ -985,8 +1082,8 @@ class PackageDispatchController extends Controller
 
                     //update dispatch
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                            ->where('dispatch', 1)
-                                            ->first();
+                                                    ->where('dispatch', 1)
+                                                    ->first();
 
                     $packageHistory->dispatch = 0;
 
@@ -994,8 +1091,8 @@ class PackageDispatchController extends Controller
 
                     //update inbound
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                            ->where('inbound', 1)
-                                            ->first();
+                                                    ->where('inbound', 1)
+                                                    ->first();
 
                     if($packageHistory)
                     {
@@ -1004,7 +1101,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
 
-                    $comment = Comment::where('description', $request->get('Description_Return'))->first();
+                    $comment      = Comment::where('description', $request->get('Description_Return'))->first();
                     $statusReturn = 'Final';
 
 
@@ -1105,32 +1202,22 @@ class PackageDispatchController extends Controller
 
                     $packageHistory->save();
 
-                    $package = $packageDispatch;
+                    $deleteDispatch = true;
 
                     if($onfleet)
                     {
                         if($onfleet['state'] == 1)
                         {
-                            if($packageDispatch->delete())
-                            {
-                                $onfleet = $this->DeleteOnfleet($packageDispatch->idOnfleet);
-                            }
+                            $deleteOnfleet  = $this->DeleteOnfleet($packageDispatch->idOnfleet);
+                            $deleteDispatch = $deleteOnfleet ? true : false;
                         }
-                        else
-                        {
-                            $packageDispatch->delete();
-                        }
-                    }
-                    else
-                    {
-                        $packageDispatch->delete();
                     }
 
                     if($comment->finalStatus == 0)
                     {
                         //data for INLAND
                         $packageController = new PackageController();
-                        $packageController->SendStatusToInland($package, 'ReInbound', null);
+                        $packageController->SendStatusToInland($packageDispatch, 'ReInbound', null);
                         //end data for inland
                     }
                     else
@@ -1141,9 +1228,18 @@ class PackageDispatchController extends Controller
                         //end data for inland
                     }
 
-                    DB::commit();
+                    if($deleteDispatch)
+                    {
+                        $packageDispatch->delete();
 
-                    return ['stateAction' => true];
+                        DB::commit();
+
+                        return ['stateAction' => true];
+                    }
+                    else
+                    {
+                        return ['stateAction' => 'taskWasNotDelete'];
+                    }
                 }
                 catch(Exception $e)
                 {
