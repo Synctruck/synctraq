@@ -3,7 +3,7 @@
         <li >
             <div id="google_translate_element" class="google"></div>
         </li>
-
+        @if(hasPermission('packageBlocked.index.index'))
         <li class="nav-heading"></li>
         <li >
             <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
@@ -11,7 +11,7 @@
                 <span>PACKAGE BLOCKED</span>
             </a>
         </li>
-
+        @endif
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >

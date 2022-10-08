@@ -21,12 +21,13 @@ Route::get('/track/detail/{package_id}', [Trackcontroller::class, 'trackDetail']
 Route::get('/', [UserController::class, 'Login']);
 Route::post('/user/login', [UserController::class, 'ValidationLogin']);
 
-Route::get('package-blocked', [PackageBlockedController::class, 'Index']);
-Route::get('package-blocked/list', [PackageBlockedController::class, 'List']);
-Route::post('package-blocked/insert', [PackageBlockedController::class, 'Insert']);
-Route::get('package-blocked/delete/{Reference}', [PackageBlockedController::class, 'Delete']);
+
 Route::group(['middleware' => 'auth'], function() {
 
+    Route::get('package-blocked', [PackageBlockedController::class, 'Index'])->middleware('permission:packageBlocked.index');
+    Route::get('package-blocked/list', [PackageBlockedController::class, 'List']);
+    Route::post('package-blocked/insert', [PackageBlockedController::class, 'Insert']);
+    Route::get('package-blocked/delete/{Reference}', [PackageBlockedController::class, 'Delete']);
 
 	Route::get('/home', [IndexController::class, 'Index']);
 
@@ -265,6 +266,6 @@ Route::group(['middleware' => 'auth'], function() {
 
 //============ Check Stop package
 Route::get('/package-check', [PackageCheckController::class, 'Index']);
-Route::post('/package-check/import', [PackageCheckController::class, 'Import']);
+Route::post('/package-check/impor}t', [PackageCheckController::class, 'Import']);
 
 Route::get('/package-delivery/updatedOnfleet', [PackageDeliveryController::class, 'UpdatedOnfleet']);
