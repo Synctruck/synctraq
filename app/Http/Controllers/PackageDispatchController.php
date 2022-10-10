@@ -410,7 +410,7 @@ class PackageDispatchController extends Controller
                             Log::info("Warnings: ". count($warnings));
                             Log::info($warnings);
 
-                            if(count($warnings) == 0)
+                            if(count($warnings) >= 0)
                             {
                                 DB::commit();
 
