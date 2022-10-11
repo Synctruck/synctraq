@@ -78,8 +78,7 @@ class IndexController extends Controller
         //                                             ->get();
 
         $quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
-                                                ->where('status', 'Inbound')
-                                                // ->where('inbound', 1)
+                                                ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
 
@@ -120,11 +119,36 @@ class IndexController extends Controller
 
     public function GetDataPerDate(Request $request, $date)
     {
-        $leastOneDayStartDate =date("Y-m-d",strtotime($date."- 1 days")).' 00:00:00';
-        $leastOneDayEndDate =date("Y-m-d",strtotime($date."- 1 days")).' 23:59:59';
-        $startDate =date("Y-m-d",strtotime($date)).' 00:00:00';
-        $endDate  = date("Y-m-d",strtotime($date)).' 23:59:59';
+        $leastOneDayStartDate = date("Y-m-d",strtotime($date ."- 1 days")) .' 00:00:00';
+        $leastOneDayEndDate   = date("Y-m-d",strtotime($date ."- 1 days")) .' 23:59:59';
+        $startDate            = date("Y-m-d",strtotime($date)) .' 00:00:00';
+        $endDate              = date("Y-m-d",strtotime($date)) .' 23:59:59';
 
+        $packageHistoryInbound = PackageHistory::select('Reference_Number_1', 'Route', 'status')
+                                                                ->whereBetween('created_at', [$leastOneDayStartDate, $leastOneDayEndDate])
+                                                                ->where('inbound', 1)
+                                                                ->groupBy('Reference_Number_1', 'Route', 'status')
+                                                                ->get();
+
+        $packageHistoryListProcess = PackageHistory::select('Reference_Number_1', 'Route', 'status')
+                                            ->whereBetween('created_at', [$startDate, $endDate])
+                                            ->where('status', '!=', 'On hold')
+                                            ->where('status', '!=', 'Inbound')
+                                            ->groupBy('Reference_Number_1', 'Route', 'status')
+                                            ->get();
+
+        $packageRouteList = PackageHistory::select(DB::raw('DISTINCT Route'))
+                                            ->whereBetween('created_at', [$startDate, $endDate])
+                                            ->orderBy('Route', 'asc')
+                                            ->get();
+
+
+        return [
+
+            'packageHistoryInbound' => $packageHistoryInbound,
+            'packageHistoryListProcess' => $packageHistoryListProcess,
+            'packageRouteList'   => $packageRouteList,
+       ];
 
         $dataPerRoutes = DB::select("SELECT
                             p.Route,

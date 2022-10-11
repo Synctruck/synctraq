@@ -115,6 +115,9 @@ function Dashboard() {
         });
     }
 
+    const [packageHistoryList, setPackageHistoryList] = useState([]);
+    const [packageStateList, setPackageStateList] = useState([]);
+
     const getDataPerDate = async () => {
         setLoading('block');
         setCart('none');
@@ -123,13 +126,94 @@ function Dashboard() {
         .then(res => res.json())
         .then((response) => {
 
-            let totalInboundRoute = 0;
+            let totalInboundRoute   = 0;
             let totalReinboundRoute = 0;
-            let totalDispatchRoute = 0;
-            let totalFailedRoute = 0;
-            let totalDeliveryRoute = 0;
+            let totalDispatchRoute  = 0;
+            let totalFailedRoute    = 0;
+            let totalDeliveryRoute  = 0;
 
-            response.dataPerRoutes.forEach(element => {
+            let listReportPerRoute = [];
+
+            response.packageRouteList.forEach( route => {
+
+                let quantityInboundRoute = 0;
+                let quantityReinboundRoute = 0;
+                let quantityDispatchRoute = 0;
+                let quantityFailedRoute = 0;
+                let quantityDeliveryRoute = 0;
+
+                response.packageHistoryInbound.forEach( packageHistory => {
+
+                    if(packageHistory.Route == route.Route)
+                    {
+                        quantityInboundRoute++;
+                    }
+                });
+
+                response.packageHistoryListProcess.forEach( packageHistory => {
+
+                    if(packageHistory.Route == route.Route && packageHistory.status == 'ReInbound')
+                    {
+                        quantityReinboundRoute++;
+                    }
+                    else if(packageHistory.Route == route.Route && packageHistory.status == 'Dispatch')
+                    {
+                        quantityDispatchRoute++;
+                    }
+                    else if(packageHistory.Route == route.Route && packageHistory.status == 'Failed')
+                    {
+                        quantityFailedRoute++;
+                    }
+                    else if(packageHistory.Route == route.Route && packageHistory.status == 'Delivery')
+                    {
+                        quantityDeliveryRoute++;
+                    }
+                });
+
+                totalInboundRoute   = parseInt(totalInboundRoute) + parseInt(quantityInboundRoute);
+                totalReinboundRoute = parseInt(totalReinboundRoute) + parseInt(quantityReinboundRoute);
+                totalDispatchRoute  = parseInt(totalDispatchRoute) + parseInt(quantityDispatchRoute);
+                totalFailedRoute    = parseInt(totalFailedRoute) + parseInt(quantityFailedRoute);
+                totalDeliveryRoute  = parseInt(totalDeliveryRoute) + parseInt(quantityDeliveryRoute);
+
+                const data = {
+
+                    Route: route.Route,
+                    total_inbound: quantityInboundRoute,
+                    total_reinbound: quantityReinboundRoute,
+                    total_dispatch: quantityDispatchRoute,
+                    total_failed: quantityFailedRoute,
+                    total_delivery: quantityDeliveryRoute,
+                }
+
+                listReportPerRoute.push(data);
+
+                //console.log('Route: '+ route.Route +', Inbound: '+ quantityInboundRoute +', ReInbound: '+ quantityReinboundRoute +', Dispatch: '+ quantityDispatchRoute +', Failed: '+ quantityFailedRoute +', Delivery: '+ quantityDeliveryRoute);
+            });
+
+            let totalPackagesRoute = {
+
+                inbound: totalInboundRoute,
+                reinbound: totalReinboundRoute,
+                dispatch: totalDispatchRoute,
+                failed: totalFailedRoute,
+                delivery: totalDeliveryRoute
+            };
+
+            setListPackageRouteTotal(totalPackagesRoute);
+            setListDataPerRoute(listReportPerRoute);
+
+            let dataPie = [];
+
+            dataPie.push(totalInboundRoute);
+            dataPie.push(totalReinboundRoute);
+            dataPie.push(totalDispatchRoute);
+            dataPie.push(totalFailedRoute);
+            dataPie.push(totalDeliveryRoute);
+            
+            setListDataPie(dataPie);
+
+            /*response.dataPerRoutes.forEach(element => {
 
                 totalInboundRoute += element.total_inbound;
                 totalReinboundRoute += element.total_reinbound;
@@ -182,9 +266,9 @@ function Dashboard() {
                             };
 
             setListPackageTeamTotal(totalPackagesTeam);
-            setListDataPerTeam(response.dataPerTeams);
+            setListDataPerTeam(response.dataPerTeams);*/
 
-
+ 
         });
     }
 
