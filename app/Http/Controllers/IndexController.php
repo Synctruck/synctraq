@@ -146,7 +146,7 @@ class IndexController extends Controller
         $dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
                                 (SELECT count(DISTINCT Reference_Number_1)
-                                FROM packagedispatch p2
+                                FROM packagehistory p2
                                 where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status ='Dispatch' AND p2.idTeam  = p.idTeam
                                 ) as total_dispatch,
                                 (SELECT count(DISTINCT Reference_Number_1)
@@ -158,7 +158,7 @@ class IndexController extends Controller
                                 where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
                                 ) as total_failed,
                                 (SELECT count(DISTINCT Reference_Number_1)
-                                FROM packagedispatch p5
+                                FROM packagehistory p5
                                 where (p5.Date_Delivery BETWEEN '$startDate' AND '$endDate') AND p5.status ='Delivery' AND p5.idTeam  = p.idTeam
                                 ) as total_delivery
                                 FROM packagehistory p
@@ -173,7 +173,7 @@ class IndexController extends Controller
             'packageRouteList'   => $packageRouteList,
             'dataPerTeams' => $dataPerTeams,
        ];
-
+       
         /*$dataPerRoutes = DB::select("SELECT
                             p.Route,
                             ( SELECT count(DISTINCT Reference_Number_1)

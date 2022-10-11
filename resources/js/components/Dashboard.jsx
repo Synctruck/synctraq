@@ -128,6 +128,7 @@ function Dashboard() {
 
             let totalInboundRoute   = 0;
             let totalReinboundRoute = 0;
+            let totalReturn         = 0;
             let totalDispatchRoute  = 0;
             let totalFailedRoute    = 0;
             let totalDeliveryRoute  = 0;
@@ -168,6 +169,11 @@ function Dashboard() {
                     {
                         quantityDeliveryRoute++;
                     }
+
+                    if(packageHistory.Route == route.Route && packageHistory.status == 'Return')
+                    {
+                        totalReturn++;
+                    }
                 });
 
                 totalInboundRoute   = parseInt(totalInboundRoute) + parseInt(quantityInboundRoute);
@@ -194,7 +200,7 @@ function Dashboard() {
             let totalPackagesRoute = {
 
                 inbound: totalInboundRoute,
-                reinbound: totalReinboundRoute,
+                reinbound: parseInt(totalReinboundRoute) + parseInt(totalReturn),
                 dispatch: totalDispatchRoute,
                 failed: totalFailedRoute,
                 delivery: totalDeliveryRoute
@@ -213,6 +219,11 @@ function Dashboard() {
 
             setListDataPie(dataPie);
 
+            let totalReinboundTeam = 0;
+            let totalDispatchTeam = 0;
+            let totalFailedTeam = 0;
+            let totalDeliveryTeam = 0;
+
             response.dataPerTeams.forEach(element => {
 
                 totalReinboundTeam += element.total_reinbound;
@@ -220,8 +231,6 @@ function Dashboard() {
                 totalFailedTeam += element.total_failed;
                 totalDeliveryTeam += element.total_delivery;
             });
-
-
 
             let totalPackagesTeam = {
                                 reinbound: totalReinboundTeam,
@@ -263,10 +272,7 @@ function Dashboard() {
 
               //asignando valores para data por teams
 
-            let totalReinboundTeam = 0;
-            let totalDispatchTeam = 0;
-            let totalFailedTeam = 0;
-            let totalDeliveryTeam = 0;
+            
 
             response.dataPerTeams.forEach(element => {
 
@@ -525,7 +531,7 @@ function Dashboard() {
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
                                             <canvas className="chart w-100" id="pieChart"></canvas>
                                         </div>
-                                        <div className='col-12 mt-2' style={ {display: 'none'} }>
+                                        <div className='col-12 mt-2'>
                                             <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                             <div className="row form-group table-responsive">
                                                 <div className="col-lg-12">
