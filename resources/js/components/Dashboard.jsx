@@ -210,7 +210,7 @@ function Dashboard() {
             dataPie.push(totalDispatchRoute);
             dataPie.push(totalFailedRoute);
             dataPie.push(totalDeliveryRoute);
-            
+
             setListDataPie(dataPie);
 
             /*response.dataPerRoutes.forEach(element => {
@@ -505,7 +505,7 @@ function Dashboard() {
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
                                             <canvas className="chart w-100" id="pieChart"></canvas>
                                         </div>
-                                        <div className='col-12 mt-2'>
+                                        <div className='col-12 mt-2' style={ {display: 'none'} }>
                                             <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
                                             <div className="row form-group table-responsive">
                                                 <div className="col-lg-12">
@@ -537,7 +537,6 @@ function Dashboard() {
                                             </div>
                                         </div>
                                    </div>
-
                                 </div>
                                 <div className='col-lg-8 col-sm-12'>
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>

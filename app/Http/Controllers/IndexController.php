@@ -150,7 +150,7 @@ class IndexController extends Controller
             'packageRouteList'   => $packageRouteList,
        ];
 
-        $dataPerRoutes = DB::select("SELECT
+        /*$dataPerRoutes = DB::select("SELECT
                             p.Route,
                             ( SELECT count(DISTINCT Reference_Number_1)
                                 FROM packagehistory p2
@@ -203,6 +203,6 @@ class IndexController extends Controller
         'dataPerRoutes' => $dataPerRoutes,
         'dataPerTeams' => $dataPerTeams
        ];
-
+        */
     }
 }
