@@ -281,7 +281,7 @@ function ReportPartnerInbound() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                           
+
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
