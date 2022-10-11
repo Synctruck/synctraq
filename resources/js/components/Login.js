@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-// import logo from './../../../public/img/logo.PNG'
+import logo from '/../public/img/logo.png';
 
 function Login() {
 
@@ -68,7 +68,7 @@ function Login() {
                 <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
                   <div className="d-flex justify-content-center py-4">
-                    {/* <img src={logo} /> */}
+                    <img src={logo} width="200"/>
                   </div>
 
                   <div className="card mb-3">
