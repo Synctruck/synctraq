@@ -2,7 +2,7 @@
 @section('title', 'Reports - All')
 @section('content')
 <div class="pagetitle">
-  	<h1>Reports - All</h1>
+  	<h1><b>REPORTS - ALL</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

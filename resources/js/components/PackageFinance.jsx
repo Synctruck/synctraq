@@ -532,11 +532,11 @@ function PackageFinance() {
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha de inicio:</label>
+                                                <label htmlFor="">Start date:</label>
                                                 <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                             </div>
                                             <div className="col-lg-2">
-                                                <label htmlFor="">Fecha final:</label>
+                                                <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
                                             {
@@ -545,7 +545,7 @@ function PackageFinance() {
                                                     <>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
-                                                                <label htmlFor="">TEAM</label>
+                                                                <label htmlFor="">Team</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listTeamSelect }
@@ -554,7 +554,7 @@ function PackageFinance() {
                                                         </div>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
+                                                                <label htmlFor="">Driver</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listDriverSelect }
@@ -572,7 +572,7 @@ function PackageFinance() {
                                                     <>
                                                         <div className="col-lg-3">
                                                             <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
+                                                                <label htmlFor="">Driver</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listDriverSelect }
@@ -586,7 +586,7 @@ function PackageFinance() {
 
                                             <div className="col-lg-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="">CHECKEDS</label>
+                                                    <label htmlFor="">Checkeds</label>
                                                     <select name="" id="" className="form-control" onChange={ (e) => setChecked(e.target.value) } required>
                                                         <option value="all">All</option>
                                                         <option value="1">Correct</option>
@@ -658,8 +658,8 @@ function PackageFinance() {
                                         onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                         itemClass="page-item"
                                         linkClass="page-link"
-                                        firstPageText="Primero"
-                                        lastPageText="Último"
+                                        firstPageText="First"
+                                        lastPageText="Last"
                                     />
                                 </div>
                             </div>

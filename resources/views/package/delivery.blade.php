@@ -2,7 +2,7 @@
 @section('title', 'Deliveries Validation')
 @section('content')
 <div class="pagetitle">
-  	<h1>Deliveries Validation</h1>
+  	<h1><b>DELIVERIES VALIDATION</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Processes</a></li>

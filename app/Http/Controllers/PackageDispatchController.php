@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{ Assigned, AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -48,10 +48,23 @@ class PackageDispatchController extends Controller
 
     public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
+        $packageDispatchList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+
+        $quantityDispatch = $packageDispatchList->total();
+        $roleUser = Auth::user()->role->name;
+
+        $listState = PackageDispatch::select('Dropoff_Province')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'roleUser' => $roleUser, 'listState' => $listState];
+    }
+
+    private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
+    {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $roleUser = Auth::user()->role->name;
 
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Dispatch');
@@ -83,17 +96,16 @@ class PackageDispatchController extends Controller
             $packageDispatchList = $packageDispatchList->whereIn('Route', $routes);
         }
 
-        $packageDispatchList = $packageDispatchList->with(['team', 'driver'])
-                                                    ->orderBy('Date_Dispatch', 'desc')
-                                                    ->paginate(50);
+        if($type == 'list'){
+            $packageDispatchList = $packageDispatchList->with(['team', 'driver'])
+            ->orderBy('Date_Dispatch', 'desc')
+            ->paginate(50);
+        }else{
+            $packageDispatchList = $packageDispatchList->orderBy('Date_Dispatch', 'desc')->get();
+        }
 
-        $quantityDispatch = $packageDispatchList->total();
+        return  $packageDispatchList;
 
-        $listState = PackageDispatch::select('Dropoff_Province')
-                                    ->groupBy('Dropoff_Province')
-                                    ->get();
-
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'roleUser' => $roleUser, 'listState' => $listState];
     }
 
     public function Export(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
@@ -109,40 +121,8 @@ class PackageDispatchController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $dateStart = $dateStart .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
 
-        $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
-                                                ->where('status', 'Dispatch');
-                                                
-        if($idTeam && $idDriver)
-        {
-            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
-        }
-        elseif($idTeam)
-        {
-            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
-        }
-        elseif($idDriver)
-        {
-            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
-        }
-
-        if($state != 'all')
-        {
-            $state = explode(',', $state);
-
-            $packageDispatchList = $packageDispatchList->whereIn('Dropoff_Province', $state);
-        }
-
-        if($routes != 'all')
-        {
-            $routes = explode(',', $routes);
-
-            $packageDispatchList = $packageDispatchList->whereIn('Route', $routes);
-        }
-
-        $packageDispatchList = $packageDispatchList->orderBy('Date_Dispatch', 'desc')->get();
+        $packageDispatchList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type ='export');
 
        foreach($packageDispatchList as $packageDispatch)
         {
@@ -283,31 +263,23 @@ class PackageDispatchController extends Controller
             {
                 DB::beginTransaction();
 
-                if(env('APP_ENV') == 'local')
+                $register = 0;
+
+                $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+
+                if($registerTask['status'] == 200)
                 {
-                    $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+                    $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                    $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
 
-                    if($registerTask['status'] == 200)
-                    {
-                        $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                        $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
-
-                        $registerTask = 200;
-                    }
-                    else
-                    {
-                        return ['stateAction' => 'repairPackage'];
-                    }
+                    $register = 200;
                 }
                 else
                 {
-                    $idOnfleet   = '';
-                    $taskOnfleet = '';
-
-                    $registerTask = 200;
+                    return ['stateAction' => 'repairPackage'];
                 }
 
-                if($package->status == 'On hold' && $registerTask == 200)
+                if($package->status == 'On hold' && $register == 200)
                 {
                     /*$packageHistory = new PackageHistory();
 
@@ -1126,7 +1098,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'Re-Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                    $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
@@ -1207,7 +1179,7 @@ class PackageDispatchController extends Controller
                         ] ,
                         "notes" => "",
                     ],
-                    "recipients" =>  [ 
+                    "recipients" =>  [
                         [
                             "name"  => $package->Dropoff_Contact_Name,
                             "phone" => "+". $package->Dropoff_Contact_Phone_Number,

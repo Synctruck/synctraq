@@ -113,7 +113,7 @@ function PackageDispatch() {
             {
                 listOptionState(response.listState);
             }
-            
+
             if(response.roleUser == 'Administrador')
             {
                 listAllTeam();
@@ -313,7 +313,7 @@ function PackageDispatch() {
                                                                 <div className="form-group">
                                                                     <label>PACKAGE ID</label>
                                                                     <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="15" readOnly={ readOnlyInput } required/>
+                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="24" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -493,7 +493,7 @@ function PackageDispatch() {
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
-                        
+
 
                         setTypeMessage('primary');
                         setNumberPackage('');
@@ -761,8 +761,8 @@ function PackageDispatch() {
                             <td><b>{ team }</b></td>
                             <td><b>{ driver }</b></td>
                         </>
-                            
-                        
+
+
                     :
                         ''
                 }
@@ -1632,7 +1632,7 @@ function PackageDispatch() {
                                                 <div className={ roleUser == 'Administrador' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
                                                     <div className="form-group">
                                                         <label htmlFor="">PACKAGE ID</label>
-                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="15" required readOnly={ readOnly }/>
+                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
                                                 {

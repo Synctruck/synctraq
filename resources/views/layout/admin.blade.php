@@ -309,7 +309,7 @@
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="{{url('user/logout')}}">
                             <i class="bi bi-box-arrow-right"></i>
-                            <span>Cerrar Sesión</span>
+                            <span>Logout</span>
                         </a>
                     </li>
                 </ul><!-- End Profile Dropdown Items -->
@@ -364,10 +364,7 @@
                                     <label for="contactCity">CITY</label>
                                     <input type="text" id="contactCity" name="contactCity" class="form-control" required>
                                 </div>
-                                 <div class="col-lg-12 form-group">
-                                    <label for="contactState">INTERNAL COMMENT</label>
-                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
-                                </div>
+
                                 <div class="col-lg-3 form-group">
                                     <label for="contactState">STATE</label>
                                     <input type="text" id="contactState" name="contactState" class="form-control" required>
@@ -384,11 +381,15 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
-                                <div class="col-lg-3 form-group">
+                                <div class="col-lg-6 form-group">
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
                                 <div class="col-lg-3 form-group">
                                     <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="contactState">INTERNAL COMMENT</label>
+                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
                                 </div>
                             </div>
                             <hr>
@@ -654,16 +655,16 @@
 
                 if(packageHistoryList.length > 0)
                 {
-                    document.getElementById('idPackage').value      = packageHistoryList[0].Reference_Number_1;
-                    document.getElementById('contactName').value    = packageHistoryList[0].Dropoff_Contact_Name;
-                    document.getElementById('contactPhone').value   = packageHistoryList[0].Dropoff_Contact_Phone_Number;
-                    document.getElementById('contactAddress').value = packageHistoryList[0].Dropoff_Address_Line_1;
-                    document.getElementById('contactCity').value    = packageHistoryList[0].Dropoff_City;
-                    document.getElementById('contactState').value   = packageHistoryList[0].Dropoff_Province;
-                    document.getElementById('contactZipCode').value = packageHistoryList[0].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value  = packageHistoryList[0].Weight;
-                    document.getElementById('contactRoute').value   = packageHistoryList[0].Route;
-                    document.getElementById('internalComment').value   = packageHistoryList[0].internal_comment;
+                    document.getElementById('idPackage').value       = packageHistoryList[0].Reference_Number_1;
+                    document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
+                    document.getElementById('contactPhone').value    = packageHistoryList[0].Dropoff_Contact_Phone_Number;
+                    document.getElementById('contactAddress').value  = packageHistoryList[0].Dropoff_Address_Line_1;
+                    document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
+                    document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
+                    document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;
+                    document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
+                    document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
+                    document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
                 }
 
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {

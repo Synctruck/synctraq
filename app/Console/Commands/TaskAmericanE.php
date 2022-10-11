@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, CompanyStatus, PackageDispatch, PackageHistory };
+use App\Models\{ Company, CompanyStatus, FileSend, PackageDispatch, PackageHistory };
 
 class TaskAmericanE extends Command
 {
@@ -46,12 +46,12 @@ class TaskAmericanE extends Command
         if($company->startDateCSV == null)
         {
             $company->endDateCSV   = date('Y-m-d H:i:00');
-            $company->startDateCSV = date('Y-m-d H:i:01', strtotime('-30 minute', strtotime($company->endDateCSV)));
+            $company->startDateCSV = date('Y-m-d H:i:01', strtotime('-60 minute', strtotime($company->endDateCSV)));
         }
         else
         {
             $company->startDateCSV = date('Y-m-d H:i:s', strtotime('+ 1 second', strtotime($company->endDateCSV)));
-            $company->endDateCSV   = date('Y-m-d H:i:00', strtotime('+30 minute', strtotime($company->endDateCSV)));
+            $company->endDateCSV   = date('Y-m-d H:i:00', strtotime('+60 minute', strtotime($company->endDateCSV)));
         }
 
         $filename = "Report-" . date('m-d-H-i-s', strtotime($company->startDateCSV)) .'-'. date('m-d-H-i-s', strtotime($company->endDateCSV)) . ".csv";
@@ -74,7 +74,9 @@ class TaskAmericanE extends Command
 
         fputcsv($file, $fields, $delimiter);
         
-        $packageListHisotry = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->get();
+        $packageListHisotry = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
+                                                ->where('idCompany', 10)
+                                                ->get();
 
         foreach($packageListHisotry as $packageHistory)
         {
@@ -87,40 +89,65 @@ class TaskAmericanE extends Command
             $date         = date('m-d-Y', strtotime($packageHistory->created_at));
             $hour         = date('H:i:s', strtotime($packageHistory->created_at));
             $timeZone     = 'America/New_York';
-            $cityLocality = '';
-            $state        = $packageHistory->Dropoff_Province;
+            $cityLocality = 'Carlstadt';
+            $state        = 'NJ';
             $lat          = '';
             $lon          = '';
             $podUrl       = '';
 
             if($packageHistory->status == 'ReInbound')
-            {
-                $status = strtoupper(str_replace(' ', '_', $packageHistory->Description_Return));
+            { 
+                if($packageHistory->Description_Return == 'NOT DELIVERED ADDRESS NOT FOUND' || $packageHistory->Description_Return == 'NOT DELIVERED DAMAGED' || $packageHistory->Description_Return == 'NOT DELIVERED LOST' || $packageHistory->Description_Return == 'NOT DELIVERED OTHER' || $packageHistory->Description_Return == 'NOT DELIVERED REFUSED')
+                {
+                    $status = str_replace(' ', '_', $packageHistory->Description_Return);
+                }
+                else
+                {
+                    $status = 'MISS_SORT';
+                }
             }
             elseif($packageHistory->status == 'Delivery')
             {
+                $cityLocality = $packageHistory->Dropoff_City;
+                $state        = $packageHistory->Dropoff_Province;
+
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
 
                 $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
             }
 
-            $lineData = array(
+            if($packageHistory->status == 'Inbound' || $packageHistory->status == 'Dispatch' || $packageHistory->status == 'ReInbound' || $packageHistory->status == 'Delivery')
+            {
+                $lineData = array(
 
-                            $shipment_id,
-                            strtoupper($status),
-                            $date,
-                            $hour,
-                            $timeZone,
-                            $cityLocality,
-                            $state,
-                            $lat,
-                            $lon,
-                            $podUrl,
-                        );
+                                $shipment_id,
+                                strtoupper($status),
+                                $date,
+                                $hour,
+                                $timeZone,
+                                $cityLocality,
+                                $state,
+                                $lat,
+                                $lon,
+                                $podUrl,
+                            );
 
-            fputcsv($file, $lineData, $delimiter);
+                fputcsv($file, $lineData, $delimiter);
+            }
+            
         }
         
+        $fileSend = new FileSend();
+
+        $fileSend->id              = uniqid();
+        $fileSend->idCompany       = 10;
+        $fileSend->fileName        = $filename;
+        $fileSend->numberOfRecords = count($packageListHisotry);
+        $fileSend->start_date      = $dateInit;
+        $fileSend->end_date        = $dateEnd;
+
+        $fileSend->save();
+
         rewind($file);
         fclose($file);
     }

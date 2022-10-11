@@ -2,7 +2,7 @@
 @section('title', 'Packages - Re Inbound')
 @section('content')
 <div class="pagetitle">
-  	<h1>Packages - Re Inbound</h1>
+  	<h1><b>PACKAGES - RE INBOUND</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

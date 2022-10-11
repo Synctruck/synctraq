@@ -40,6 +40,19 @@ class PackageInboundController extends Controller
 
     public function List($idCompany, $dateStart,$dateEnd, $route, $state)
     {
+
+        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state);
+        $quantityInbound = $packageListInbound->total();
+
+        $listState  = PackageInbound::select('Dropoff_Province')
+                                            ->groupBy('Dropoff_Province')
+                                            ->get();
+
+        return ['packageList' => $packageListInbound, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+    }
+
+    private function getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state,$type='list'){
+
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -72,21 +85,20 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->where('idCompany', $idCompany);
         }
-
-        $packageListInbound = $packageListInbound->where('reInbound', 0)
+        if($type =='list'){
+            $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')
                                                 ->paginate(50);
+        }else{
+            $packageListInbound = $packageListInbound->where('reInbound', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        }
 
-        $quantityInbound = $packageListInbound->total();
-
-        $listState  = PackageInbound::select('Dropoff_Province')
-                                            ->groupBy('Dropoff_Province')
-                                            ->get();
-
-        return ['packageList' => $packageListInbound, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+        return $packageListInbound;
     }
 
-    public function Export(Request $request, $dateStart,$dateEnd, $route, $state)
+    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv";
@@ -99,37 +111,7 @@ class PackageInboundController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $dateStart = $dateStart .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        if(Auth::user()->role->name == 'Validador')
-        {
-            $packageListInbound = PackageInbound::with('user')->where('idUser', Auth::user()->id)
-                                                ->where('status', 'Inbound');
-        }
-        else if(Auth::user()->role->name == 'Administrador')
-        {
-            $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
-        }
-
-            $packageListInbound = $packageListInbound->whereBetween('created_at', [$dateStart, $dateEnd]);
-
-        if($route != 'all')
-        {
-            $packageListInbound = $packageListInbound->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $packageListInbound = $packageListInbound->whereIn('Dropoff_Province', $states);
-        }
-
-        $packageListInbound = $packageListInbound->where('reInbound', 0)
-                                                ->orderBy('created_at', 'desc')
-                                                ->get();
+        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state,$type='export');
 
         foreach($packageListInbound as $packageInbound)
         {

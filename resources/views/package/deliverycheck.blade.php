@@ -2,11 +2,11 @@
 @section('title', 'PACKAGE - DELIVERY CHECK')
 @section('content')
 <div class="pagetitle">
-  	<h1>PACKAGE - DELIVERY CHECK</h1>
+  	<h1></b>PACKAGE - DELIVERY CHECK</b></h1>
   	<nav>
     	<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="#">Inicio</a></li>
-			<li class="breadcrumb-item active">PACKAGE DELIVERY CHECK</li>
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
+			<li class="breadcrumb-item active">Package Delivery Check</li>
     	</ol>
   	</nav>
 </div><!-- End Page Title -->

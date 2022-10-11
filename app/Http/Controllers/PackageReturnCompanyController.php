@@ -46,9 +46,27 @@ class PackageReturnCompanyController extends Controller
 
     public function List($dateInit, $dateEnd, $route, $state)
     {
+
+        $roleUser = Auth::user()->role->name;
+
+
+        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state);
+
+        $quantityReturn = $packageReturnCompanyList->total();
+
+        $listState = PackageReturnCompany::select('Dropoff_Province')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+    }
+
+    private function getDataReturn($dateInit, $dateEnd, $route, $state,$type='list')
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
         $routes   = explode(',', $route);
         $states   = explode(',', $state);
-        $roleUser = Auth::user()->role->name;
 
         $packageReturnCompanyList = PackageReturnCompany::whereBetween('created_at', [$dateInit, $dateEnd]);
 
@@ -62,15 +80,14 @@ class PackageReturnCompanyController extends Controller
             $packageReturnCompanyList = $packageReturnCompanyList->whereIn('Dropoff_Province', $states);
         }
 
-        $packageReturnCompanyList = $packageReturnCompanyList->paginate(50);
+        if($type=='list'){
+            $packageReturnCompanyList = $packageReturnCompanyList->paginate(50);
+        }
+        else{
+            $packageReturnCompanyList = $packageReturnCompanyList->get();
+        }
 
-        $quantityReturn = $packageReturnCompanyList->total();
-
-        $listState = PackageReturnCompany::select('Dropoff_Province')
-                                    ->groupBy('Dropoff_Province')
-                                    ->get();
-
-        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+        return $packageReturnCompanyList;
     }
 
     public function Insert(Request $request)
@@ -215,29 +232,11 @@ class PackageReturnCompanyController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('FECHA', 'HORA', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'Description Return', 'Client', 'Weight', 'Measures');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'DESCRIPTION RETURN', 'CLIENT', 'WEIGHT', 'MEASURES');
 
         fputcsv($file, $fields, $delimiter);
 
-        $dateInit = $dateInit .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        $listPackageReturnCompany = PackageReturnCompany::with('driver')
-                                                        ->whereBetween('created_at', [$dateInit, $dateEnd]);
-        if($route != 'all')
-        {
-            $listPackageReturnCompany = $listPackageReturnCompany->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $listPackageReturnCompany = $listPackageReturnCompany->whereIn('Dropoff_Province', $states);
-        }
-
-        $listPackageReturnCompany = $listPackageReturnCompany->get();
+        $listPackageReturnCompany = $this->getDataReturn($dateInit, $dateEnd, $route, $state,$type='export');
 
         foreach($listPackageReturnCompany as $packageReturnCompany)
         {

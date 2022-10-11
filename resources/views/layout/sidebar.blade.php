@@ -3,7 +3,7 @@
         <li >
             <div id="google_translate_element" class="google"></div>
         </li>
-
+        @if(hasPermission('packageBlocked.index'))
         <li class="nav-heading"></li>
         <li >
             <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
@@ -11,6 +11,7 @@
                 <span>PACKAGE BLOCKED</span>
             </a>
         </li>
+        @endif
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >
@@ -48,14 +49,14 @@
                 </li>
             @endif
 
-            @if(hasPermission('checkstop.index'))
+
                 <li >
                     <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
                         <i class="bx bx-barcode-reader"></i>
                         <span>CHECK STOP</span>
                     </a>
                 </li>
-            @endif
+
 
                 {{-- @if(Auth::user()->role->name == 'Administrador')
                     <li >
@@ -192,12 +193,6 @@
                         </li>
                     @endif
                     @if(hasPermission('reportDelivery.index'))
-                        {{-- <li>
-                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Failed</span>
-                            </a>
-                        </li> --}}
                         <li>
                             <a class="nav-link {{Request::is('report/delivery') ? 'show' : 'collapsed'}}" href="{{url('/report/delivery')}}">
                                 <i class="bx bxs-report"></i>
@@ -205,6 +200,16 @@
                             </a>
                         </li>
                     @endif
+
+                    @if(hasPermission('reportFailed.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
+                                <i class="bx bxs-report"></i>
+                                <span>Failed</span>
+                            </a>
+                        </li>
+                    @endif
+
                     @if(hasPermission('reportNotexists.index'))
                         {{-- <li>
                             <a class="nav-link {{Request::is('report/assigns') ? 'show' : 'collapsed'}}" href="{{url('/report/assigns')}}">
@@ -335,7 +340,7 @@
 
                 <li class="nav-item" id="liUlFinanzas">
                     <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
-                      <i class="bx bxs-check-circle"></i><span>FINANZAS</span><i class="bi bi-chevron-down ms-auto"></i>
+                      <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="ulFinanzas" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#ulFinanzas" style="">
                         @if(hasPermission('checkDelivery.index'))

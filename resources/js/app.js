@@ -39,10 +39,19 @@ require('./components/PackageCheckDelivery');
 require('./components/PackageFinance');
 require('./components/Roles');
 require('./components/PackageBlocked');
+require('./components/Track');
 require('./components/Login');
 
 //rutas públicas (usuarios externos a la empresa)
 
-require('./components/landing/LoginCompany');
+require('./components/partner/LoginCompany');
+require('./components/partner/ReportDelivery');
+require('./components/partner/ReportDispatch');
+require('./components/partner/ReportInbound');
+require('./components/partner/ReportManifest');
+require('./components/partner/ReportNotExists');
+require('./components/partner/ReportAssigns');
+require('./components/partner/ReportFailed');
+require('./components/partner/ReportReturnCompany');
 
 

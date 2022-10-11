@@ -75,57 +75,62 @@ class TaskAmericanManifest extends Command
 
                             if(!$packageHistory)
                             {
-                                $package = new PackageManifest();
+                                if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
+                                {
+                                    $package = new PackageManifest();
 
-                                $package->Reference_Number_1           = $row[0];
-                                $package->idCompany                    = 10;
-                                $package->company                      = 'AMERICAN EAGLE';
-                                $package->Dropoff_Contact_Name         = $row[21];
-                                $package->Dropoff_Contact_Phone_Number = $row[22];
-                                $package->Dropoff_Contact_Email        = $row[23];
-                                $package->Dropoff_Address_Line_1       = $row[16];
-                                $package->Dropoff_Address_Line_2       = $row[17];
-                                $package->Dropoff_City                 = $row[18];
-                                $package->Dropoff_Province             = $row[19];
-                                $package->Dropoff_Postal_Code          = $row[20];
-                                $package->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                $package->Number_Of_Pieces             = $row[25];
-                                $package->weight_unit                  = $row[26];
-                                $package->Weight                       = $row[27];
-                                $package->height                       = $row[30];
-                                $package->status                       = 'On hold';
+                                    $package->Reference_Number_1           = $row[0];
+                                    $package->idCompany                    = 10;
+                                    $package->company                      = 'AMERICAN EAGLE';
+                                    $package->Dropoff_Contact_Name         = $row[21];
+                                    $package->Dropoff_Contact_Phone_Number = $row[22];
+                                    $package->Dropoff_Contact_Email        = $row[23];
+                                    $package->Dropoff_Address_Line_1       = $row[16];
+                                    $package->Dropoff_Address_Line_2       = $row[17];
+                                    $package->Dropoff_City                 = $row[18];
+                                    $package->Dropoff_Province             = $row[19];
+                                    $package->Dropoff_Postal_Code          = $row[20];
+                                    $package->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
+                                    $package->Number_Of_Pieces             = $row[25];
+                                    $package->weight_unit                  = $row[26];
+                                    $package->Weight                       = $row[27];
+                                    $package->height                       = $row[30];
+                                    $package->status                       = 'On hold';
 
-                                $route = Routes::where('zipCode', $row[20])->first();
+                                    $route = Routes::where('zipCode', $row[20])->first();
+                                    
+                                    $package->Route = $route ? $route->name : '';
+
+                                    $package->save();
+
+                                    $packageHistory = new PackageHistory();
+
+                                    $packageHistory->id = uniqid();
+                                    $packageHistory->Reference_Number_1           = $row[0];
+                                    $packageHistory->idCompany                    = 10;
+                                    $packageHistory->company                      = 'AMERICAN EAGLE';
+                                    $packageHistory->Dropoff_Contact_Name         = $row[21];
+                                    $packageHistory->Dropoff_Contact_Phone_Number = $row[22];
+                                    $packageHistory->Dropoff_Contact_Email        = $row[23];
+                                    $packageHistory->Dropoff_Address_Line_1       = $row[16];
+                                    $packageHistory->Dropoff_Address_Line_2       = $row[17];
+                                    $packageHistory->Dropoff_City                 = $row[18];
+                                    $packageHistory->Dropoff_Province             = $row[19];
+                                    $packageHistory->Dropoff_Postal_Code          = $row[20];
+                                    $packageHistory->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
+                                    $packageHistory->Number_Of_Pieces             = $row[25];
+                                    $packageHistory->weight_unit                  = $row[26];
+                                    $packageHistory->Weight                       = $row[27];
+                                    $packageHistory->height                       = $row[30];
+                                    $packageHistory->status                       = 'On hold';
+                                    $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
+                                    $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
+                                    $packageHistory->Route                        = $route ? $route->name : '';
+                                    $packageHistory->status                       = 'On hold';
+
+                                    $packageHistory->save();
+                                }
                                 
-                                $package->Route = $route ? $route->name : '';
-
-                                $package->save();
-
-                                $packageHistory = new PackageHistory();
-
-                                $packageHistory->id = uniqid();
-                                $packageHistory->Reference_Number_1           = $row[0];
-                                $packageHistory->idCompany                    = 10;
-                                $packageHistory->company                      = 'AMERICAN EAGLE';
-                                $packageHistory->Dropoff_Contact_Name         = $row[21];
-                                $packageHistory->Dropoff_Contact_Phone_Number = $row[22];
-                                $packageHistory->Dropoff_Contact_Email        = $row[23];
-                                $packageHistory->Dropoff_Address_Line_1       = $row[16];
-                                $packageHistory->Dropoff_Address_Line_2       = $row[17];
-                                $packageHistory->Dropoff_City                 = $row[18];
-                                $packageHistory->Dropoff_Province             = $row[19];
-                                $packageHistory->Dropoff_Postal_Code          = $row[20];
-                                $packageHistory->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                $packageHistory->Number_Of_Pieces             = $row[25];
-                                $packageHistory->weight_unit                  = $row[26];
-                                $packageHistory->Weight                       = $row[27];
-                                $packageHistory->height                       = $row[30];
-                                $packageHistory->status                       = 'On hold';
-                                $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                                $packageHistory->Description                  = 'On hold - for: schedule task';
-                                $packageHistory->status                       = 'On hold';
-
-                                $packageHistory->save();
                             }
                         }
                         
@@ -134,8 +139,9 @@ class TaskAmericanManifest extends Command
 
                     $fileImport = new FileImport();
 
-                    $fileImport->id   = uniqid();
-                    $fileImport->name = $fileTracking;
+                    $fileImport->id        = uniqid();
+                    $fileImport->idCompany = 10;
+                    $fileImport->name      = $fileTracking;
 
                     $fileImport->save();
 

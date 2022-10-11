@@ -178,6 +178,7 @@ class PackageController extends Controller
             foreach($packageHistoryList as $packageHistory)
             {
                 $packageHistory = PackageHistory::find($packageHistory->id);
+                
                 $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
                 $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
                 $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
@@ -187,7 +188,7 @@ class PackageController extends Controller
                 $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $packageHistory->Weight                       = $request->get('Weight');
                 $packageHistory->Route                        = $request->get('Route');
-                $packageHistory->internal_comment                    = $request->internal_comment;
+                $packageHistory->internal_comment             = $request->internal_comment;
 
                 $packageHistory->save();
             }
@@ -208,7 +209,12 @@ class PackageController extends Controller
     {
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
-        $packageHistoryList = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+        $packageHistoryList = PackageHistory::with([
+                                                'user' => function($query){
+                                                    $query->select('id', 'name', 'nameOfOwner');
+                                                }
+                                            ])
+                                            ->where('Reference_Number_1', $Reference_Number_1)
                                             ->orderBy('created_at', 'asc')
                                             ->get();
 
@@ -918,7 +924,7 @@ class PackageController extends Controller
             $packageReturnList = PackageReturn::where('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Driver';
         }
@@ -930,7 +936,7 @@ class PackageController extends Controller
                                                 ->orWhere('idUserReturn', Auth::user()->id)
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Team';
         }
@@ -938,7 +944,7 @@ class PackageController extends Controller
         {
             $packageReturnList = PackageReturn::where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
-                                                ->orderBy('created_at', 'ASC');
+                                                ->orderBy('created_at', 'desc');
 
             $roleUser = 'Administrador';
         }
@@ -1017,8 +1023,6 @@ class PackageController extends Controller
                                                 ->where('status', 'Return')
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'ASC');
-
-            $roleUser = 'Team';
         }
         else
         {
@@ -1026,7 +1030,6 @@ class PackageController extends Controller
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'ASC');
 
-            $roleUser = 'Administrador';
         }
 
         if($idTeam && $idDriver)
@@ -1270,26 +1273,10 @@ class PackageController extends Controller
 
     }
 
-    public function DownloadRoadWarrior($idTeam, $idDriver, $type, $valuesCheck, $StateSearch, $dayNight = null, $dateInit = null, $dateEnd = null)
+    public function DownloadRoadWarrior($idTeam, $idDriver, $StateSearch)
     {
-        if($dateInit)
-        {
-            $initDate = $dateInit .' 00:00:00';
-            $endDate  = $dateEnd .' 23:59:59';
-        }
-        else
-        {
-            if($dayNight == 'Day')
-            {
-                $initDate = date('Y-m-d') .' 03:00:00';
-                $endDate  = date('Y-m-d') .' 14:59:59';
-            }
-            else
-            {
-                $initDate = date('Y-m-d') .' 15:00:00';
-                $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1day'));
-            }
-        }
+        $initDate = date('Y-m-d 03:00:00');
+        $endDate  = date('Y-m-d 23:59:59');
 
         $delimiter = ",";
         $filename = "road warrior " . date('Y-m-d H:i:s') . ".csv";
@@ -1303,32 +1290,18 @@ class PackageController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        if($valuesCheck == 'all')
-        {
-            $listPackageDispatch = PackageHistory::with('driver')
+        $listPackageDispatch = PackageHistory::with('driver')
                                         ->whereBetween('Date_Dispatch', [$initDate, $endDate])
                                         ->where('dispatch', 1)
                                         ->where('status', 'Dispatch');
-        }
-        else
-        {
-            $values = explode(',', $valuesCheck);
-
-            $listPackageDispatch = PackageHistory::with('driver')
-                                        ->whereIn('Reference_Number_1', $values)
-                                        ->where('status', 'Dispatch')
-                                        ->where('idUserDispatch', '!=', 0);
-        }
 
         if($idTeam && $idDriver)
         {
-            $listPackageDispatch = $listPackageDispatch->where('idUserDispatch', $idDriver);
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);
         }
         elseif($idTeam)
         {
-            $userIds = User::where('idTeam', $idTeam)->orWhere('id', $idTeam)->get('id');
-
-            $listPackageDispatch = $listPackageDispatch->whereIn('idUserDispatch', $userIds);
+            $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam);
         }
 
         if($StateSearch != 'all')
@@ -1338,27 +1311,24 @@ class PackageController extends Controller
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $StateSearch);
         }
 
-        $listPackageDispatch = $listPackageDispatch->get();
+        $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])->get();
 
         foreach($listPackageDispatch as $packageDispatch)
         {
-            if($packageDispatch->driver)
-            {
-                if($packageDispatch->driver->idTeam)
-                {
-                    $team = User::find($packageDispatch->driver->idTeam)->name;
-                }
-                else
-                {
-                    $team = $packageDispatch->driver->name;
-                }
-            }
-            else
-            {
-                $team = '';
-            }
-
-            $lineData = array($packageDispatch->Dropoff_Address_Line_1, $packageDispatch->Dropoff_Address_Line_2, $packageDispatch->Dropoff_Address_Line_1, $packageDispatch->Dropoff_City, $packageDispatch->Dropoff_Province, $packageDispatch->Dropoff_Postal_Code, 'USA', '', $packageDispatch->Dropoff_Contact_Phone_Number, $packageDispatch->Reference_Number_1, '', '', '');
+            $lineData = array(
+                                $packageDispatch->Dropoff_Address_Line_1,
+                                $packageDispatch->Dropoff_Address_Line_2,
+                                $packageDispatch->Dropoff_Address_Line_1,
+                                $packageDispatch->Dropoff_City,
+                                $packageDispatch->Dropoff_Province,
+                                $packageDispatch->Dropoff_Postal_Code, 
+                                'USA',
+                                '',
+                                $packageDispatch->Dropoff_Contact_Phone_Number,
+                                $packageDispatch->Reference_Number_1,
+                                '',
+                                '',
+                                '');
 
             fputcsv($file, $lineData, $delimiter);
         }

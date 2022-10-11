@@ -580,7 +580,7 @@ function PackageCheckDelivery() {
                                                     <>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
-                                                                <label htmlFor="">TEAM</label>
+                                                                <label htmlFor="">Team</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listTeamSelect }
@@ -589,7 +589,7 @@ function PackageCheckDelivery() {
                                                         </div>
                                                         <div className="col-lg-2">
                                                             <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
+                                                                <label htmlFor="">Driver</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listDriverSelect }
@@ -607,7 +607,7 @@ function PackageCheckDelivery() {
                                                     <>
                                                         <div className="col-lg-3">
                                                             <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
+                                                                <label htmlFor="">Driver</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                                    <option value="0">All</option>
                                                                     { listDriverSelect }
@@ -683,8 +683,8 @@ function PackageCheckDelivery() {
                                         onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                         itemClass="page-item"
                                         linkClass="page-link"
-                                        firstPageText="Primero"
-                                        lastPageText="Último"
+                                        firstPageText="First"
+                                        lastPageText="Last"
                                     />
                                 </div>
                             </div>

@@ -422,7 +422,7 @@ function User() {
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th>Rol</th>
+                                                <th>ROLE</th>
                                                 <th>FIRST NAME</th>
                                                 <th>LAST NAME</th>
                                                 <th>ADDREESS</th>

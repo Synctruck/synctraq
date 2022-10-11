@@ -76,7 +76,7 @@ function PackageInbound() {
         else
         {
             setViewButtonSave('block');
-        } 
+        }
 
     }, [file]);
 
@@ -101,10 +101,10 @@ function PackageInbound() {
             }
         });
     }
-    
+
     const exportAllPackageInbound = (route, state) => {
 
-        location.href = url_general +'package-inbound/export/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        location.href = url_general +'package-inbound/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
@@ -139,7 +139,7 @@ function PackageInbound() {
         .then(res => res.json())
         .then((response) => {
 
-            setListCompany(response.companyList);
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
         });
     }
 
@@ -317,7 +317,7 @@ function PackageInbound() {
                                                                 <div className="form-group">
                                                                     <label>PACKAGE ID</label>
                                                                     <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="16" readOnly={ readOnlyInput } required/>
+                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -816,7 +816,7 @@ function PackageInbound() {
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="16" required/>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>

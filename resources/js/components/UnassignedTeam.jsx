@@ -26,7 +26,7 @@ function UnassignedTeam() {
     const [textMessage, setTextMessage] = useState('');
     const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
 
-    const [typeMessage, setTypeMessage] = useState(''); 
+    const [typeMessage, setTypeMessage] = useState('');
 
     const [file, setFile]             = useState('');
 
@@ -131,7 +131,7 @@ function UnassignedTeam() {
         //clearValidation();
 
         setReadOnlyInput(true);
-        
+
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
 
             keyboard: true
@@ -384,7 +384,7 @@ function UnassignedTeam() {
                     setTextMessage("SUCCESSFULLY REMOVE ASSIGNED #"+ Reference_Number_1);
                     setTypeMessageDispatch('success');
                     setNumberPackage('');
-                    
+
                     listAllUnassigned(1, dataView);
 
                     document.getElementById('Reference_Number_1').focus();
@@ -490,14 +490,14 @@ function UnassignedTeam() {
                         setTextMessage('RE-ASSIGN PACKAGE #'+ Reference_Number);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
-                        
+
                         listAllUnassigned(1, dataView);
 
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
                     },
                 );
-            } 
+            }
         });
     }
 
@@ -529,7 +529,7 @@ function UnassignedTeam() {
                 <td style={ {textAlign: 'center', display: 'none'} }>
                     { idUserGeneral == assigned.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ assigned.Reference_Number_1 } onClick={ (e) => changeReference(assigned.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(assigned.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i> 
+                        <i className="bx bx-edit-alt"></i>
                     </button>
                 </td>
             </tr>
@@ -561,7 +561,7 @@ function UnassignedTeam() {
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         LoadingShow();
- 
+
         fetch(url_general +'package/return/dispatch', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
@@ -590,7 +590,7 @@ function UnassignedTeam() {
                     setTextMessage("Paquete N° "+ idPackage +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
-                    
+
                     document.getElementById('return_Reference_Number_1').focus();
                     document.getElementById('soundPitidoSuccess').play();
 
@@ -725,7 +725,7 @@ function UnassignedTeam() {
         }
     }
 
-    return ( 
+    return (
 
         <section className="section">
             { modalPackageEdit }
@@ -735,7 +735,7 @@ function UnassignedTeam() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    
+
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-4">
@@ -783,11 +783,11 @@ function UnassignedTeam() {
                                                                 </button>
                                                             </div>
                                                         </form>
-                                                    </div> 
+                                                    </div>
                                                 :
-                                                    ''       
+                                                    ''
                                             }
-                                            
+
                                         </div>
                                         <form onSubmit={ handlerValidation } autoComplete="off">
                                             <div className="row">
@@ -803,7 +803,7 @@ function UnassignedTeam() {
                                                         <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
                                                             <option value="">All</option>
                                                             { listTeamSelect }
-                                                        </select> 
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -818,7 +818,7 @@ function UnassignedTeam() {
                                 <div className="row" style={ {display: 'none'} }>
                                     <div className="col-lg-8">
                                         <div className="form-group">
-                                            <b className="alert-danger" style={ {borderRadius: '10px', padding: '10px'} }>Unassigned: { quantityUnassigned }</b> 
+                                            <b className="alert-danger" style={ {borderRadius: '10px', padding: '10px'} }>Unassigned: { quantityUnassigned }</b>
                                         </div>
                                     </div>
                                     <div className="col-lg-4">
@@ -841,13 +841,13 @@ function UnassignedTeam() {
                             <div className="row form-group table-responsive" style={ {display: 'none'} }>
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed table-bordered">
-                                        <thead> 
+                                        <thead>
                                             <tr>
                                                 <th style={ {display: 'none'} }>
                                                     <input class="form-check-input" type="checkbox" id="checkAllPackage" value="1" onChange={ () => hanldlerCheckAll() }/>
                                                 </th>
-                                                <th>FECHA</th>
-                                                <th>HORA</th>
+                                                <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th><b>TEAM</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
@@ -875,8 +875,8 @@ function UnassignedTeam() {
                                     onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                     itemClass="page-item"
                                     linkClass="page-link"
-                                    firstPageText="Primero"
-                                    lastPageText="Último"
+                                    firstPageText="First"
+                                    lastPageText="Last"
                                 />
                             </div>
                         </div>
