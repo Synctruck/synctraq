@@ -32,7 +32,6 @@ function ReportPartnerInbound() {
     useEffect( () => {
 
         listAllRoute();
-        // listAllCompany();
 
     }, []);
 
@@ -70,25 +69,7 @@ function ReportPartnerInbound() {
         });
     }
 
-    // const listAllCompany = () => {
 
-    //     setListCompany([]);
-
-    //     fetch(url_general +'company/getAll')
-    //     .then(res => res.json())
-    //     .then((response) => {
-
-    //         let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
-    //         setCompany(0);
-    //         setListCompany(CustomListCompany);
-
-    //     });
-    // }
-
-    // const optionCompany = listCompany.map( (company, i) => {
-
-    //     return <option value={company.id}>{company.name}</option>
-    // })
 
     const listAllRoute = () => {
 

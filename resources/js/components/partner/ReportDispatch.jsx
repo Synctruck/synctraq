@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function ReportDispatch() {
+function ReportPartnerDispatch() {
 
     const [listReport, setListReport] = useState([]);
     const [listTeam, setListTeam]     = useState([]);
@@ -37,7 +37,7 @@ function ReportDispatch() {
         }
         listAllTeam();
         listAllRoute();
-        listAllCompany();
+        // listAllCompany();
 
     }, []);
 
@@ -52,7 +52,7 @@ function ReportDispatch() {
 
         setListReport([]);
 
-        const responseData = await fetch(url_general +'report/list/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        const responseData = await fetch(url_general +'partners/report/list/dispatch/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res =>  res.json())
         .then((response) => {
             setListReport(response.reportList.data);
@@ -158,7 +158,7 @@ function ReportDispatch() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'partners/report/export/dispatch/'+dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
@@ -329,12 +329,12 @@ function ReportDispatch() {
             valuesCheck = 'all';
         }
 
-        location.href = url_general +'package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/day/'+ dateInit +'/'+ dateEnd;
+        location.href = url_general +'partners/package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/day/'+ dateInit +'/'+ dateEnd;
     }
 
     const handlerDownloadRoadWarrior = () => {
 
-        location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ StateSearch;
+        location.href = url_general +'partners/package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ StateSearch;
     }
 
     return (
@@ -353,11 +353,11 @@ function ReportDispatch() {
                                                     <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
                                                 </div>
                                             </div>
-                                            <div className="col-lg-2">
+                                            {/* <div className="col-lg-2">
                                                 <div className="form-group">
                                                     <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         <div className="row form-group">
@@ -370,65 +370,6 @@ function ReportDispatch() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
-
-                                            {
-                                                roleUser == 'Administrador'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Team</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -522,9 +463,9 @@ function ReportDispatch() {
     );
 }
 
-export default ReportDispatch;
+export default ReportPartnerDispatch;
 
-if (document.getElementById('reportDispatch'))
+if (document.getElementById('reportPartnerDispatch'))
 {
-    ReactDOM.render(<ReportDispatch />, document.getElementById('reportDispatch'));
+    ReactDOM.render(<ReportPartnerDispatch />, document.getElementById('reportPartnerDispatch'));
 }

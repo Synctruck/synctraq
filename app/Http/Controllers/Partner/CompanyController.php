@@ -16,7 +16,7 @@ class CompanyController extends Controller
 
     public function Login()
     {
-        return view('landing/partner/login');
+        return view('partner.login');
     }
 
     public function ValidationLogin(Request $request)

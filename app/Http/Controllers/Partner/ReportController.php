@@ -145,12 +145,12 @@ class ReportController extends Controller
 
     public function IndexDispatch()
     {
-        return view('report.indexdispatch');
+        return view('partner.report.dispatch');
     }
 
-    public function ListDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ListDispatch($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
-        $listPackageDispatch = $this->getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $listPackageDispatch = $this->getDataDispatch(Auth::guard('partner')->user()->id,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
 
         $roleUser = Auth::user()->role->name;
         $idUser   = Auth::user()->id;
@@ -441,7 +441,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportDispatch($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportDispatch($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Dispatch " . date('Y-m-d H:i:s') . ".csv";
@@ -454,7 +454,7 @@ class ReportController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageDispatch = $this->getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
+        $listPackageDispatch = $this->getDataDispatch(Auth::guard('partner')->user()->id,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
 
         foreach($listPackageDispatch as $packageDispatch)
         {

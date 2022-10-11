@@ -34,8 +34,8 @@ Route::prefix('partners')->group(function () {
         Route::get('/report/export/delivery/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDelivery']);
 
         Route::get('/report/dispatch', [ReportController::class, 'IndexDispatch']);
-        Route::get('/report/list/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDispatch']);
-        Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDispatch']);
+        Route::get('/report/list/dispatch/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDispatch']);
+        Route::get('/report/export/dispatch/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDispatch']);
 
         Route::get('/report/failed', [ReportController::class, 'IndexFailed']);
         Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListFailed']);
