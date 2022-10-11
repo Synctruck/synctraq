@@ -197,6 +197,11 @@ function Dashboard() {
                 //console.log('Route: '+ route.Route +', Inbound: '+ quantityInboundRoute +', ReInbound: '+ quantityReinboundRoute +', Dispatch: '+ quantityDispatchRoute +', Failed: '+ quantityFailedRoute +', Delivery: '+ quantityDeliveryRoute);
             });
 
+            console.log('=======================');
+            console.log('totalReturn: '+ totalReturn);
+            console.log('totalReinboundRoute: '+ totalReinboundRoute);
+            console.log('=======================');
+
             let totalPackagesRoute = {
 
                 inbound: totalInboundRoute,
