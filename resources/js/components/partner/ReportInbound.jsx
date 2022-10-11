@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function ReportInbound() {
+function ReportPartnerInbound() {
 
     const [listReport, setListReport] = useState([]);
 
@@ -32,7 +32,7 @@ function ReportInbound() {
     useEffect( () => {
 
         listAllRoute();
-        listAllCompany();
+        // listAllCompany();
 
     }, []);
 
@@ -45,7 +45,7 @@ function ReportInbound() {
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
-        fetch(url_general +'report/list/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
+        fetch(url_general +'partners/report/list/inbound/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -70,25 +70,25 @@ function ReportInbound() {
         });
     }
 
-    const listAllCompany = () => {
+    // const listAllCompany = () => {
 
-        setListCompany([]);
+    //     setListCompany([]);
 
-        fetch(url_general +'company/getAll')
-        .then(res => res.json())
-        .then((response) => {
+    //     fetch(url_general +'company/getAll')
+    //     .then(res => res.json())
+    //     .then((response) => {
 
-            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
-            setCompany(0);
-            setListCompany(CustomListCompany);
+    //         let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+    //         setCompany(0);
+    //         setListCompany(CustomListCompany);
 
-        });
-    }
+    //     });
+    // }
 
-    const optionCompany = listCompany.map( (company, i) => {
+    // const optionCompany = listCompany.map( (company, i) => {
 
-        return <option value={company.id}>{company.name}</option>
-    })
+    //     return <option value={company.id}>{company.name}</option>
+    // })
 
     const listAllRoute = () => {
 
@@ -120,7 +120,7 @@ function ReportInbound() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
+        location.href = url_general +'partners/report/export/inbound/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
     }
 
     const listReportTable = listReport.map( (pack, i) => {
@@ -281,19 +281,7 @@ function ReportInbound() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
+                                           
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -383,9 +371,9 @@ function ReportInbound() {
     );
 }
 
-export default ReportInbound;
+export default ReportPartnerInbound;
 
 // DOM element
-if (document.getElementById('reportInbound')) {
-    ReactDOM.render(<ReportInbound />, document.getElementById('reportInbound'));
+if (document.getElementById('reportPartnerInbound')) {
+    ReactDOM.render(<ReportPartnerInbound />, document.getElementById('reportPartnerInbound'));
 }

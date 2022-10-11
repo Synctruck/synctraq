@@ -74,12 +74,12 @@ class ReportController extends Controller
 
     public function IndexInbound()
     {
-        return view('report.indexinbound');
+        return view('partner.report.inbound');
     }
 
-    public function ListInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck)
+    public function ListInbound( $dateInit, $dateEnd, $route, $state, $truck)
     {
-        $listAll = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck);
+        $listAll = $this->getDataInbound(Auth::guard('partner')->user()->id, $dateInit, $dateEnd, $route, $state, $truck);
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Inbound')
@@ -384,7 +384,7 @@ class ReportController extends Controller
         return ['reportList' => $reportList];
     }
 
-    public function ExportInbound($idCompany, $dateInit, $dateEnd, $route, $state,$truck)
+    public function ExportInbound($dateInit, $dateEnd, $route, $state,$truck)
     {
         $delimiter = ",";
         $filename = "Report Inbound " . date('Y-m-d H:i:s') . ".csv";
@@ -398,7 +398,7 @@ class ReportController extends Controller
         fputcsv($file, $fields, $delimiter);
 
 
-        $listPackageInbound = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
+        $listPackageInbound = $this->getDataInbound(Auth::guard('partner')->user()->id, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
 
         foreach($listPackageInbound as $packageInbound)
         {

@@ -26,8 +26,8 @@ Route::prefix('partners')->group(function () {
         Route::get('/report/export/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
 
         Route::get('/report/inbound', [ReportController::class, 'IndexInbound']);
-        Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
-        Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ExportInbound']);
+        Route::get('/report/list/inbound/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
+        Route::get('/report/export/inbound/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ExportInbound']);
 
         Route::get('/report/delivery', [ReportController::class, 'IndexDelivery']);
         Route::get('/report/list/delivery/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDelivery']);

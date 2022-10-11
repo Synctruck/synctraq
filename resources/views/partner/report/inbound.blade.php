@@ -14,6 +14,6 @@
 	let auxDateInit = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
 </script>
-<div id="partnerInbound">
+<div id="reportPartnerInbound">
 </div>
 @endsection
