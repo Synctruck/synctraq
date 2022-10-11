@@ -4,7 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 
-function ReportNotExists() {
+function ReportPartnerNotExists() {
 
     const [listReport, setListReport] = useState([]);
 
@@ -113,9 +113,9 @@ function ReportNotExists() {
     );
 }
 
-export default ReportNotExists;
+export default ReportPartnerNotExists;
 
-if (document.getElementById('reportNotExists'))
+if (document.getElementById('reportPartnerNotExists'))
 {
-    ReactDOM.render(<ReportNotExists />, document.getElementById('reportNotExists'));
+    ReactDOM.render(<ReportPartnerNotExists />, document.getElementById('reportPartnerNotExists'));
 }

@@ -15,6 +15,6 @@
 	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
 </script>
-<div id="partnerReturnCompany">
+<div id="reportPartnerReturnCompany">
 </div>
 @endsection

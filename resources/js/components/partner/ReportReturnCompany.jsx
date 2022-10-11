@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function ReportReturnCompany() {
+function ReportPartnerReturnCompany() {
 
     const [listReport, setListReport]         = useState([]);
     const [listDeliveries, setListDeliveries] = useState([]);
@@ -70,7 +70,7 @@ function ReportReturnCompany() {
 
         setListReport([]);
 
-        fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'partners/report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -154,7 +154,7 @@ function ReportReturnCompany() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'partners/report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageReturnCompany, i) => {
@@ -454,9 +454,7 @@ function ReportReturnCompany() {
                                     <div className="col-lg-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
-                                    </div>
+
                                 </div>
                             </h5>
                             <div className="row form-group table-responsive">
@@ -507,9 +505,9 @@ function ReportReturnCompany() {
     );
 }
 
-export default ReportReturnCompany;
+export default ReportPartnerReturnCompany;
 
-if (document.getElementById('reportReturnCompany'))
+if (document.getElementById('reportPartnerReturnCompany'))
 {
-    ReactDOM.render(<ReportReturnCompany />, document.getElementById('reportReturnCompany'));
+    ReactDOM.render(<ReportPartnerReturnCompany />, document.getElementById('reportPartnerReturnCompany'));
 }

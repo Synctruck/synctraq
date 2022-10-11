@@ -371,7 +371,7 @@ class ReportController extends Controller
 
     public function IndexNotExists()
     {
-        return view('report.indexnotexists');
+        return view('partner.report.notexists');
     }
 
     public function ListNotExists($dateInit, $dateEnd)
@@ -379,9 +379,11 @@ class ReportController extends Controller
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $reportList = PackageNotExists::whereBetween('created_at', [$dateInit, $dateEnd])
-                                        ->orderBy('created_at', 'desc')
-                                        ->get();
+        $reportList = PackageNotExists::whereBetween('Date_Inbound', [$dateInit, $dateEnd])
+                                    ->join('packagehistory', 'packagehistory.Reference_Number_1 ', '=', ' packagenotexists.Reference_Number_1 ')
+                                    ->where('packagehistory.idCompany',Auth::guard('partner')->user()->id)
+                                    ->orderBy('Date_Inbound', 'desc')
+                                    ->get();
 
         return ['reportList' => $reportList];
     }
@@ -394,7 +396,7 @@ class ReportController extends Controller
         //create a file pointer
         $file = fopen('php://memory', 'w');
 
-        //set column headers
+        //set column headersPackageReturnCompanyController
         $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
@@ -648,6 +650,8 @@ class ReportController extends Controller
 
 
         $listPackageNotExists = PackageNotExists::whereBetween('Date_Inbound', [$dateInit, $dateEnd])
+                                ->join('packagehistory', 'packagehistory.Reference_Number_1 ', '=', ' packagenotexists.Reference_Number_1 ')
+                                ->where('packagehistory.idCompany',Auth::guard('partner')->user()->id)
                                 ->orderBy('Date_Inbound', 'desc')
                                 ->get();
 

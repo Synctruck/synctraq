@@ -3,6 +3,7 @@
 use App\Http\Controllers\Partner\CompanyController;
 use App\Http\Controllers\Partner\HomeController;
 use App\Http\Controllers\Partner\ReportController;
+use App\Http\Controllers\Partner\PackageReturnCompanyController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -51,7 +52,7 @@ Route::prefix('partners')->group(function () {
 
         Route::get('/report/return-company', [PackageReturnCompanyController::class, 'Index']);
         Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
-        Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
+        // Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
         Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
     });
 });
