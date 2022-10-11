@@ -220,7 +220,7 @@ class ReportController extends Controller
 
     public function IndexDelivery()
     {
-        return view('report.indexdelivery');
+        return view('partner.report.delivery');
     }
 
     public function ListDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
@@ -256,7 +256,9 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])->where('status', 'Delivery');
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                                ->where('idCompany',Auth::guard('partner')->user()->id)
+                                                ->where('status', 'Delivery');
 
         if($idTeam && $idDriver)
         {

@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function ReportDelivery() {
+function ReportPartnerDelivery() {
 
     const [listReport, setListReport]         = useState([]);
     const [listDeliveries, setListDeliveries] = useState([]);
@@ -71,7 +71,7 @@ function ReportDelivery() {
 
         setListReport([]);
 
-        fetch(url_general +'report/list/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'partners/report/list/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -156,7 +156,7 @@ function ReportDelivery() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'partners/report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageDelivery, i) => {
@@ -501,50 +501,8 @@ function ReportDelivery() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            {
-                                                roleUser == 'Administrador'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">TEAM</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
 
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
+
 
                                             <div className="col-lg-2">
                                                 <div className="row">
@@ -576,27 +534,8 @@ function ReportDelivery() {
                                     <div className="col-lg-2">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
-                                    <div className="col-lg-2">
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerUpdateState() }>Updated Onfleet</button>
-                                    </div>
-                                    <div className="col-lg-2 text-warning">
-                                        { messageUpdateOnfleet }
-                                    </div>
+
+
                                 </div>
                             </h5>
                             <div className="row form-group table-responsive">
@@ -647,9 +586,9 @@ function ReportDelivery() {
     );
 }
 
-export default ReportDelivery;
+export default ReportPartnerDelivery;
 
-if (document.getElementById('reportDelivery'))
+if (document.getElementById('reportPartnerDelivery'))
 {
-    ReactDOM.render(<ReportDelivery />, document.getElementById('reportDelivery'));
+    ReactDOM.render(<ReportPartnerDelivery />, document.getElementById('reportPartnerDelivery'));
 }

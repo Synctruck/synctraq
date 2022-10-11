@@ -27,6 +27,6 @@
         console.log(id_team,id_driver)
 
 </script>
-<div id="partnerDelivery">
+<div id="reportPartnerDelivery">
 </div>
 @endsection
