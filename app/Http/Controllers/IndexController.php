@@ -79,7 +79,6 @@ class IndexController extends Controller
 
         $quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Inbound')
-                                                // ->where('inbound', 1)
                                                 ->get()
                                                 ->count();
 
@@ -120,13 +119,62 @@ class IndexController extends Controller
 
     public function GetDataPerDate(Request $request, $date)
     {
-        $leastOneDayStartDate =date("Y-m-d",strtotime($date."- 1 days")).' 00:00:00';
-        $leastOneDayEndDate =date("Y-m-d",strtotime($date."- 1 days")).' 23:59:59';
-        $startDate =date("Y-m-d",strtotime($date)).' 00:00:00';
-        $endDate  = date("Y-m-d",strtotime($date)).' 23:59:59';
+        $leastOneDayStartDate = date("Y-m-d",strtotime($date ."- 1 days")) .' 00:00:00';
+        $leastOneDayEndDate   = date("Y-m-d",strtotime($date ."- 1 days")) .' 23:59:59';
+        $startDate            = date("Y-m-d",strtotime($date)) .' 00:00:00';
+        $endDate              = date("Y-m-d",strtotime($date)) .' 23:59:59';
+
+        $packageHistoryInbound = PackageHistory::select('Reference_Number_1', 'Route', 'status')
+                                                                ->whereBetween('created_at', [$leastOneDayStartDate, $leastOneDayEndDate])
+                                                                ->where('status', 'Inbound')
+                                                                ->groupBy('Reference_Number_1')
+                                                                ->get();
+
+        $packageHistoryListProcess = PackageHistory::select('Reference_Number_1', 'Route', 'status')
+                                            ->whereBetween('created_at', [$startDate, $endDate])
+                                            ->where('status', '!=', 'On hold')
+                                            ->where('status', '!=', 'Inbound')
+                                            ->groupBy('Reference_Number_1', 'Route', 'status')
+                                            ->get();
 
 
-        $dataPerRoutes = DB::select("SELECT
+        $packageRouteList = PackageHistory::select(DB::raw('DISTINCT Route'))
+                                            ->whereBetween('created_at', [$leastOneDayStartDate, $endDate])
+                                            ->orderBy('Route', 'asc')
+                                            ->get();
+        
+        $dataPerTeams = DB::select("SELECT
+                                p.idTeam, u.name,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagehistory p2
+                                where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status ='Dispatch' AND p2.idTeam  = p.idTeam
+                                ) as total_dispatch,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagereturn p3
+                                where (p3.created_at  BETWEEN '$startDate' AND '$endDate')  AND p3.idTeam  = p.idTeam
+                                ) as total_reinbound,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagehistory p4
+                                where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
+                                ) as total_failed,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagehistory p5
+                                where (p5.Date_Delivery BETWEEN '$startDate' AND '$endDate') AND p5.status ='Delivery' AND p5.idTeam  = p.idTeam
+                                ) as total_delivery
+                                FROM packagehistory p
+                                JOIN `user` u ON u.id = p.idTeam
+                                WHERE (p.created_at BETWEEN '$startDate' AND '$endDate' )
+                                GROUP  BY p.idTeam ");
+
+        return [
+
+            'packageHistoryInbound' => $packageHistoryInbound,
+            'packageHistoryListProcess' => $packageHistoryListProcess,
+            'packageRouteList'   => $packageRouteList,
+            'dataPerTeams' => $dataPerTeams,
+       ];
+       
+        /*$dataPerRoutes = DB::select("SELECT
                             p.Route,
                             ( SELECT count(DISTINCT Reference_Number_1)
                                 FROM packagehistory p2
@@ -179,6 +227,6 @@ class IndexController extends Controller
         'dataPerRoutes' => $dataPerRoutes,
         'dataPerTeams' => $dataPerTeams
        ];
-
+        */
     }
 }

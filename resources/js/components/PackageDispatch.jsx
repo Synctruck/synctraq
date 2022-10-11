@@ -525,6 +525,15 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoError').play();
                     }
+                    else if(response.stateAction == 'notSelectTeamDriver')
+                    {
+                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                        setTextMessageDate("SELECT A TEAM AND A DRIVER");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
                     else if(response.stateAction == 'notInland')
                     {
                         setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
