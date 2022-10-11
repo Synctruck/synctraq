@@ -141,8 +141,7 @@ class IndexController extends Controller
                                             ->whereBetween('created_at', [$startDate, $endDate])
                                             ->orderBy('Route', 'asc')
                                             ->get();
-
-
+                                            
         return [
 
             'packageHistoryInbound' => $packageHistoryInbound,
