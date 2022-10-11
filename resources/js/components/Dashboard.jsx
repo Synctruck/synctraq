@@ -213,6 +213,26 @@ function Dashboard() {
 
             setListDataPie(dataPie);
 
+            response.dataPerTeams.forEach(element => {
+
+                totalReinboundTeam += element.total_reinbound;
+                totalDispatchTeam += element.total_dispatch;
+                totalFailedTeam += element.total_failed;
+                totalDeliveryTeam += element.total_delivery;
+            });
+
+
+
+            let totalPackagesTeam = {
+                                reinbound: totalReinboundTeam,
+                                dispatch: totalDispatchTeam,
+                                failed: totalFailedTeam,
+                                delivery: totalDeliveryTeam
+                            };
+
+            setListPackageTeamTotal(totalPackagesTeam);
+            setListDataPerTeam(response.dataPerTeams);
+            
             /*response.dataPerRoutes.forEach(element => {
 
                 totalInboundRoute += element.total_inbound;
