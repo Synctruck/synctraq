@@ -365,7 +365,7 @@ class PackageManifestController extends Controller
                         {
                             $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
 
-                            $company = Company::find($row[33]);
+                            $company = Company::find($row[32]);
 
                             $package = new PackageManifest();
 
@@ -402,7 +402,7 @@ class PackageManifestController extends Controller
                             $package->Notes = $row[28];
                             $package->Number_Of_Pieces = $row[29];
                             $package->Weight = $row[30];
-                            $package->Name = isset($row[32]) ? $row[32] : '';
+                            $package->Name = isset($row[31]) ? $row[31] : '';
                             $package->filter = $packageBlocked ? 1 : 0;
                             $package->status = 'On hold';
 
