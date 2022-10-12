@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Company;
-use App\Models\CompanyStatus;
+use App\Models\{ Company, CompanyStatus };
+
+//use App\Models\{ BasicRates, Company, CompanyStatus, Configuration, DimFactor, PeakeSeason, RangeDieselSurcharge };
+
+//use App\Http\Controllers\{ BasicRateController, DimFactorController, PeakeSeasonController, RangeDieselSurchargeController };
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -45,11 +48,27 @@ class CompanyController extends Controller
 
             [
                 "name" => ["required", "unique:company", "max:300"],
+                "email" => ["required", "unique:company", "max:50"],
+                "password" => ["required", "max:250"],
+                "length_field" => ["required", "numeric", "max:50"],
+                "typeServices" => ["required"],
             ],
             [
                 "name.unique" => "Company already exists",
-                "name.required" => "El campo es requerido",
-                "name.max"  => "Debe ingresar máximo 300 dígitos",
+                "name.required" => "The field is required",
+                "name.max"  => "You must enter a maximum of 300 digits",
+
+                "email.unique" => "Email Company already exists",
+                "email.required" => "The field is required",
+                "email.max"  => "You must enter a maximum of 50 digits",
+
+                "password.required" => "The field is required",
+                "password.max"  => "You must enter a maximum of 250 digits",
+
+                "length_field.required" => "The field is required",
+                "length_field.max"  => "Debe ingresar máximo el número 50",
+
+                "typeServices.required" => "select an item",
             ]
         );
 
@@ -62,10 +81,19 @@ class CompanyController extends Controller
         {
             DB::beginTransaction();
 
-            $request['key_api']    = base64_encode(uniqid() . $request->get('name'));
-            $request['key_base64'] = 'Basic '. base64_encode($request['key_api'] .':');
-
-            Company::create($request->all());
+            $company = new Company();
+            
+            $company->name         = $request->get('name');
+            $company->email        = $request->get('email');
+            $company->password     = Hash::make($request->get('password'));
+            $company->length_field = $request->get('length_field');
+            $company->typeServices = $request->get('typeServices');
+            $company->key_webhook  = '';
+            $company->url_webhook  = '';
+            $company->key_api      = base64_encode(uniqid() . $request->get('name'));
+            $company->key_base64   = 'Basic '. base64_encode($company->key_api .':');
+            
+            $company->save();
 
             $company = Company::where('name', $request->get('name'))->first();
 
@@ -82,6 +110,18 @@ class CompanyController extends Controller
 
                 $companyStatus->save();
             }
+
+            /*$baseRatesController = new BasicRateController();
+            $baseRatesController->Insert($company->id);
+
+            $dimFactorController = new DimFactorController();
+            $dimFactorController->Insert($company->id);
+
+            $peakeSeasonController = new PeakeSeasonController();
+            $peakeSeasonController->Insert($company->id);
+
+            $rangeDieselSurchargeController = new RangeDieselSurchargeController();
+            $rangeDieselSurchargeController->Insert($company->id);*/
 
             DB::commit();
 
@@ -108,11 +148,18 @@ class CompanyController extends Controller
 
             [
                 "name" => ["required", "unique:company,name,$id", "max:300"],
+                "length_field" => ["required", "numeric", "max:50"],
+                "typeServices" => ["required"],
             ],
             [
                 "name.unique" => "Company already exists",
                 "name.required" => "El campo es requerido",
                 "name.max"  => "Debe ingresar máximo 300 dígitos",
+
+                "length_field.required" => "The field is required",
+                "length_field.max"  => "Debe ingresar máximo el número 50",
+
+                "typeServices.required" => "select an item",
             ]
         );
 
@@ -120,47 +167,74 @@ class CompanyController extends Controller
         {
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
-
-        $company = Company::find($id);
         
-        $statusList = CompanyStatus::where('idCompany', $id)->get();
-
-
-        foreach($statusList as $statusCompany)
+        try
         {
-            $companyStatus = CompanyStatus::find($statusCompany->id);
+            DB::beginTransaction();
 
-            if($companyStatus->status == 'ReInbound')
+            $statusList = CompanyStatus::where('idCompany', $id)->get();
+
+            foreach($statusList as $statusCompany)
             {
-                $companyStatus->statusCodeCompany = $request->get('reInbound');
-            }
-            else if($companyStatus->status == 'On hold')
-            {
-                $companyStatus->statusCodeCompany = $request->get('onHold');
-            }
-            else if($companyStatus->status == 'Dispatch')
-            {
-                $companyStatus->statusCodeCompany = $request->get('dispatch');
-            }
-            else if($companyStatus->status == 'Delivery')
-            {
-                $companyStatus->statusCodeCompany = $request->get('delivery');
-            }
-            else if($companyStatus->status == 'Inbound')
-            {
-                $companyStatus->statusCodeCompany = $request->get('inbound');
-            }
-            else if($companyStatus->status == 'ReturnCompany')
-            {
-                $companyStatus->statusCodeCompany = $request->get('returnCompany');
+                $companyStatus = CompanyStatus::find($statusCompany->id);
+
+                if($companyStatus->status == 'ReInbound')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('reInbound');
+                }
+                else if($companyStatus->status == 'On hold')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('onHold');
+                }
+                else if($companyStatus->status == 'Dispatch')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('dispatch');
+                }
+                else if($companyStatus->status == 'Delivery')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('delivery');
+                }
+                else if($companyStatus->status == 'Inbound')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('inbound');
+                }
+                else if($companyStatus->status == 'ReturnCompany')
+                {
+                    $companyStatus->statusCodeCompany = $request->get('returnCompany');
+                }
+
+                $companyStatus->save();
             }
 
-            $companyStatus->save();
+            $company = Company::find($id);
+
+            $company->name         = $request->get('name');
+            $company->length_field = $request->get('length_field');
+            $company->typeServices = $request->get('typeServices');
+
+            if($request->get('typeServices') == 'API')
+            {
+                $company->key_webhook = $request->get('key_webhook');
+                $company->url_webhook = $request->get('url_webhook');
+            }
+            else
+            {
+                $company->key_webhook = '';
+                $company->url_webhook = '';
+            }
+
+            $company->save();
+
+            DB::commit();
+
+            return ['stateAction' => true];
         }
+        catch(Exception $e)
+        {
+            DB::rollback();
 
-        $company->update($request->all()); 
-
-        return ['stateAction' => true];
+            return ['stateAction' => true];     
+        }
     }
 
     public function Delete($id)
@@ -192,5 +266,35 @@ class CompanyController extends Controller
 
             return ['stateAction' => false];
         }
+    }
+
+    public function GetConfigurationRates($idCompany)
+    {
+        $dieselPrice = Configuration::first()->diesel_price;
+
+        $basicRates  = BasicRates::where('idCompany', $idCompany)
+                                    ->orderBy('weight', 'asc')
+                                    ->get();
+
+        $peakeSeason = PeakeSeason::where('idCompany', $idCompany)->first();
+
+        if(date('Y-m-d') >= $peakeSeason->start_date && date('Y-m-d') <= $peakeSeason->end_date)
+        {
+            $peakeSeason = $peakeSeason;
+        }
+        else
+        {
+            $peakeSeason = null;
+        }
+
+        $surchargePercentage = RangeDieselSurcharge::where('idCompany', $idCompany)
+                                                    ->where('at_least', '<=', $dieselPrice)
+                                                    ->where('but_less', '>=',  $dieselPrice)
+                                                    ->first()->surcharge_percentage;
+
+        $dimFactor   = DimFactor::where('idCompany', $idCompany)->first()->factor;
+        $lengthField = Company::select('length_field')->find($idCompany)->length_field;
+
+        return ['basicRates' => $basicRates, 'peakeSeason' => $peakeSeason, 'surchargePercentage' => $surchargePercentage, 'lengthField' => $lengthField, 'dimFactor' => $dimFactor];
     }
 }

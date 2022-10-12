@@ -11,10 +11,10 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let idUserGeneral = '{{Auth::user()->id}}';
+	let idUserGeneral = '{{Auth::guard('partner')->user()->id}}';
 	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
-    let auth = @json(Auth::user());
+    let auth = @json(Auth::guard('partner')->user());
     var id_team = 0;
     var id_driver = 0;
         if(auth.idRole == 4){
@@ -29,3 +29,4 @@
 <div id="reportPartnerDispatch">
 </div>
 @endsection
+ 
