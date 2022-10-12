@@ -11,9 +11,8 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let idUserGeneral = '{{Auth::guard('partner')->user()->id}}';
-	let auxDateInit   = '{{date('Y-m-d')}}';
-	let auxDateEnd    = '{{date('Y-m-t')}}';
+	let auxDateInit = '{{date('Y-m-d')}}';
+	let auxDateEnd  = '{{date('Y-m-t')}}';
 </script>
 <div id="reportPartnerReturnCompany">
 </div>

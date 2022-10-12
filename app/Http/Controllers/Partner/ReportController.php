@@ -152,15 +152,13 @@ class ReportController extends Controller
     {
         $listPackageDispatch = $this->getDataDispatch(Auth::guard('partner')->user()->id,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
 
-        $roleUser = Auth::user()->role->name;
-        $idUser   = Auth::user()->id;
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('dispatch', 1)
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => $roleUser,'idUser'=>$idUser];
+        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => 0,'idUser'=>0];
     }
 
     private function getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
@@ -238,14 +236,12 @@ class ReportController extends Controller
                                         ->orderBy('created_at', 'desc')
                                         ->get();
 
-        $roleUser = Auth::user()->role->name;
-
         $listState = PackageDispatch::select('Dropoff_Province')
                                     ->where('status', 'Delivery')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
+        return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => ''];
     }
 
     private function getDataDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='list'){
@@ -304,15 +300,12 @@ class ReportController extends Controller
     {
         $listPackageFailed = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
 
-        $roleUser = Auth::user()->role->name;
-        $idUser   = Auth::user()->id;
-
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Failed')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listPackageFailed, 'listState' => $listState, 'roleUser' => $roleUser, 'idUser' => $idUser];
+        return ['reportList' => $listPackageFailed, 'listState' => $listState, 'roleUser' => '', 'idUser' => ''];
     }
 
     private function getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')

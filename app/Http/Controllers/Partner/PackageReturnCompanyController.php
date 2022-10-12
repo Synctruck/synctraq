@@ -47,8 +47,6 @@ class PackageReturnCompanyController extends Controller
     public function List($dateInit, $dateEnd, $route, $state)
     {
 
-        $roleUser = Auth::user()->role->name;
-
 
         $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state);
 
@@ -58,7 +56,7 @@ class PackageReturnCompanyController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => ''];
     }
 
     private function getDataReturn($dateInit, $dateEnd, $route, $state,$type='list')

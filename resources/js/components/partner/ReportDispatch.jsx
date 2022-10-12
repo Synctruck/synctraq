@@ -32,9 +32,7 @@ function ReportPartnerDispatch() {
     const [totalPackage, setTotalPackage] = useState(0);
 
     useEffect( () => {
-        if(auth.idRole == 3){
-            listAllDriverByTeam(auth.id);
-        }
+
         listAllTeam();
         listAllRoute();
         // listAllCompany();
@@ -70,15 +68,6 @@ function ReportPartnerDispatch() {
                 listOptionState(response.listState);
             }
 
-            // if(response.roleUser == 'Team')
-            // {
-            //     listAllDriverByTeam(auth.id);
-            //     setIdTeam(auth.id);
-            // }
-            // else
-            // {
-            //     listAllTeam();
-            // }
         });
 
         console.log(responseData);
