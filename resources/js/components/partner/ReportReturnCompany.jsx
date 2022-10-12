@@ -88,15 +88,6 @@ function ReportPartnerReturnCompany() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
-            {
-                //listAllTeam();
-            }
-            else
-            {
-                listAllDriverByTeam(idUserGeneral);
-                setIdTeam(idUserGeneral);
-            }
         });
     }
 

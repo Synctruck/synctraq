@@ -54,9 +54,7 @@ function ReportPartnerDelivery() {
 
         listAllTeam();
         listAllRoute();
-        if(auth.idRole == 3){
-            listAllDriverByTeam(auth.id);
-        }
+
 
     }, []);
 
