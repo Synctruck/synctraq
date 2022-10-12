@@ -43,14 +43,14 @@
                 <span>Delivery</span>
             </a>
         </li>
-        <li>
+        <li style="display: none;">
             <a class="nav-link {{Request::is('partners/report/notExists') ? 'show' : 'collapsed'}}" href="{{url('partners/report/notExists')}}">
                 <i class="bx bxs-report"></i>
                 <span>Not Exists</span>
             </a>
         </li>
 
-        <li>
+        <li style="display: none;">
             <a class="nav-link {{Request::is('partners/report/return-company') ? 'show' : 'collapsed'}}" href="{{url('partners/report/return-company')}}">
                 <i class="bx bxs-report"></i>
                 <span>Return Company</span>
