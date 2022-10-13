@@ -85,7 +85,25 @@
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
+    <div class="search-bar">
 
+            <div class="row">
+                <div class="col-lg-6">
+                    <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
+                        <input type="text" id="searchPackage" name="searchPackage" placeholder="Search PACKAGE ID" title="Enter search keyword">
+                        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <form class="search-form d-flex align-items-center" onsubmit="SearchPackageTask(event)">
+                        <input type="text" id="searchPackageTask" name="searchPackageTask" placeholder="Search TASK#" title="Enter search keyword">
+                        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+                    </form>
+                </div>
+            </div>
+
+
+    </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
@@ -300,6 +318,167 @@
 
     <main id="main" class="main">
         <div id="loader"></div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5 class="text-primary" id="titleModalHistory">Historial Package</h5>
+                                <h6 class="text-primary" id="subTitleModalHistory"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h6 class="text-primary" id="subTitleModalHistory"></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="" onsubmit="SaveEditPackageHistory(event);">
+                        <div class="modal-body">
+                            <input type="hidden" id="idPackage" name="Reference_Number_1">
+                            <div class="row">
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactName">CLIENT</label>
+                                    <input type="text" id="contactName" name="contactName" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactPhone">CONTACT</label>
+                                    <input type="text" id="contactPhone" name="contactPhone" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactAddress">ADDREESS</label>
+                                    <input type="text" id="contactAddress" name="contactAddress" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactCity">CITY</label>
+                                    <input type="text" id="contactCity" name="contactCity" class="form-control" disabled>
+                                </div>
+
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactState">STATE</label>
+                                    <input type="text" id="contactState" name="contactState" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactZipCode">ZIP C</label>
+                                    <input type="text" id="contactZipCode" name="contactZipCode" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactWeight">WEIGHT</label>
+                                    <input type="text" id="contactWeight" name="contactWeight" class="form-control" disabled>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactRoute">ROUTE</label>
+                                    <input type="text" id="contactRoute" name="contactRoute" class="form-control" disabled>
+                                </div>
+
+                                <div class="col-lg-3 form-group">
+                                    <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #" disabled>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="contactState">INTERNAL COMMENT</label>
+                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control" disabled></textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table id="tableHistoryPackage" class="table table-condensed table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>STATUS</th>
+                                                <th>DESCRIPTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableHistoryPackageTbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModalTask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5 class="text-primary">Status Package Track#</h5>
+                                <h6 class="text-primary"></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="" onsubmit="SaveEditPackageHistory(event);">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-6 form-group">
+                                    <label for="teamOnfleet">TASK #</label>
+                                    <input type="text" id="taskOnfleet" name="teamOnfleet" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="teamOnfleet">PACKAGE ID</label>
+                                    <input type="text" id="packageID" name="teamOnfleet" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="teamOnfleet">TEAM</label>
+                                    <input type="text" id="teamOnfleet" name="teamOnfleet" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="driverOnfleet">DRIVER</label>
+                                    <input type="text" id="driverOnfleet" name="driverOnfleet" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="contactOnfleetName">CLIENT</label>
+                                    <input type="text" id="contactOnfleetName" name="contactOnfleetName" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="contactOnfleetPhone">CONTACT</label>
+                                    <input type="text" id="contactOnfleetPhone" name="contactOnfleetPhone" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="contactOnfleetAddress">ADDREESS</label>
+                                    <input type="text" id="contactOnfleetAddress" name="contactOnfleetAddress" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="contactOnfleetCity">CITY</label>
+                                    <input type="text" id="contactOnfleetCity" name="contactOnfleetCity" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="contactOnfleetState">STATE</label>
+                                    <input type="text" id="contactOnfleetState" name="contactOnfleetState" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="contactOnfleetZipCode">ZIP C</label>
+                                    <input type="text" id="contactOnfleetZipCode" name="contactOnfleetZipCode" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="statusOnfleet">Status</label>
+                                    <input type="text" id="statusOnfleet" name="statusOnfleet" class="form-control" readonly>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <table id="tableOnfleet" class="table table-condensed table-bordered">
+                                            <tbody id="tableOnfleetTbody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModalTask');">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!--Contenid -->
@@ -337,6 +516,245 @@
     <!-- Template Main JS File -->
 
     <script src="{{asset('admin/assets/js/main.js')}}"></script>
+    <script>
+        var url_general = '{{url('/')}}/';
+
+        function LoadingShow()
+        {
+            //document.getElementById('loader').style.display = 'block';
+        }
+
+        function LoadingHide()
+        {
+            //document.getElementById('loader').style.display = 'none';
+        }
+
+        function SearchPackage(e)
+        {
+            e.preventDefault();
+
+            let PACKAGE_ID = document.getElementById('searchPackage').value;
+
+            fetch(url_general +'package-history/search/'+ PACKAGE_ID)
+            .then(response => response.json())
+            .then(response => {
+
+                let packageBlocked     = response.packageBlocked;
+                let packageHistoryList = response.packageHistoryList;
+                let packageDelivery    = response.packageDelivery;
+                let packageDispatch    = response.packageDispatch;
+
+                document.getElementById('taskOnfleetHistory').value           = '';
+                document.getElementById('tableHistoryPackageTbody').innerHTML = '';
+
+                if(packageDispatch)
+                {
+                    document.getElementById('taskOnfleetHistory').value = packageDispatch.taskOnfleet;
+                }
+
+                let tableHistoryPackage = document.getElementById('tableHistoryPackageTbody');
+
+                let tr = '';
+
+                if(packageBlocked)
+                {
+                    tr =    '<tr>'+
+                                '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
+                                '<td>PACKAGE BLOCKED</td>'+
+                                '<td>'+ packageBlocked.comment +'</td>'+
+                            '</tr>';
+
+                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                }
+
+                packageHistoryList.forEach( package =>  {
+
+                    let Description        = '';
+                    let Description_Return = '';
+
+                    if(package.Description_Return != '')
+                    {
+                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
+                    }
+
+                    if(package.status == 'Failed')
+                    {
+                        Description = package.Description_Onfleet;
+                    }
+                    else
+                    {
+                        Description = package.Description;
+                    }
+
+                    tr =    '<tr>'+
+                                '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
+                                '<td>'+ package.status +'</td>'+
+                                '<td>'+ Description + Description_Return +'</td>'+
+                            '</tr>';
+
+
+                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                });
+
+                if(packageDispatch)
+                {
+                    if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                    {
+                        let urlsPhoto = packageDispatch.photoUrl.split(',')
+
+                        urlsPhoto.forEach( photoCode => {
+
+                            let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+
+                            tr =    '<tr>'+
+                                        '<td colspan="3"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                    '</tr>';
+
+                            tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                        });
+                    }
+                    else if(packageDelivery)
+                    {
+                        let urlsPhoto = packageDelivery.photoUrl.split('https:')
+
+                        urlsPhoto.forEach( url => {
+
+                            if(url)
+                            {
+                                tr =    '<tr>'+
+                                            '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                        '</tr>';
+
+                                tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                            }
+
+                        });
+                    }
+                }
+
+                document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;
+                document.getElementById('contactName').value           = '';
+                document.getElementById('contactPhone').value          = '';
+                document.getElementById('contactAddress').value        = '';
+
+                if(packageHistoryList.length > 0)
+                {
+                    document.getElementById('idPackage').value       = packageHistoryList[0].Reference_Number_1;
+                    document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
+                    document.getElementById('contactPhone').value    = packageHistoryList[0].Dropoff_Contact_Phone_Number;
+                    document.getElementById('contactAddress').value  = packageHistoryList[0].Dropoff_Address_Line_1;
+                    document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
+                    document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
+                    document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;
+                    document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
+                    document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
+                    document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
+                }
+
+                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+
+                    keyboard: false
+                })
+
+                myModal.toggle();
+            });
+        }
+
+        function SearchPackageTask(e)
+        {console.log('buscarrr');
+            e.preventDefault();
+
+            let PACKAGE_ID = document.getElementById('searchPackageTask').value;
+
+            fetch(url_general +'package-history/search-task/'+ PACKAGE_ID)
+            .then(response => response.json())
+            .then(response => {
+
+                if(response.stateAction == 200)
+                {
+                    let onfleet = response.onfleet;
+                    let driver  = response.driver;
+                    let team    = response.team;
+
+                    document.getElementById('taskOnfleet').value = document.getElementById('searchPackageTask').value;
+                    document.getElementById('packageID').value = onfleet['notes'];
+                    document.getElementById('teamOnfleet').value   = team;
+                    document.getElementById('driverOnfleet').value = driver;
+
+                    document.getElementById('contactOnfleetName').value    = onfleet['recipients'][0]['name'];
+                    document.getElementById('contactOnfleetPhone').value   = onfleet['recipients'][0]['phone'];
+                    document.getElementById('contactOnfleetAddress').value = onfleet['destination']['address']['apartment'] +' '+ onfleet['destination']['address']['country'] +' '+ onfleet['destination']['address']['number'] +' '+ onfleet['destination']['address']['postalCode'] +' '+ onfleet['destination']['address']['street'];
+                    document.getElementById('contactOnfleetCity').value    = onfleet['destination']['address']['city'];
+                    document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state'];
+                    document.getElementById('contactOnfleetZipCode').value = onfleet['destination']['address']['postalCode'];
+                    document.getElementById('statusOnfleet').value  = onfleet['state'] +' success('+ onfleet['completionDetails']['success'] +')' ;
+
+                    let tr = '';
+
+                    if(onfleet['state'] == 3)
+                    {
+                        document.getElementById('tableOnfleetTbody').innerHTML = '';
+
+                        let tableOnfleet = document.getElementById('tableOnfleet');
+
+                        if(onfleet['completionDetails']['photoUploadIds'].length > 1)
+                        {
+                            let urlsPhoto = onfleet['completionDetails']['photoUploadIds']
+
+                            urlsPhoto.forEach( photoUploadId => {
+
+                                tr =    '<tr>'+
+                                            '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
+                                        '</tr>';
+
+                                tableOnfleet.insertRow(-1).innerHTML = tr;
+                            });
+                        }
+                        else
+                        {
+                            let photoUploadId = onfleet['completionDetails']['photoUploadId'];
+
+                            tr =    '<tr>'+
+                                        '<td colspan="3"><img src="https://d15p8tr8p0vffz.cloudfront.net/'+ photoUploadId +'/800x.png" class="img-fluid"/></td>'+
+                                    '</tr>';
+
+                            tableOnfleet.insertRow(-1).innerHTML = tr;
+                        }
+                    }
+
+                    var myModal = new bootstrap.Modal(document.getElementById('exampleModalTask'), {
+
+                        keyboard: false
+                    })
+
+                    myModal.toggle();
+                }
+                else
+                {
+                    alert('error consulta data');
+                }
+            });
+        }
+
+        function SaveEditPackageHistory(e)
+        {
+           console.log('error 401');
+        }
+
+        function CloseModal(idModal)
+        {
+            document.getElementById(idModal).style.display = 'none';
+
+            var modal = document.getElementsByClassName('modal-backdrop');
+
+            for(var i = 0; i < modal.length; i++)
+            {
+                modal[i].style.display = "none"; // depending on what you're doing
+            }
+
+            document.getElementById('bodyAdmin').setAttribute('style', 'position: relative; min-height: 100%; top: 0px;');
+        }
+    </script>
     <script src="{{ asset('js/app.js') }}?{{time()}}" defer></script>
 
 
