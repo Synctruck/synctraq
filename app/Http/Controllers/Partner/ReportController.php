@@ -311,7 +311,9 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listPackageFailed = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Failed');
+        $listPackageFailed = PackageHistory::where('idCompany', $idCompany)
+                                            ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                            ->where('status', 'Failed');
 
         if($idTeam && $idDriver)
         {
@@ -334,11 +336,6 @@ class ReportController extends Controller
         if($state != 'all')
         {
             $listPackageFailed = $listPackageFailed->whereIn('Dropoff_Province', $states);
-        }
-
-        if($idCompany && $idCompany !=0)
-        {
-            $listPackageFailed = $listPackageFailed->where('idCompany', $idCompany);
         }
 
         if($type == 'list')
