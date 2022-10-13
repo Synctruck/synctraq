@@ -23,6 +23,9 @@ Route::post('/user/login', [UserController::class, 'ValidationLogin']);
 
 Route::get('routes/getAll', [RoutesController::class, 'GetAll']);
 
+Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
+Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);
+
 Route::group(['middleware' => 'auth'], function() {
 
     Route::get('package-blocked', [PackageBlockedController::class, 'Index'])->middleware('permission:packageBlocked.index');
@@ -36,8 +39,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/dashboard/getallquantity/{startDate}/{endDate}', [IndexController::class, 'GetAllQuantity']);
 	Route::get('/dashboard/getDataPerDate/{startDate}', [IndexController::class, 'GetDataPerDate']);
 
-	Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
-	Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);
 	Route::post('/package-history/update', [PackageController::class, 'Update']);
 
 	//============ Assigned
