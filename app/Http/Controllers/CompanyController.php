@@ -27,15 +27,16 @@ class CompanyController extends Controller
 
     public function GetAll(Request $request)
     {
-        $companyList = Company::orderBy('name', 'asc')->get();
+        $companyList = Company::orderBy('name', 'asc')->where('status', 'Active')->get();
         
         return ['companyList' => $companyList];
     }
 
     public function List(Request $request)
     {
-        $companyList = Company::with(['company_status'])
+        $companyList = Company::with(['company_status', 'histories'])
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
+                                ->orWhere('email', 'like', '%'. $request->get('textSearch') .'%')
                                 ->orderBy('name', 'asc')
                                 ->paginate($this->paginate);
         
@@ -48,10 +49,11 @@ class CompanyController extends Controller
 
             [
                 "name" => ["required", "unique:company", "max:300"],
-                "email" => ["required", "unique:company", "max:50"],
+                "email" => ["required", "unique:company", "email", "max:50"],
                 "password" => ["required", "max:250"],
                 "length_field" => ["required", "numeric", "max:50"],
                 "typeServices" => ["required"],
+                "status" => ["required"],
             ],
             [
                 "name.unique" => "Company already exists",
@@ -61,6 +63,7 @@ class CompanyController extends Controller
                 "email.unique" => "Email Company already exists",
                 "email.required" => "The field is required",
                 "email.max"  => "You must enter a maximum of 50 digits",
+                "email.email" => "Enter a valid email address",
 
                 "password.required" => "The field is required",
                 "password.max"  => "You must enter a maximum of 250 digits",
@@ -68,7 +71,9 @@ class CompanyController extends Controller
                 "length_field.required" => "The field is required",
                 "length_field.max"  => "Debe ingresar máximo el número 50",
 
-                "typeServices.required" => "select an item",
+                "typeServices.required" => "Select an item",
+
+                "status.required" => "Select an item",
             ]
         );
 
@@ -88,6 +93,7 @@ class CompanyController extends Controller
             $company->password     = Hash::make($request->get('password'));
             $company->length_field = $request->get('length_field');
             $company->typeServices = $request->get('typeServices');
+            $company->status       = $request->get('status');
             $company->key_webhook  = '';
             $company->url_webhook  = '';
             $company->key_api      = base64_encode(uniqid() . $request->get('name'));
@@ -148,6 +154,7 @@ class CompanyController extends Controller
 
             [
                 "name" => ["required", "unique:company,name,$id", "max:300"],
+                "email" => ["required", "unique:company,email,$id", "email", "max:50"],
                 "length_field" => ["required", "numeric", "max:50"],
                 "typeServices" => ["required"],
             ],
@@ -155,6 +162,11 @@ class CompanyController extends Controller
                 "name.unique" => "Company already exists",
                 "name.required" => "El campo es requerido",
                 "name.max"  => "Debe ingresar máximo 300 dígitos",
+
+                "email.unique" => "Email Company already exists",
+                "email.required" => "The field is required",
+                "email.max"  => "You must enter a maximum of 50 digits",
+                "email.email" => "Enter a valid email address",
 
                 "length_field.required" => "The field is required",
                 "length_field.max"  => "Debe ingresar máximo el número 50",
@@ -209,8 +221,10 @@ class CompanyController extends Controller
             $company = Company::find($id);
 
             $company->name         = $request->get('name');
+            $company->email        = $request->get('email');
             $company->length_field = $request->get('length_field');
             $company->typeServices = $request->get('typeServices');
+            $company->status       = $request->get('status');
 
             if($request->get('typeServices') == 'API')
             {
@@ -243,11 +257,7 @@ class CompanyController extends Controller
         {
             DB::beginTransaction();
 
-            $comment = Company::find($id);
-
-            $comment->delete();
-
-            $statusCompanyList = companyStatus::where('idCompany', $id)->get();
+            $statusCompanyList = CompanyStatus::where('idCompany', $id)->get();
 
             foreach($statusCompanyList as $statusCompany)
             {
@@ -255,6 +265,10 @@ class CompanyController extends Controller
 
                 $statusCompany->delete();
             }
+
+            $company = Company::find($id);
+
+            $company->delete();
 
             DB::commit();
 

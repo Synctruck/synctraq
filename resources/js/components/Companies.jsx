@@ -12,6 +12,7 @@ function Companies() {
     const [password, setPassword]         = useState('');
     const [lengthField, setLengthField]   = useState('');
     const [typeServices, setTypeServices] = useState('');
+    const [status, setStatus] = useState('');
     const [keyWebhook, setKeyWebhook]     = useState('');
     const [urlWebhook, setUrlWebhook]     = useState('');
 
@@ -82,7 +83,7 @@ function Companies() {
         myModal.show();
     }
 
-    const handlerSaveRoute = (e) => {
+    const handlerSaveCategory = (e) => {
 
         e.preventDefault();
 
@@ -93,6 +94,7 @@ function Companies() {
         formData.append('password', password);
         formData.append('length_field', lengthField);
         formData.append('typeServices', typeServices);
+        formData.append('status', status);
         formData.append('key_webhook', keyWebhook);
         formData.append('url_webhook', urlWebhook);
         formData.append('onHold', onHold);
@@ -219,7 +221,10 @@ function Companies() {
 
             setId(company.id);
             setName(company.name);
+            setEmail(company.email);
+            setPassword(company.email);
             setTypeServices(company.typeServices);
+            setStatus(company.status);
             setLengthField(company.length_field);
             setKeyWebhook(company.key_webhook);
             setUrlWebhook(company.url_webhook);
@@ -267,6 +272,7 @@ function Companies() {
         setPassword('');
         setTypeServices('');
         setLengthField('');
+        setStatus('');
         setOnHold('');
         setInbound('');
         setDispatch('');
@@ -281,10 +287,19 @@ function Companies() {
         document.getElementById('name').innerHTML     = '';
 
         document.getElementById('email').style.display = 'none';
-        document.getElementById('name').innerHTML     = '';
+        document.getElementById('email').innerHTML     = '';
 
         document.getElementById('password').style.display = 'none';
-        document.getElementById('name').innerHTML     = '';
+        document.getElementById('password').innerHTML     = '';
+
+        document.getElementById('typeServices').style.display = 'none';
+        document.getElementById('typeServices').innerHTML     = '';
+
+        document.getElementById('length_field').style.display = 'none';
+        document.getElementById('length_field').innerHTML     = '';
+
+        document.getElementById('status').style.display = 'none';
+        document.getElementById('status').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -331,16 +346,14 @@ function Companies() {
 
     const listCompanyTable = listCompany.map( (company, i) => {
 
-        let buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
-                                <i className="bx bxs-trash-alt"></i>
-                            </button>
+        let buttonDelete = '';
 
-        /*if(company.histories.length == 0)
+        if(company.histories.length == 0)
         {
             buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
                                 <i className="bx bxs-trash-alt"></i>
                             </button>
-        }*/
+        }
 
         let status1 = <p><b>{ company.company_status[0].status }</b>: { company.company_status[0].statusCodeCompany }</p>;
         let status2 = <p><b>{ company.company_status[1].status }</b>: { company.company_status[1].statusCodeCompany }</p>;
@@ -446,7 +459,7 @@ function Companies() {
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveRoute }>
+                                            <form onSubmit={ handlerSaveCategory }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
                                                         <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
@@ -459,15 +472,15 @@ function Companies() {
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className={ (id == 0 ? 'col-lg-6 form-group' : 'col-lg-12 form-group') }>
                                                                 <label>Email</label>
                                                                 <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="email" className="form-control" value={ email } maxLength="100" onChange={ (e) => setEmail(e.target.value) } required/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'block' : 'none')} }>
                                                                 <label>Password</label>
                                                                 <div id="password" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="password" className="form-control" value={ password } maxLength="100" onChange={ (e) => setPassword(e.target.value) } required/>
+                                                                <input type="password" className="form-control" value={ password } minLength="5" maxLength="100" onChange={ (e) => setPassword(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
                                                                 <label>Type Of Service</label>
@@ -482,6 +495,15 @@ function Companies() {
                                                                 <label>Scan Length</label>
                                                                 <div id="length_field" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="number" className="form-control" value={ lengthField } max="50" onChange={ (e) => setLengthField(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Status</label>
+                                                                <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setStatus(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="Active" selected={ (status == 'Active' ? 'selected' : '' ) }>Active</option>
+                                                                    <option value="Inactive" selected={ (status == 'Inactive' ? 'selected' : '' ) }>Inactive</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div className="row">
