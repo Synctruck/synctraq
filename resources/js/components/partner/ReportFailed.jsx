@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 
-function ReportFailed() {
+function ReportPartnerFailed() {
 
     const [listReport, setListReport] = useState([]);
     const [listTeam, setListTeam]     = useState([]);
@@ -34,12 +34,9 @@ function ReportFailed() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
     useEffect( () => {
-        if(auth.idRole == 3){
-            listAllDriverByTeam(auth.id);
-        }
+
         listAllTeam();
         listAllRoute();
-        listAllCompany();
 
     }, []);
 
@@ -54,7 +51,7 @@ function ReportFailed() {
 
         setListReport([]);
 
-        const responseData = await fetch(url_general +'report/list/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        const responseData = await fetch(url_general +'partners/report/list/failed/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res =>  res.json())
         .then((response) => {
             setListReport(response.reportList.data);
@@ -76,21 +73,6 @@ function ReportFailed() {
         console.log(responseData);
     }
 
-
-    const listAllCompany = () => {
-
-        setListCompany([]);
-
-        fetch(url_general +'company/getAll')
-        .then(res => res.json())
-        .then((response) => {
-
-            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
-            setCompany(0);
-            setListCompany(CustomListCompany);
-
-        });
-    }
 
     const listAllTeam = () => {
 
@@ -133,10 +115,7 @@ function ReportFailed() {
 
         setDateInit(date);
     }
-    const optionCompany = listCompany.map( (company, i) => {
 
-        return <option value={company.id}>{company.name}</option>
-    })
 
     const handlerChangeDateEnd = (date) => {
 
@@ -150,13 +129,12 @@ function ReportFailed() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'partners/report/export/failed/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
     }
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
 
-        let team   = (packageDispatch.team ? packageDispatch.team.name : '');
-        let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+
 
         return (
 
@@ -168,25 +146,6 @@ function ReportFailed() {
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
-                {
-                    roleUser == 'Administrador'
-                    ?
-                        <>
-                            <td><b>{ team }</b></td>
-                            <td><b>{ driver }</b></td>
-                        </>
-
-
-                    :
-                        ''
-                }
-                {
-                    roleUser == 'Team'
-                    ?
-                        <td><b>{ driver }</b></td>
-                    :
-                        ''
-                }
                 <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
                 <td>{ packageDispatch.Dropoff_Contact_Name }</td>
                 <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
@@ -343,64 +302,6 @@ function ReportFailed() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
-
-                                            {
-                                                roleUser == 'Administrador'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Team</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
 
                                             <div className="col-lg-2">
                                                 <div className="row">
@@ -494,9 +395,9 @@ function ReportFailed() {
     );
 }
 
-export default ReportFailed;
+export default ReportPartnerFailed;
 
-if (document.getElementById('reportFailed'))
+if (document.getElementById('reportPartnerFailed'))
 {
-    ReactDOM.render(<ReportFailed />, document.getElementById('reportFailed'));
+    ReactDOM.render(<ReportPartnerFailed />, document.getElementById('reportPartnerFailed'));
 }

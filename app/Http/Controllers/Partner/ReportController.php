@@ -293,12 +293,12 @@ class ReportController extends Controller
 
     public function IndexFailed()
     {
-        return view('report.indexfailed');
+        return view('partner.report.failed');
     }
 
-    public function ListFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ListFailed($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
-        $listPackageFailed = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $listPackageFailed = $this->getDataFailed($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Failed')
@@ -308,8 +308,9 @@ class ReportController extends Controller
         return ['reportList' => $listPackageFailed, 'listState' => $listState, 'roleUser' => '', 'idUser' => ''];
     }
 
-    private function getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
+    private function getDataFailed($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
     {
+        $idCompany = Auth::guard('partner')->user()->id;
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
@@ -536,7 +537,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportFailed($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Failed " . date('Y-m-d H:i:s') . ".csv";
@@ -549,7 +550,7 @@ class ReportController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageFailed = $this->getDataFailed($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
+        $listPackageFailed = $this->getDataFailed($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
 
         foreach($listPackageFailed as $packageFailed)
         {

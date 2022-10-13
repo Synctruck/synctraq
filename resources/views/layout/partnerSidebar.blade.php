@@ -44,6 +44,12 @@
             </a>
         </li>
         <li>
+            <a class="nav-link {{Request::is('partners/report/failed') ? 'show' : 'collapsed'}}" href="{{url('partners/report/failed')}}">
+                <i class="bx bxs-report"></i>
+                <span>Failed</span>
+            </a>
+        </li>
+        <li>
             <a class="nav-link {{Request::is('partners/report/notExists') ? 'show' : 'collapsed'}}" href="{{url('partners/report/notExists')}}">
                 <i class="bx bxs-report"></i>
                 <span>Not Exists</span>
