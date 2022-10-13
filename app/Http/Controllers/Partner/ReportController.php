@@ -33,7 +33,7 @@ class ReportController extends Controller
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'On hold')
-                                    ->where('idCompany',Auth::guard('partner')->user()->id)
+                                    ->where('idCompany', Auth::guard('partner')->user()->id)
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
@@ -48,7 +48,9 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'On hold');
+        $listAll = PackageHistory::where('idCompany', Auth::guard('partner')->user()->id)
+                                    ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                    ->where('status', 'On hold');
 
         if($route != 'all')
         {
@@ -105,10 +107,10 @@ class ReportController extends Controller
 
         $listAll = PackageHistory::with(
                                 [
-                                    'validator'=> function($query){ $query->select('id', 'name', 'nameOfOwner'); },
-
+                                    'validator' => function($query){ $query->select('id', 'name', 'nameOfOwner'); },
                                 ])
-                                ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
+                                ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                ->where('idCompany', $idCompany)
                                 ->where('status', 'Inbound');
 
         if($route != 'all')
@@ -126,18 +128,13 @@ class ReportController extends Controller
             $listAll = $listAll->whereIn('TRUCK', $trucks);
         }
 
-        if($idCompany && $idCompany !=0)
-        {
-            $listAll = $listAll->where('idCompany', $idCompany);
-        }
-
         if($type =='list')
         {
-            $listAll = $listAll->orderBy('Date_Inbound', 'desc')->paginate(50);
+            $listAll = $listAll->orderBy('created_at', 'desc')->paginate(50);
         }
         else
         {
-            $listAll = $listAll->orderBy('Date_Inbound', 'desc')->get();
+            $listAll = $listAll->orderBy('created_at', 'desc')->get();
         }
 
         return $listAll;
@@ -169,7 +166,9 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd])
+                                            ->where('idCompany', $idCompany)
+                                            ->where('status', 'Dispatch');
 
         if($idTeam && $idDriver)
         {
@@ -193,11 +192,6 @@ class ReportController extends Controller
         if($state != 'all')
         {
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $states);
-        }
-
-        if($idCompany && $idCompany != 0)
-        {
-            $listPackageDispatch = $listPackageDispatch->where('idCompany', $idCompany);
         }
 
         if($type == 'list')
@@ -502,7 +496,6 @@ class ReportController extends Controller
         fputcsv($file, $fields, $delimiter);
 
         $listPackageDelivery = $this->getDataDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='export');
-
 
         foreach($listPackageDelivery as $packageDelivery)
         {

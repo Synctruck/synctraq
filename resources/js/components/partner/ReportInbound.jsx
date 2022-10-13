@@ -110,13 +110,13 @@ function ReportPartnerInbound() {
 
             <tr key={i} className="alert-success">
                 <td>
-                    { pack.Date_Inbound.substring(5, 7) }-{ pack.Date_Inbound.substring(8, 10) }-{ pack.Date_Inbound.substring(0, 4) }
+                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { pack.Date_Inbound.substring(11, 19) }
+                    { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.validator.name +' '+ pack.validator.nameOfOwner }</b></td>
+                <td><b>{ (pack.validator ? pack.validator.name +' '+ pack.validator.nameOfOwner : '') }</b></td>
                 <td>{ pack.TRUCK }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>

@@ -6,8 +6,14 @@ import swal from 'sweetalert'
 
 function Companies() {
 
-    const [id, setId]      = useState(0);
-    const [name, setName]  = useState('');
+    const [id, setId]                     = useState(0);
+    const [name, setName]                 = useState('');
+    const [email, setEmail]               = useState('');
+    const [password, setPassword]         = useState('');
+    const [lengthField, setLengthField]   = useState('');
+    const [typeServices, setTypeServices] = useState('');
+    const [keyWebhook, setKeyWebhook]     = useState('');
+    const [urlWebhook, setUrlWebhook]     = useState('');
 
     const [onHold, setOnHold]               = useState('');
     const [inbound, setInbound]             = useState('');
@@ -80,11 +86,15 @@ function Companies() {
 
         e.preventDefault();
 
-        clearForm();
-
         const formData = new FormData();
 
         formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('length_field', lengthField);
+        formData.append('typeServices', typeServices);
+        formData.append('key_webhook', keyWebhook);
+        formData.append('url_webhook', urlWebhook);
         formData.append('onHold', onHold);
         formData.append('inbound', inbound);
         formData.append('delivery', delivery);
@@ -118,7 +128,7 @@ function Companies() {
                         clearForm();
                         listAllCompany(1);
                     }
-                    else(response.status == 422)
+                    else if(response.status == 422)
                     {
                         for(const index in response.errors)
                         {
@@ -209,6 +219,10 @@ function Companies() {
 
             setId(company.id);
             setName(company.name);
+            setTypeServices(company.typeServices);
+            setLengthField(company.length_field);
+            setKeyWebhook(company.key_webhook);
+            setUrlWebhook(company.url_webhook);
 
             handlerOpenModal(company.id);
         });
@@ -249,6 +263,10 @@ function Companies() {
 
         setId(0);
         setName('');
+        setEmail('');
+        setPassword('');
+        setTypeServices('');
+        setLengthField('');
         setOnHold('');
         setInbound('');
         setDispatch('');
@@ -261,7 +279,55 @@ function Companies() {
 
         document.getElementById('name').style.display = 'none';
         document.getElementById('name').innerHTML     = '';
+
+        document.getElementById('email').style.display = 'none';
+        document.getElementById('name').innerHTML     = '';
+
+        document.getElementById('password').style.display = 'none';
+        document.getElementById('name').innerHTML     = '';
     }
+
+    const [idCompany, setIdCompany]                     = useState(0);
+    const [baseRatesList, setBaseRatesList]             = useState([]);
+    const [titleModalBaseRates, setTitleModalBaseRates] = useState('');
+
+    const getBaseRates = (idCompany, nameCompany) => {
+
+        setIdCompany(idCompany);
+        setTitleModalBaseRates('Base Rates - '+ nameCompany);
+
+        fetch(url_general +'base-rates/list/'+ idCompany)
+        .then(response => response.json())
+        .then(response => {
+
+            setBaseRatesList(response.baseRatesList);
+            handlerOpenModalBaseRates();
+        });
+    }
+
+    const handlerOpenModalBaseRates = () => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalBaseRates'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const listBaseRatesTable = baseRatesList.map( (baseRates, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td><b>{ baseRates.weight}</b></td>
+                <td>
+                    <input type="text" id={ 'base'+ baseRates.id } value={ baseRates.base }/>
+                </td>
+            </tr>
+        );
+    });
 
     const listCompanyTable = listCompany.map( (company, i) => {
 
@@ -286,8 +352,20 @@ function Companies() {
         return (
 
             <tr key={i}>
-                <td>{ company.name }</td>
+                <td><b>{ company.name }</b></td>
+                <td>{ company.email }</td>
                 <td>{ company.key_api }</td>
+                <td>{ company.key_webhook }</td>
+                <td title={ company.url_webhook }>
+                    {
+                        (company.url_webhook)
+                        ?
+                            'url_webhook'
+                        :
+                            ''
+                    }
+                </td>
+                <td>{ company.typeServices }</td>
                 <td>
                     { status1 }
                     { status2 }
@@ -295,6 +373,29 @@ function Companies() {
                     { status4 }
                     { status5 }
                     { status6 }
+                </td>
+                <td>
+                    {
+                        (company.status == 'Active')
+                        ?
+                            <div className="alert alert-success"><b>{ company.status }</b></div>
+                        :
+                            <div className="alert alert-danger"><b>{ company.status }</b></div>
+                    }
+                </td>
+                <td style={ {display: 'none'} }>
+                    <button className="btn btn-warning btn-sm form-control" title="Editar" onClick={ () => getBaseRates(company.id, company.name) }>
+                        Base Rates
+                    </button> &nbsp;
+                    <button className="btn btn-warning btn-sm form-control" title="Editar" onClick={ () => getCompany(company.id) }>
+                        Range diesel
+                    </button> &nbsp;&nbsp;
+                    <button className="btn btn-warning btn-sm form-control" title="Editar" onClick={ () => getCompany(company.id) }>
+                        Dim Factor
+                    </button> &nbsp;
+                    <button className="btn btn-warning btn-sm form-control" title="Editar" onClick={ () => getCompany(company.id) }>
+                        Peake Season
+                    </button> &nbsp;
                 </td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getCompany(company.id) }>
@@ -305,6 +406,42 @@ function Companies() {
             </tr>
         );
     });
+
+    const modalBaseRates = <React.Fragment>
+                                    <div className="modal fade" id="modalBaseRates" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit="">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalBaseRates }</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <table className="table table-hover table-condensed">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>WEIGHT</th>
+                                                                            <th>BASE</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { listBaseRatesTable }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">{ textButtonSave }</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
 
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -322,29 +459,61 @@ function Companies() {
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
                                                             </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Email</label>
+                                                                <div id="email" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="email" className="form-control" value={ email } maxLength="100" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Password</label>
+                                                                <div id="password" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="password" className="form-control" value={ password } maxLength="100" onChange={ (e) => setPassword(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Type Of Service</label>
+                                                                <div id="typeServices" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setTypeServices(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="API" selected={ (typeServices == 'API' ? 'selected' : '' ) }>API</option>
+                                                                    <option value="CSV" selected={ (typeServices == 'CSV' ? 'selected' : '' ) }>CSV</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Scan Length</label>
+                                                                <div id="length_field" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ lengthField } max="50" onChange={ (e) => setLengthField(e.target.value) } required/>
+                                                            </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
+                                                                <label>KEY WEBHOOK</label>
+                                                                <input type="text" className="form-control" value={ keyWebhook } maxLength="100" onChange={ (e) => setKeyWebhook(e.target.value) }/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
+                                                                <label>URL WEBHOOK</label>
+                                                                <input type="text" className="form-control" value={ urlWebhook } maxLength="100" onChange={ (e) => setUrlWebhook(e.target.value) }/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>On Hold</label>
                                                                 <input type="text" className="form-control" value={ onHold } maxLength="100" onChange={ (e) => setOnHold(e.target.value) }/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>Inbound</label>
                                                                 <input type="text" className="form-control" value={ inbound } maxLength="100" onChange={ (e) => setInbound(e.target.value) }/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>Dispatch</label>
                                                                 <input type="text" className="form-control" value={ dispatch } maxLength="100" onChange={ (e) => setDispatch(e.target.value) }/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>Delivery</label>
                                                                 <input type="text" className="form-control" value={ delivery } maxLength="100" onChange={ (e) => setDelivery(e.target.value) }/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>Re-Inbound</label>
                                                                 <input type="text" className="form-control" value={ reInbound } maxLength="100" onChange={ (e) => setReInbound(e.target.value) }/>
                                                             </div>
-                                                            <div className="col-lg-6 form-group">
+                                                            <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label>Retur-Company</label>
                                                                 <input type="text" className="form-control" value={ returnCompany } maxLength="100" onChange={ (e) => setReturnCompany(e.target.value) }/>
                                                             </div>
@@ -364,6 +533,7 @@ function Companies() {
 
         <section className="section">
             { modalCategoryInsert }
+            { modalBaseRates }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -387,13 +557,19 @@ function Companies() {
                                 </div>
                             </div>
                             <div className="row form-group">
-                                <div className="col-lg-12">
-                                    <table className="table table-hover table-condensed">
+                                <div className="col-lg-12 table-responsive">
+                                    <table className="table table-hover table-condensed table-bordered">
                                         <thead>
                                             <tr>
                                                 <th>COMPANY NAME</th>
+                                                <th>EMAIL</th>
                                                 <th>KEY API</th>
+                                                <th>KEY WEBHOOK</th>
+                                                <th>URL WEBHOOK</th>
+                                                <th>TYPE SERVICES</th>
+                                                <th>STATUS CODE</th>
                                                 <th>STATUS</th>
+                                                <th style={ {display: 'none'} }>CONFIGURATION</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

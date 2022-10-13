@@ -11,13 +11,10 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
-
-	let auxDateInit   = '{{date('Y-m-d')}}';
-	let auxDateEnd    = '{{date('Y-m-t')}}';
-
-    var id_team = 0;
-    var id_driver = 0;
-
+	let auxDateInit = '{{date('Y-m-d')}}';
+	let auxDateEnd  = '{{date('Y-m-t')}}';
+    var id_team	    = 0;
+    var id_driver   = 0;
 </script>
 <div id="reportPartnerDelivery">
 </div>
