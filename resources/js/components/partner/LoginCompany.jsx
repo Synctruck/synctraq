@@ -36,7 +36,7 @@ function LoginCompany() {
                         icon: "success",
                     });
                     setTimeout( () => {
-                        location.href = '/partners'
+                        location.href = '/partners/dashboard'
                     }, 1500);
                 }
                 else

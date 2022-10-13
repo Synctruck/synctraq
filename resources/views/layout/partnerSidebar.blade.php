@@ -1,16 +1,13 @@
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
 
-
         <li class="nav-heading"></li>
-
-                {{-- <li class="nav-heading"></li>
-                <li >
-                    <a class="nav-link {{Request::is('partners/dashboard') ? 'active' : 'collapsed'}}" href="{{url('partners/dashboard')}}">
-                        <i class="bx bxs-dashboard"></i>
-                        <span>DASHBOARD</span>
-                    </a>
-                </li> --}}
+        <li >
+            <a class="nav-link {{Request::is('partners/dashboard') ? 'active' : 'collapsed'}}" href="{{url('partners/dashboard')}}">
+                <i class="bx bxs-dashboard"></i>
+                <span>DASHBOARD</span>
+            </a>
+        </li>
 
         <li class="nav-heading" id="titleReports" >Reports</li>
 

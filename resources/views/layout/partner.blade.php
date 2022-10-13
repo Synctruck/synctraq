@@ -287,20 +287,20 @@
                       <hr class="dropdown-divider">
                     </li>
 
-                    <li>
+                    {{-- <li>
                       <a class="dropdown-item d-flex align-items-center" href="{{url('/profile')}}">
                         <i class="bi bi-person"></i>
                         <span>My profile</span>
                       </a>
-                    </li>
-                    <li>
+                    </li> --}}
+                    {{-- <li>
                       <hr class="dropdown-divider">
-                    </li>
+                    </li> --}}
 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{url('user/logout')}}">
+                        <a class="dropdown-item d-flex align-items-center" href="{{url('partners/logout')}}">
                             <i class="bi bi-box-arrow-right"></i>
-                            <span>Cerrar Sesión</span>
+                            <span>Logout</span>
                         </a>
                     </li>
                 </ul><!-- End Profile Dropdown Items -->

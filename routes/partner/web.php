@@ -18,6 +18,10 @@ Route::prefix('partners')->group(function () {
 
 
     Route::group(['middleware' => 'authPartner'], function() {
+
+        Route::get('/dashboard', [HomeController::class, 'Dashboard']);
+	    Route::get('/dashboard/getallquantity/{startDate}/{endDate}', [HomeController::class, 'GetAllQuantity']);
+
         Route::get('/', [HomeController::class, 'index']);
 
         Route::get('/reports', [ReportController::class, 'Index']);

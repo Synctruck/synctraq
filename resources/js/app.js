@@ -43,7 +43,7 @@ require('./components/Track');
 require('./components/Login');
 
 //rutas públicas (usuarios externos a la empresa)
-
+require('./components/partner/Dashboard');
 require('./components/partner/LoginCompany');
 require('./components/partner/ReportDelivery');
 require('./components/partner/ReportDispatch');
