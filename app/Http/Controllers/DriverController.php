@@ -44,7 +44,7 @@ class DriverController extends Controller
     {
         if(Auth::user()->role->name == 'Administrador')
         {
-            $userList = Driver::with(['dispatchs', 'role'])
+            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
@@ -54,7 +54,7 @@ class DriverController extends Controller
         }
         else
         {
-            $userList = Driver::with(['dispatchs', 'role'])
+            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')

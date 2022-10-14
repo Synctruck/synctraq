@@ -327,12 +327,16 @@ function Driver() {
     }
 
     const listDriverTable = listUser.map( (user, i) => {
+
         let buttonDelete ='';
-        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 ) {
-            buttonDelete = <button className="btn btn-danger btn-sm" title="Delete" style={ { display: user.dispatchs.length == 0 ? 'block' : 'none' }} onClick={ () => deleteUser(user.id) }>
-                            <i className="bx bxs-trash-alt"></i>
-                        </button>;
+
+        if(user.history_dispatch.length == 0)
+        {
+            buttonDelete =  <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>;
         }
+
         return (
 
             <tr key={i}>
@@ -340,22 +344,32 @@ function Driver() {
                     roleUser == 'Administrador'
                     ?
                         <>
-                            <td>{ user.nameTeam }</td>
+                            <td><b>{ user.nameTeam }</b></td>
                         </>
                     :
                         ''
                 }
                 <td>{ user.name +' '+ user.nameOfOwner }</td>
-                <td>{ user.phone }</td>
+                <td>{ user.phone }</td> 
                 <td>{ user.email }</td>
                 <td>{ user.idOnfleet }</td>
-                <td>{ user.status }</td>
+                <td>
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
+                </td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    {buttonDelete}
+                    { buttonDelete }
                 </td>
             </tr>
         );

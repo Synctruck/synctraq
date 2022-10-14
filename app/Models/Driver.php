@@ -32,6 +32,12 @@ class Driver extends Model
     {
         return $this->hasMany('App\Models\PackageDispatch', 'idUserDispatch');
     }
+
+    public function history_dispatch()
+    {
+        return $this->hasMany('App\Models\PackageHistory', 'idUserDispatch');
+    }
+
     public function routes_team()
     {
         return $this->hasMany('App\Models\TeamRoute', 'idTeam');
