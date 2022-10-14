@@ -14,6 +14,7 @@ function Team() {
     const [address, setAddress]                       = useState('');
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
+    const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
     const [idOnfleet, setIdOnfleet]                   = useState('');
@@ -120,6 +121,7 @@ function Team() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('status', status);
         formData.append('routesName', idsRoutes);
         formData.append('permissionDispatch', permissionDispatch);
 
@@ -236,6 +238,7 @@ function Team() {
             setPhone(team.phone);
             setEmail(team.email);
             setPermissionDispatch(team.permissionDispatch);
+            setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
 
             setTimeout( () => {
@@ -299,6 +302,7 @@ function Team() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setStatus('Active');
     }
 
     const clearValidation = () => {
@@ -317,6 +321,9 @@ function Team() {
 
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
+
+        document.getElementById('status').style.display = 'none';
+        document.getElementById('status').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -333,6 +340,7 @@ function Team() {
                     { user.permissionDispatch ? 'YES' : 'NO'}
                 </td>
                 <td>{ user.idOnfleet }</td>
+                <td>{ user.status }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getTeam(user.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -464,6 +472,18 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div className="row" >
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Status</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
+                                                                        <option value="Active" >Active</option>
+                                                                        <option value="Inactive" >Inactive</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                         <div className="row">
                                                             <div className="col-lg-12">
@@ -525,6 +545,7 @@ function Team() {
                                                 <th>EMAIL</th>
                                                 <th>PERMISSION DISPATCH</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

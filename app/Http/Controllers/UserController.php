@@ -43,6 +43,7 @@ class UserController extends Controller
 
 
         foreach ($userList as $key => $user) {
+
             $history = PackageHistory::where('idUser',$user->id)
                                         ->orWhere('idUserManifest',$user->id)
                                         ->orWhere('idUserInbound',$user->id)
@@ -152,6 +153,7 @@ class UserController extends Controller
         $user->nameOfOwner = $request->get('nameOfOwner');
         $user->phone       = $request->get('phone');
         $user->email       = $request->get('email');
+        $user->status       = $request->get('status');
 
         $user->save();
 
@@ -174,7 +176,7 @@ class UserController extends Controller
 
     public function ValidationLogin(Request $request)
     {
-        $user = User::with(['role', 'routes_team.route'])->where('email', $request->get('email'))->first();
+        $user = User::with(['role', 'routes_team.route'])->where('email', $request->get('email'))->where('status','Active')->first();
 
         if($user && $user->role->status ==1)
         {

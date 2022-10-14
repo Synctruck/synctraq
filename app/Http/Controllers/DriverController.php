@@ -196,7 +196,7 @@ class DriverController extends Controller
                 "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
                 "address" => ["required"],
-                "phone" => ["required","unique:user,phone,$id"],
+                "phone" => ["required","unique:user,phone,$id","max:20"],
                 "email" => ["required", "unique:user,email,$id", "max:100"],
             ],
             [

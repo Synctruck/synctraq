@@ -141,6 +141,7 @@ class TeamController extends Controller
                 $user->password           = $request->get('password');
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->idOnfleet          = $request->get('idOnfleet');
+                $user->status             = $request->get('status');
 
                 $user->save();
 
@@ -258,6 +259,7 @@ class TeamController extends Controller
                 $user->email              = $request->get('email');
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->idOnfleet          = $request->get('idOnfleet');
+                $user->status             = $request->get('status');
 
                 $user->save();
 

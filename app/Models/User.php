@@ -19,7 +19,7 @@ class User extends Authenticatable
 
     protected $appends = ['url_image'];
 
-    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at'];
+    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at','status'];
 
      /** Relaciones */
     public function permissions()
@@ -62,7 +62,7 @@ class User extends Authenticatable
     }
 
     public function histories()
-    { 
+    {
         return $this->hasMany('App\Models\PackageHistory', 'idUser');
     }
 

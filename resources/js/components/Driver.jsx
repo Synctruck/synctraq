@@ -13,6 +13,7 @@ function Driver() {
     const [address, setAddress]         = useState('');
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
+    const [status, setStatus]           = useState('');
     const [roleUser, setRoleUser]       = useState([]);
     const [idTeam, setIdTeam]           = useState(0);
     const [idOnfleet, setIdOnfleet]     = useState('');
@@ -125,6 +126,7 @@ function Driver() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('status', status);
 
         clearValidation();
 
@@ -248,6 +250,7 @@ function Driver() {
             setEmail(driver.email);
             setIdOnfleet(driver.idOnfleet);
             setIdTeam(driver.idTeam);
+            setStatus(driver.status);
 
             listAllTeam();
             handlerOpenModal(driver.id);
@@ -299,6 +302,7 @@ function Driver() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setStatus('Active');
     }
 
     const clearValidation = () => {
@@ -317,6 +321,9 @@ function Driver() {
 
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
+
+        document.getElementById('status').style.display = 'none';
+        document.getElementById('status').innerHTML     = '';
     }
 
     const listDriverTable = listUser.map( (user, i) => {
@@ -342,6 +349,7 @@ function Driver() {
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
                 <td>{ user.idOnfleet }</td>
+                <td>{ user.status }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -456,6 +464,18 @@ function Driver() {
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
                                                                 </div>
                                                             </div>
+
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Status</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
+                                                                        <option value="Active" >Active</option>
+                                                                        <option value="Inactive" >Inactive</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                     <div className="modal-footer">
@@ -512,6 +532,7 @@ function Driver() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>
