@@ -331,22 +331,30 @@ function Team() {
         return (
 
             <tr key={i}>
-                <td>{ user.name }</td>
-                <td>{ user.nameOfOwner }</td>
-                <td>{ user.address }</td>
+                <td>
+                    <b>{ user.name }</b><br/>
+                    { user.nameOfOwner }
+                </td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
+                <td>{ user.idOnfleet }</td> 
                 <td>
-                    { user.permissionDispatch ? 'YES' : 'NO'}
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
                 </td>
-                <td>{ user.idOnfleet }</td>
-                <td>{ user.status }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getTeam(user.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
+                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 && user.histories_teams.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
@@ -539,11 +547,8 @@ function Team() {
                                         <thead>
                                             <tr>
                                                 <th>NAME</th>
-                                                <th>NAME OF OWNER</th>
-                                                <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>PERMISSION DISPATCH</th>
                                                 <th>ID ONFLEET</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>

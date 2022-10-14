@@ -461,146 +461,143 @@ class PackageDeliveryController extends Controller
 
     public function UpdatedOnfleet()
     {
-        if(env('APP_ENV') == 'local')
-        {
-            $listPackageDispatch = PackageDispatch::where('status', 'Dispatch')
+        $listPackageDispatch = PackageDispatch::where('status', 'Dispatch')
                                                 ->where('idOnfleet', '!=', '')
                                                 ->orderBy('created_at', 'asc')
                                                 ->get()
                                                 ->take(200);
 
-            $quantityOnfleet = 0;
+        $quantityOnfleet = 0;
 
-            try
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($listPackageDispatch as $packageDispatch)
             {
-                DB::beginTransaction();
+                $onfleet = $this->GetOnfleet($packageDispatch->taskOnfleet);
 
-                foreach($listPackageDispatch as $packageDispatch)
+                if($onfleet)
                 {
-                    $onfleet = $this->GetOnfleet($packageDispatch->taskOnfleet);
-
-                    if($onfleet)
+                    if($onfleet['state'] == 3 && isset($onfleet['completionDetails']['success']))
                     {
-                        if($onfleet['state'] == 3 && isset($onfleet['completionDetails']['success']))
+                        if($onfleet['completionDetails']['success'] == true)
                         {
-                            if($onfleet['completionDetails']['success'] == true)
+                            $packageDispatch = PackageDispatch::where('status', 'Dispatch')
+                                                                ->find($packageDispatch->Reference_Number_1);
+
+                            if($packageDispatch)
                             {
-                                $packageDispatch = PackageDispatch::where('status', 'Dispatch')
-                                                                    ->find($packageDispatch->Reference_Number_1);
+                                $user = User::find($packageDispatch->idUserDispatch);
 
-                                if($packageDispatch)
+                                if($user)
                                 {
-                                    $user = User::find($packageDispatch->idUserDispatch);
-
-                                    if($user)
+                                    if($user->nameTeam)
                                     {
-                                        if($user->nameTeam)
-                                        {
-                                            $description = 'Delivery - for: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
-                                        }
-                                        else
-                                        {
-                                            $description = 'Delivery - for: Team 1 to '. $user->name;
-                                        }
+                                        $description = 'Delivery - for: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                                     }
                                     else
                                     {
-                                        $description = 'Delivery - for: Not exist Team';
+                                        $description = 'Delivery - for: Team 1 to '. $user->name;
                                     }
+                                }
+                                else
+                                {
+                                    $description = 'Delivery - for: Not exist Team';
+                                }
 
-                                    $packageHistory = new PackageHistory();
+                                $packageHistory = new PackageHistory();
 
-                                    $packageHistory->id                           = uniqid();
-                                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                                    $packageHistory->company                      = $packageDispatch->company;
-                                    $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                                    $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                                    $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                                    $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                                    $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                                    $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                                    $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                                    $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                                    $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                                    $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                                    $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                                    $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                                    $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                                    $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                                    $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                                    $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                                    $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                                    $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                                    $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                                    $packageHistory->Route                        = $packageDispatch->Route;
-                                    $packageHistory->Name                         = $packageDispatch->Name;
-                                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                                    $packageHistory->idUser                       = 64;
-                                    $packageHistory->idUserDelivery               = 64;
-                                    $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
-                                    $packageHistory->Description                  = $description;
-                                    $packageHistory->status                       = 'Delivery';
+                                $packageHistory->id                           = uniqid();
+                                $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                                $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                                $packageHistory->company                      = $packageDispatch->company;
+                                $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
+                                $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
+                                $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
+                                $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
+                                $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
+                                $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
+                                $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
+                                $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
+                                $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
+                                $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
+                                $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
+                                $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
+                                $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
+                                $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
+                                $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
+                                $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                                $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                                $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                                $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                                $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                                $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                                $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                                $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                                $packageHistory->Service_Level                = $packageDispatch->Service_Level;
+                                $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
+                                $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
+                                $packageHistory->Notes                        = $packageDispatch->Notes;
+                                $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
+                                $packageHistory->Weight                       = $packageDispatch->Weight;
+                                $packageHistory->Route                        = $packageDispatch->Route;
+                                $packageHistory->Name                         = $packageDispatch->Name;
+                                $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                                $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+                                $packageHistory->idUser                       = 64;
+                                $packageHistory->idUserDelivery               = 64;
+                                $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
+                                $packageHistory->Description                  = $description;
+                                $packageHistory->status                       = 'Delivery';
 
-                                    $packageHistory->save();
+                                $packageHistory->save();
 
-                                    $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                                    $packageDispatch->workerName         = $user->name .' '. $user->nameOfOwner;
-                                    $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                                    $packageDispatch->recipientNotes     = $user->nameTeam;
+                                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
+                                $packageDispatch->workerName         = $user->name .' '. $user->nameOfOwner;
+                                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
+                                $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                                    if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
-                                    {
-                                        $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
-                                    }
-                                    else
-                                    {
-                                        $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
-                                    }
+                                if(count($onfleet['completionDetails']['photoUploadIds']) > 0)
+                                {
+                                    $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
+                                }
+                                else
+                                {
+                                    $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
+                                }
 
-                                    $packageDispatch->photoUrl           = $photoUrl;
-                                    $packageDispatch->Date_Delivery      = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
+                                $packageDispatch->photoUrl           = $photoUrl;
+                                $packageDispatch->Date_Delivery      = date('Y-m-d H:i:s', $onfleet['completionDetails']['time'] / 1000);
 
-                                    $packageDispatch->status = 'Delivery';
+                                $packageDispatch->status = 'Delivery';
 
-                                    if($packageDispatch->save())
-                                    {
-                                        $quantityOnfleet++;
-                                    }
+                                if($packageDispatch->save())
+                                {
+                                    $quantityOnfleet++;
                                 }
                             }
                         }
                     }
                 }
-
-                DB::commit();
-
-                return [
-                        'stateAction' => 'onfleet',
-                        'quantityDispatch' => count($listPackageDispatch),
-                        'quantityOnfleet' => $quantityOnfleet,
-                ];
             }
-            catch(Exception $e)
-            {
-                DB::rollback();
 
-                return [
-                        'stateAction' => 'error',
-                ];
-            }
+            DB::commit();
+
+            return [
+                    'stateAction' => 'onfleet',
+                    'quantityDispatch' => count($listPackageDispatch),
+                    'quantityOnfleet' => $quantityOnfleet,
+            ];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return [
+                    'stateAction' => 'error',
+            ];
         }
 
         return ['stateAction' => 'notOnfleet'];

@@ -53,7 +53,7 @@ class User extends Authenticatable
 
     public function drivers()
     {
-        return $this->hasMany('App\Models\Driver', 'idUserDispatch');
+        return $this->hasMany('App\Models\Driver', 'idTeam');
     }
 
     public function inbounds()
@@ -66,6 +66,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\PackageHistory', 'idUser');
     }
 
+    public function histories_teams()
+    {
+        return $this->hasMany('App\Models\PackageHistory', 'idTeam');
+    }
+ 
     public function dispatchs_user()
     {
         return $this->hasMany('App\Models\Package', 'idUserDispatch');
