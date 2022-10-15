@@ -5,6 +5,8 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import ReportDelivery from '../components/ReportDelivery'
+import moment from 'moment/moment'
+
 
 function Report() {
 
@@ -87,8 +89,17 @@ function Report() {
     }
 
     const handlerExport = () => {
+        let date1= moment(dateInit);
+        let date2 = moment(dateEnd);
+        let difference = date2.diff(date1,'days');
 
-        location.href = url_general +'report/export/assigns/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        if(difference> limitToExport){
+            swal(`Maximum limit to export is ${limitToExport} days`, {
+                icon: "warning",
+            });
+        }else{
+            location.href = url_general +'report/export/assigns/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        }
     }
 
     const listReportTable = listReport.map( (pack, i) => {
@@ -151,7 +162,6 @@ function Report() {
             setOptionsRoleSearch(optionsRoleSearch);
         });
 
-        console.log(optionsRoleSearch);
     }
 
     const handlerChangeState = (states) => {

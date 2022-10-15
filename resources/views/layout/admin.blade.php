@@ -533,6 +533,7 @@
 
     <script src="{{asset('admin/assets/js/main.js')}}"></script>
     <script>
+        var limitToExport = 60;
         var url_general = '{{url('/')}}/';
 
         function LoadingShow()

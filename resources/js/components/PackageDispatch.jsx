@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import moment from 'moment';
 
 let count = 1;
 
@@ -133,8 +134,18 @@ function PackageDispatch() {
     }
 
     const handlerExport = () => {
-        console.log('export!!!!');
-       exportAllPackageDispatch(StateSearch, RouteSearchList);
+        let date1= moment(dateStart);
+        let date2 = moment(dateEnd);
+        let difference = date2.diff(date1,'days');
+
+        if(difference> limitToExport){
+            swal(`Maximum limit to export is ${limitToExport} days`, {
+                icon: "warning",
+            });
+        }else{
+            exportAllPackageDispatch(StateSearch, RouteSearchList);
+        }
+
     }
 
     const handlerChangePage = (pageNumber) => {

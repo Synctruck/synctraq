@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import moment from 'moment/moment'
 
 function ReportManifest() {
 
@@ -87,7 +88,17 @@ function ReportManifest() {
 
     const handlerExport = () => {
 
-        location.href = url_general +'report/export/manifest/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        let date1= moment(dateInit);
+        let date2 = moment(dateEnd);
+        let difference = date2.diff(date1,'days');
+
+        if(difference> limitToExport){
+            swal(`Maximum limit to export is ${limitToExport} days`, {
+                icon: "warning",
+            });
+        }else{
+            location.href = url_general +'report/export/manifest/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+        }
     }
 
     const listReportTable = listReport.map( (pack, i) => {
