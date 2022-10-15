@@ -162,7 +162,7 @@ function Track() {
                              <h5 className='text-center'>PACKAGE ID: {packageId}  / CLIENT: { packageClient }</h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
-                                    <Steps.Item title="On hold" description={onholdDesc} />
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
                                     <Steps.Item title="Inbound" description={inboundDesc}/>
                                     <Steps.Item title="Out of Delivery" description={dispatchDesc}/>
                                     <Steps.Item title="Delivery" description={deliveryDesc}/>
