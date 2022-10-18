@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class ScheduleTask extends Model
+class ScheduleTask extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'schedule_task';
     protected $primaryKey = 'id';
 

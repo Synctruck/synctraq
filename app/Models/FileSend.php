@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class FileSend extends Model
+class FileSend extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'file_send';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';

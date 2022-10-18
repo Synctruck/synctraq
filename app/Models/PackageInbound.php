@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageInbound extends Model
+class PackageInbound extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'packageinbound';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';

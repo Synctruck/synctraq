@@ -2,9 +2,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-class PackageNotExists extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+class PackageNotExists extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'packagenotexists';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';

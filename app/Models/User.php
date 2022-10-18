@@ -2,10 +2,13 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use OwenIt\Auditing\Contracts\Auditable;
 use DB;
 
-class User extends Authenticatable
+class User extends Authenticatable  implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'user';
     protected $primaryKey = 'id';
 
@@ -62,7 +65,7 @@ class User extends Authenticatable
     }
 
     public function histories()
-    { 
+    {
         return $this->hasMany('App\Models\PackageHistory', 'idUser');
     }
 
