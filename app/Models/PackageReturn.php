@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageReturn extends Model implements Auditable
+class PackageReturn extends Model
 {
-    use \OwenIt\Auditing\Auditable;
+    // use \OwenIt\Auditing\Auditable;
 
     protected $table      = 'packagereturn';
     protected $primaryKey = 'id';

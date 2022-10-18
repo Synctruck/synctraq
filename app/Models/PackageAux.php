@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageAux extends Model implements Auditable
+class PackageAux extends Model
 {
-    use \OwenIt\Auditing\Auditable;
+    // use \OwenIt\Auditing\Auditable;
 
     protected $table      = 'packageaux';
     protected $primaryKey = 'id';

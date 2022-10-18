@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageWarehouse extends Model implements Auditable
+class PackageWarehouse extends Model
 {
-    use \OwenIt\Auditing\Auditable;
+    // use \OwenIt\Auditing\Auditable;
 
     protected $table      = 'packagewarehouse';
     protected $primaryKey = 'Reference_Number_1';

@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageDispatch extends Model implements Auditable
+class PackageDispatch extends Model
 {
-    use \OwenIt\Auditing\Auditable;
+    // use \OwenIt\Auditing\Auditable;
 
     protected $table      = 'packagedispatch';
     protected $primaryKey = 'Reference_Number_1';
