@@ -14,6 +14,7 @@ function User() {
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
     const [password, setPassword]       = useState('');
+    const [status, setStatus]           = useState('');
 
     const [viewInputPassword, setViewInputPassword] = useState(true);
 
@@ -102,6 +103,7 @@ function User() {
         formData.append('phone', phone);
         formData.append('email', email);
         formData.append('password', password);
+        formData.append('status', status);
 
         clearValidation();
 
@@ -200,6 +202,7 @@ function User() {
             setAddress(user.address);
             setPhone(user.phone);
             setEmail(user.email);
+            setStatus(user.status);
 
             handlerOpenModal(user.id);
         });
@@ -245,6 +248,7 @@ function User() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setStatus('Active');
         setPassword('');
     }
 
@@ -265,6 +269,9 @@ function User() {
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
 
+        document.getElementById('status').style.display = 'none';
+        document.getElementById('status').innerHTML     = '';
+
         document.getElementById('password').style.display = 'none';
         document.getElementById('password').innerHTML     = '';
     }
@@ -272,10 +279,12 @@ function User() {
     const listUserTable = listUser.map( (user, i) => {
 
         let buttonDelete ='';
-        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 ) {
-            buttonDelete = <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>;
+
+        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 && user.histories.length == 0)
+        {
+            buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>;
         }
 
         return (
@@ -287,6 +296,17 @@ function User() {
                 <td>{ user.address }</td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
+                <td>
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
+                </td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -380,6 +400,18 @@ function User() {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div className="row" >
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Status</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
+                                                                        <option value="Active" >Active</option>
+                                                                        <option value="Inactive" >Inactive</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -428,6 +460,7 @@ function User() {
                                                 <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
+                                                <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

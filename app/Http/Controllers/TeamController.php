@@ -41,10 +41,10 @@ class TeamController extends Controller
 
     public function List(Request $request)
     {
-
-        $teamsList = User::with(['drivers', 'role', 'routes_team'])->orderBy('name', 'asc')
+        $teamsList = User::with(['drivers', 'role', 'routes_team', 'histories_teams'])
                             ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                             ->where('idRole', 3)
+                            ->orderBy('name', 'asc')
                             ->paginate($this->paginate);
 
         return ['userList' => $teamsList];
@@ -52,17 +52,11 @@ class TeamController extends Controller
 
     public function ListAll(Request $request)
     {
-        if(env('APP_ENV') == 'local')
-        {
-            $listTeam = User::where('idRole', 3)
+        $listTeam = User::where('idRole', 3)
                         ->where('idOnfleet', '!=', '')
-                        ->orderBy('name', 'asc')->get();
-        }
-        else
-        {
-            $listTeam = User::where('idRole', 3)
-                        ->orderBy('name', 'asc')->get();
-        }
+                        ->where('status', 'Active')
+                        ->orderBy('name', 'asc')
+                        ->get();
 
         return ['listTeam' => $listTeam];
     }
@@ -102,24 +96,17 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        if(env('APP_ENV') == 'local')
+        $listTeamOnfleet = $this->GetListOnfleet();
+
+        $register = false;
+
+        foreach ($listTeamOnfleet as $team)
         {
-            $listTeamOnfleet = $this->GetListOnfleet();
-
-            $register = false;
-
-            foreach ($listTeamOnfleet as $team)
+            if($team['name'] == $request->get('name'))
             {
-                if($team['name'] == $request->get('name'))
-                {
-                    $request['idOnfleet'] = $team['id'];
-                    $register = true;
-                }
+                $request['idOnfleet'] = $team['id'];
+                $register = true;
             }
-        }
-        else
-        {
-            $register = true;
         }
 
         if($register)
@@ -141,6 +128,7 @@ class TeamController extends Controller
                 $user->password           = $request->get('password');
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->idOnfleet          = $request->get('idOnfleet');
+                $user->status             = $request->get('status');
 
                 $user->save();
 
@@ -222,26 +210,18 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        if(env('APP_ENV') == 'local')
+        $listTeamOnfleet = $this->GetListOnfleet();
+
+        $updated = false;
+
+        foreach ($listTeamOnfleet as $team)
         {
-            $listTeamOnfleet = $this->GetListOnfleet();
-
-            $updated = false;
-
-            foreach ($listTeamOnfleet as $team)
+            if($team['name'] == $request->get('name'))
             {
-                if($team['name'] == $request->get('name'))
-                {
-                    $request['idOnfleet'] = $team['id'];
-                    $updated = true;
-                }
+                $request['idOnfleet'] = $team['id'];
+                $updated = true;
             }
         }
-        else
-        {
-            $updated = true;
-        }
-
 
         if($updated)
         {
@@ -258,6 +238,7 @@ class TeamController extends Controller
                 $user->email              = $request->get('email');
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->idOnfleet          = $request->get('idOnfleet');
+                $user->status             = $request->get('status');
 
                 $user->save();
 
@@ -306,16 +287,20 @@ class TeamController extends Controller
 
     public function Delete($id)
     {
-        $user = User::find($id);
+        $user = User::with('routes_team')->find($id);
 
-        if(env('APP_ENV') == 'local')
+        $teamOnfleet = $this->GetOnfleet($user->idOnfleet);
+
+        if($teamOnfleet)
         {
-            $teamOnfleet = $this->GetOnfleet($user->idOnfleet);
+            $deleteOnfleet = $this->DeleteOnfleet($user->idOnfleet);
+        }
 
-            if($teamOnfleet)
-            {
-                $deleteOnfleet = $this->DeleteOnfleet($user->idOnfleet);
-            }
+        foreach($user->routes_team as $teamRoute)
+        {
+            $teamRoute = TeamRoute::find($teamRoute->id);
+
+            $teamRoute->delete();
         }
 
         $user->delete();

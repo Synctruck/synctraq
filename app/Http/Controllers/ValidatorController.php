@@ -156,6 +156,7 @@ class ValidatorController extends Controller
         $user->nameOfOwner = $request->get('nameOfOwner');
         $user->phone       = $request->get('phone');
         $user->email       = $request->get('email');
+        $user->status      = $request->get('status');
 
         $user->save();
 

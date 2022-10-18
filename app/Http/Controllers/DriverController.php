@@ -44,7 +44,7 @@ class DriverController extends Controller
     {
         if(Auth::user()->role->name == 'Administrador')
         {
-            $userList = Driver::with(['dispatchs', 'role'])
+            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
@@ -54,7 +54,7 @@ class DriverController extends Controller
         }
         else
         {
-            $userList = Driver::with(['dispatchs', 'role'])
+            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
@@ -84,14 +84,11 @@ class DriverController extends Controller
 
     public function ListAllByTeam($idTeam)
     {
-        $listDriver = Driver::where('idTeam', $idTeam);
-
-        if(env('APP_ENV') == 'local')
-        {
-            $listDriver = $listDriver->where('idOnfleet', '!=', '');
-        }
-
-        $listDriver = $listDriver->orderBy('name', 'asc')->get();
+        $listDriver = Driver::where('idTeam', $idTeam)
+                            ->where('idOnfleet', '!=', '')
+                            ->where('status', 'Active')
+                            ->orderBy('name', 'asc')
+                            ->get();
 
         return ['listDriver' => $listDriver];
     }
@@ -132,14 +129,7 @@ class DriverController extends Controller
 
         $team = User::find($request->get('idTeam'));
 
-        if(env('APP_ENV') == 'local')
-        {
-            $registerTeam = $this->RegisterOnfleet($team, $request);
-        }
-        else
-        {
-            $registerTeam = true;
-        }
+        $registerTeam = $this->RegisterOnfleet($team, $request);
 
         if($registerTeam == 400)
         {
@@ -148,11 +138,7 @@ class DriverController extends Controller
 
         if($registerTeam)
         {
-            if(env('APP_ENV') == 'local')
-            {
-                $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
-            }
-
+            $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
             $request['idRole']    = 4;
             $request['password']  = Hash::make($request->get('email'));
             $request['idTeam']    = $team->id;
@@ -196,7 +182,7 @@ class DriverController extends Controller
                 "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
                 "address" => ["required"],
-                "phone" => ["required","unique:user,phone,$id"],
+                "phone" => ["required","unique:user,phone,$id","max:20"],
                 "email" => ["required", "unique:user,email,$id", "max:100"],
             ],
             [
@@ -225,39 +211,25 @@ class DriverController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        if(env('APP_ENV') == 'local')
+        $listDriverOnfleet = $this->GetListOnfleet();
+
+        $updated = false;
+
+        foreach ($listDriverOnfleet as $driver)
         {
-            $listDriverOnfleet = $this->GetListOnfleet();
-
-            $updated = false;
-
-            foreach ($listDriverOnfleet as $driver)
+            if($driver['phone'] == $request->get('phone'))
             {
-                if($driver['phone'] == $request->get('phone'))
-                {
-                    $request['idOnfleet'] = $driver['id'];
+                $request['idOnfleet'] = $driver['id'];
 
-                    $updated = true;
-                }
+                $updated = true;
             }
-        }
-        else
-        {
-            $updated = true;
         }
 
         if($updated)
         {
             $team = User::find($request->get('idTeam'));
 
-            if(env('APP_ENV') == 'local')
-            {
-                $updatedTeam = $this->UpdatedOnfleet($team, $request);
-            }
-            else
-            {
-                $updatedTeam = true;
-            }
+            $updatedTeam = $this->UpdatedOnfleet($team, $request);
 
             if($updatedTeam)
             {
@@ -276,16 +248,12 @@ class DriverController extends Controller
 
     public function Delete($id)
     {
-        $driver = Driver::find($id);
+        $driver        = Driver::find($id);
+        $driverOnfleet = $this->GetOnfleet($driver->idOnfleet);
 
-        if(env('APP_ENV') == 'local')
+        if($driverOnfleet)
         {
-            $driverOnfleet = $this->GetOnfleet($driver->idOnfleet);
-
-            if($driverOnfleet)
-            {
-                $deleteOnfleet = $this->DeleteOnfleet($driver->idOnfleet);
-            }
+            $deleteOnfleet = $this->DeleteOnfleet($driver->idOnfleet);
         }
 
         $driver->delete();

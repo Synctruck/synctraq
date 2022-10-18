@@ -16,7 +16,7 @@ class Driver extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'idTeam', 'nameTeam', 'idOnfleet'];
+    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'idTeam', 'nameTeam', 'idOnfleet','status'];
 
     public function role()
     {
@@ -32,6 +32,12 @@ class Driver extends Model
     {
         return $this->hasMany('App\Models\PackageDispatch', 'idUserDispatch');
     }
+
+    public function history_dispatch()
+    {
+        return $this->hasMany('App\Models\PackageHistory', 'idUserDispatch');
+    }
+
     public function routes_team()
     {
         return $this->hasMany('App\Models\TeamRoute', 'idTeam');

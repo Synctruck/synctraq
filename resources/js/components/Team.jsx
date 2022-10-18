@@ -14,6 +14,7 @@ function Team() {
     const [address, setAddress]                       = useState('');
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
+    const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
     const [idOnfleet, setIdOnfleet]                   = useState('');
@@ -120,6 +121,7 @@ function Team() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('status', status);
         formData.append('routesName', idsRoutes);
         formData.append('permissionDispatch', permissionDispatch);
 
@@ -236,6 +238,7 @@ function Team() {
             setPhone(team.phone);
             setEmail(team.email);
             setPermissionDispatch(team.permissionDispatch);
+            setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
 
             setTimeout( () => {
@@ -299,6 +302,7 @@ function Team() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setStatus('Active');
     }
 
     const clearValidation = () => {
@@ -317,6 +321,9 @@ function Team() {
 
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
+
+        document.getElementById('status').style.display = 'none';
+        document.getElementById('status').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -324,21 +331,30 @@ function Team() {
         return (
 
             <tr key={i}>
-                <td>{ user.name }</td>
-                <td>{ user.nameOfOwner }</td>
-                <td>{ user.address }</td>
+                <td>
+                    <b>{ user.name }</b><br/>
+                    { user.nameOfOwner }
+                </td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
+                <td>{ user.idOnfleet }</td> 
                 <td>
-                    { user.permissionDispatch ? 'YES' : 'NO'}
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
                 </td>
-                <td>{ user.idOnfleet }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getTeam(user.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
+                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 && user.histories_teams.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
@@ -464,6 +480,18 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div className="row" >
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Status</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
+                                                                        <option value="Active" >Active</option>
+                                                                        <option value="Inactive" >Inactive</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                         <div className="row">
                                                             <div className="col-lg-12">
@@ -519,12 +547,10 @@ function Team() {
                                         <thead>
                                             <tr>
                                                 <th>NAME</th>
-                                                <th>NAME OF OWNER</th>
-                                                <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>PERMISSION DISPATCH</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>
