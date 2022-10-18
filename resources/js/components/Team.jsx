@@ -354,7 +354,7 @@ function Team() {
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 && user.histories_teams.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
+                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>

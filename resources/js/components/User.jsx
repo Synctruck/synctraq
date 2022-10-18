@@ -280,7 +280,7 @@ function User() {
 
         let buttonDelete ='';
 
-        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 && user.histories.length == 0)
+        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0)
         {
             buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
                                 <i className="bx bxs-trash-alt"></i>

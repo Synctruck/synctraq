@@ -116,7 +116,7 @@
 
 
             @if(hasPermission('assigned.index'))
-            <li >
+            <li style="display: none;">
                 <a class="nav-link {{Request::is('assignedTeam') ? 'show' : 'collapsed'}}" href="{{url('/assignedTeam')}}">
                     <i class="bx bx-user"></i>
                     <span>ASSIGNED</span>
@@ -124,7 +124,7 @@
             </li>
             @endif
             @if(hasPermission('unssigned.index'))
-            <li >
+            <li style="display: none;">
                 <a class="nav-link {{Request::is('unassignedTeam') ? 'show' : 'collapsed'}}" href="{{url('/unassignedTeam')}}">
                     <i class="bx bx-user"></i>
                     <span>UNSSIGNED</span>

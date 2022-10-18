@@ -37,11 +37,11 @@ class TeamController extends Controller
     public function Index()
     {
         return view('team.index');
-    }
+    } 
 
     public function List(Request $request)
     {
-        $teamsList = User::with(['drivers', 'role', 'routes_team', 'histories_teams'])
+        $teamsList = User::with(['drivers', 'role', 'routes_team'])
                             ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                             ->where('idRole', 3)
                             ->orderBy('name', 'asc')
