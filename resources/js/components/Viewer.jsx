@@ -285,7 +285,17 @@ function User() {
                 <td>{ user.address }</td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
-                <td>{ user.status }</td>
+                <td>
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
+                </td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>

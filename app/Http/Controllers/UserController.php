@@ -36,6 +36,7 @@ class UserController extends Controller
         $userList = User::with('role')
                                 ->with('package_not_exists')
                                 ->with('routes_team')
+                                ->with('histories')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idRole', '=', 1)

@@ -279,10 +279,12 @@ function User() {
     const listUserTable = listUser.map( (user, i) => {
 
         let buttonDelete ='';
-        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 ) {
-            buttonDelete = <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>;
+
+        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0 && user.histories.length == 0)
+        {
+            buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>;
         }
 
         return (
@@ -294,7 +296,17 @@ function User() {
                 <td>{ user.address }</td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
-                <td>{ user.status }</td>
+                <td>
+                    {
+                        (
+                            user.status == 'Active'
+                            ?
+                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                        )
+                    }
+                </td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>
