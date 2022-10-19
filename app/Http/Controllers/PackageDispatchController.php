@@ -247,7 +247,7 @@ class PackageDispatchController extends Controller
                         DB::beginTransaction();
 
                         $nowDate    = date('Y-m-d H:i:s');
-                        $created_at = date('H:i:s') > date('22:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
+                        $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
 
                         if($package->status == 'On hold')
                         {
@@ -458,7 +458,7 @@ class PackageDispatchController extends Controller
                 elseif($package->status == 'Delete')
                 {
                     $nowDate    = date('Y-m-d H:i:s');
-                    $created_at = date('H:i:s') > date('22:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
+                    $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
 
                     $packageHistory = new PackageHistory();
 

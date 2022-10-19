@@ -281,7 +281,7 @@ class PackageDeliveryController extends Controller
 
                 if(isset($row[0]))
                 {
-                    $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($row[0]);
+                    $packageDispatch = PackageDispatch::find($row[0]);
 
                     if($packageDispatch)
                     {
