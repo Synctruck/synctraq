@@ -248,7 +248,7 @@
                         <li >
                             <a class="nav-link {{Request::is('user') ? 'show' : 'collapsed'}}" href="{{url('user')}}">
                                 <i class="bi bi-person"></i>
-                                <span>Admins</span>
+                                <span>Users</span>
                             </a>
                         </li>
                         @endif
@@ -269,22 +269,7 @@
                             </a>
                         </li>
                         @endif
-                        @if(hasPermission('viewer.index'))
-                        <li >
-                            <a class="nav-link {{Request::is('viewer') ? 'active' : 'collapsed'}}" href="{{url('viewer')}}">
-                                <i class="bi bi-person"></i>
-                                <span>Viewers</span>
-                            </a>
-                        </li>
-                        @endif
-                        @if(hasPermission('validator.index'))
-                        <li >
-                            <a class="nav-link {{Request::is('validator') ? 'active' : 'collapsed'}}" href="{{url('validator')}}">
-                                <i class="bi bi-person"></i>
-                                <span>Validators</span>
-                            </a>
-                        </li>
-                        @endif
+
                         @if(hasPermission('role.index'))
                         <li >
                             <a class="nav-link {{Request::is('roles') ? 'active' : 'collapsed'}}" href="{{url('roles')}}">

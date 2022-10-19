@@ -8,6 +8,7 @@ function User() {
 
     const [id, setId]                   = useState(0);
     const [idRole, setIdRole]           = useState(0);
+    const [idRoleFilter, setIdRoleFilter]  = useState('');
     const [name, setName]               = useState('');
     const [nameOfOwner, setNameOfOwner] = useState('');
     const [address, setAddress]         = useState('');
@@ -15,6 +16,7 @@ function User() {
     const [email, setEmail]             = useState('');
     const [password, setPassword]       = useState('');
     const [status, setStatus]           = useState('');
+    const [statusFilter, setStatusFilter] = useState('Active');
 
     const [viewInputPassword, setViewInputPassword] = useState(true);
 
@@ -30,11 +32,14 @@ function User() {
     const [textSearch, setSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Save');
 
+    useEffect(()=> {
+        listAllRole();
+    },[]);
     useEffect(() => {
 
         listAllUser(page);
 
-    }, [textSearch])
+    }, [textSearch,idRoleFilter,statusFilter])
 
     const handlerChangePage = (pageNumber) => {
 
@@ -43,7 +48,7 @@ function User() {
 
     const listAllUser = (pageNumber) => {
 
-        fetch(url_general +'user/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'user/list?page='+ pageNumber +'&textSearch='+ textSearch+'&idRole='+ idRoleFilter+'&status='+ statusFilter)
         .then(res => res.json())
         .then((response) => {
 
@@ -70,14 +75,14 @@ function User() {
 
         if(id)
         {
-            setTitleModal('Update Admin')
+            setTitleModal('Update User')
             setTextButtonSave('Update');
         }
         else
         {
-            listAllRole();
+            // listAllRole();
             clearForm();
-            setTitleModal('Add Admin');
+            setTitleModal('Add User');
             setTextButtonSave('Save');
             setViewInputPassword(true);
         }
@@ -123,7 +128,7 @@ function User() {
 
                     if(response.stateAction)
                     {
-                        swal("Admin was registered!", {
+                        swal("User was registered!", {
 
                             icon: "success",
                         });
@@ -164,7 +169,7 @@ function User() {
                 {
                     listAllUser(1);
 
-                    swal("Admin was updated!", {
+                    swal("User was updated!", {
 
                         icon: "success",
                     });
@@ -185,7 +190,7 @@ function User() {
 
     const getUser = (id) => {
 
-        listAllRole();
+        // listAllRole();
 
         setViewInputPassword(false);
 
@@ -212,7 +217,7 @@ function User() {
 
         swal({
             title: "You want to delete?",
-            text: "Admin will be deleted!",
+            text: "User will be deleted!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -227,7 +232,7 @@ function User() {
 
                     if(response.stateAction)
                     {
-                        swal("Admin successfully deleted!", {
+                        swal("User successfully deleted!", {
 
                             icon: "success",
                         });
@@ -276,6 +281,7 @@ function User() {
         document.getElementById('password').innerHTML     = '';
     }
 
+
     const listUserTable = listUser.map( (user, i) => {
 
         let buttonDelete ='';
@@ -318,12 +324,27 @@ function User() {
         );
     });
 
-    const listRoleSelect = listRole.map( (role, i) => {
-
+    const listRoleFilter = listRole.map( (role, i) => {
+        console.log('role: ',role.name);
         return (
 
             (
-                role.name == 'Administrador'
+                (role.id != 3 && role.id != 4 )
+                ?
+                    <option value={ role.id }>{ role.name }</option>
+
+                :
+                 ''
+            )
+
+        );
+    });
+    const listRoleSelect = listRole.map( (role, i) => {
+        console.log('dsf')
+        return (
+
+            (
+                (role.id != 3 && role.id != 4 )
                 ?
                     <option value={ role.id }>{ role.name }</option>
 
@@ -434,7 +455,7 @@ function User() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-10">
-                                        Admins List
+                                        Users List
                                     </div>
                                     <div className="col-lg-2">
                                         <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
@@ -443,10 +464,24 @@ function User() {
                                     </div>
                                 </div>
                             </h5>
-                            <div className="row form-group">
-                                <div className="col-lg-12">
-                                    <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Buscar..."/>
-                                    <br/>
+                            <div className="row form-group mb-5">
+                                <div className="col-lg-4">
+                                    <label htmlFor="">Name</label>
+                                    <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Search..."/>
+                                </div>
+                                <div className="col-lg-4">
+                                    <label htmlFor="">Role</label>
+                                    <select value={ idRoleFilter } className="form-control" onChange={ (e) => setIdRoleFilter(e.target.value) } required>
+                                        <option value="">All</option>
+                                        { listRoleFilter }
+                                    </select>
+                                </div>
+                                <div className="col-lg-4">
+                                    <label htmlFor="">Status</label>
+                                    <select value={ statusFilter } className="form-control" onChange={ (e) => setStatusFilter(e.target.value) } required>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="row form-group">

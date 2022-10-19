@@ -38,7 +38,9 @@ class UserController extends Controller
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('idRole', '=', 1)
+                                ->whereNotIn('idRole', [3,4])
+                                ->role($request->idRole)
+                                ->status($request->status)
                                 ->paginate($this->paginate);
 
 
@@ -58,7 +60,7 @@ class UserController extends Controller
         }
 
         return ['userList' => $userList];
-    } 
+    }
 
     public function Insert(Request $request)
     {
@@ -154,6 +156,7 @@ class UserController extends Controller
         $user->phone       = $request->get('phone');
         $user->email       = $request->get('email');
         $user->status       = $request->get('status');
+        $user->idRole       = $request->get('idRole');
 
         $user->save();
 

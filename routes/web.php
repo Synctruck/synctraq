@@ -212,21 +212,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('profile', [UserController::class, 'Profile']);
 	Route::post('profile', [UserController::class, 'UpdateProfile']);
 	Route::get('getProfile', [UserController::class, 'getProfile']);
-	//============ Maintenance of view
-	Route::get('viewer', [ViewerController::class, 'Index'])->middleware('permission:viewer.index');
-	Route::get('viewer/list', [ViewerController::class, 'List']);
-	Route::post('viewer/insert', [ViewerController::class, 'Insert']);
-	Route::get('viewer/get/{id}', [ViewerController::class, 'Get']);
-	Route::post('viewer/update/{id}', [ViewerController::class, 'Update']);
-	Route::get('viewer/delete/{id}', [ViewerController::class, 'Delete']);
-	//============ Maintenance of validator
-	Route::get('validator', [ValidatorController::class, 'Index'])->middleware('permission:validator.index');
-	Route::get('validator/list', [ValidatorController::class, 'List']);
-	Route::get('validator/getAll', [ValidatorController::class, 'GetAll']);
-	Route::post('validator/insert', [ValidatorController::class, 'Insert']);
-	Route::get('validator/get/{id}', [ValidatorController::class, 'Get']);
-	Route::post('validator/update/{id}', [ValidatorController::class, 'Update']);
-	Route::get('validator/delete/{id}', [ValidatorController::class, 'Delete']);
+
 
 
 	Route::get('user/logout', [UserController::class, 'Logout']);
