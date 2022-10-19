@@ -769,10 +769,10 @@ function PackageDispatch() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                    { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 {
                     roleUser == 'Administrador'

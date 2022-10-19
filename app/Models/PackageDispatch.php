@@ -12,10 +12,10 @@ class PackageDispatch extends Model
     public $timestamps   = false;
     public $incrementing = true;
 
-    protected $casts = [
+    /*protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
+    ];*/
 
     public function team()
     {
@@ -33,7 +33,7 @@ class PackageDispatch extends Model
     }
 
     //observers
-    protected static function booted()
+    /*protected static function booted()
     {
         static::creating(function ($user) {
             $user->created_at = date('Y-m-d H:i:s');
@@ -43,5 +43,5 @@ class PackageDispatch extends Model
         static::updating(function ($user) {
             $user->updated_at = date('Y-m-d H:i:s');
         });
-    }
+    }*/
 }
