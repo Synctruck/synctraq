@@ -49,22 +49,24 @@ class PackageDispatchController extends Controller
     public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
         $packageDispatchList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $getDataDispatchAll  = $this->getDataDispatchAll($idTeam, $idDriver);
 
-        $quantityDispatch = $packageDispatchList->total();
+        $quantityDispatch    = $packageDispatchList->total();
+        $quantityDispatchAll = $getDataDispatchAll->count();
+
         $roleUser = Auth::user()->role->name;
 
         $listState = PackageDispatch::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'roleUser' => $roleUser, 'listState' => $listState];
+        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'roleUser' => $roleUser, 'listState' => $listState]; 
     }
 
     private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
-
 
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Dispatch');
@@ -106,6 +108,28 @@ class PackageDispatchController extends Controller
 
         return  $packageDispatchList;
 
+    }
+
+    private function getDataDispatchAll($idTeam, $idDriver)
+    {
+        $packageDispatchList = PackageDispatch::where('status', 'Dispatch');
+
+        if($idTeam && $idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+
+        $packageDispatchList = $packageDispatchList->orderBy('created_at', 'desc')->get();
+
+        return  $packageDispatchList;
     }
 
     public function Export(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
