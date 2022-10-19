@@ -346,14 +346,9 @@ function Companies() {
 
     const listCompanyTable = listCompany.map( (company, i) => {
 
-        let buttonDelete = '';
-
-        if(company.histories.length == 0)
-        {
-            buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
+        let buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
                                 <i className="bx bxs-trash-alt"></i>
                             </button>
-        }
 
         let status1 = <p><b>{ company.company_status[0].status }</b>: { company.company_status[0].statusCodeCompany }</p>;
         let status2 = <p><b>{ company.company_status[1].status }</b>: { company.company_status[1].statusCodeCompany }</p>;

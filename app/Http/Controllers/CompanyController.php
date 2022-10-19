@@ -34,7 +34,7 @@ class CompanyController extends Controller
 
     public function List(Request $request)
     {
-        $companyList = Company::with(['company_status', 'histories'])
+        $companyList = Company::with(['company_status'])
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->orWhere('email', 'like', '%'. $request->get('textSearch') .'%')
                                 ->orderBy('name', 'asc')

@@ -1,52 +1,227 @@
-taskDetails,photoUrl,arrivalTime,arrivalLonLat
-67660380171,https://d15p8tr8p0vffz.cloudfront.net/92637c0bb8ee55b00ff41462/800x.png https://d15p8tr8p0vffz.cloudfront.net/dce7017a7e26ef67a9f05f06/800x.png,44788.29368,"`-73.859184517,40.929264006"
-67660384156,https://d15p8tr8p0vffz.cloudfront.net/92637c0bb8ee55b00ff41462/800x.png https://d15p8tr8p0vffz.cloudfront.net/dce7017a7e26ef67a9f05f06/800x.png,44788.29368,"`-73.859184517,40.929264006"
-67660326582,https://d15p8tr8p0vffz.cloudfront.net/cae0cfb3110f20ebe409a8f8/800x.png https://d15p8tr8p0vffz.cloudfront.net/d41b64c6c1a1660ac29ba9df/800x.png,44788.29639,"`-73.864660352,40.925579434"
-67660326190,https://d15p8tr8p0vffz.cloudfront.net/0a37ac14db43fd7b2962750a/800x.png https://d15p8tr8p0vffz.cloudfront.net/e8d84f6d2580a2075a8be025/800x.png,44788.30433,"`-73.815004615,40.931263652"
-67660326574,https://d15p8tr8p0vffz.cloudfront.net/5ab7c24665b994a560949718/800x.png https://d15p8tr8p0vffz.cloudfront.net/644f0a286ab4e3db8780b78e/800x.png,44788.30762,"`-73.817344644,40.941763974"
-67660326638,https://d15p8tr8p0vffz.cloudfront.net/4fba90146acaafd665a573b2/800x.png,44788.31627,"`-73.87014343,41.157859061"
-67660326523,https://d15p8tr8p0vffz.cloudfront.net/e65bc0b3837201bb61c473ef/800x.png https://d15p8tr8p0vffz.cloudfront.net/3e09196357c156da569e150e/800x.png,44788.30802,"`-73.817219431,40.941663566"
-67660326663,https://d15p8tr8p0vffz.cloudfront.net/2eb9adc8b7800df3ade48d8b/800x.png https://d15p8tr8p0vffz.cloudfront.net/ce8b298ae70e969ecb3a9559/800x.png,44788.31049,"`-73.817517241,40.94293578"
-67660326550,https://d15p8tr8p0vffz.cloudfront.net/eb0db6e4d4507ddbabeb4a09/800x.png https://d15p8tr8p0vffz.cloudfront.net/e121025b626ed8badd58de40/800x.png,44788.3158,"`-73.821518858,40.953567332"
-67660326207,https://d15p8tr8p0vffz.cloudfront.net/aad782c98ef8e7b996149976/800x.png,44788.31648,"`-73.87029919999999,41.1580695"
-67660326587,https://d15p8tr8p0vffz.cloudfront.net/cb75912d29f6de493924a495/800x.png,44788.31672,"`-73.87029919999999,41.1580695"
-67660326565,https://d15p8tr8p0vffz.cloudfront.net/ec84bca316569bb539b78dd2/800x.png https://d15p8tr8p0vffz.cloudfront.net/eaf71bfa3c4522eab24cb453/800x.png,44788.32168,"`-74.0388018,41.0588147"
-67660326569,https://d15p8tr8p0vffz.cloudfront.net/c45d670945f1f17510d1e25b/800x.png https://d15p8tr8p0vffz.cloudfront.net/96dc4d72be4023ba900489d2/800x.png,44788.32015,"`-73.8296842,40.9477669"
-67660326168,https://d15p8tr8p0vffz.cloudfront.net/8901e0d7c8ffcf1ddf9733fc/800x.png https://d15p8tr8p0vffz.cloudfront.net/074cdeb37bf69763e40f7646/800x.png,44788.32552,"`-73.905963879,41.220116734"
-67660326568,https://d15p8tr8p0vffz.cloudfront.net/9dca0d658c6d8dc4c288d093/800x.png https://d15p8tr8p0vffz.cloudfront.net/a47688b773a8c3f0f6f0b48b/800x.png,44788.32786,"`-74.0215823,41.0615089"
-67660326517,https://d15p8tr8p0vffz.cloudfront.net/20d170bca68500aff120ca31/800x.png,44788.33206,"`-74.0146776,41.0812012"
-67660326532,https://d15p8tr8p0vffz.cloudfront.net/f9e22fe6c674c351953714fb/800x.png https://d15p8tr8p0vffz.cloudfront.net/41c4f503019ad8a3e5055754/800x.png https://d15p8tr8p0vffz.cloudfront.net/560b276393746a60e6126af5/800x.png,44788.32847,"`-73.851971721,40.945472446"
-67660326561,https://d15p8tr8p0vffz.cloudfront.net/d87b383a5eb903968e5575d2/800x.png https://d15p8tr8p0vffz.cloudfront.net/ad9b71c1bf47730edbe8a116/800x.png,44788.33543,"`-73.861935168,41.225738613"
-67660326552,https://d15p8tr8p0vffz.cloudfront.net/e4a570be84731009d88874c6/800x.png https://d15p8tr8p0vffz.cloudfront.net/0f6ba976ac7afdcfd148c36f/800x.png,44788.33594,"`-73.884914468,40.920994457"
-67660326665,https://d15p8tr8p0vffz.cloudfront.net/1bd12cfa4e6fbb51f995581f/800x.png,44788.34311,"`-73.815523,41.260729"
-67660326016,https://d15p8tr8p0vffz.cloudfront.net/490d6a5e3d08e5c59e510145/800x.png https://d15p8tr8p0vffz.cloudfront.net/bf4c67f338717fd4c059934a/800x.png,44788.33902,"`-73.889748595,40.92584474"
-67660326595,https://d15p8tr8p0vffz.cloudfront.net/f390b7f5903016348bb88731/800x.png,44788.34347,"`-73.815928025,41.261392073"
-67660379182,https://d15p8tr8p0vffz.cloudfront.net/60a08cf488317bc9f567ebe7/800x.png https://d15p8tr8p0vffz.cloudfront.net/b73fdaf1803708b6789116f3/800x.png,44788.34635,"`-73.9578042,41.0557765"
-67660326242,https://d15p8tr8p0vffz.cloudfront.net/85f2a0b1d8155ecd0da1b772/800x.png https://d15p8tr8p0vffz.cloudfront.net/dc590711815caf153d8e101d/800x.png,44788.34501,"`-73.90354529999999,40.9287595"
-67660326618,https://d15p8tr8p0vffz.cloudfront.net/46dafbdc8a12c96664db3e08/800x.png https://d15p8tr8p0vffz.cloudfront.net/eaf2ddb157d48ea0f9621b4d/800x.png,44788.35025,"`-73.784143926,41.267802605"
-INLAND102137923,https://d15p8tr8p0vffz.cloudfront.net/30f99f1ea2b92a599f0fa126/800x.png https://d15p8tr8p0vffz.cloudfront.net/147bd964f1f894c0ddf2fb73/800x.png,44788.35125,"`-73.936714,41.0412376"
-67660326525,https://d15p8tr8p0vffz.cloudfront.net/6cc31ac2b605498ca136b8c6/800x.png https://d15p8tr8p0vffz.cloudfront.net/a279365a9eec0ba44a90b46d/800x.png,44788.35538,"`-73.9351691,41.0234324"
-67660326238,https://d15p8tr8p0vffz.cloudfront.net/8bd968a6d731d5d12377f69d/800x.png,44788.35635,"`-73.754424245,41.260953932"
-67660326184,https://d15p8tr8p0vffz.cloudfront.net/c0bda0e9a4bc372ae6f69ef3/800x.png https://d15p8tr8p0vffz.cloudfront.net/d24cd3351b9fb975e2705576/800x.png,44788.35235,"`-73.892206607,40.948611879"
-67660326511,https://d15p8tr8p0vffz.cloudfront.net/a666e4f21d59cf1c4d0278e7/800x.png https://d15p8tr8p0vffz.cloudfront.net/91875db999399a1d96f5c86a/800x.png https://d15p8tr8p0vffz.cloudfront.net/ffd3ddbffa793a4145fd454b/800x.png,44788.35639,"`-73.880256012,40.959563707"
-67660326483,https://d15p8tr8p0vffz.cloudfront.net/acda82aea3d889570d9df2f1/800x.png https://d15p8tr8p0vffz.cloudfront.net/9cf4542d3f630c4a54f72573/800x.png,44788.35975,"`-73.9251143,41.008467"
-67660326606,https://d15p8tr8p0vffz.cloudfront.net/1566e90905323b34d7ee225d/800x.png,44788.36341,"`-73.771484451,41.245355679"
-67660326467,https://d15p8tr8p0vffz.cloudfront.net/0ece9ca29095e3b2b2aff291/800x.png https://d15p8tr8p0vffz.cloudfront.net/0d09d771175ebd9802de10bb/800x.png,44788.36293,"`-73.8581189,40.9631244"
-67660326186,https://d15p8tr8p0vffz.cloudfront.net/ccf34f0cef93e3643293c162/800x.png,44788.36375,"`-73.771322249,41.245473651"
-67660326153,https://d15p8tr8p0vffz.cloudfront.net/6e308ed7298555d3c5c64a55/800x.png https://d15p8tr8p0vffz.cloudfront.net/bbd844bbeadb1bd4ffc3ed2e/800x.png,44788.36608,"`-73.9164182,41.0392357"
-67660326544,https://d15p8tr8p0vffz.cloudfront.net/6873a4929780b0f9fc18be8e/800x.png https://d15p8tr8p0vffz.cloudfront.net/7a5c8a79f9c3b63f766bb863/800x.png,44788.37316,"`-73.817325407,41.194004219"
-INLAND102137882,https://d15p8tr8p0vffz.cloudfront.net/9d7d78614ae30b7d9d1e0c29/800x.png https://d15p8tr8p0vffz.cloudfront.net/998bbdb8be66b2e09d75352d/800x.png,44788.37019,"`-73.842408206,40.956125976"
-INLAND102137874,https://d15p8tr8p0vffz.cloudfront.net/c26cb05d67b83a27108926a7/800x.png https://d15p8tr8p0vffz.cloudfront.net/2e6e3cb949655c386d8701f3/800x.png,44788.37824,"`-73.82330689999999,40.9697465"
-INLAND102137890,https://d15p8tr8p0vffz.cloudfront.net/cdafb09d7d9105f4de692ac9/800x.png https://d15p8tr8p0vffz.cloudfront.net/4f0bed50d94be9027539e77e/800x.png,44788.37874,"`-73.824282381,40.970302739"
-INLAND102137907,https://d15p8tr8p0vffz.cloudfront.net/94162e7fd499725e322b5915/800x.png https://d15p8tr8p0vffz.cloudfront.net/b2f39ac0bdb94154bf1e85fa/800x.png,44788.38063,"`-73.9264339,41.0935088"
-67660326508,https://d15p8tr8p0vffz.cloudfront.net/734fe5fb6a5a80209684b4de/800x.png https://d15p8tr8p0vffz.cloudfront.net/1af8137bbe1b3f695d499727/800x.png,44788.38403,"`-73.7849016,41.1275035"
-67660326481,https://d15p8tr8p0vffz.cloudfront.net/ee7fb5ad4455072ef72a2ac4/800x.png https://d15p8tr8p0vffz.cloudfront.net/d21574bc1a1f0ed331fa3615/800x.png,44788.38508,"`-73.8120864,40.9812575"
-67660326466,https://d15p8tr8p0vffz.cloudfront.net/7dc86f53cbe40def118a5e1f/800x.png,44788.38926,"`-73.7615067,41.120873"
-67660326493,https://d15p8tr8p0vffz.cloudfront.net/2919ba9be0ceaf9fc216572a/800x.png https://d15p8tr8p0vffz.cloudfront.net/c9f7334a83636485c58ad9d0/800x.png,44788.38713,"`-73.9352495,41.1036532"
-67660326450,https://d15p8tr8p0vffz.cloudfront.net/936b51a4c0d407c830badcb1/800x.png https://d15p8tr8p0vffz.cloudfront.net/eee8e2bb4a27ec74ad203a98/800x.png,44788.38875,"`-73.804310608,40.981061847"
-67660328471,https://d15p8tr8p0vffz.cloudfront.net/22e424dd17d0279e094846c3/800x.png,44788.39522,"`-73.76587339999999,41.11288"
-67660326462,https://d15p8tr8p0vffz.cloudfront.net/0b0b4f215be8a10baa4189c8/800x.png,44788.39551,"`-73.76587339999999,41.11288"
-67660326509,https://d15p8tr8p0vffz.cloudfront.net/1d52bac32a148a96e53fd19a/800x.png https://d15p8tr8p0vffz.cloudfront.net/2b2325d0af57a09d008318bb/800x.png,44788.39119,"`-73.804446552,40.985270172"
-67660328528,https://d15p8tr8p0vffz.cloudfront.net/d760557ea4a14aea399347c7/800x.png,44788.39569,"`-73.765968587,41.113202531"
-67660326489,https://d15p8tr8p0vffz.cloudfront.net/8c9c85ff2bee6822d4b1643f/800x.png https://d15p8tr8p0vffz.cloudfront.net/5e442bc72cde49a72854fa25/800x.png,44788.39883,"`-73.9345849,41.1424553"
-67660326500,https://d15p8tr8p0vffz.cloudfront.net/44931fb5523db40946a7557a/800x.png,44788.40251,"`-73.777415632,41.152735863"
+INLAND101563137,,,scan_in_for_return
+INLAND101689058,,,scan_in_for_return
+67660374880,,,scan_in_for_return
+INLAND102231478,,,scan_out_for_return
+67660352349,,,scan_out_for_return
+67660353809,,,scan_out_for_return
+67660318548,,,scan_out_for_return
+67660347494,,,scan_out_for_return
+67660342027,,,scan_out_for_return
+67660266541,,,scan_out_for_return
+INLAND102085578,,,scan_out_for_return
+INLAND102077129,,,scan_out_for_return
+INLAND102077111,,,scan_out_for_return
+INLAND102077103,,,scan_out_for_return
+INLAND102073482,,,scan_out_for_return
+INLAND102027819,,,scan_out_for_return
+INLAND102070024,,,scan_out_for_return
+INLAND102070016,,,scan_out_for_return
+INLAND102070032,,,scan_out_for_return
+INLAND102068293,,,scan_out_for_return
+INLAND102089992,,,scan_out_for_return
+INLAND101706737,,,scan_out_for_return
+INLAND101706886,,,scan_out_for_return
+INLAND101707214,,,scan_out_for_return
+INLAND101707248,,,scan_out_for_return
+INLAND101710473,,,scan_out_for_return
+INLAND101722329,,,scan_out_for_return
+INLAND101952992,,,scan_out_for_return
+INLAND101955144,,,scan_out_for_return
+INLAND101955186,,,scan_out_for_return
+INLAND101958396,,,scan_out_for_return
+INLAND101972122,,,scan_out_for_return
+INLAND101972958,,,scan_out_for_return
+INLAND101973576,,,scan_out_for_return
+INLAND101979524,,,scan_out_for_return
+INLAND101979657,,,scan_out_for_return
+INLAND101994316,,,scan_out_for_return
+INLAND102014519,,,scan_out_for_return
+INLAND102021407,,,scan_out_for_return
+INLAND102038783,,,scan_out_for_return
+INLAND102042114,,,scan_out_for_return
+INLAND101347383,,,scan_out_for_return
+INLAND101533841,,,scan_out_for_return
+INLAND101548949,,,scan_out_for_return
+INLAND101565175,,,scan_out_for_return
+INLAND101565216,,,scan_out_for_return
+INLAND101566123,,,scan_out_for_return
+INLAND101573334,,,scan_out_for_return
+INLAND101579093,,,scan_out_for_return
+INLAND101620979,,,scan_out_for_return
+INLAND101620987,,,scan_out_for_return
+INLAND101621430,,,scan_out_for_return
+INLAND101621969,,,scan_out_for_return
+INLAND101625424,,,scan_out_for_return
+INLAND101627983,,,scan_out_for_return
+INLAND101653524,,,scan_out_for_return
+INLAND101659572,,,scan_out_for_return
+INLAND101659580,,,scan_out_for_return
+INLAND101659605,,,scan_out_for_return
+INLAND101659613,,,scan_out_for_return
+INLAND101675825,,,scan_out_for_return
+INLAND101679215,,,scan_out_for_return
+INLAND101680220,,,scan_out_for_return
+INLAND101683612,,,scan_out_for_return
+INLAND101690675,,,scan_out_for_return
+INLAND101700614,,,scan_out_for_return
+67660276670,,,scan_out_for_return
+67660320934,,,scan_out_for_return
+67660321882,,,scan_out_for_return
+67660322845,,,scan_out_for_return
+67660323026,,,scan_out_for_return
+67660325759,,,scan_out_for_return
+67660330042,,,scan_out_for_return
+67660330046,,,scan_out_for_return
+67660330786,,,scan_out_for_return
+67660330968,,,scan_out_for_return
+67660334788,,,scan_out_for_return
+67660337761,,,scan_out_for_return
+67660339407,,,scan_out_for_return
+67660339681,,,scan_out_for_return
+67660345978,,,scan_out_for_return
+67660345984,,,scan_out_for_return
+67660175602,,,scan_out_for_return
+67660176469,,,scan_out_for_return
+67660176754,,,scan_out_for_return
+67660179191,,,scan_out_for_return
+67660182887,,,scan_out_for_return
+67660190175,,,scan_out_for_return
+67660194921,,,scan_out_for_return
+67660197026,,,scan_out_for_return
+67660200301,,,scan_out_for_return
+67660216943,,,scan_out_for_return
+67660218049,,,scan_out_for_return
+67660219462,,,scan_out_for_return
+67660223035,,,scan_out_for_return
+67660227971,,,scan_out_for_return
+67660239420,,,scan_out_for_return
+67660246354,,,scan_out_for_return
+67660247435,,,scan_out_for_return
+67660257629,,,scan_out_for_return
+67660262843,,,scan_out_for_return
+67660266483,,,scan_out_for_return
+67660266925,,,scan_out_for_return
+67660268231,,,scan_out_for_return
+67660276100,,,scan_out_for_return
+67660276576,,,scan_out_for_return
+67660317895,,,scan_out_for_return
+67660351833,,,scan_out_for_return
+INLAND101783256,,,scan_out_for_return
+67660514003,,,scan_out_for_return
+67660465717,,,scan_out_for_return
+INLAND102529899,,,scan_out_for_return
+INLAND102548758,,,scan_out_for_return
+INLAND102485364,,,scan_out_for_return
+67660467087,,,scan_out_for_return
+67660457337,,,scan_out_for_return
+INLAND102472139,,,scan_out_for_return
+67660468124,,,scan_out_for_return
+INLAND102242053,,,scan_out_for_return
+INLAND102461695,,,scan_out_for_return
+INLAND102288883,,,scan_out_for_return
+67660368559,,,scan_out_for_return
+67660386312,,,scan_out_for_return
+67660387022,,,scan_out_for_return
+67660402240,,,scan_out_for_return
+67660426223,,,scan_out_for_return
+INLAND102050589,,,scan_out_for_return
+INLAND102204764,,,scan_out_for_return
+67660363641,,,scan_out_for_return
+67660387717,,,scan_out_for_return
+67660415345,,,scan_out_for_return
+67660342560,,,scan_out_for_return
+INLAND101719293,,,scan_out_for_return
+67660342840,,,scan_out_for_return
+INLAND102642055,,,shipment_not_found
+INLAND102602851,,,shipment_not_found
+INLAND102552981,,,shipment_not_found
+67660436794,,,shipment_not_found
+67660439332,,,shipment_not_found
+67660436001,,,shipment_not_found
+67660427353,,,shipment_not_found
+67660431107,,,shipment_not_found
+INLAND102386471,,,scan_out_for_return
+INLAND102415535,,,scan_out_for_return
+INLAND102474911,,,scan_out_for_return
+INLAND102481510,,,scan_out_for_return
+INLAND102494703,,,scan_out_for_return
+INLAND102505716,,,scan_out_for_return
+INLAND102519684,,,scan_out_for_return
+INLAND102536430,,,scan_out_for_return
+INLAND102553806,,,scan_out_for_return
+INLAND102558111,,,scan_out_for_return
+INLAND102569861,,,scan_out_for_return
+INLAND102576254,,,scan_out_for_return
+INLAND102576618,,,scan_out_for_return
+INLAND102608859,,,scan_out_for_return
+INLAND102610705,,,scan_out_for_return
+INLAND102610713,,,scan_out_for_return
+INLAND102633187,,,scan_out_for_return
+INLAND102637874,,,scan_out_for_return
+INLAND102642443,,,scan_out_for_return
+INLAND102643087,,,scan_out_for_return
+INLAND102646685,,,scan_out_for_return
+INLAND102647162,,,scan_out_for_return
+INLAND102656113,,,scan_out_for_return
+INLAND102671327,,,scan_out_for_return
+INLAND102682267,,,scan_out_for_return
+INLAND102688124,,,scan_out_for_return
+INLAND102691945,,,scan_out_for_return
+INLAND102759545,,,scan_out_for_return
+67660442249,,,scan_out_for_return
+67660447381,,,scan_out_for_return
+67660454226,,,scan_out_for_return
+67660454321,,,scan_out_for_return
+67660456230,,,scan_out_for_return
+67660456317,,,scan_out_for_return
+67660458236,,,scan_out_for_return
+67660461606,,,scan_out_for_return
+67660466351,,,scan_out_for_return
+67660466616,,,scan_out_for_return
+67660468090,,,scan_out_for_return
+67660468270,,,scan_out_for_return
+67660469675,,,scan_out_for_return
+67660470217,,,scan_out_for_return
+67660473391,,,scan_out_for_return
+67660474842,,,scan_out_for_return
+67660475801,,,scan_out_for_return
+67660480193,,,scan_out_for_return
+67660481192,,,scan_out_for_return
+67660481258,,,scan_out_for_return
+67660481515,,,scan_out_for_return
+67660482259,,,scan_out_for_return
+67660482896,,,scan_out_for_return
+67660485508,,,scan_out_for_return
+67660485839,,,scan_out_for_return
+67660488153,,,scan_out_for_return
+67660489623,,,scan_out_for_return
+67660494577,,,scan_out_for_return
+67660497509,,,scan_out_for_return
+67660498967,,,scan_out_for_return
+67660500968,,,scan_out_for_return
+67660516512,,,scan_out_for_return
+67660517583,,,scan_out_for_return
+67660519346,,,scan_out_for_return
+67660520148,,,scan_out_for_return
+67660523378,,,scan_out_for_return
+67660523753,,,scan_out_for_return
+67660541716,,,scan_out_for_return
+67660568029,,,scan_out_for_return
+INLAND102384061,,,scan_out_for_return
+INLAND102379955,,,scan_out_for_return
+INLAND102759214,,,scan_out_for_return
+INLAND102759149,,,scan_out_for_return
+67660542973,,,scan_out_for_return
+67660514003,,,scan_out_for_return
+67660465717,,,scan_out_for_return
+INLAND102529899,,,scan_out_for_return
+INLAND102548758,,,scan_out_for_return
+INLAND102485364,,,scan_out_for_return
+67660467087,,,scan_out_for_return
+67660457337,,,scan_out_for_return
+INLAND102472139,,,scan_out_for_return
+67660468124,,,scan_out_for_return
+INLAND102642055,,,scan_out_for_return
+INLAND102602851,,,scan_out_for_return
+INLAND102552981,,,scan_out_for_return
+67660547965,,,scan_out_for_return

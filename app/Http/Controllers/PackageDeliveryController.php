@@ -277,113 +277,93 @@ class PackageDeliveryController extends Controller
 
             while (($raw_string = fgets($handle)) !== false)
             {
-                if($lineNumber > 1)
+                $row = str_getcsv($raw_string);
+
+                if(isset($row[0]))
                 {
-                    $row = str_getcsv($raw_string);
+                    $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($row[0]);
 
-                    if(isset($row[0]))
+                    if($packageDispatch)
                     {
-                        $package = [];
+                        $user = User::find($packageDispatch->idUserDispatch);
 
-                        $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
-                                                            ->where('status', 'Dispatch')
-                                                            ->first();
-
-                        $packageDelivery = PackageDelivery::where('taskDetails', $row)->first();
-
-                        if($packageDispatch && $packageDelivery == null)
+                        if($user)
                         {
-                            $user = User::find($packageDispatch->idUserDispatch);
-
-                            if($user)
+                            if($user->nameTeam)
                             {
-                                if($user->nameTeam)
-                                {
-                                    $description = 'Delivery - for: Team 1 to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
-                                }
-                                else
-                                {
-                                    $description = 'Delivery - for: Team 1 to '. $user->name;
-                                }
+                                $description = 'For: '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                             }
                             else
                             {
-                                $description = 'Delivery - for: Not exist Team';
-                            }
-
-                            if($user)
-                            {
-                                $packageHistory = new PackageHistory();
-
-                                $packageHistory->id                           = uniqid();
-                                $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                                $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                                $packageHistory->company                      = $packageDispatch->company;
-                                $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                                $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                                $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                                $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                                $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                                $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                                $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                                $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                                $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                                $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                                $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                                $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                                $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                                $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                                $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                                $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                                $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                                $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                                $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                                $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                                $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                                $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                                $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                                $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                                $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                                $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                                $packageHistory->Notes                        = $packageDispatch->Notes;
-                                $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                                $packageHistory->Weight                       = $packageDispatch->Weight;
-                                $packageHistory->Route                        = $packageDispatch->Route;
-                                $packageHistory->Name                         = $packageDispatch->Name;
-                                $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                                $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                                $packageHistory->idUser                       = Auth::user()->id;
-                                $packageHistory->idUserDelivery               = Auth::user()->id;
-                                $packageHistory->Date_Delivery                = date('Y-m-d H:s:i');
-                                $packageHistory->Description                  = $description;
-                                $packageHistory->status                       = 'Delivery';
-
-                                $packageHistory->save();
-
-                                //Register delivery
-                                $packageDelivery = new PackageDelivery();
-
-                                $packageDelivery->taskDetails    = $row[0];
-                                $packageDelivery->workerName     = $user->name .' '. $user->nameOfOwner;
-                                $packageDelivery->recipientNotes = $user->nameTeam;
-                                $packageDelivery->photoUrl       = $row[1];
-                                $packageDelivery->arrivalTime    = $row[2];
-                                $packageDelivery->arrivalLonLat  = $row[3];
-                                $packageDelivery->status         = 'completed';
-
-                                $packageDelivery->save();
-
-                                $packageDispatch->Date_Delivery  = date('Y-m-d H:i:s');
-                                $packageDispatch->status         = 'Delivery';
-
-                                $packageDispatch->save();
+                                $description = 'For: Team (not exists) / '. $user->name;
                             }
                         }
+                        else
+                        {
+                            $description = 'For: Import Report Delivery';
+                        }
+
+                        $packageHistory = new PackageHistory();
+
+                        $packageHistory->id                           = uniqid();
+                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                        $packageHistory->company                      = $packageDispatch->company;
+                        $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
+                        $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
+                        $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
+                        $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
+                        $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
+                        $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
+                        $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
+                        $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
+                        $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
+                        $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
+                        $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
+                        $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
+                        $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
+                        $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
+                        $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
+                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageHistory->Service_Level                = $packageDispatch->Service_Level;
+                        $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
+                        $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
+                        $packageHistory->Notes                        = $packageDispatch->Notes;
+                        $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
+                        $packageHistory->Weight                       = $packageDispatch->Weight;
+                        $packageHistory->Route                        = $packageDispatch->Route;
+                        $packageHistory->Name                         = $packageDispatch->Name;
+                        $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                        $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+                        $packageHistory->idUser                       = $packageDispatch->idUser;
+                        $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
+                        $packageHistory->Date_Delivery                = $packageDispatch->created_at;
+                        $packageHistory->Description                  = $description;
+                        $packageHistory->status                       = 'Delivery';
+                        $packageHistory->created_at                   = $packageDispatch->created_at;
+                        $packageHistory->updated_at                   = $packageDispatch->created_at;
+
+                        $packageHistory->save();
+
+                        $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
+                        $packageDispatch->workerName         = $user ?  $user->name .' '. $user->nameOfOwner : '';
+                        $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageDispatch->recipientNotes     = $user ?  $user->nameTeam : '';
+                        $packageDispatch->photoUrl           = '';
+                        $packageDispatch->Date_Delivery      = $packageDispatch->created_at;
+                        $packageDispatch->status             = 'Delivery';
+
+                        $packageDispatch->save();
                     }
                 }
-
-                $lineNumber++;
             }
 
             fclose($handle);
@@ -421,6 +401,36 @@ class PackageDeliveryController extends Controller
                 $packageFailed->save();
             }
 
+        }
+
+        return "completed";
+    }
+
+    public function UpdatedCreatedDate()
+    {
+        $dateInit = date('Y-m-d 00:00:00');
+        $dateEnd  = date('Y-m-d 23:59:59');
+
+        $packageDispatchList = PackageDispatch::where('status', 'Delivery')
+                                                ->whereBetween('updated_at', [$dateInit, $dateEnd])
+                                                ->get();
+
+        foreach($packageDispatchList as $packageDispatch)
+        {
+            if($packageDispatch->Date_Delivery == $packageDispatch->created_at)
+            {
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->last();
+
+                if($packageHistory)
+                {
+                    $packageHistory->created_at = $packageDispatch->Date_Delivery;
+
+                    $packageHistory->save();
+                }
+            }
         }
 
         return "completed";

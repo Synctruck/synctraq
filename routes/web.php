@@ -108,6 +108,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);
 	Route::get('/package-delivery/updatedDeliverFields', [PackageDeliveryController::class, 'UpdatedDeliverFields']);
+	Route::get('/package-delivery/updatedCreatedDate', [PackageDeliveryController::class, 'UpdatedCreatedDate']);
 	Route::get('/package-delivery/check', [PackageDeliveryController::class, 'IndexForCheck'])->middleware('permission:checkDelivery.index');
 	Route::get('/package-delivery/list-for-check/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageDeliveryController::class, 'ListForCheck']);
 	Route::post('/package-delivery/insert-for-check', [PackageDeliveryController::class, 'InsertForCheck']);
