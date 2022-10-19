@@ -295,8 +295,8 @@ class PackageDispatchController extends Controller
                             $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
-                            $packageHistory->created_at                   = $created_at;
-                            $packageHistory->updated_at                   = $created_at;
+                            $packageHistory->created_at                   = $nowDate;
+                            $packageHistory->updated_at                   = $nowDate;
  
                             $packageHistory->save();
                         }
