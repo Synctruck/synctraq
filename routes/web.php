@@ -141,7 +141,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/roles',[RoleController::class,'index'])->middleware('permission:role.index');
     Route::get('/roles/getList',[RoleController::class,'getList']);
     Route::get('/roles/getPermissions',[RoleController::class,'getPermissions']);
-    Route::post('/roles/create',[RoleController::class,'create']);
+    Route::post('/roles/insert',[RoleController::class,'create']);
     Route::get('/roles/{role_id}',[RoleController::class,'getRole']);
     Route::put('/roles/update/{role_id}',[RoleController::class,'update']);
     Route::delete('/roles/delete',[RoleController::class,'delete']);
