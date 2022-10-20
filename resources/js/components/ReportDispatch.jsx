@@ -346,7 +346,7 @@ function ReportDispatch() {
 
     const handlerDownloadRoadWarrior = () => {
 
-        location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ StateSearch;
+        location.href = url_general +'package/download/roadwarrior/'+ idCompany +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch+'/'+ RouteSearch;
     }
 
     return (
