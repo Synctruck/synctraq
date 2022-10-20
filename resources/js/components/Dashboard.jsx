@@ -151,23 +151,31 @@ function Dashboard() {
                     }
                 });
 
+                response.packageDispatchList.forEach( packageDispatch => {
+
+                    if(packageDispatch.Route == route.Route)
+                    {
+                        quantityDispatchRoute++;
+                    }
+                });
+
+                response.packageDeliveryList.forEach( packageDelivery => {
+
+                    if(packageDelivery.Route == route.Route)
+                    {
+                        quantityDeliveryRoute++;
+                    }
+                });
+
                 response.packageHistoryListProcess.forEach( packageHistory => {
 
                     if(packageHistory.Route == route.Route && packageHistory.status == 'ReInbound')
                     {
                         quantityReinboundRoute++;
                     }
-                    else if(packageHistory.Route == route.Route && packageHistory.status == 'Dispatch')
-                    {
-                        quantityDispatchRoute++;
-                    }
                     else if(packageHistory.Route == route.Route && packageHistory.status == 'Failed')
                     {
                         quantityFailedRoute++;
-                    }
-                    else if(packageHistory.Route == route.Route && packageHistory.status == 'Delivery')
-                    {
-                        quantityDeliveryRoute++;
                     }
 
                     if(packageHistory.Route == route.Route && packageHistory.status == 'Return')
@@ -315,7 +323,7 @@ function Dashboard() {
                     { item.Route }
                 </td>
                 <td className='text-end'>{ item.total_inbound }</td>
-                <td className='text-end'>{ item.total_reinbound }</td>
+                <td className='text-end' style={ {display: 'none'} }>{ item.total_reinbound }</td>
                 <td className='text-end'>{ item.total_dispatch }</td>
                 <td className='text-end'>{ item.total_failed }</td>
                 <td className='text-end'>{ item.total_delivery }</td>
@@ -333,7 +341,7 @@ function Dashboard() {
                 <td>
                     { item.name }
                 </td>
-                <td className='text-end'>{ item.total_reinbound }</td>
+                <td className='text-end' style={ {display: 'none'} }>{ item.total_reinbound }</td>
                 <td className='text-end'>{ item.total_dispatch }</td>
                 <td className='text-end'>{ item.total_failed }</td>
                 <td className='text-end'>{ item.total_delivery }</td>
@@ -545,8 +553,7 @@ function Dashboard() {
                                                                 <tr>
                                                                     <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
                                                                     <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
-
-                                                                    <th style={{backgroundColor: '#38D9A1',color: '#fff'}}>RE-INBOUND</th>
+                                                                    <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'} }>RE-INBOUND</th>
                                                                     <th className='bg-warning'>DISPATCH</th>
                                                                     <th className='bg-danger'>FAILED</th>
                                                                     <th className='bg-info'>DELIVERY</th>
@@ -556,7 +563,7 @@ function Dashboard() {
                                                                 <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
                                                                     <td></td>
                                                                     <td><b>   TOTAL:</b></td>
-                                                                    <td className='text-end'><b>{listPackageTeamTotal.reinbound}</b></td>
+                                                                    <td className='text-end' style={ {display: 'none'} }><b>{listPackageTeamTotal.reinbound}</b></td>
                                                                     <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
                                                                     <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
                                                                     <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
@@ -579,7 +586,7 @@ function Dashboard() {
                                                             <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
                                                             <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
                                                             <th className='bg-success'>INBOUND</th>
-                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff'}}>RE-INBOUND</th>
+                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'}}>RE-INBOUND</th>
                                                             <th className='bg-warning'>DISPATCH</th>
                                                             <th className='bg-danger'>FAILED</th>
                                                             <th className='bg-info'>DELIVERY</th>
@@ -590,7 +597,7 @@ function Dashboard() {
                                                             <td></td>
                                                             <td><b>   TOTAL:</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.reinbound}</b></td>
+                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.reinbound}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.dispatch}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.failed}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.delivery}</b></td>

@@ -104,6 +104,8 @@ class WHookController extends Controller
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Delivery';
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
 
@@ -124,6 +126,7 @@ class WHookController extends Controller
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->Date_Delivery = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageDispatch->status        = 'Delivery';
+                    $packageDispatch->updated_at    = date('Y-m-d H:i:s');
 
                     $packageDispatch->save();
 
@@ -213,6 +216,8 @@ class WHookController extends Controller
                 $packageHistory->idUser                       = $user->id;
                 $packageHistory->Description_Onfleet          = $Description_Onfleet;
                 $packageHistory->status                       = 'Failed';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
 
@@ -315,6 +320,8 @@ class WHookController extends Controller
                             $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] ';
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
+                            $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                            $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                             $packageHistory->save();
                         }
@@ -364,6 +371,8 @@ class WHookController extends Controller
                             $packageDispatch->taskOnfleet                  = $taskOnfleet;
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                             $packageDispatch->status                       = 'Dispatch';
+                            $packageDispatch->created_at                   = date('Y-m-d H:i:s');
+                            $packageDispatch->updated_at                   = date('Y-m-d H:i:s');
 
                             $packageDispatch->save();
                         }
@@ -412,6 +421,8 @@ class WHookController extends Controller
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] '. $descriptionDispatch;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                        $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                         $packageHistory->save();
 
@@ -422,6 +433,7 @@ class WHookController extends Controller
                             $package->idOnfleet     = $idOnfleet;
                             $package->taskOnfleet   = $taskOnfleet;
                             $package->created_at    = date('Y-m-d H:i:s');
+                            $package->updated_at    = date('Y-m-d H:i:s');
 
                             $package->save();
                         }
@@ -531,11 +543,14 @@ class WHookController extends Controller
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
 
                 //update status Dispatch
-                $package->status = 'Delete';
+                $package->status     = 'Delete';
+                $package->updated_at = date('Y-m-d H:i:s');
 
                 $package->save();
 
