@@ -66,7 +66,7 @@ class PackageDispatchController extends Controller
     private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
+        $dateEnd   = $dateEnd .' 23:59:59';
 
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Dispatch');
@@ -112,7 +112,11 @@ class PackageDispatchController extends Controller
 
     private function getDataDispatchAll($idTeam, $idDriver)
     {
-        $packageDispatchList = PackageDispatch::where('status', 'Dispatch');
+        $startDate = date('Y-m-d') .' 00:00:00';
+        $endDate   = date('Y-m-d') .' 23:59:59';
+
+        $packageDispatchList = PackageDispatch::where('status', 'Dispatch')
+                                                ->whereNotBetween('created_at', [$startDate, $endDate]);
 
         if($idTeam && $idDriver)
         {
