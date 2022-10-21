@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class TeamRoute extends Model
+class TeamRoute extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'teamroute';
     protected $primaryKey = 'id';
     protected $fillable   = ['id', 'idTeam', 'idRoute'];

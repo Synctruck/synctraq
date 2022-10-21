@@ -2,19 +2,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class PackageHistory extends Model
 {
+    // use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'packagehistory';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
     public $incrementing = true;
-    protected $casts = [
+    /*protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
+    ];*/
 
     public function package_manifest()
     {
@@ -62,7 +65,7 @@ class PackageHistory extends Model
     }
 
     //observers
-    protected static function booted()
+    /*protected static function booted()
     {
         static::creating(function ($user) {
             $user->created_at = date('Y-m-d H:i:s');
@@ -72,5 +75,5 @@ class PackageHistory extends Model
         static::updating(function ($user) {
             $user->updated_at = date('Y-m-d H:i:s');
         });
-    }
+    }*/
 }

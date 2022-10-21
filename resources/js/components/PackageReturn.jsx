@@ -495,17 +495,19 @@ function PackageReturn() {
     }
 
     const handlerExport = () => {
-        let date1= moment(dateStart);
-        let date2 = moment(dateEnd);
-        let difference = date2.diff(date1,'days');
+        // let date1= moment(dateStart);
+        // let date2 = moment(dateEnd);
+        // let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
-            swal(`Maximum limit to export is ${limitToExport} days`, {
-                icon: "warning",
-            });
-        }else{
-            exportAllPackageReturn(RouteSearch, StateSearch);
-        }
+        // if(difference> limitToExport){
+        //     swal(`Maximum limit to export is ${limitToExport} days`, {
+        //         icon: "warning",
+        //     });
+        // }else{
+
+        // }
+
+        exportAllPackageReturn(RouteSearch, StateSearch);
     }
     const clearForm = () => {
 
