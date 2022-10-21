@@ -5,9 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
 use App\Models\Permission;
+use App\Models\PermissionRole;
 use Illuminate\Http\Request;
 
 use App\Models\Role;
+use App\Models\User;
 use DB;
 
 class RoleController extends Controller
@@ -38,17 +40,16 @@ class RoleController extends Controller
 
     public function create(RoleCreateRequest $request )
     {
-        if($request->ajax())
-        {
+
             try {
 
                 DB::beginTransaction();
 
-                $permissions = $request->Permissions;
+                $permissions = $request->permissions;
                 unset($request['Id_Role']);
                 unset($request['Permissions']);
 
-                $role = Role::create($request->all());
+                $role = Role::create(['name'=>$request->name,'status'=>$request->status]);
                 //insertando permisos
                 $role->permissions()->sync($permissions);
 
@@ -62,7 +63,7 @@ class RoleController extends Controller
                 DB::rollback();
                 abort(500,'Error'.$e->getMessage());
             }
-        }
+
     }
 
     public function getRole(Request $request,$id )
@@ -95,22 +96,22 @@ class RoleController extends Controller
         }
     }
 
-    // public function delete(Request $request )
-    // {
+    public function delete(Request $request )
+    {
 
-    //     $users = CmsUser::where('Id_Role',$request->Id_Role)->first();
+        $users = User::where('idRole',$request->idRole)->first();
 
-    //     if($users)
-    //         return response('failed',409);
+        if($users)
+            return response('failed',409);
 
-    //     //eliminamos los permisos asignados
-    //     PermissionRole::where('Id_Role',$request->Id_Role)->delete();
+        //eliminamos los permisos asignados
+        PermissionRole::where('role_id',$request->idRole)->delete();
 
-    //     $user = Role::findOrFail($request->Id_Role);
-    //     $user->delete();
+        $role = Role::findOrFail($request->idRole);
+        $role->delete();
 
-    //     return response('susscess',200);
-    // }
+        return response('success',200);
+    }
 
     public function List(Request $request)
     {

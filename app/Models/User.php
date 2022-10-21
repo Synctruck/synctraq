@@ -24,6 +24,17 @@ class User extends Authenticatable  implements Auditable
 
     protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at','status'];
 
+    //scopes
+    public function scopeRole($query,$value)
+    {
+        if ($value!= '' || $value!= 0)
+            return $query->where('idRole', $value);
+    }
+    public function scopeStatus($query,$value)
+    {
+        if ($value!= '' || $value!= 0 || $value!= 'All')
+            return $query->where('status', $value);
+    }
      /** Relaciones */
     public function permissions()
     {
@@ -73,7 +84,7 @@ class User extends Authenticatable  implements Auditable
     {
         return $this->hasMany('App\Models\PackageHistory', 'idTeam');
     }
- 
+
     public function dispatchs_user()
     {
         return $this->hasMany('App\Models\Package', 'idUserDispatch');

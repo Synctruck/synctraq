@@ -65,7 +65,6 @@ function Roles() {
 
     const handleCheckedAll = ()=>{
         setCheckAll(!checkAll);
-        console.log('check all');
         if(checkAll== false ){
 
             let permissions = []
@@ -159,6 +158,47 @@ function Roles() {
         .finally(() => LoadingHide());
     }
 
+    const deleteRole = (id,name) => {
+
+        let url = url_general +'roles/delete'
+        let method = 'DELETE'
+
+        swal({
+            title: "",
+            text: 'Are you sure you want to delete this role ? : '+name,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          })
+          .then((willDelete) => {
+            if (willDelete) {
+                axios({
+                    method: method,
+                    url: url,
+                    data: {idRole:id}
+                })
+                .then((response) => {
+                    swal("Role deleted!", {
+                        icon: "success",
+                    });
+
+                    listAllRoles(1);
+
+                })
+                .catch(function(error) {
+                    if(error.response.status == 409){
+                        swal("There are users related to this role,it is not possible to delete the role ", {
+                            icon: "warning",
+                        });
+                    }
+                })
+                .finally(() => LoadingHide());
+            }
+          });
+
+
+    }
+
     const editRole = (id) => {
 
         fetch(url_general +'roles/'+ id)
@@ -184,6 +224,7 @@ function Roles() {
 
         setId(0);
         setName('');
+        setCheckAll(false)
         setRolePermissions([]);
     }
 
@@ -229,16 +270,24 @@ function Roles() {
     });
 
     const rolesListTable = rolesList.map( (role, i) => {
+        let buttonDelete ='';
 
+        if (role.id !=1 && role.id !=2 && role.id !=3 && role.id !=4)
+        {
+            buttonDelete = <button className="btn btn-danger btn-sm" title="Delete role" onClick={ () => deleteRole(role.id,role.name) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>
+        }
         return (
 
             <tr key={i}>
                 <td>{ i+1 }</td>
                 <td>{ role.name }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => editRole(role.id) }>
+                    <button className="btn btn-primary btn-sm" title="Edit role" onClick={ () => editRole(role.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
+                    {buttonDelete}
                 </td>
             </tr>
         );
@@ -308,13 +357,13 @@ function Roles() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-9">
+                                    <div className="col-lg-10">
                                         Roles List
                                     </div>
-                                    <div className="col-lg-1">
-                                        {/* <button className="btn btn-success btn-sm pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i> Add
-                                        </button> */}
+                                    <div className="col-lg-2">
+                                        <button className="btn btn-success btn-sm pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add role
+                                        </button>
                                     </div>
                                 </div>
                             </h5>
