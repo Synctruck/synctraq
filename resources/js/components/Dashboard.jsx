@@ -18,15 +18,16 @@ import { CalendarPicker } from '@mui/x-date-pickers'
 
 function Dashboard() {
 
-    const [valueCalendar, setValueCalendar] = React.useState(dayjs());
+    const [valueCalendar, setValueCalendar] = React.useState(dayjs()); 
     // const [days, setDays] = useState(dayjs(auxDateStart));
 
     const [quantityManifest, setQuantityManifest]   = useState(0);
     const [quantityInbound, setQuantityInbound]     = useState(0);
     const [quantityDispatch, setQuantityDispatch]   = useState(0);
+    const [quantityReInbound, setQuantityReInbound] = useState(0);
     const [quantityDelivery, setQuantityDelivery]   = useState(0);
-    const [quantityWarehouse, setQuantityWarehouse]   = useState(0);
-    const [quantityFailed, setQuantityFailed]   = useState(0);
+    const [quantityWarehouse, setQuantityWarehouse] = useState(0);
+    const [quantityFailed, setQuantityFailed]       = useState(0);
 
 
     const [listDataPie, setListDataPie] = useState([]);
@@ -109,6 +110,7 @@ function Dashboard() {
             setQuantityManifest(response.quantityManifest);
             setQuantityInbound(response.quantityInbound);
             setQuantityWarehouse(response.quantityWarehouse);
+            setQuantityReInbound(response.quantityReInbound);
             setQuantityDispatch(response.quantityDispatch);
             setQuantityFailed(response.quantityFailed);
             setQuantityDelivery(response.quantityDelivery);
@@ -461,54 +463,70 @@ function Dashboard() {
                                     </div>
                                 </div>
                                 <div className="col-lg-8">
-                                    <div className="row justify-content-center">
-                                        <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h6></div>
-
-                                        <div className="col-lg-3 text-center form-group">
-                                            <div className="card text-white bg-warning mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header bg-warning text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Dispatch</div>
-                                                <div className="card-body">
-                                                    <h3 className=" text-white text-start">{ quantityDispatch}</h3>
+                                    <table className=" table-condensed" style={ {width: '100%'} }>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h6></div><br/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div className="card text-white bg-secondary mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-secondary text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> ReInbound</div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityReInbound }</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-secondary text-white" href="/package/return">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end bg-warning text-white" href="/package-dispatch">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-3 text-center form-group">
-                                            <div className="card text-white bg-danger mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header bg-danger text-white text-start">  <i className="bx bxs-error-alt" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Failed</div>
-                                                <div className="card-body">
-                                                    <h3 className=" text-white text-start">{ quantityFailed}</h3>
+                                            </td>
+                                            <td>
+                                                <div className="card text-white bg-warning mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-warning text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Dispatch</div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityDispatch}</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-warning text-white" href="/package-dispatch">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end bg-danger text-white" href="/package-dispatch">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-3 text-center form-group">
-                                            <div className="card text-white bg-info mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header bg-info text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Delivery</div>
-                                                <div className="card-body">
-                                                    <h3 className=" text-white text-start">{ quantityDelivery }</h3>
+                                            </td>
+                                            <td>
+                                                <div className="card text-white bg-danger mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-danger text-white text-start">  <i className="bx bxs-error-alt" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Failed</div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityFailed}</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-danger text-white" href="/package-dispatch">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end bg-info text-white" href="#">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-3 text-center form-group">
-                                            <div className="card text-white mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header  text-white text-start" style={{background:'#5b0672'}}>  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: '',background:'#5b0672'} }></i> Warehouse</div>
-                                                <div className="card-body" style={{background:'#5b0672'}}>
-                                                    <h3 className=" text-white text-start">{ quantityWarehouse }</h3>
+                                            </td>
+                                            <td>
+                                                <div className="card text-white bg-info mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-info text-white text-start">  <i className="bx bx-car" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Delivery</div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityDelivery }</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-info text-white" href="#">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end text-white" style={{background:'#5b0672'}} href="/package-warehouse">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            </td>
+                                            <td>
+                                                <div className="card text-white mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header  text-white text-start" style={{background:'#5b0672'}}>  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: '',background:'#5b0672'} }></i> Warehouse</div>
+                                                    <div className="card-body" style={{background:'#5b0672'}}>
+                                                        <h3 className=" text-white text-start">{ quantityWarehouse }</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end text-white" style={{background:'#5b0672'}} href="/package-warehouse">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
