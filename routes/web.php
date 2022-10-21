@@ -178,6 +178,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('driver/insert', [DriverController::class, 'Insert']);
 	Route::get('driver/get/{id}', [DriverController::class, 'Get']);
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);
+	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
 
 	//============ Maintenance of teams
@@ -198,6 +199,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('team/insert', [TeamController::class, 'Insert']);
 	Route::get('team/get/{id}', [TeamController::class, 'Get']);
 	Route::post('team/update/{id}', [TeamController::class, 'Update']);
+	Route::get('team/changeStatus/{id}', [TeamController::class, 'ChangeStatus']);
 	Route::get('team/delete/{id}', [TeamController::class, 'Delete']);
 
 	//============ Maintenance of users

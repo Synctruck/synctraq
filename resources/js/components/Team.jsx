@@ -258,6 +258,41 @@ function Team() {
         });
     }
 
+    const changeStatus = (id) => {
+
+        swal({
+            title: "You want to change the status of the Team?",
+            text: "Change state!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShow();
+
+                fetch(url_general +'team/changeStatus/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Team status changed!", {
+
+                            icon: "success",
+                        });
+
+                        listAllTeam(page);
+                    }
+
+                    LoadingHide();
+                });
+            }
+        });
+    }
+
     const deleteTeam = (id) => {
 
         swal({
@@ -343,9 +378,9 @@ function Team() {
                         (
                             user.status == 'Active'
                             ?
-                                <div className="alert alert-success font-weight-bold">{ user.status }</div>
+                                <button className="alert alert-success font-weight-bold" onClick={ () => changeStatus(user.id) }>{ user.status }</button>
                             :
-                                <div className="alert alert-danger font-weight-bold">{ user.status }</div>
+                                <button className="alert alert-danger font-weight-bold" onClick={ () => changeStatus(user.id) }>{ user.status }</button>
                         )
                     }
                 </td>

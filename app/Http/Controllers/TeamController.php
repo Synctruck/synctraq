@@ -285,6 +285,17 @@ class TeamController extends Controller
         }
     }
 
+    public function ChangeStatus($id)
+    {
+        $user = User::find($id);
+
+        $user->status = $user->status == 'Active' ? 'Inactive' : 'Active';
+
+        $user->save();
+
+        return ['stateAction' => true];
+    }
+
     public function Delete($id)
     {
         $user = User::with('routes_team')->find($id);
