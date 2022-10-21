@@ -3,9 +3,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
-class Company extends Authenticatable
+use OwenIt\Auditing\Contracts\Auditable;
+class Company extends Authenticatable implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'company';
     protected $primaryKey = 'id';
 

@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class AuxDispatchUser extends Model
+class AuxDispatchUser extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'aux_dispatch_user';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';

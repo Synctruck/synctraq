@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class PackageBlocked extends Model
 {
+    // use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'packageblocked';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';
