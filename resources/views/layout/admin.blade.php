@@ -381,17 +381,25 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
-                                <div class="col-lg-6 form-group">
-                                    <button class="btn btn-primary form-control">Updated</button>
-                                </div>
-                                <div class="col-lg-3 form-group">
-                                    <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
+                                <div class="row">
+                                    <div class="col-lg-4 form-group">
+                                        <label for="">Onfleet Task#</label>
+                                        <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
+                                    </div>
+                                    <div class="col-lg-8 form-group">
+                                        <label for="">Onfleet Note</label>
+                                        <input type="text" id="notesOnfleetHistory" class="form-control" placeholder="Notes">
+                                    </div>
                                 </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
-                                    <textarea name="internalComment" id="internalComment" cols="10" rows="4" class="form-control"></textarea>
+                                    <textarea name="internalComment" id="internalComment" cols="10" rows="2" class="form-control"></textarea>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <button class="btn btn-primary form-control">Updated</button>
                                 </div>
                             </div>
+                            
                             <hr>
                             <div class="row">
                                 <div class="col-lg-12">
@@ -561,8 +569,10 @@
                 let packageHistoryList = response.packageHistoryList;
                 let packageDelivery    = response.packageDelivery;
                 let packageDispatch    = response.packageDispatch;
+                let notesOnfleet       = response.notesOnfleet;
 
                 document.getElementById('taskOnfleetHistory').value           = '';
+                document.getElementById('notesOnfleetHistory').value          = notesOnfleet;
                 document.getElementById('tableHistoryPackageTbody').innerHTML = '';
 
                 if(packageDispatch)

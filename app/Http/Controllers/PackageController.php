@@ -222,7 +222,22 @@ class PackageController extends Controller
 
         $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
 
-        return ['packageBlocked' => $packageBlocked, 'packageHistoryList' => $packageHistoryList, 'packageDelivery' => $packageDelivery, 'packageDispatch' => $packageDispatch];
+        $noteOnfleet = '';
+
+        if($packageDispatch && $packageDispatch->status == 'Delivery')
+        {
+            $responseOnfleet = $this->SearchTask($packageDispatch->taskOnfleet);
+            $noteOnfleet     = $responseOnfleet['stateAction'] == false ? null: $responseOnfleet['onfleet']['destination']['notes'];
+        }
+
+        return [
+
+            'packageBlocked' => $packageBlocked,
+            'packageHistoryList' => $packageHistoryList,
+            'packageDelivery' => $packageDelivery,
+            'packageDispatch' => $packageDispatch,
+            'notesOnfleet' => $noteOnfleet,
+        ];
     }
 
     public function SearchTask($taskOnfleet)
@@ -1273,20 +1288,25 @@ class PackageController extends Controller
 
     }
 
-    public function DownloadRoadWarrior($idCompany,$idTeam, $idDriver, $StateSearch,$routeSearch)
+    public function DownloadRoadWarrior($idCompany,$idTeam, $idDriver, $StateSearch,$routeSearch, $initDate, $endDate)
     {
-        $currentDate = date('Y-m-d');
+        //$currentDate = date('Y-m-d');
         // $currentDate = date('Y-m-d',strtotime('2022-09-14'));
-        $currentDatetime = (int)date('His');
+        //$currentDatetime = (int)date('His');
 
-        if($currentDatetime >=30000){
-            $initDate = date("Y-m-d",strtotime($currentDate)).' 03:00:00';
-            $endDate  = date("Y-m-d",strtotime($currentDate."+ 1 days")).' 02:59:59';
+        /*if($currentDatetime >=30000)
+        {
+            $initDate = date($initDate, strtotime($currentDate)).' 03:00:00';
+            $endDate  = date($endDate, strtotime($currentDate."+ 1 days")).' 02:59:59';
         }
-        else{
-            $initDate =  date("Y-m-d",strtotime($currentDate."- 1 days")).' 03:00:00';
-            $endDate  = date("Y-m-d",strtotime($currentDate)).' 02:59:59';
-        }
+        else
+        {
+            $initDate =  date($initDate, strtotime($currentDate."- 1 days")).' 03:00:00';
+            $endDate  = date($endDate, strtotime($currentDate)).' 02:59:59';
+        }*/
+
+        $initDate = $initDate .' 00:00:00';
+        $endDate  = $endDate .' 23:59:59';
 
         $delimiter = ",";
         $filename = "road warrior " . date('Y-m-d H:i:s') . ".csv";
@@ -1300,9 +1320,8 @@ class PackageController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageDispatch = PackageHistory::with('driver')
-                                        ->whereBetween('Date_Dispatch', [$initDate, $endDate])
-                                        ->where('dispatch', 1)
+        $listPackageDispatch = PackageDispatch::with('driver')
+                                        ->whereBetween('created_at', [$initDate, $endDate])
                                         ->where('status', 'Dispatch');
 
         if($idTeam && $idDriver)

@@ -436,37 +436,47 @@ function Dashboard() {
                             </div>
                             <div className="row justify-content-center">
                                 <div className="col-lg-4">
-                                    <div className="row justify-content-center">
-                                        <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).subtract(1,'days').format('LL')} And {moment(dateEnd).subtract(1,'days').format('LL')}</h6></div>
-                                        <div className="col-lg-6 text-center form-group">
-                                            <div className="card text-white bg-primary mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header bg-primary text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Manifest</div>
-                                                <div className="card-body">
-                                                    <h3 className=" text-white text-start">{ quantityManifest }</h3>
+                                    <table className=" table-condensed" style={ {width: '100%'} }>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).subtract(1,'days').format('LL')} And {moment(dateEnd).subtract(1,'days').format('LL')}</h6></div><br/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div className="card text-white bg-primary mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-primary text-white text-start">  <i className="bx bx-box" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Manifest</div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityManifest }</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-primary text-white" href="/package-manifest">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end bg-primary text-white" href="/package-manifest">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-6 text-center form-group">
-                                            <div className="card text-white bg-success mb-3" style={{maxWidth: '18rem'}} >
-                                                <div className="card-header bg-success text-white text-start">  <i className="bx bx-barcode-reader" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Inbound </div>
-                                                <div className="card-body">
-                                                    <h3 className=" text-white text-start">{ quantityInbound}</h3>
+                                            </td>
+                                            <td>
+                                                <div className="card text-white bg-success mb-3" style={{maxWidth: '18rem'}} >
+                                                    <div className="card-header bg-success text-white text-start">  <i className="bx bx-barcode-reader" style={ {fontSize: '16px',fontFamily: 'sans-serif',borderColor: ''} }></i> Inbound </div>
+                                                    <div className="card-body">
+                                                        <h3 className=" text-white text-start">{ quantityInbound}</h3>
+                                                    </div>
+                                                    <a className="card-footer text-end bg-success text-white" href="/package-inbound">
+                                                        More info <i className='bi bi-arrow-right-circle'></i>
+                                                    </a>
                                                 </div>
-                                                <a className="card-footer text-end bg-success text-white" href="/package-inbound">
-                                                    More info <i className='bi bi-arrow-right-circle'></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                                 <div className="col-lg-8">
                                     <table className=" table-condensed" style={ {width: '100%'} }>
                                         <tr>
                                             <td colspan="5">
-                                                <div className='col-lg-12 text-center'> <h6> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h6></div><br/>
+                                                <div className="row">
+                                                    <div className="col-lg-4"></div>
+                                                    <div className='col-lg-4 text-center'> <h6> Date between : {moment(dateStart).format('LL')} And {moment(dateEnd).format('LL')}</h6><br/></div>
+                                                    <div className="col-lg-4"></div>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>

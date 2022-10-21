@@ -125,7 +125,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package/list/return/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturn']);
 	Route::get('/package/list/return/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
 	Route::post('/package/return/dispatch', [PackageDispatchController::class, 'Return']);
-	Route::get('/package/download/roadwarrior/{idCompany}/{idTeam}/{idDriver}/{StateSearch}/{RouteSearch}', [PackageController::class, 'DownloadRoadWarrior']);
+	Route::get('/package/download/roadwarrior/{idCompany}/{idTeam}/{idDriver}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageController::class, 'DownloadRoadWarrior']);
 
 	Route::post('/package/dispatch/import', [PackageController::class, 'ImportDispatch']);
 
