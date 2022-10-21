@@ -83,6 +83,11 @@ class IndexController extends Controller
                                             ->count();
 
 
+        $quantityReInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('status', 'ReInbound')
+                                                ->get()
+                                                ->count();
+
         $quantityDispatch = PackageDispatch::whereBetween('created_at', [$initDate, $endDate])
                                             ->get()
                                             ->count();
@@ -106,6 +111,7 @@ class IndexController extends Controller
         return [
             'quantityManifest' => $quantityManifest,
             'quantityInbound' => $quantityInbound,
+            'quantityReInbound' => $quantityReInbound,
             'quantityDispatch' => $quantityDispatch,
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
