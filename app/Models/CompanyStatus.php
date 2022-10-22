@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CompanyStatus extends Model
+class CompanyStatus extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'company_status';
     protected $primaryKey = 'id';
     protected $keyType    = 'string';

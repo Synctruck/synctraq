@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class PackageDelivery extends Model
 {
+    // use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'packagedelivery';
     protected $primaryKey = 'taskDetails';
     protected $keyType    = 'string';

@@ -1273,10 +1273,20 @@ class PackageController extends Controller
 
     }
 
-    public function DownloadRoadWarrior($idTeam, $idDriver, $StateSearch)
+    public function DownloadRoadWarrior($idCompany,$idTeam, $idDriver, $StateSearch,$routeSearch)
     {
-        $initDate = date('Y-m-d 03:00:00');
-        $endDate  = date('Y-m-d 23:59:59');
+        $currentDate = date('Y-m-d');
+        // $currentDate = date('Y-m-d',strtotime('2022-09-14'));
+        $currentDatetime = (int)date('His');
+
+        if($currentDatetime >=30000){
+            $initDate = date("Y-m-d",strtotime($currentDate)).' 03:00:00';
+            $endDate  = date("Y-m-d",strtotime($currentDate."+ 1 days")).' 02:59:59';
+        }
+        else{
+            $initDate =  date("Y-m-d",strtotime($currentDate."- 1 days")).' 03:00:00';
+            $endDate  = date("Y-m-d",strtotime($currentDate)).' 02:59:59';
+        }
 
         $delimiter = ",";
         $filename = "road warrior " . date('Y-m-d H:i:s') . ".csv";
@@ -1303,12 +1313,22 @@ class PackageController extends Controller
         {
             $listPackageDispatch = $listPackageDispatch->where('idTeam', $idTeam);
         }
+        if($idCompany && $idCompany != 0)
+        {
+            $listPackageDispatch = $listPackageDispatch->where('idCompany', $idCompany);
+        }
 
         if($StateSearch != 'all')
         {
             $StateSearch = explode(',', $StateSearch);
 
             $listPackageDispatch = $listPackageDispatch->whereIn('Dropoff_Province', $StateSearch);
+        }
+
+        if($routeSearch != 'all')
+        {
+             $routeSearch = explode(',', $routeSearch);
+            $listPackageDispatch = $listPackageDispatch->whereIn('Route', $routeSearch);
         }
 
         $listPackageDispatch = $listPackageDispatch->with(['team', 'driver'])->get();

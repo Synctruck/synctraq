@@ -271,6 +271,8 @@ class PackageController extends Controller
                     $packageHistory->service_code                  = $data['service_code'];
                     $packageHistory->extra_data                    = $data['extra_data'];
                     $packageHistory->Description                   = 'On hold - for company: '. $company->name;
+                    $packageHistory->created_at                    = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                    = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
  

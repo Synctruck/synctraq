@@ -49,22 +49,24 @@ class PackageDispatchController extends Controller
     public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
         $packageDispatchList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $getDataDispatchAll  = $this->getDataDispatchAll($idTeam, $idDriver);
 
-        $quantityDispatch = $packageDispatchList->total();
+        $quantityDispatch    = $packageDispatchList->total();
+        $quantityDispatchAll = $getDataDispatchAll->count();
+
         $roleUser = Auth::user()->role->name;
 
         $listState = PackageDispatch::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'roleUser' => $roleUser, 'listState' => $listState];
+        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'roleUser' => $roleUser, 'listState' => $listState]; 
     }
 
     private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
+        $dateEnd   = $dateEnd .' 23:59:59';
 
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Dispatch');
@@ -98,14 +100,40 @@ class PackageDispatchController extends Controller
 
         if($type == 'list'){
             $packageDispatchList = $packageDispatchList->with(['team', 'driver'])
-            ->orderBy('Date_Dispatch', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(50);
         }else{
-            $packageDispatchList = $packageDispatchList->orderBy('Date_Dispatch', 'desc')->get();
+            $packageDispatchList = $packageDispatchList->orderBy('created_at', 'desc')->get();
         }
 
         return  $packageDispatchList;
 
+    }
+
+    private function getDataDispatchAll($idTeam, $idDriver)
+    {
+        $startDate = date('Y-m-d') .' 00:00:00';
+        $endDate   = date('Y-m-d') .' 23:59:59';
+
+        $packageDispatchList = PackageDispatch::where('status', 'Dispatch')
+                                                ->whereNotBetween('created_at', [$startDate, $endDate]);
+
+        if($idTeam && $idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+
+        $packageDispatchList = $packageDispatchList->orderBy('created_at', 'desc')->get();
+
+        return  $packageDispatchList;
     }
 
     public function Export(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
@@ -246,9 +274,10 @@ class PackageDispatchController extends Controller
                     {
                         DB::beginTransaction();
 
-                        $register = 0;
+                        $nowDate    = date('Y-m-d H:i:s');
+                        $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
 
-                        if($package->status == 'On hold') 
+                        if($package->status == 'On hold')
                         {
                             $packageHistory = new PackageHistory();
 
@@ -290,11 +319,13 @@ class PackageDispatchController extends Controller
                             $packageHistory->Name                         = $package->Name;
                             $packageHistory->idUser                       = Auth::user()->id;
                             $packageHistory->idUserInbound                = Auth::user()->id;
-                            $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                            $packageHistory->Date_Inbound                 = $created_at;
                             $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
-
+                            $packageHistory->created_at                   = $nowDate;
+                            $packageHistory->updated_at                   = $nowDate;
+ 
                             $packageHistory->save();
                         }
 
@@ -338,8 +369,10 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idUser                       = Auth::user()->id;
                         $packageDispatch->idTeam                       = $request->get('idTeam');
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
-                        $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
+                        $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->status                       = 'Dispatch';
+                        $packageDispatch->created_at                   = $created_at;
+                        $packageDispatch->updated_at                   = $created_at;
 
                         $packageHistory = new PackageHistory();
 
@@ -382,10 +415,12 @@ class PackageDispatchController extends Controller
                         $packageHistory->idUser                       = Auth::user()->id;
                         $packageHistory->idTeam                       = $request->get('idTeam');
                         $packageHistory->idUserDispatch               = $idUserDispatch;
-                        $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
+                        $packageHistory->Date_Dispatch                = $created_at;
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->Description                  = $description;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->created_at                   = $created_at;
+                        $packageHistory->updated_at                   = $created_at;
 
                         $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
@@ -450,6 +485,9 @@ class PackageDispatchController extends Controller
                 }
                 elseif($package->status == 'Delete')
                 {
+                    $nowDate    = date('Y-m-d H:i:s');
+                    $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
+
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -495,6 +533,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->dispatch                     = 1;
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Dispatch';
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
                     
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
@@ -507,7 +547,8 @@ class PackageDispatchController extends Controller
                         $package->status        = 'Dispatch';
                         $package->idOnfleet     = $idOnfleet;
                         $package->taskOnfleet   = $taskOnfleet;
-                        $package->created_at    = date('Y-m-d H:i:s');
+                        $package->created_at    = $created_at;
+                        $package->updated_at    = $created_at;
 
                         $package->save();
                         $packageHistory->save();
@@ -897,6 +938,8 @@ class PackageDispatchController extends Controller
                             $packageDispatch->idUserDispatch               = $idUserDispatch;
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                             $packageDispatch->status                       = 'Dispatch';
+                            $packageDispatch->created_at                   = date('Y-m-d H:i:s');
+                            $packageDispatch->updated_at                   = date('Y-m-d H:i:s');
 
                             $packageDispatch->save();
 
@@ -945,6 +988,8 @@ class PackageDispatchController extends Controller
                             $packageHistory->dispatch                     = 1;
                             $packageHistory->Description                  = $description;
                             $packageHistory->status                       = 'Dispatch';
+                            $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                            $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                             $packageHistory->save();
 
@@ -1199,6 +1244,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = $statusReturn;
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
 

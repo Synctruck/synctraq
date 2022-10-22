@@ -78,23 +78,24 @@ class IndexController extends Controller
         //                                             ->get();
 
         $quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
-                                                ->where('status', 'Inbound')
+                                            ->where('status', 'Inbound')
+                                            ->get()
+                                            ->count();
+
+
+        $quantityReInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('status', 'ReInbound')
                                                 ->get()
                                                 ->count();
 
+        $quantityDispatch = PackageDispatch::whereBetween('created_at', [$initDate, $endDate])
+                                            ->get()
+                                            ->count();
 
-        $quantityDispatch = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
-                                                ->where('status', 'Dispatch')
-                                                // ->where('dispatch', 1)
-                                                ->get()
-                                                ->count();
-
-        $quantityDelivery = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
-                                                ->where('status', 'Delivery')
-                                                ->get()
-                                                ->count();
-
-
+        $quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$initDate, $endDate])
+                                            ->where('status', 'Delivery')
+                                            ->get()
+                                            ->count();
 
         $quantityFailed = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'Failed')
@@ -110,6 +111,7 @@ class IndexController extends Controller
         return [
             'quantityManifest' => $quantityManifest,
             'quantityInbound' => $quantityInbound,
+            'quantityReInbound' => $quantityReInbound,
             'quantityDispatch' => $quantityDispatch,
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
@@ -130,6 +132,12 @@ class IndexController extends Controller
                                                                 ->groupBy('Reference_Number_1')
                                                                 ->get();
 
+        $packageDispatchList = PackageDispatch::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        $packageDeliveryList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                ->where('status', 'Delivery')
+                                                ->get();
+
         $packageHistoryListProcess = PackageHistory::select('Reference_Number_1', 'Route', 'status')
                                             ->whereBetween('created_at', [$startDate, $endDate])
                                             ->where('status', '!=', 'On hold')
@@ -146,8 +154,8 @@ class IndexController extends Controller
         $dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
                                 (SELECT count(DISTINCT Reference_Number_1)
-                                FROM packagehistory p2
-                                where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status ='Dispatch' AND p2.idTeam  = p.idTeam
+                                FROM packagedispatch p2
+                                where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.idTeam  = p.idTeam
                                 ) as total_dispatch,
                                 (SELECT count(DISTINCT Reference_Number_1)
                                 FROM packagereturn p3
@@ -158,7 +166,7 @@ class IndexController extends Controller
                                 where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
                                 ) as total_failed,
                                 (SELECT count(DISTINCT Reference_Number_1)
-                                FROM packagehistory p5
+                                FROM packagedispatch p5
                                 where (p5.Date_Delivery BETWEEN '$startDate' AND '$endDate') AND p5.status ='Delivery' AND p5.idTeam  = p.idTeam
                                 ) as total_delivery
                                 FROM packagehistory p
@@ -169,6 +177,8 @@ class IndexController extends Controller
         return [
 
             'packageHistoryInbound' => $packageHistoryInbound,
+            'packageDispatchList' => $packageDispatchList,
+            'packageDeliveryList' => $packageDeliveryList,
             'packageHistoryListProcess' => $packageHistoryListProcess,
             'packageRouteList'   => $packageRouteList,
             'dataPerTeams' => $dataPerTeams,

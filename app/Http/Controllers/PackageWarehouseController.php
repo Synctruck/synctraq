@@ -199,6 +199,8 @@ class PackageWarehouseController extends Controller
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
 
@@ -302,6 +304,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
 
@@ -470,6 +474,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Return';
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
 

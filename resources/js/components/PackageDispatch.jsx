@@ -32,7 +32,8 @@ function PackageDispatch() {
     const [readOnly, setReadOnly] = useState(false);
     const [checkAll, setCheckAll] = useState(0);
 
-    const [quantityDispatch, setQuantityDispatch] = useState(0);
+    const [quantityDispatch, setQuantityDispatch]       = useState(0);
+    const [quantityDispatchAll, setQuantityDispatchAll] = useState(0);
 
     // const [dataView, setDataView] = useState('today');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -106,7 +107,8 @@ function PackageDispatch() {
             setTotalPackage(response.packageDispatchList.total);
             setTotalPage(response.packageDispatchList.per_page);
             setPage(response.packageDispatchList.current_page);
-            setQuantityDispatch(response.quantityDispatch)
+            setQuantityDispatch(response.quantityDispatch);
+            setQuantityDispatchAll(response.quantityDispatchAll);
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -134,17 +136,19 @@ function PackageDispatch() {
     }
 
     const handlerExport = () => {
-        let date1= moment(dateStart);
-        let date2 = moment(dateEnd);
-        let difference = date2.diff(date1,'days');
+        // let date1= moment(dateStart);
+        // let date2 = moment(dateEnd);
+        // let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
-            swal(`Maximum limit to export is ${limitToExport} days`, {
-                icon: "warning",
-            });
-        }else{
-            exportAllPackageDispatch(StateSearch, RouteSearchList);
-        }
+        // if(difference> limitToExport){
+        //     swal(`Maximum limit to export is ${limitToExport} days`, {
+        //         icon: "warning",
+        //     });
+        // }else{
+
+        // }
+
+        exportAllPackageDispatch(StateSearch, RouteSearchList);
 
     }
 
@@ -769,10 +773,10 @@ function PackageDispatch() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                    { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 {
                     roleUser == 'Administrador'
@@ -1758,11 +1762,18 @@ function PackageDispatch() {
                                 <hr/><br/>
 
                                 <div className="row">
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-4">
                                         <div className="form-group">
-                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
-                                        </div>
+                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
+                                        </div><br/>
                                     </div>
+                                    <div className="col-lg-4">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERY PACKAGES: { quantityDispatchAll }</b>
+                                        </div><br/>
+                                    </div>
+                                </div>
+                                <div className="row">
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">

@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Assigned extends Model
+class Assigned extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'assigned';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
