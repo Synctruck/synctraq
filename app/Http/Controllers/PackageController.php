@@ -178,7 +178,7 @@ class PackageController extends Controller
             foreach($packageHistoryList as $packageHistory)
             {
                 $packageHistory = PackageHistory::find($packageHistory->id);
-                
+
                 $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
                 $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
                 $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
@@ -1186,7 +1186,7 @@ class PackageController extends Controller
             else
             {
                 $initDate = date('Y-m-d') .' 15:00:00';
-                $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1day'));
+                $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1 days'));
             }
         }
 
@@ -1321,7 +1321,7 @@ class PackageController extends Controller
                                 $packageDispatch->Dropoff_Address_Line_1,
                                 $packageDispatch->Dropoff_City,
                                 $packageDispatch->Dropoff_Province,
-                                $packageDispatch->Dropoff_Postal_Code, 
+                                $packageDispatch->Dropoff_Postal_Code,
                                 'USA',
                                 '',
                                 $packageDispatch->Dropoff_Contact_Phone_Number,
