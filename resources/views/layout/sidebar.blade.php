@@ -132,119 +132,26 @@
             </li>
             @endif
 
-                <li class="nav-heading" id="titleReports" >Reports</li>
-                <li class="nav-item" id="liUlReports">
-                    <a class="nav-link
-                            {{
-                                Request::is('report/failed') ||
-                                Request::is('report/assigns') ||
-                                Request::is('report/dispatch') ||
-                                Request::is('report/delivery') ||
-                                Request::is('report/inbound') ||
-                                Request::is('report/manifest') ||
-                                Request::is('report/notExists') ||
-                                Request::is('report/return-company')
-                                ?
-                                    ''
-                                :
-                                    'collapsed'
-                            }}" data-bs-target="#ulReports" data-bs-toggle="collapse" href="#"
-                    >
-                        <i class="bi bi-journal-text"></i><span>GENERAL REPORTS</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="ulReports" class="nav-content
-                            {{
-                                Request::is('report/failed') ||
-                                Request::is('report/assigns') ||
-                                Request::is('report/dispatch') ||
-                                Request::is('report/delivery') ||
-                                Request::is('report/inbound') ||
-                                Request::is('report/manifest') ||
-                                Request::is('report/notExists') ||
-                                Request::is('report/return-company')
-                                ?
-                                    'collapse show'
-                                :
-                                    'collapse'
-                            }}" data-bs-parent="#ulReports"
-                    >
-                    @if(hasPermission('reportManifest.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/manifest') ? 'show' : 'collapsed'}}" href="{{url('/report/manifest')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Manifest</span>
-                            </a>
-                        </li>
-                    @endif
-                    @if(hasPermission('reportInbound.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/inbound') ? 'show' : 'collapsed'}}" href="{{url('/report/inbound')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Inbound</span>
-                            </a>
-                        </li>
-                    @endif
-                    @if(hasPermission('reportDispatch.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/dispatch') ? 'show' : 'collapsed'}}" href="{{url('/report/dispatch')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Dispatch</span>
-                            </a>
-                        </li>
-                    @endif
-                    @if(hasPermission('reportDelivery.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/delivery') ? 'show' : 'collapsed'}}" href="{{url('/report/delivery')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Delivery</span>
-                            </a>
-                        </li>
-                    @endif
+                {{-- <li class="nav-heading" id="titleReports" >Reports</li> --}}
+                @if(hasPermission('report.index'))
+                <li >
+                   <a class="nav-link {{Request::is('reports/general') ? 'show' : 'collapsed'}}" href="{{url('/reports/general')}}">
+                       <i class="bx bxs-report"></i>
+                       <span>GENERAL REPORTS</span>
+                   </a>
+               </li>
+               @endif
 
-                    @if(hasPermission('reportFailed.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/failed') ? 'show' : 'collapsed'}}" href="{{url('/report/failed')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Failed</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if(hasPermission('reportNotexists.index'))
-                        {{-- <li>
-                            <a class="nav-link {{Request::is('report/assigns') ? 'show' : 'collapsed'}}" href="{{url('/report/assigns')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Assigns Teams</span>
-                            </a>
-                        </li> --}}
-                        <li>
-                            <a class="nav-link {{Request::is('report/notExists') ? 'show' : 'collapsed'}}" href="{{url('/report/notExists')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Not Exists</span>
-                            </a>
-                        </li>
-                    @endif
-                    @if(hasPermission('reportReturncompany.index'))
-                        <li>
-                            <a class="nav-link {{Request::is('report/return-company') ? 'show' : 'collapsed'}}" href="{{url('/report/return-company')}}">
-                                <i class="bx bxs-report"></i>
-                                <span>Return Company</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    </ul>
-                </li>
                  @if(hasPermission('configuration.index'))
                  <li >
-                    <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/configurations')}}">
+                    <a class="nav-link {{Request::is('configurations') ? 'show' : 'collapsed'}}" href="{{url('/configurations')}}">
                         <i class="ri-settings-4-line"></i>
                         <span>CONFIGURATION</span>
                     </a>
                 </li>
                 @endif
 
-                <li class="nav-heading" id="titleMaintenances">MAINTENANCES</li>
+
 
                 <li class="nav-item" id="liUlFinanzas">
                     <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">

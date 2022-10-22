@@ -218,6 +218,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('user/logout', [UserController::class, 'Logout']);
 
 	Route::get('/reports', [ReportController::class, 'Index']);
+	Route::get('/reports/general', [ReportController::class, 'general'])->middleware('permission:report.index');
 
 	Route::get('/report/manifest', [ReportController::class, 'IndexManifest'])->middleware('permission:reportManifest.index');
 	Route::get('/report/list/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
@@ -252,7 +253,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
 	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
 
-    Route::get('/configurations', [ConfigurationController::class, 'index']);
+    Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
+
 
 
 });

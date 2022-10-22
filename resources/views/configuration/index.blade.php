@@ -17,7 +17,7 @@
         </div>
         @if(hasPermission('admin.index'))
         <div class="col-xxl-3 col-xl-12">
-            <a href="{{url('user')}} style="text-decoration: none">
+            <a href="{{url('user')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
