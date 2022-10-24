@@ -21,6 +21,11 @@ class ReportController extends Controller
         return view('report.index');
     }
 
+    public function general()
+    {
+        return view('report.general');
+    }
+
     public function IndexManifest()
     {
         return view('report.indexmanifest');

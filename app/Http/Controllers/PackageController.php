@@ -1201,7 +1201,7 @@ class PackageController extends Controller
             else
             {
                 $initDate = date('Y-m-d') .' 15:00:00';
-                $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1day'));
+                $endDate  = date('Y-m-d 02:59:59', strtotime(date('Y-m-d') .' +1 days'));
             }
         }
 
