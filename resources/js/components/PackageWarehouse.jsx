@@ -10,6 +10,7 @@ function PackageWarehouse() {
 
     const [listPackageInbound, setListPackageInbound] = useState([]);
     const [listPackageTotal, setListPackageTotal]     = useState([]);
+    const [listStateValidate , setListStateValidate]  = useState([]);
     const [listState , setListState]                  = useState([]);
     const [listValidator , setListValidator]          = useState([]);
 
@@ -41,7 +42,7 @@ function PackageWarehouse() {
     const [readInput, setReadInput] = useState(false);
 
     var dateNow = new Date();
-    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate() 
     const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
 
     dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
@@ -99,12 +100,11 @@ function PackageWarehouse() {
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setQuantityWarehouse(response.quantityWarehouse);
+            setListStateValidate(response.listStateValidate);
             setListState(response.listState);
 
-            if(listState.length == 0)
-            {
-                listOptionState(response.listState);
-            }
+            listOptionState(response.listState);
+            listOptionStateValidate(response.listStateValidate);
         });
     }
 
@@ -130,7 +130,7 @@ function PackageWarehouse() {
 
         setListValidator([]);
 
-        fetch(url_general +'validator/getAll')
+        fetch(url_general +'validator/warehouse/getAll')
         .then(res => res.json())
         .then((response) => {
 
@@ -151,6 +151,7 @@ function PackageWarehouse() {
     const [Route, setRoute] = useState('');
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [StateValidate, setStateValidate] = useState('');
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
@@ -415,8 +416,7 @@ function PackageWarehouse() {
             const formData = new FormData();
 
             formData.append('Reference_Number_1', Reference_Number_1);
-            formData.append('TRUCK', Truck);
-            formData.append('CLIENT', Client);
+            formData.append('StateValidate', StateValidate);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -434,7 +434,15 @@ function PackageWarehouse() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'notExists')
+                    if(response.stateAction == 'nonValidatedState')
+                    {
+                        setTextMessage("NON VALIDATED STATE #"+ Reference_Number_1);
+                        setTypeMessage('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notExists')
                     {
                         setTextMessage("NO INBOUND and NO DISPATCH #"+ Reference_Number_1);
                         setTypeMessage('error');
@@ -642,7 +650,27 @@ function PackageWarehouse() {
         }
     };
 
-    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+    const handlerChangeStateValidate = (states) => {
+
+        if(states.length != 0)
+        {
+            let statesSearchValidate = '';
+
+            states.map( (state) => {
+
+                statesSearchValidate = statesSearchValidate == '' ? state.value : statesSearchValidate +','+ state.value;
+            });
+
+            setStateValidate(statesSearchValidate);
+        }
+        else
+        {
+            setStateValidate('');
+        }
+    };
+
+    const [optionsStateSearch, setOptionsStateSearch]     = useState([]);
+    const [optionsStateValidate, setOptionsStateValidate] = useState([]);
 
     const listOptionState = (listState) => {
 
@@ -653,6 +681,18 @@ function PackageWarehouse() {
             optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
 
             setOptionsStateSearch(optionsStateSearch);
+        });
+    }
+
+    const listOptionStateValidate = (listState) => {
+
+        setOptionsStateValidate([]);
+
+        listState.map( (state, i) => {
+
+            optionsStateValidate.push({ value: state.name, label: state.name });
+
+            setOptionsStateValidate(optionsStateValidate);
         });
     }
 
@@ -750,7 +790,7 @@ function PackageWarehouse() {
                                                 ''
                                         }
                                     </div>
-                                    <div className="col-lg-12 form-group">
+                                    <div className="col-lg-10 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -762,6 +802,12 @@ function PackageWarehouse() {
                                                 <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="form-group">
+                                            <label htmlFor="">State</label>
+                                            <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />
+                                        </div>
                                     </div>
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>

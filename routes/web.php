@@ -257,8 +257,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 
-
-
+    Route::get('/validator/warehouse/getAll', [ValidatorController::class, 'GetAllWarehouse']);
 });
 
 //============ Check Stop package

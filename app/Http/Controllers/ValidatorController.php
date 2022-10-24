@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\User;
+use App\Models\{ PackageWarehouse, User };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -58,6 +58,15 @@ class ValidatorController extends Controller
                                 ->where('idRole', 2)
                                 ->orWhere('idRole', 1)
                                 ->get();
+
+        return ['validatorList' => $validatorList];
+    }
+
+    public function GetAllWarehouse()
+    {
+        $idsUserPackageWarehouse = PackageWarehouse::get('idUser');
+
+        $validatorList = User::whereIn('id', $idsUserPackageWarehouse)->get();
 
         return ['validatorList' => $validatorList];
     }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, User};
+use App\Models\{ Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, States, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -52,7 +52,9 @@ class PackageWarehouseController extends Controller
                                             ->groupBy('Dropoff_Province')
                                             ->get();
 
-        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'quantityWarehouse' => $quantityWarehouse];
+        $listStateValidate  = States::orderBy('name', 'asc')->get();                                    
+
+        return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
 
     private function getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
@@ -144,10 +146,21 @@ class PackageWarehouseController extends Controller
     public function Insert(Request $request)
     {
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
+        $stateValidate    = $request->get('StateValidate');
+
+        $stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
 
         //VALIDATION OF PACKAGE IN WAREHOUSE AND UPDATE DATE CREATED
         if($packageWarehouse)
         {
+            if(count($stateValidate) > 0)
+            {
+                if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                {
+                    return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                }
+            }
+            
             if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
             {
                 return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
@@ -256,6 +269,15 @@ class PackageWarehouseController extends Controller
                 {
                     $package = $packageDispatch;
                 }
+
+                if(count($stateValidate) > 0)
+                {
+                    if(!in_array($package->Dropoff_Province, $stateValidate))
+                    {
+                        return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $package];
+                    }
+                }
+
                 if($packageManifest)
                 {
                     $packageHistory = new PackageHistory();
