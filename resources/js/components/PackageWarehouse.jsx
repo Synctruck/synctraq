@@ -91,6 +91,9 @@ function PackageWarehouse() {
 
     const listAllPackageWarehouse = (pageNumber, route, state) => {
 
+        setOptionsStateSearch([]);
+        setOptionsStateValidate([]);
+
         fetch(url_general +'package-warehouse/list/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
@@ -436,7 +439,7 @@ function PackageWarehouse() {
 
                     if(response.stateAction == 'nonValidatedState')
                     {
-                        setTextMessage("NON VALIDATED STATE #"+ Reference_Number_1);
+                        setTextMessage("NON VALIDATED STATE #"+ Reference_Number_1 +' / '+ response.packageWarehouse.Route +' / '+ response.packageWarehouse.Dropoff_Province);
                         setTypeMessage('error');
                         setNumberPackage('');
 
@@ -474,7 +477,7 @@ function PackageWarehouse() {
                     }
                     else if(response.stateAction)
                     {
-                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1);
+                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1 +' / '+ response.packageWarehouse.Route +' / '+ response.packageWarehouse.Dropoff_Province);
                         setTypeMessage('success');
                         setNumberPackage('');
 
