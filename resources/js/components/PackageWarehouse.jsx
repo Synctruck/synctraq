@@ -439,7 +439,15 @@ function PackageWarehouse() {
 
                     if(response.stateAction == 'nonValidatedState')
                     {
-                        setTextMessage("NON VALIDATED STATE #"+ Reference_Number_1 +' / '+ response.packageWarehouse.Route +' / '+ response.packageWarehouse.Dropoff_Province);
+                        setTextMessage("#"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
+                        setTypeMessage('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'countValidations')
+                    {
+                        setTextMessage("You cannot validate the same package more than 2 times a day #"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
                         setTypeMessage('error');
                         setNumberPackage('');
 
@@ -477,7 +485,7 @@ function PackageWarehouse() {
                     }
                     else if(response.stateAction)
                     {
-                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1 +' / '+ response.packageWarehouse.Route +' / '+ response.packageWarehouse.Dropoff_Province);
+                        setTextMessage("VALID WAREHOUSE / "+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
                         setTypeMessage('success');
                         setNumberPackage('');
 
@@ -808,7 +816,7 @@ function PackageWarehouse() {
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="form-group">
-                                            <label htmlFor="">State</label>
+                                            <label htmlFor="">LinaHaul Filter</label>
                                             <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />
                                         </div>
                                     </div>

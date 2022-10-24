@@ -147,11 +147,10 @@ class PackageWarehouseController extends Controller
     {
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
         $stateValidate    = $request->get('StateValidate');
-
-        $stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
+        $stateValidate    = $stateValidate != '' ? explode(',', $stateValidate) : [];
 
         //VALIDATION OF PACKAGE IN WAREHOUSE AND UPDATE DATE CREATED
-        if($packageWarehouse)
+        if($packageWarehouse != null)
         {
             if(count($stateValidate) > 0)
             {
@@ -161,10 +160,25 @@ class PackageWarehouseController extends Controller
                 }
             }
             
-            if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
+            $initDate = date('Y-m-d 00:00:00');
+            $endDate  = date('Y-m-d 23:59:59');
+
+            $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                            ->whereBetween('created_at', [$initDate, $endDate])
+                                            ->where('idUser', Auth::user()->id)
+                                            ->where('status', 'Warehouse')
+                                            ->get()
+                                            ->count();
+
+            if($countValidations >= 2)
+            {
+                return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
+            }
+
+            /*if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
             {
                 return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
-            }
+            }*/
 
             try
             {
@@ -218,6 +232,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->save();
 
                 // update warehouse
+                $packageWarehouse->idUser     = Auth::user()->id;
                 $packageWarehouse->created_at = date('Y-m-d H:i:s');
 
                 $packageWarehouse->save();
