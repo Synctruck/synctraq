@@ -573,6 +573,8 @@ class PackageWarehouseController extends Controller
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Warehouse';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
 

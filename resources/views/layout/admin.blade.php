@@ -382,11 +382,11 @@
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-4 form-group">
+                                    <div class="col-lg-9 ">
                                         <label for="">Onfleet Task#</label>
                                         <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
                                     </div>
-                                    <div class="col-lg-8 form-group">
+                                    <div class="col-lg-9 ">
                                         <label for="">Onfleet Note</label>
                                         <input type="text" id="notesOnfleetHistory" class="form-control" placeholder="Notes">
                                     </div>
