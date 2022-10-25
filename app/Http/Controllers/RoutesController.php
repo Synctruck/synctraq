@@ -21,13 +21,73 @@ class RoutesController extends Controller
         return view('routes.index');
     }
 
-    public function List(Request $request)
+    public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList)
     {
-        $routeList = Routes::orderBy('name', 'asc')
-                                ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->paginate($this->paginate);
-        
-        return ['routeList' => $routeList];
+        $zipCode   = $request->get('zipCode');
+        $routeList = Routes::orderBy('zipCode', 'asc');
+
+        if($zipCode)
+        {
+            $routeList = $routeList->where('zipCode', 'like', '%'. $zipCode .'%');
+        }
+        else
+        {
+            $CitySearchList   = $CitySearchList == 'all' ? [] : explode(',', $CitySearchList);
+            $CountySearchList = $CountySearchList == 'all' ? [] : explode(',', $CountySearchList);
+            $TypeSearchList   = $TypeSearchList == 'all' ? [] : explode(',', $TypeSearchList);
+            $StateSearchList  = $StateSearchList == 'all' ? [] : explode(',', $StateSearchList);
+            $RouteSearchList  = $RouteSearchList == 'all' ? [] : explode(',', $RouteSearchList);
+
+            if(count($CitySearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('city', $CitySearchList);
+            }
+
+            if(count($CountySearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('county', $CountySearchList);
+            }
+
+            if(count($TypeSearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('type', $TypeSearchList);
+            }
+
+            if(count($StateSearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('state', $StateSearchList);
+            }
+
+            if(count($RouteSearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('name', $RouteSearchList);
+            }
+        }
+
+        $routeList = $routeList->with('teams')->paginate($this->paginate);
+            
+        return [
+
+            'routeList' => $routeList,
+        ];
+    }
+
+    public function FilterList()
+    {
+        $listCity   = Routes::select('city')->groupBy('city')->get();
+        $listCounty = Routes::select('county')->groupBy('county')->get();
+        $listType   = Routes::select('type')->groupBy('type')->get();
+        $listState  = Routes::select('state')->groupBy('state')->get();
+        $listRoute  = Routes::select('name')->groupBy('name')->get();
+
+        return [
+
+            'listCity' => $listCity,
+            'listCounty' => $listCounty,
+            'listType' => $listType,
+            'listState' => $listState,
+            'listRoute' => $listRoute,
+        ];
     }
 
     public function GetAll(Request $request)
@@ -101,26 +161,35 @@ class RoutesController extends Controller
                 {
                     $row = str_getcsv($raw_string);
 
-                    $route = Routes::where('zipCode', $row[0])->first();
-
-                    if($route)
+                    if($row[0] != '')
                     {
-                        if($route->name != $row[5])
+                        $route = Routes::where('zipCode', $row[0])->first();
+
+                        if($route)
                         {
-                            $route->name = $row[5];
+                            $route->city   = $row[1];
+                            $route->county = $row[2];
+                            $route->type   = $row[3];
+                            $route->state  = $row[4];
+                            $route->name   = $row[5];
+
+                            $route->save();
+                        }
+                        else
+                        {
+                            $route = new Routes();
+
+                            $route->zipCode = $row[0];
+                            $route->city    = $row[1];
+                            $route->county  = $row[2];
+                            $route->type    = $row[3];
+                            $route->state   = $row[4];
+                            $route->name    = $row[5];
 
                             $route->save();
                         }
                     }
-                    else
-                    {
-                        $package = new Routes();
-
-                        $package->zipCode = $row[0];
-                        $package->name    = $row[5];
-
-                        $package->save();
-                    }
+                    
                 }
                 
                 $lineNumber++;
@@ -130,7 +199,7 @@ class RoutesController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true];    
+            return ['stateAction' => true, 'lineNumber' => $lineNumber];    
         }
         catch(Exception $e)
         {

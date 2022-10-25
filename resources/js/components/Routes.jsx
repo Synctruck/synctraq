@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
+import Select from 'react-select'
+import moment from 'moment';
 
 function Routes() {
 
@@ -10,7 +12,13 @@ function Routes() {
     const [name, setName]        = useState('');
     const [zipCode, setZipCode]  = useState('');
 
-    const [listRoute, setListRoute] = useState([]);
+    const [listRoute, setListRoute]   = useState([]);
+
+    const [listCity, setListCity]               = useState([]);
+    const [listCounty, setListCounty]           = useState([]);
+    const [listType, setListType]               = useState([]);
+    const [listState, setListState]             = useState([]);
+    const [listRouteSearch, setListRouteSearch] = useState([]);
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -18,7 +26,7 @@ function Routes() {
 
     const [titleModal, setTitleModal] = useState('');
 
-    const [textSearch, setSearch] = useState('');
+    const [zipCodeSearch, setZipCodeSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     const inputFileRef  = React.useRef();
@@ -29,9 +37,15 @@ function Routes() {
 
     useEffect(() => {
 
-        listAllRoute(page); 
+        listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
 
-    }, [textSearch])
+    }, [zipCodeSearch])
+
+    useEffect(() => {
+
+        listFilter();
+
+    }, [])
 
     useEffect(() => {
 
@@ -48,20 +62,39 @@ function Routes() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllRoute(pageNumber);
+        listAllRoute(pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
     }
 
-    const listAllRoute = (pageNumber) => {
+    const listAllRoute = (pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList) => {
 
-        fetch(url_general +'routes/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'routes/list/'+ CitySearchList +'/'+ CountySearchList +'/'+ TypeSearchList +'/'+ StateSearchList +'/'+ RouteSearchList +'?zipCode='+ zipCodeSearch +'&page='+ pageNumber)
         .then(res => res.json())
-        .then((response) => {
+        .then((response) => { 
 
             setListRoute(response.routeList.data);
             setPage(response.routeList.current_page);
             setTotalPage(response.routeList.per_page);
             setTotalRoute(response.routeList.total);
+        });
+    }
 
+    const listFilter = () => {
+
+        fetch(url_general +'routes/filter/list')
+        .then(res => res.json())
+        .then((response) => { 
+
+            setListCity(response.listCity);
+            setListCounty(response.listCounty);
+            setListType(response.listType);
+            setListState(response.listState);
+            setListRouteSearch(response.listRouteSearch);
+
+            listOptionCity(response.listCity);
+            listOptionCounty(response.listCounty);
+            listOptionType(response.listType);
+            listOptionState(response.listState);
+            listOptionRoute(response.listRoute);
         });
     }
 
@@ -205,7 +238,8 @@ function Routes() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllRoute(1);
+                    listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+                    listFilter();
 
                     setViewButtonSave('none');
                 }
@@ -280,21 +314,228 @@ function Routes() {
         inputFileRef.current.click();
     }
 
+
+    const listCountyOption = listCounty.map( (county, i) => {
+
+        return (
+
+            <option value={ county.county }>{ county.county }</option>
+        );
+    });
+
+    const [optionsCitySearch, setOptionsCitySearch]     = useState([]);
+    const [optionsCountySearch, setOptionsCountySearch] = useState([]);
+    const [optionsTypeSearch, setOptionsTypeSearch]     = useState([]);
+    const [optionsStateSearch, setOptionsStateSearch]   = useState([]);
+    const [optionsRouteSearch, setOptionsRouteSearch]   = useState([]);
+
+    const listOptionCity = (listCity) => {
+
+        setOptionsCitySearch([]);
+
+        listCity.map( (city, i) => {
+
+            optionsCitySearch.push({ value: city.city, label: city.city });
+
+            setOptionsCitySearch(optionsCitySearch);
+        });
+    }
+
+    const listOptionCounty = (listCounty) => {
+
+        setOptionsCountySearch([]);
+
+        listCounty.map( (county, i) => {
+
+            optionsCountySearch.push({ value: county.county, label: county.county });
+
+            setOptionsCountySearch(optionsCountySearch);
+        });
+    }
+
+    const listOptionType = (listType) => {
+
+        setOptionsTypeSearch([]);
+
+        listType.map( (type, i) => {
+
+            optionsTypeSearch.push({ value: type.type, label: type.type });
+
+            setOptionsTypeSearch(optionsTypeSearch);
+        });
+    }
+
+    const listOptionState = (listState) => {
+
+        setOptionsStateSearch([]);
+
+        listState.map( (state, i) => {
+
+            optionsStateSearch.push({ value: state.state, label: state.state });
+
+            setOptionsStateSearch(optionsStateSearch);
+        });
+    }
+
+    const listOptionRoute = (listRoute) => {
+
+        setOptionsRouteSearch([]);
+
+        listRoute.map( (route, i) => {
+
+            optionsRouteSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRouteSearch(optionsRouteSearch);
+        });
+    }
+
+
+    const [CitySearchList, setCitySearchList]     = useState('all');
+    const [CountySearchList, setCountySearchList] = useState('all');
+    const [TypeSearchList, setTypeSearchList]     = useState('all');
+    const [StateSearchList, setStateSearchList]   = useState('all');
+    const [RouteSearchList, setRouteSearchList]   = useState('all');
+
+    const handlerChangeCity = (cities) => {
+
+        if(cities.length != 0)
+        {
+            let citiesSearch = '';
+
+            cities.map( (route) => {
+
+                citiesSearch = citiesSearch == '' ? route.value : citiesSearch +','+ route.value;
+            });
+
+            setCitySearchList(citiesSearch);
+
+            listAllRoute(1, citiesSearch, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+        }
+        else
+        {
+            setCitySearchList('all');
+
+            listAllRoute(1, 'all', CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+        }
+    }
+
+    const handlerChangeCounty = (countys) => {
+
+        if(countys.length != 0)
+        {
+            let countiesSearch = '';
+
+            countys.map( (route) => {
+
+                countiesSearch = countiesSearch == '' ? route.value : countiesSearch +','+ route.value;
+            });
+
+            setCountySearchList(countiesSearch);
+
+            listAllRoute(1, CitySearchList, countiesSearch, TypeSearchList, StateSearchList, RouteSearchList);
+        }
+        else
+        {
+            setCountySearchList('all');
+
+            listAllRoute(1, CitySearchList, 'all', TypeSearchList, StateSearchList, RouteSearchList);
+        }
+    }
+
+    const handlerChangeType = (types) => {
+
+        if(types.length != 0)
+        {
+            let typesSearch = '';
+
+            types.map( (route) => {
+
+                typesSearch = typesSearch == '' ? route.value : typesSearch +','+ route.value;
+            });
+
+            setTypeSearchList(typesSearch);
+
+            listAllRoute(1, CitySearchList, CountySearchList, typesSearch, StateSearchList, RouteSearchList);
+        }
+        else
+        {
+            setTypeSearchList('all');
+
+            listAllRoute(1, CitySearchList, CountySearchList, 'all', StateSearchList, RouteSearchList);
+        }
+    }
+
+    const handlerChangeState = (states) => {
+
+        if(states.length != 0)
+        {
+            let statesSearch = '';
+
+            states.map( (route) => {
+
+                statesSearch = statesSearch == '' ? route.value : statesSearch +','+ route.value;
+            });
+
+            setStateSearchList(statesSearch);
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, statesSearch, RouteSearchList);
+        }
+        else
+        {
+            setStateSearchList('all');
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, 'all', RouteSearchList);
+        }
+    }
+
+    const handlerChangeRoute = (routes) => {
+
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
+
+            routes.map( (route) => {
+
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+
+            setRouteSearchList(routesSearch);
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, routesSearch);
+        }
+        else
+        {
+            setRouteSearchList('all');
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, 'all');
+        }
+    }
+
     const listRouteTable = listRoute.map( (route, i) => {
 
         return (
 
             <tr key={i}>
                 <td>{ route.zipCode }</td>
+                <td>{ route.city }</td>
+                <td>{ route.county }</td>
+                <td>{ route.type }</td>
+                <td>{ route.state }</td>
                 <td>{ route.name }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
+                    <button style={ {display: 'none'} } className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>
+                    {
+                        route.teams.length == 0 
+                        ?
+                            <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>
+                        :
+                            ''
+                    }
                 </td>
             </tr>
         );
@@ -361,25 +602,61 @@ function Routes() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-1">
+                                    <div style={ {display: 'none'} } className="col-lg-1">
                                         <button className="btn btn-success btn-sm pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>
                             </h5>
-                            <div className="row form-group">
+                            <div className="row form-group" style={ {display: 'none'} }>
                                 <div className="col-lg-12"> 
-                                    <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Search..."/>
+                                    <input type="text" value={ zipCodeSearch } onChange={ (e) => setZipCodeSearch(e.target.value) } className="form-control" placeholder="Search..."/>
                                     <br/>
                                 </div>
                             </div>
                             <div className="row form-group">
-                                <div className="col-lg-12">
+                                <div className="col-lg-12 table-responsive">
                                     <table className="table table-hover table-condensed">
+                                        <tr>
+                                            <td>
+                                                <div className="col-lg-12"> 
+                                                    <input type="text" value={ zipCodeSearch } onChange={ (e) => setZipCodeSearch(e.target.value) } className="form-control" placeholder="Zip Code..."/>
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeCity(e) } options={ optionsCitySearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeCounty(e) } options={ optionsCountySearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeType(e) } options={ optionsTypeSearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
+                                                </div>
+                                            </td>
+                                        </tr>   
                                         <thead>
                                             <tr>
                                                 <th>ZIP CODE</th>
+                                                <th>CITY</th>
+                                                <th>COUNTY</th>
+                                                <th>TYPE</th>
+                                                <th>STATE</th>
                                                 <th>ROUTE</th>
                                                 <th>ACTIONS</th>
                                             </tr>
