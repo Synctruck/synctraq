@@ -18,14 +18,12 @@ function PackageAge() {
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
-    const [listTruck , setListTruck] = useState([]);
 
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
-    const [truckSearch, setTruckSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -33,21 +31,20 @@ function PackageAge() {
 
     useEffect( () => {
 
-        listAllRoute();
-        listAllCompany();
+        listFilter();
 
     }, []);
 
     useEffect(() => {
 
-        listReportInbound(page, RouteSearch, StateSearch,truckSearch);
+        listReportInbound(page, StateSearch, RouteSearch);
 
     }, [dateInit, dateEnd, idCompany]);
 
 
-    const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
+    const listReportInbound = (pageNumber, stateSearch, routeSearch) => {
 
-        fetch(url_general +'package-age/list/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'package-age/list/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -56,52 +53,26 @@ function PackageAge() {
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityInbound(response.packageHistoryList.total);
+        });
+    }
+
+    const listFilter = () => {
+
+        fetch(url_general +'routes/filter/list')
+        .then(res => res.json())
+        .then((response) => { 
 
             setListState(response.listState);
+            setListRoute(response.listRoute);
 
-            if(listState.length == 0)
-            {
-                listOptionState(response.listState);
-            }
-        });
-    }
-
-    const listAllCompany = () => {
-
-        setListCompany([]);
-
-        fetch(url_general +'company/getAll')
-        .then(res => res.json())
-        .then((response) => {
-
-            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
-            setCompany(0);
-            setListCompany(CustomListCompany);
-
-        });
-    }
-
-    const optionCompany = listCompany.map( (company, i) => {
-
-        return <option value={company.id}>{company.name}</option>
-    })
-
-    const listAllRoute = () => {
-
-        setListRoute([]);
-
-        fetch(url_general +'routes/getAll')
-        .then(res => res.json())
-        .then((response) => {
-
-            setListRoute(response.routeList);
-            listOptionRoute(response.routeList);
+            listOptionState(response.listState);
+            listOptionRoute(response.listRoute);
         });
     }
 
     const handlerChangePage = (pageNumber) => {
 
-        listReportInbound(pageNumber, RouteSearch, StateSearch);
+        listReportInbound(pageNumber, StateSearch, RouteSearch);
     }
 
     const handlerExport = () => {
@@ -139,30 +110,20 @@ function PackageAge() {
         );
     });
 
-    const handlerChangeRoute = (routes) => {
-
-        if(routes.length != 0)
-        {
-            let routesSearch = '';
-
-            routes.map( (route) => {
-
-                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
-            });
-
-            setRouteSearch(routesSearch);
-
-            listReportInbound(1, routesSearch, StateSearch);
-        }
-        else
-        {
-            setRouteSearch('all');
-
-            listReportInbound(1, 'all', StateSearch);
-        }
-    };
-
+    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
     const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+
+    const listOptionState = (listStates) => {
+
+        setOptionsRoleSearch([]);
+
+        listStates.map( (state, i) => {
+
+            optionsStateSearch.push({ value: state.state, label: state.state });
+
+            setOptionsStateSearch(optionsStateSearch);
+        });
+    }
 
     const listOptionRoute = (listRoutes) => {
 
@@ -174,7 +135,6 @@ function PackageAge() {
 
             setOptionsRoleSearch(optionsRoleSearch);
         });
-
     }
 
     const handlerChangeState = (states) => {
@@ -190,29 +150,38 @@ function PackageAge() {
 
             setStateSearch(statesSearch);
 
-            listReportInbound(1, RouteSearch, statesSearch);
+            listReportInbound(1, statesSearch, RouteSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listReportInbound(1, RouteSearch, 'all');
+            listReportInbound(1, 'all', RouteSearch);
         }
     };
 
-    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+    const handlerChangeRoute = (routes) => {
 
-    const listOptionState = (listState) => {
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
 
-        setOptionsStateSearch([]);
+            routes.map( (state) => {
 
-        listState.map( (state, i) => {
+                routesSearch = routesSearch == '' ? state.value : routesSearch +','+ state.value;
+            });
 
-            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+            setRouteSearch(routesSearch);
 
-            setOptionsStateSearch(optionsStateSearch);
-        });
-    }
+            listReportInbound(1, StateSearch, routesSearch);
+        }
+        else
+        {
+            setRouteSearch('all');
+
+            listReportInbound(1, StateSearch, 'all');
+        }
+    };
 
     return (
 

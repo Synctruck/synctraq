@@ -21,7 +21,7 @@ class RoutesController extends Controller
         return view('routes.index');
     }
 
-    public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList)
+    public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList, $LatitudeSearchList, $LongitudeSearchList)
     {
         $zipCode   = $request->get('zipCode');
         $routeList = Routes::orderBy('zipCode', 'asc');
@@ -32,11 +32,13 @@ class RoutesController extends Controller
         }
         else
         {
-            $CitySearchList   = $CitySearchList == 'all' ? [] : explode(',', $CitySearchList);
-            $CountySearchList = $CountySearchList == 'all' ? [] : explode(',', $CountySearchList);
-            $TypeSearchList   = $TypeSearchList == 'all' ? [] : explode(',', $TypeSearchList);
-            $StateSearchList  = $StateSearchList == 'all' ? [] : explode(',', $StateSearchList);
-            $RouteSearchList  = $RouteSearchList == 'all' ? [] : explode(',', $RouteSearchList);
+            $CitySearchList      = $CitySearchList == 'all' ? [] : explode(',', $CitySearchList);
+            $CountySearchList    = $CountySearchList == 'all' ? [] : explode(',', $CountySearchList);
+            $TypeSearchList      = $TypeSearchList == 'all' ? [] : explode(',', $TypeSearchList);
+            $StateSearchList     = $StateSearchList == 'all' ? [] : explode(',', $StateSearchList);
+            $RouteSearchList     = $RouteSearchList == 'all' ? [] : explode(',', $RouteSearchList);
+            $LatitudeSearchList  = $LatitudeSearchList == 'all' ? [] : explode(',', $LatitudeSearchList);
+            $LongitudeSearchList = $LongitudeSearchList == 'all' ? [] : explode(',', $LongitudeSearchList);
 
             if(count($CitySearchList) != 0)
             {
@@ -62,6 +64,16 @@ class RoutesController extends Controller
             {
                 $routeList = $routeList->whereIn('name', $RouteSearchList);
             }
+
+            if(count($LatitudeSearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('latitude', $LatitudeSearchList);
+            }
+
+            if(count($LongitudeSearchList) != 0)
+            {
+                $routeList = $routeList->whereIn('longitude', $LongitudeSearchList);
+            }
         }
 
         $routeList = $routeList->with('teams')->paginate($this->paginate);
@@ -74,11 +86,13 @@ class RoutesController extends Controller
 
     public function FilterList()
     {
-        $listCity   = Routes::select('city')->groupBy('city')->get();
-        $listCounty = Routes::select('county')->groupBy('county')->get();
-        $listType   = Routes::select('type')->groupBy('type')->get();
-        $listState  = Routes::select('state')->groupBy('state')->get();
-        $listRoute  = Routes::select('name')->groupBy('name')->get();
+        $listCity      = Routes::select('city')->groupBy('city')->get();
+        $listCounty    = Routes::select('county')->groupBy('county')->get();
+        $listType      = Routes::select('type')->groupBy('type')->get();
+        $listState     = Routes::select('state')->groupBy('state')->get();
+        $listRoute     = Routes::select('name')->groupBy('name')->get();
+        $listLatitude  = Routes::select('latitude')->groupBy('latitude')->get();
+        $listLongitude = Routes::select('longitude')->groupBy('longitude')->get();
 
         return [
 
@@ -87,6 +101,8 @@ class RoutesController extends Controller
             'listType' => $listType,
             'listState' => $listState,
             'listRoute' => $listRoute,
+            'listLatitude' => $listLatitude,
+            'listLongitude' => $listLongitude,
         ];
     }
 

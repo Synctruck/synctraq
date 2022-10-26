@@ -187,7 +187,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ Maintenance of teams
 	Route::get('routes', [RoutesController::class, 'Index'])->middleware('permission:route.index');
-	Route::get('routes/list/{CitySearchList}/{CountySearchList}/{TypeSearchList}/{StateSearchList}/{RouteSearchList}', [RoutesController::class, 'List']);
+	Route::get('routes/list/{CitySearchList}/{CountySearchList}/{TypeSearchList}/{StateSearchList}/{RouteSearchList}/{LatitudeSearchList}/{LongitudeSearchList}', [RoutesController::class, 'List']);
 	Route::get('routes/filter/list', [RoutesController::class, 'FilterList']);
 	Route::post('routes/insert', [RoutesController::class, 'Insert']);
 	Route::post('routes/import', [RoutesController::class, 'Import']);

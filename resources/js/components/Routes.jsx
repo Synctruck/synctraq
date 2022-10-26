@@ -19,6 +19,8 @@ function Routes() {
     const [listType, setListType]               = useState([]);
     const [listState, setListState]             = useState([]);
     const [listRouteSearch, setListRouteSearch] = useState([]);
+    const [listLatitude, setListLatitude]       = useState([]);
+    const [listLongitude, setListLongitude]     = useState([]);
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -37,7 +39,7 @@ function Routes() {
 
     useEffect(() => {
 
-        listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+        listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
 
     }, [zipCodeSearch])
 
@@ -62,12 +64,12 @@ function Routes() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllRoute(pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+        listAllRoute(pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
     }
 
-    const listAllRoute = (pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList) => {
+    const listAllRoute = (pageNumber, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList) => {
 
-        fetch(url_general +'routes/list/'+ CitySearchList +'/'+ CountySearchList +'/'+ TypeSearchList +'/'+ StateSearchList +'/'+ RouteSearchList +'?zipCode='+ zipCodeSearch +'&page='+ pageNumber)
+        fetch(url_general +'routes/list/'+ CitySearchList +'/'+ CountySearchList +'/'+ TypeSearchList +'/'+ StateSearchList +'/'+ RouteSearchList +'/'+ LatitudeSearchList +'/'+ LongitudeSearchList +'?zipCode='+ zipCodeSearch +'&page='+ pageNumber)
         .then(res => res.json())
         .then((response) => { 
 
@@ -88,13 +90,17 @@ function Routes() {
             setListCounty(response.listCounty);
             setListType(response.listType);
             setListState(response.listState);
-            setListRouteSearch(response.listRouteSearch);
+            setListRouteSearch(response.listRoute);
+            setListLatitude(response.listLatitude);
+            setListLongitude(response.listLongitude);
 
             listOptionCity(response.listCity);
             listOptionCounty(response.listCounty);
             listOptionType(response.listType);
             listOptionState(response.listState);
             listOptionRoute(response.listRoute);
+            listOptionLatitude(response.listLatitude);
+            listOptionLongitude(response.listLongitude);
         });
     }
 
@@ -323,11 +329,13 @@ function Routes() {
         );
     });
 
-    const [optionsCitySearch, setOptionsCitySearch]     = useState([]);
-    const [optionsCountySearch, setOptionsCountySearch] = useState([]);
-    const [optionsTypeSearch, setOptionsTypeSearch]     = useState([]);
-    const [optionsStateSearch, setOptionsStateSearch]   = useState([]);
-    const [optionsRouteSearch, setOptionsRouteSearch]   = useState([]);
+    const [optionsCitySearch, setOptionsCitySearch]           = useState([]);
+    const [optionsCountySearch, setOptionsCountySearch]       = useState([]);
+    const [optionsTypeSearch, setOptionsTypeSearch]           = useState([]);
+    const [optionsStateSearch, setOptionsStateSearch]         = useState([]);
+    const [optionsRouteSearch, setOptionsRouteSearch]         = useState([]);
+    const [optionsLatitudeSearch, setOptionsLatitudeSearch]   = useState([]);
+    const [optionsLongitudeSearch, setOptionsLongitudeSearch] = useState([]);
 
     const listOptionCity = (listCity) => {
 
@@ -389,12 +397,38 @@ function Routes() {
         });
     }
 
+    const listOptionLatitude = (listLatitude) => {
 
-    const [CitySearchList, setCitySearchList]     = useState('all');
-    const [CountySearchList, setCountySearchList] = useState('all');
-    const [TypeSearchList, setTypeSearchList]     = useState('all');
-    const [StateSearchList, setStateSearchList]   = useState('all');
-    const [RouteSearchList, setRouteSearchList]   = useState('all');
+        setOptionsLatitudeSearch([]);
+
+        listLatitude.map( (latitude, i) => {
+
+            optionsLatitudeSearch.push({ value: latitude.latitude, label: latitude.latitude });
+
+            setOptionsLatitudeSearch(optionsLatitudeSearch);
+        });
+    }
+
+    const listOptionLongitude = (listLongitude) => {
+
+        setOptionsLongitudeSearch([]);
+
+        listLongitude.map( (longitude, i) => {
+
+            optionsLongitudeSearch.push({ value: longitude.longitude, label: longitude.longitude });
+
+            setOptionsLongitudeSearch(optionsLongitudeSearch);
+        });
+    }
+
+
+    const [CitySearchList, setCitySearchList]           = useState('all');
+    const [CountySearchList, setCountySearchList]       = useState('all');
+    const [TypeSearchList, setTypeSearchList]           = useState('all');
+    const [StateSearchList, setStateSearchList]         = useState('all');
+    const [RouteSearchList, setRouteSearchList]         = useState('all');
+    const [LatitudeSearchList, setLatitudeSearchList]   = useState('all');
+    const [LongitudeSearchList, setLongitudeSearchList] = useState('all');
 
     const handlerChangeCity = (cities) => {
 
@@ -409,13 +443,13 @@ function Routes() {
 
             setCitySearchList(citiesSearch);
 
-            listAllRoute(1, citiesSearch, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+            listAllRoute(1, citiesSearch, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
         else
         {
             setCitySearchList('all');
 
-            listAllRoute(1, 'all', CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+            listAllRoute(1, 'all', CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
     }
 
@@ -432,13 +466,13 @@ function Routes() {
 
             setCountySearchList(countiesSearch);
 
-            listAllRoute(1, CitySearchList, countiesSearch, TypeSearchList, StateSearchList, RouteSearchList);
+            listAllRoute(1, CitySearchList, countiesSearch, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
         else
         {
             setCountySearchList('all');
 
-            listAllRoute(1, CitySearchList, 'all', TypeSearchList, StateSearchList, RouteSearchList);
+            listAllRoute(1, CitySearchList, 'all', TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
     }
 
@@ -455,13 +489,13 @@ function Routes() {
 
             setTypeSearchList(typesSearch);
 
-            listAllRoute(1, CitySearchList, CountySearchList, typesSearch, StateSearchList, RouteSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, typesSearch, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
         else
         {
             setTypeSearchList('all');
 
-            listAllRoute(1, CitySearchList, CountySearchList, 'all', StateSearchList, RouteSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, 'all', StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
     }
 
@@ -478,13 +512,13 @@ function Routes() {
 
             setStateSearchList(statesSearch);
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, statesSearch, RouteSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, statesSearch, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
         else
         {
             setStateSearchList('all');
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, 'all', RouteSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, 'all', RouteSearchList, LatitudeSearchList, LongitudeSearchList);
         }
     }
 
@@ -501,13 +535,59 @@ function Routes() {
 
             setRouteSearchList(routesSearch);
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, routesSearch);
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, routesSearch, LatitudeSearchList);
         }
         else
         {
             setRouteSearchList('all');
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, 'all');
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, 'all', LongitudeSearchList);
+        }
+    }
+
+    const handlerChangeLatitude = (latitudes) => {
+
+        if(latitudes.length != 0)
+        {
+            let latitudesSearch = '';
+
+            latitudes.map( (latitude) => {
+
+                latitudesSearch = latitudesSearch == '' ? latitude.value : latitudesSearch +','+ latitude.value;
+            });
+
+            setLatitudeSearchList(latitudesSearch);
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, latitudesSearch, LongitudeSearchList);
+        }
+        else
+        {
+            setLatitudeSearchList('all');
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, 'all', LongitudeSearchList);
+        }
+    }
+
+    const handlerChangeLongitude = (longitudes) => {
+
+        if(longitudes.length != 0)
+        {
+            let longitudesSearch = '';
+
+            longitudes.map( (route) => {
+
+                longitudesSearch = longitudesSearch == '' ? route.value : longitudesSearch +','+ route.value;
+            });
+
+            setLongitudeSearchList(longitudesSearch);
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, longitudesSearch);
+        }
+        else
+        {
+            setLongitudeSearchList('all');
+
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, 'all');
         }
     }
 
@@ -649,6 +729,16 @@ function Routes() {
                                             <td> 
                                                 <div className="col-lg-12">
                                                     <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeLatitude(e) } options={ optionsLatitudeSearch } />
+                                                </div>
+                                            </td>
+                                            <td> 
+                                                <div className="col-lg-12">
+                                                    <Select isMulti onChange={ (e) => handlerChangeLongitude(e) } options={ optionsLongitudeSearch } />
                                                 </div>
                                             </td>
                                         </tr>   

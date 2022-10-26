@@ -30,13 +30,17 @@ class PackageAgeController extends Controller
         return view('package.age');
     }
 
-    public function List($routes, $states)
+    public function List($states, $routes)
     {
         $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
         $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
         $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
 
         $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch);
+
+        $states = $states == 'all' ? [] : explode(',', $states);
+        $routes = $routes == 'all' ? [] : explode(',', $routes);
+
 
         $packageHistoryList = PackageHistory::select(
 
@@ -53,9 +57,19 @@ class PackageAgeController extends Controller
                                                 'Route'
                                             )
                                             ->whereIn('Reference_Number_1', $idsAll)
-                                            ->where('status', 'Inbound')
-                                            ->orderBy('created_at', 'asc')
-                                            ->paginate(50);
+                                            ->where('status', 'Inbound');
+                                            
+        if(count($states) != 0)
+        {
+            $packageHistoryList = $packageHistoryList->whereIn('Dropoff_Province', $states);
+        }
+
+        if(count($routes) != 0)
+        {
+            $packageHistoryList = $packageHistoryList->whereIn('Route', $routes);
+        }
+
+        $packageHistoryList = $packageHistoryList->orderBy('created_at', 'asc')->paginate(50);
 
         $idsExists             = [];
         $packageHistoryListNew = [];
@@ -91,8 +105,8 @@ class PackageAgeController extends Controller
 
         return [
 
-            'listAll' => $packageHistoryListNew,
             'packageHistoryList' => $packageHistoryList,
+            'listAll' => $packageHistoryListNew,
         ];
     }
 
