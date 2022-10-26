@@ -522,6 +522,8 @@ function Routes() {
                 <td>{ route.type }</td>
                 <td>{ route.state }</td>
                 <td>{ route.name }</td>
+                <td>{ route.latitude }</td>
+                <td>{ route.longitude }</td>
                 <td>
                     <button style={ {display: 'none'} } className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -658,6 +660,8 @@ function Routes() {
                                                 <th>TYPE</th>
                                                 <th>STATE</th>
                                                 <th>ROUTE</th>
+                                                <th>LATITUDE</th>
+                                                <th>LONGITUDE</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

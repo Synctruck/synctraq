@@ -167,11 +167,13 @@ class RoutesController extends Controller
 
                         if($route)
                         {
-                            $route->city   = $row[1];
-                            $route->county = $row[2];
-                            $route->type   = $row[3];
-                            $route->state  = $row[4];
-                            $route->name   = $row[5];
+                            $route->city      = $row[1];
+                            $route->county    = $row[2];
+                            $route->type      = $row[3];
+                            $route->state     = $row[4];
+                            $route->name      = $row[5];
+                            $route->latitude  = $row[6];
+                            $route->longitude = $row[7];
 
                             $route->save();
                         }
@@ -179,12 +181,14 @@ class RoutesController extends Controller
                         {
                             $route = new Routes();
 
-                            $route->zipCode = $row[0];
-                            $route->city    = $row[1];
-                            $route->county  = $row[2];
-                            $route->type    = $row[3];
-                            $route->state   = $row[4];
-                            $route->name    = $row[5];
+                            $route->zipCode   = $row[0];
+                            $route->city      = $row[1];
+                            $route->county    = $row[2];
+                            $route->type      = $row[3];
+                            $route->state     = $row[4];
+                            $route->name      = $row[5];
+                            $route->latitude  = $row[6];
+                            $route->longitude = $row[7];
 
                             $route->save();
                         }

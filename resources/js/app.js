@@ -34,6 +34,7 @@ require('./components/Viewer');
 require('./components/Validator');
 require('./components/UserChangePassword');
 require('./components/UserProfile');
+require('./components/PackageAge');
 require('./components/PackageWarehouse');
 require('./components/PackageCheckDelivery');
 require('./components/PackageFinance');

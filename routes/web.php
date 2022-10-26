@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -115,6 +115,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/confirmation-check', [PackageDeliveryController::class, 'ConfirmationCheck']);
 	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:validatedDelivery.index');
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
+
+	//=========== Age of Package
+	Route::get('/package-age', [PackageAgeController::class, 'Index']);
+	Route::get('/package-age/list/{routes}/{states}', [PackageAgeController::class, 'List']);
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);

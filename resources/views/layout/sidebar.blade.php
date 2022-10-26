@@ -57,6 +57,12 @@
                     </a>
                 </li>
 
+                <li>
+                    <a class="nav-link {{Request::is('package-age') ? 'show' : 'collapsed'}}" href="{{url('/package-age')}}">
+                        <i class="bx bx-calendar-exclamation"></i>
+                        <span>AGE OF PACKAGES</span>
+                    </a>
+                </li>
 
                 {{-- @if(Auth::user()->role->name == 'Administrador')
                     <li >
