@@ -76,17 +76,8 @@ function PackageAge() {
     }
 
     const handlerExport = () => {
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
-        let difference = date2.diff(date1,'days');
-
-        if(difference> limitToExport){
-            swal(`Maximum limit to export is ${limitToExport} days`, {
-                icon: "warning",
-            });
-        }else{
-            location.href = url_general +'report/export/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
-        }
+        
+        location.href = url_general +'package-age/export/'+ StateSearch +'/'+ RouteSearch;
     }
 
     const listReportTable = listReport.map( (packageInbound, i) => {
@@ -99,6 +90,7 @@ function PackageAge() {
                 </td>
                 <td className="text-center"><b>{ packageInbound.lateDays }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
+                <td>{ packageInbound.status }</td>
                 <td>{ packageInbound.Dropoff_Contact_Name }</td>
                 <td>{ packageInbound.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageInbound.Dropoff_Address_Line_1 }</td>
@@ -228,6 +220,7 @@ function PackageAge() {
                                                 <th>DATE</th>
                                                 <th>LATE DAYS</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>

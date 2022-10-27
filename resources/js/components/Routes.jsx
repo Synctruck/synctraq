@@ -8,9 +8,15 @@ import moment from 'moment';
 
 function Routes() {
 
-    const [id, setId]            = useState(0);
-    const [name, setName]        = useState('');
-    const [zipCode, setZipCode]  = useState('');
+    const [id, setId]               = useState(0);
+    const [name, setName]           = useState('');
+    const [zipCode, setZipCode]     = useState('');
+    const [city, setCity]           = useState('');
+    const [county, setCounty]       = useState('');
+    const [type, setType]           = useState('');
+    const [state, setState]         = useState('');
+    const [latitude, setLatitude]   = useState('');
+    const [longitude, setLongitude] = useState('');
 
     const [listRoute, setListRoute]   = useState([]);
 
@@ -120,7 +126,7 @@ function Routes() {
             setTextButtonSave('Save');
         }
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalCategoryInsert'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalRouteInsert'), {
 
             keyboard: true
         });
@@ -135,6 +141,12 @@ function Routes() {
         const formData = new FormData();
 
         formData.append('zipCode', zipCode);
+        formData.append('city', city);
+        formData.append('county', county);
+        formData.append('type', type);
+        formData.append('state', state);
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
         formData.append('name', name);
 
         clearValidation();
@@ -160,7 +172,7 @@ function Routes() {
                             icon: "success",
                         });
 
-                        listAllRoute(1);
+                        listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
                         clearForm();
                     }
                     else(response.status == 422)
@@ -194,7 +206,7 @@ function Routes() {
 
                 if(response.stateAction)
                 {
-                    listAllRoute(1);
+                    listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
 
                     swal("The route has been updated!", {
 
@@ -244,7 +256,7 @@ function Routes() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList);
+                    listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
                     listFilter();
 
                     setViewButtonSave('none');
@@ -264,6 +276,13 @@ function Routes() {
             let route = response.route;
 
             setId(route.id);
+            setZipCode(route.zipCode);
+            setCity(route.city);
+            setCounty(route.county);
+            setType(route.type);
+            setState(route.state);
+            setLatitude(route.latitude);
+            setLongitude(route.longitude);
             setName(route.name);
 
             handlerOpenModal(route.id);
@@ -307,10 +326,31 @@ function Routes() {
         setName('');
     }
 
-    const clearValidation = () => {
+    const clearValidation = () => { 
+
+        document.getElementById('zipCode').style.display = 'none';
+        document.getElementById('zipCode').innerHTML     = ''
+
+        document.getElementById('city').style.display = 'none';
+        document.getElementById('city').innerHTML     = ''
+
+        document.getElementById('county').style.display = 'none';
+        document.getElementById('county').innerHTML     = ''
+
+        document.getElementById('type').style.display = 'none';
+        document.getElementById('type').innerHTML     = ''
+
+        document.getElementById('state').style.display = 'none';
+        document.getElementById('state').innerHTML     = ''
 
         document.getElementById('name').style.display = 'none';
         document.getElementById('name').innerHTML     = '';
+
+        document.getElementById('latitude').style.display = 'none';
+        document.getElementById('latitude').innerHTML     = ''
+
+        document.getElementById('longitude').style.display = 'none';
+        document.getElementById('longitude').innerHTML     = ''
     }
 
     const onBtnClickFile = () => {
@@ -535,13 +575,13 @@ function Routes() {
 
             setRouteSearchList(routesSearch);
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, routesSearch, LatitudeSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, routesSearch, LatitudeSearchList, LongitudeSearchList);
         }
         else
         {
             setRouteSearchList('all');
 
-            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, 'all', LongitudeSearchList);
+            listAllRoute(1, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, 'all', LongitudeSearchList, LongitudeSearchList);
         }
     }
 
@@ -605,7 +645,7 @@ function Routes() {
                 <td>{ route.latitude }</td>
                 <td>{ route.longitude }</td>
                 <td>
-                    <button style={ {display: 'none'} } className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
@@ -623,8 +663,8 @@ function Routes() {
         );
     });
 
-    const modalCategoryInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const modalRouteInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalRouteInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <form onSubmit={ handlerSaveRoute }>
                                                 <div className="modal-content">
@@ -634,15 +674,51 @@ function Routes() {
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
-                                                            <div className="col-lg-12 form-group">
+                                                            <div className="col-lg-6 form-group">
                                                                 <label>Zip Code</label>
                                                                 <div id="zipCode" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ zipCode } maxLength="100" onChange={ (e) => setZipCode(e.target.value) } required/>
                                                             </div>
-                                                            <div className="col-lg-12 form-group">
-                                                                <label>Route name</label>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>City</label>
+                                                                <div id="city" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ city } maxLength="100" onChange={ (e) => setCity(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>County</label>
+                                                                <div id="county" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ county } maxLength="100" onChange={ (e) => setCounty(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Type</label>
+                                                                <div id="type" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ type } maxLength="100" onChange={ (e) => setType(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>State</label>
+                                                                <div id="state" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ state } maxLength="100" onChange={ (e) => setState(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Route</label>
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Latitude</label>
+                                                                <div id="latitude" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ latitude } maxLength="100" onChange={ (e) => setLatitude(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Longitude</label>
+                                                                <div id="longitude" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ longitude } maxLength="100" onChange={ (e) => setLongitude(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -659,7 +735,7 @@ function Routes() {
     return (
 
         <section className="section">
-            { modalCategoryInsert }
+            { modalRouteInsert }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

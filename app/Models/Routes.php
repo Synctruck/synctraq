@@ -4,13 +4,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Routes extends Model //implements Auditable
+class Routes extends Model implements Auditable
 {
-    //use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
 
     protected $table      = 'routes';
     protected $primaryKey = 'id';
-    protected $fillable   = ['id', 'zipCode', 'name'];
+    protected $fillable   = ['id', 'zipCode', 'city', 'county', 'type', 'state', 'name', 'latitude', 'longitude'];
 
     public $timestamps   = false;
 

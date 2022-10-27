@@ -1180,3 +1180,8 @@ table.table > thead > tr > th
 {
     background-color: rgb(84 84 84 / 93%)!important;
 }
+
+.pointer
+{
+  cursor: pointer;
+}

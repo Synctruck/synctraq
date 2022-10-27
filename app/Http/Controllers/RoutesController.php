@@ -183,15 +183,18 @@ class RoutesController extends Controller
 
                         if($route)
                         {
-                            $route->city      = $row[1];
-                            $route->county    = $row[2];
-                            $route->type      = $row[3];
-                            $route->state     = $row[4];
-                            $route->name      = $row[5];
-                            $route->latitude  = $row[6];
-                            $route->longitude = $row[7];
+                            if($route->city != $row[1] || $route->county != $row[2] || $route->type != $row[3] || $route->state = $row[4] || $route->name != $row[5] || $route->latitude != $row[6] || $route->longitude != $row[7])
+                            {
+                                $route->city      = $row[1];
+                                $route->county    = $row[2];
+                                $route->type      = $row[3];
+                                $route->state     = $row[4];
+                                $route->name      = $row[5];
+                                $route->latitude  = $row[6];
+                                $route->longitude = $row[7];
 
-                            $route->save();
+                                $route->save();
+                            }
                         }
                         else
                         {
@@ -209,7 +212,6 @@ class RoutesController extends Controller
                             $route->save();
                         }
                     }
-                    
                 }
                 
                 $lineNumber++;
@@ -237,16 +239,44 @@ class RoutesController extends Controller
     }
 
     public function Update(Request $request, $id)
-    {
+    {        
         $validator = Validator::make($request->all(),
 
             [
-                "name" => ["required", "unique:routes,name,$id", "max:100"],
+                "zipCode" => ["required", "unique:routes,zipCode,$id", "max:20"],
+                "city" => ["required", "max:40"],
+                "county" => ["required", "max:40"],
+                "type" => ["required", "max:40"],
+                "state" => ["required", "max:20"],
+                "name" => ["required", "max:20"],
+                "latitude" => ["required", "numeric"],
+                "longitude" => ["required", "numeric"],
             ],
             [
-                "name.unique" => "La ruta existe",
-                "name.required" => "El campo es requerido",
-                "name.max"  => "Debe ingresar máximo 100 dígitos",
+                "zipCode.unique" => "The zip code exists",
+                "zipCode.required" => "The field is required",
+                "zipCode.max"  => "You must enter a maximum of 20 digits",
+
+                "city.required" => "The field is required",
+                "city.max"  => "You must enter a maximum of 40 digits",
+
+                "county.required" => "The field is required",
+                "county.max"  => "You must enter a maximum of 40 digits",
+
+                "type.required" => "The field is required",
+                "type.max"  => "You must enter a maximum of 40 digits",
+
+                "state.required" => "The field is required",
+                "state.max"  => "You must enter a maximum of 20 digits",
+
+                "name.required" => "The field is required",
+                "name.max"  => "You must enter a maximum of 20 digits",
+
+                "latitude.required" => "The field is required",
+                "latitude.numeric"  => "Enter a numeric value",
+
+                "longitude.required" => "The field is required",
+                "longitude.numeric"  => "Enter a numeric value",
             ]
         );
 

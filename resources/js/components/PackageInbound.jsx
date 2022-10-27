@@ -606,9 +606,7 @@ function PackageInbound() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
                 <td>{ pack.TRUCK }</td>
-                <td>{ pack.CLIENT }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -988,9 +986,7 @@ function PackageInbound() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                <th>VALIDATOR</th>
                                                 <th>TRUCK #</th>
-                                                <th>CLIENT</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
