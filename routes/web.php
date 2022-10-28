@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -163,6 +163,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('company', [CompanyController::class, 'Index'])->middleware('permission:company.index');
 	Route::get('company/list', [CompanyController::class, 'List']);
 	Route::get('company/getAll', [CompanyController::class, 'GetAll']);
+	Route::get('company/getAll/delivery', [CompanyController::class, 'GetAllDelivery']);
 	Route::post('company/insert', [CompanyController::class, 'Insert']);
 	Route::get('company/get/{id}', [CompanyController::class, 'Get']);
 	Route::post('company/update/{id}', [CompanyController::class, 'Update']);
@@ -185,6 +186,19 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);
 	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
+
+	//============ Maintenance of comments
+	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);
+	Route::post('stores/insert', [StoreController::class, 'Insert']);
+	Route::get('stores/get/{id}', [StoreController::class, 'Get']);
+	Route::post('stores/update/{id}', [StoreController::class, 'Update']);
+	Route::get('stores/delete/{id}', [StoreController::class, 'Delete']);
+
+	//============ Processof orders
+	Route::get('orders', [OrderController::class, 'Index'])->middleware('permission:orders.index');
+    Route::get('orders/list/{routes}/{states}', [OrderController::class, 'List']);
+    Route::post('orders/insert', [OrderController::class, 'Insert']);
+    Route::get('orders/delete/{PACKAGE_ID}', [OrderController::class, 'Delete']);
 
 	//============ Maintenance of teams
 	Route::get('routes', [RoutesController::class, 'Index'])->middleware('permission:route.index');

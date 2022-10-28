@@ -32,6 +32,16 @@ class CompanyController extends Controller
         return ['companyList' => $companyList];
     }
 
+    public function GetAllDelivery(Request $request)
+    {
+        $companyList = Company::orderBy('name', 'asc')
+                                ->where('typeServices', 'DELIVERY')
+                                ->where('status', 'Active')
+                                ->get();
+        
+        return ['companyList' => $companyList];
+    }
+
     public function List(Request $request)
     {
         $companyList = Company::with(['company_status'])

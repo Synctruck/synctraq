@@ -198,6 +198,8 @@ class PackageInboundController extends Controller
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
                 $packageInbound->idCompany                    = $packageManifest->idCompany;
                 $packageInbound->company                      = $packageManifest->company;
+                $packageInbound->idStore                      = $packageManifest->idStore;
+                $packageInbound->store                        = $packageManifest->store;
                 $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -233,6 +235,7 @@ class PackageInboundController extends Controller
                 $packageInbound->Route                        = $packageManifest->Route;
                 $packageInbound->Name                         = $packageManifest->Name;
                 $packageInbound->idUser                       = Auth::user()->id;
+                $packageInbound->quantity                     = $packageManifest->quantity;
                 $packageInbound->status                       = 'Inbound';
 
                 $packageInbound->save();
@@ -243,6 +246,8 @@ class PackageInboundController extends Controller
                 $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
                 $packageHistory->idCompany                    = $packageManifest->idCompany;
                 $packageHistory->company                      = $packageManifest->company;
+                $packageHistory->idStore                      = $packageManifest->idStore;
+                $packageHistory->store                        = $packageManifest->store;
                 $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -281,6 +286,7 @@ class PackageInboundController extends Controller
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->quantity                     = $packageManifest->quantity;
                 $packageHistory->inbound                      = 1;
                 $packageHistory->status                       = 'Inbound';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');

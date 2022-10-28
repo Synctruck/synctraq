@@ -49,49 +49,57 @@
                 </li>
             @endif
 
-
+            @if(hasPermission('orders.index'))
                 <li >
-                    <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
+                    <a class="nav-link {{Request::is('orders') ? 'show' : 'collapsed'}}" href="{{url('orders')}}">
+                        <i class="bx bx-book-open"></i>
+                        <span>ORDERS</span>
+                    </a>
+                </li>
+            @endif
+
+            <li >
+                <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
+                    <i class="bx bx-barcode-reader"></i>
+                    <span>CHECK STOP</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="nav-link {{Request::is('package-age') ? 'show' : 'collapsed'}}" href="{{url('/package-age')}}">
+                    <i class="bx bx-calendar-exclamation"></i>
+                    <span>AGE OF PACKAGES</span>
+                </a>
+            </li>
+
+            {{-- @if(Auth::user()->role->name == 'Administrador')
+                <li >
+                    <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
+                        <i class="bx bx-user"></i>
+                        <span>Assigned Team</span>
+                    </a>
+                </li>
+            @endif --}}
+
+            <li style="display: none;">
+                <a class="nav-link {{Request::is('package-delivery') ? 'show' : 'collapsed'}}" href="{{url('package-delivery')}}">
+                    <i class="bx bx-car"></i>
+                    <span>DELIVERIES</span>
+                </a>
+            </li>
+
+
+
+
+            {{-- <li class="nav-heading">* DESELECT</li> --}}
+            {{-- @if(Auth::user()->role->name == 'Administrador')
+                <li >
+                    <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
                         <i class="bx bx-barcode-reader"></i>
-                        <span>CHECK STOP</span>
+                        <span>Not Exists</span>
                     </a>
                 </li>
-
-                <li>
-                    <a class="nav-link {{Request::is('package-age') ? 'show' : 'collapsed'}}" href="{{url('/package-age')}}">
-                        <i class="bx bx-calendar-exclamation"></i>
-                        <span>AGE OF PACKAGES</span>
-                    </a>
-                </li>
-
-                {{-- @if(Auth::user()->role->name == 'Administrador')
-                    <li >
-                        <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
-                            <i class="bx bx-user"></i>
-                            <span>Assigned Team</span>
-                        </a>
-                    </li>
-                @endif --}}
-
-                <li style="display: none;">
-                    <a class="nav-link {{Request::is('package-delivery') ? 'show' : 'collapsed'}}" href="{{url('package-delivery')}}">
-                        <i class="bx bx-car"></i>
-                        <span>DELIVERIES</span>
-                    </a>
-                </li>
-
-
-
-
-                {{-- <li class="nav-heading">* DESELECT</li> --}}
-                {{-- @if(Auth::user()->role->name == 'Administrador')
-                    <li >
-                        <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
-                            <i class="bx bx-barcode-reader"></i>
-                            <span>Not Exists</span>
-                        </a>
-                    </li>
-                @endif --}}
+            @endif --}}
 
             @if(hasPermission('reinbound.index'))
                 <li >

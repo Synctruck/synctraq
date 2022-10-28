@@ -31,7 +31,7 @@ class PackageManifestController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $packageList = PackageManifest::where('status', 'On hold');
+        $packageList = PackageManifest::where('idStore', 'NULL');
 
         if($route != 'all')
         {

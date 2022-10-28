@@ -264,6 +264,188 @@ function Companies() {
         });
     }
 
+    const [listStore, setListStore]                     = useState([]);
+    const [viewAddStore, setViewAddStore]               = useState('none');
+    const [titleModalStore, setTitleModalStore]         = useState('');
+    const [textButtonSaveStore, setTextButtonSaveStore] = useState('')
+    const [idStore, setIdStore]                         = useState(0);
+    const [nameStore, setNameStore]                     = useState('');
+    const [addressStore, setAddressStore]               = useState('');
+
+    const listAllStore = (idCompany) => {
+
+        fetch(url_general +'stores/list/'+ idCompany)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListStore(response.storeList);
+        });
+    }
+
+    const handlerOpenModalStore = (idCompany, company) => {
+
+        listAllStore(idCompany);
+        setIdCompany(idCompany);
+        setViewAddStore('none');
+        setTitleModalStore('Company Stores: '+ company);
+
+        clearValidation();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalStoreInsert'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const handlerAddStore = () => {
+
+        clearFormStore();
+        clearValidationStore();
+        setViewAddStore('block');
+        setTextButtonSaveStore('Save');
+
+    }
+
+    const handlerSaveStore = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idCompany', idCompany);
+        formData.append('name', nameStore);
+        formData.append('address', addressStore);
+
+        clearValidationStore();
+
+        if(idStore == 0)
+        {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShow();
+
+            fetch(url_general +'stores/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Store was save!", {
+
+                            icon: "success",
+                        });
+
+                        clearFormStore();
+                        listAllStore(idCompany);
+                    }
+                    else if(response.status == 422)
+                    {
+                        for(const index in response.errors)
+                        {
+                            document.getElementById(index +'Store').style.display = 'block';
+                            document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                        }
+                    }
+
+                    LoadingHide();
+                },
+            );
+        }
+        else
+        {
+            LoadingShow();
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'stores/update/'+ idStore, {
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                if(response.stateAction)
+                {
+                    listAllStore(idCompany);
+
+                    swal("Store updated!", {
+
+                        icon: "success",
+                    });
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index +'Store').style.display = 'block';
+                        document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            });
+        }
+    }
+
+    const getStore = (id) => {
+
+        clearValidationStore();
+
+        fetch(url_general +'stores/get/'+ id)
+        .then(response => response.json())
+        .then(response => {
+
+            let store = response.store;
+
+            setIdStore(store.id);
+            setNameStore(store.name);
+            setAddressStore(store.address);
+            setViewAddStore('block');
+            setTextButtonSaveStore('Updated');
+        });
+    }
+
+    const deleteStore = (id) => {
+
+        swal({
+            title: "You want to delete?",
+            text: "Store will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'stores/delete/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Store deleted successfully!", {
+
+                            icon: "success",
+                        });
+
+                        listAllStore(idCompany);
+                    }
+                });
+            } 
+        });
+    }
+
     const clearForm = () => {
 
         setId(0);
@@ -300,6 +482,22 @@ function Companies() {
 
         document.getElementById('status').style.display = 'none';
         document.getElementById('status').innerHTML     = '';
+    }
+
+    const clearFormStore = () => {
+
+        setIdStore(0);
+        setNameStore('');
+        setAddressStore('');
+    }
+
+    const clearValidationStore = () => {
+
+        document.getElementById('nameStore').style.display = 'none';
+        document.getElementById('nameStore').innerHTML     = '';
+
+        document.getElementById('addressStore').style.display = 'none';
+        document.getElementById('addressStore').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -405,11 +603,43 @@ function Companies() {
                         Peake Season
                     </button> &nbsp;
                 </td>
-                <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getCompany(company.id) }>
+                <td className="text-center">
+                    <button className="btn btn-success btn-sm" title="List stores" onClick={ () => handlerOpenModalStore(company.id, company.name) }>
+                        <i className="bx bx-store"></i>
+                    </button>
+                </td>
+                <td className="text-center">
+                    <button className="btn btn-primary btn-sm mb-2" title="Editar" onClick={ () => getCompany(company.id) }>
                         <i className="bx bx-edit-alt"></i>
-                    </button> &nbsp;
+                    </button>
                     { buttonDelete }
+                </td>
+            </tr>
+        );
+    });
+
+    const listStoreTable = listStore.map( (store, i) => {
+
+        let buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteStore(store.id) }>
+                                <i className="bx bxs-trash-alt"></i>
+                            </button>
+
+        return (
+
+            <tr key={i}>
+                <td><b>{ store.name }</b></td>
+                <td>{ store.address }</td>
+                <td className="text-center">
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getStore(store.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button>&nbsp;
+                    {
+                        store.delete == 0
+                        ?
+                            buttonDelete
+                        :
+                            ''
+                    }
                 </td>
             </tr>
         );
@@ -484,6 +714,7 @@ function Companies() {
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
                                                                     <option value="API" selected={ (typeServices == 'API' ? 'selected' : '' ) }>API</option>
                                                                     <option value="CSV" selected={ (typeServices == 'CSV' ? 'selected' : '' ) }>CSV</option>
+                                                                    <option value="DELIVERY" selected={ (typeServices == 'DELIVERY' ? 'selected' : '' ) }>DELIVERY</option>
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
@@ -546,10 +777,66 @@ function Companies() {
                                     </div>
                                 </React.Fragment>;
 
+    const modalStoreInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalStoreInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-lg">
+                                            <div className="modal-content">
+                                                <form onSubmit={ handlerSaveStore }>
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalStore }</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body" style={ {display: viewAddStore } }>
+                                                        <div className="row">
+                                                            <div className="col-lg-12 form-group">
+                                                                <label>Store Name</label>
+                                                                <div id="nameStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ nameStore } maxLength="100" onChange={ (e) => setNameStore(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group">
+                                                                <label>Store Address</label>
+                                                                <div id="addressStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ addressStore } maxLength="100" onChange={ (e) => setAddressStore(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-4 form-group">
+                                                            <button className="btn btn-primary form-control">{ textButtonSaveStore }</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <div className="modal-footer">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 form-group pull-right">
+                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddStore() }>
+                                                                <i className="bx bxs-plus-square"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <table className="table table-condensed table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>NAME</th>
+                                                                <th>ADDREESS</th>
+                                                                <th>ACTIONS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            { listStoreTable }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
             { modalCategoryInsert }
+            { modalStoreInsert }
             { modalBaseRates }
             <div className="row">
                 <div className="col-lg-12">
@@ -586,6 +873,7 @@ function Companies() {
                                                 <th>TYPE SERVICES</th>
                                                 <th>STATUS CODE</th>
                                                 <th>STATUS</th>
+                                                <th>STORES</th>
                                                 <th style={ {display: 'none'} }>CONFIGURATION</th>
                                                 <th>ACTIONS</th>
                                             </tr>

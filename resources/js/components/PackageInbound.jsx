@@ -11,7 +11,7 @@ function PackageInbound() {
     const [listPackageInbound, setListPackageInbound] = useState([]);
     const [listPackageTotal, setListPackageTotal]     = useState([]);
     const [listState , setListState]                  = useState([]);
-    const [listCompany , setListCompany]                = useState([]);
+    const [listCompany , setListCompany]              = useState([]);
 
     const [listRoute, setListRoute]     = useState([]);
 

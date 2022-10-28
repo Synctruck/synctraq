@@ -1,0 +1,767 @@
+import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
+import { Modal } from 'react'
+import Pagination from "react-js-pagination"
+import swal from 'sweetalert'
+import Select from 'react-select'
+
+function Orders() {
+
+    const [listPackage, setListPackage]  = useState([]);
+    const [listRoute, setListRoute]      = useState([]);
+    const [listState , setListState]     = useState([]);
+    const [listCompany , setListCompany] = useState([]);
+
+    const [quantityPackage , setQuantityPackage] = useState(0);
+
+    const [file, setFile]             = useState('');
+
+    const [titleModal, setTitleModal] = useState('');
+
+    const [textButtonSave, setTextButtonSave]     = useState('Save');
+    const [textButtonImport, setTextButtonImport] = useState('Save');
+
+    const [textMessage, setTextMessage] = useState('');
+    const [typeMessage, setTypeMessage] = useState('');
+
+    const [readOnlyInput, setReadOnlyInput]   = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
+
+    const [page, setPage]                 = useState(1);
+    const [totalPage, setTotalPage]       = useState(0);
+    const [totalPackage, setTotalPackage] = useState(0);
+
+    const [RouteSearch, setRouteSearch] = useState('all');
+    const [StateSearch, setStateSearch] = useState('all');
+
+    const inputFileRef  = React.useRef();
+
+    const [viewButtonSave, setViewButtonSave] = useState('none');
+
+    document.getElementById('bodyAdmin').style.backgroundColor = '#cff4fc';
+
+    useEffect(() => {
+
+        if(String(file) == 'undefined' || file == '')
+        {
+            setViewButtonSave('none');
+        }
+        else
+        {
+            setViewButtonSave('block');
+        }
+
+    }, [file]);
+
+    useEffect(() => {
+
+        listAllPackage(page, RouteSearch, StateSearch);
+        listAllCompany();
+        listAllRoute();
+
+    }, []);
+
+    const listAllPackage = (pageNumber, route, state) => {
+
+        LoadingShow();
+
+        fetch(url_general +'orders/list/'+ route +'/'+ state +'?page='+ pageNumber)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListPackage(response.packageList.data);
+            setQuantityPackage(response.quantityPackage);
+            setTotalPackage(response.packageList.total);
+            setTotalPage(response.packageList.per_page);
+            setPage(response.packageList.current_page);
+            setListState(response.listState);
+
+            if(listState.length == 0)
+            {
+                listOptionState(response.listState);
+            }
+
+            LoadingHide();
+        });
+    }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll/delivery')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany(response.companyList);
+        });
+    }
+
+    const [listStore, setListStore] = useState([]);
+
+    const listAllStore = (idCompany) => {
+
+        setIdCompany(idCompany);
+
+        fetch(url_general +'stores/list/'+ idCompany)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListStore(response.storeList);
+        });
+    }
+
+    const handlerChangePage = (pageNumber) => {
+
+        listAllPackage(pageNumber, RouteSearch, StateSearch);
+    }
+
+    const listAllRoute = () => {
+
+        setListRoute([]);
+
+        fetch(url_general +'routes/filter/list')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRoute(response.listRoute);
+            listOptionRoute(response.listRoute);
+        });
+    }
+
+    const handlerImport = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', file);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        setTextButtonImport('Saving...');
+        setDisabledButton(true);
+
+        fetch(url_general +'package-manifest/import', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        }, {timeout: 10000})
+        .then(res => res.json()).
+        then((response) => {
+
+                setTextButtonImport('Save');
+                setDisabledButton(false);
+
+                if(response.status == 504)
+                {
+                    swal("Error al importar el archivo, intente nuevamente!", {
+
+                        icon: "error",
+                    });
+                }
+                else if(response.stateAction)
+                {
+                    swal("Se importó el archivo!", {
+
+                        icon: "success",
+                    });
+
+                    document.getElementById('fileImport').value = '';
+
+                    listAllPackage(page, RouteSearch, StateSearch);
+                    setViewButtonSave('none');
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const handlerFile = (e) => {
+
+        setFile(e.target.files[0]);
+    }
+
+    const [viewForm, setViewForm]   = useState('none');
+    const [idCompany, setIdCompany] = useState('');
+    const [idStore, setIdStore] = useState('');
+    const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
+    const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
+    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
+    const [Dropoff_City, setDropoff_City] = useState('');
+    const [Dropoff_Province, setDropoff_Province] = useState('');
+    const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
+    const [Weight, setWeight] = useState('');
+    const [quantity, setQuantity] = useState('');
+
+    const [action, setAction] = useState('');
+
+    const handlerOpenModal = (PACKAGE_ID) => {
+
+        if(PACKAGE_ID)
+        {
+            fetch(url_general +'package-manifest/get/'+ PACKAGE_ID)
+            .then(res => res.json())
+            .then((response) => {
+
+                setDropoff_Contact_Name(response.package.Dropoff_Contact_Name);
+                setDropoff_Contact_Phone_Number(response.package.Dropoff_Contact_Phone_Number);
+                setDropoff_Address_Line_1(response.package.Dropoff_Address_Line_1);
+                setDropoff_City(response.package.Dropoff_City);
+                setDropoff_Province(response.package.Dropoff_Province);
+                setDropoff_Postal_Code(response.package.Dropoff_Postal_Code);
+                setWeight(response.package.Weight);
+                setRoute(response.package.Route);
+            });
+
+            clearValidation();
+            clearForm();
+
+            setTitleModal('Update Package');
+            setTextButtonSave('Update');
+            setAction('Update');
+            setReadOnlyInput(true);
+        }
+        else
+        {
+            clearValidation();
+            clearForm();
+
+            setTitleModal('Add Order');
+            setTextButtonSave('Save');
+            setViewForm('block');
+            setIdCompany('');
+            setAction('Save');
+            setReadOnlyInput(false);
+        }
+
+        /*let myModal = new bootstrap.Modal(document.getElementById('modalPackageInsert'), {
+
+            keyboard: true
+        });
+
+        myModal.show();*/
+    }
+
+    const handlerCloseForm = () => {
+
+        clearForm();
+        listAllCompany();
+        setViewForm('none');
+        setListStore([]);
+    }
+
+    const handlerSavePackage = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idCompany', idCompany);
+        formData.append('idStore', idStore);
+        formData.append('Dropoff_Contact_Name', Dropoff_Contact_Name);
+        formData.append('Dropoff_Contact_Phone_Number', Dropoff_Contact_Phone_Number);
+        formData.append('Dropoff_Address_Line_1', Dropoff_Address_Line_1);
+        formData.append('Dropoff_City', Dropoff_City);
+        formData.append('Dropoff_Province', Dropoff_Province);
+        formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
+        formData.append('Weight', Weight);
+        formData.append('quantity', quantity);
+
+        clearValidation();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setDisabledButton(true);
+        setTextButtonSave('Saving...');
+
+        fetch(url_general +'orders/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                setTextButtonSave('Save');
+                setDisabledButton(false);
+
+                if(response.stateAction == 'notInland')
+                {
+                    swal('Atención!', "The Order #"+ Reference_Number_1 +" does not have the initials INLAND or 67660!", 'warning');
+                }
+                else if(response.stateAction == 'exists')
+                {
+                    swal('Atención!', "The Order #"+ Reference_Number_1 +" it already exists!", 'warning');
+                }
+                else if(response.stateAction == true)
+                {
+                    swal('Order was registered!', {
+
+                        icon: "success",
+                    });
+
+                    if(action != 'Update')
+                    {
+                        clearForm();
+                    }
+
+                    listAllCompany();
+                    listAllPackage(page, RouteSearch, StateSearch);
+
+                    setListCompany([]);
+                    setListStore([]);
+                    setViewForm('none');
+                }
+                else if(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
+                }
+                else
+                {
+                    swal('Atención!', "Hubo un problema, intente nuevamente!", 'warning');
+                }
+            },
+        );
+    }
+
+    const handlerCancelOrder = (Reference_Number_1) => {
+
+        swal({
+            title: "You want to delete?",
+            text: "Order will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'orders/delete/'+ Reference_Number_1)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Order deleted successfully!", {
+
+                            icon: "success",
+                        });
+
+                        listAllPackage(page, RouteSearch, StateSearch);
+                    }
+                });
+            } 
+        });
+    }
+
+    const clearValidation = () => {
+
+        document.getElementById('idCompany').style.display = 'none';
+        document.getElementById('idCompany').innerHTML     = '';
+
+        document.getElementById('idStore').style.display = 'none';
+        document.getElementById('idStore').innerHTML     = '';
+
+        document.getElementById('Dropoff_Contact_Name').style.display = 'none';
+        document.getElementById('Dropoff_Contact_Name').innerHTML     = '';
+
+        document.getElementById('Dropoff_Contact_Phone_Number').style.display = 'none';
+        document.getElementById('Dropoff_Contact_Phone_Number').innerHTML     = '';
+
+        document.getElementById('Dropoff_Address_Line_1').style.display = 'none';
+        document.getElementById('Dropoff_Address_Line_1').innerHTML     = '';
+
+        document.getElementById('Dropoff_City').style.display = 'none';
+        document.getElementById('Dropoff_City').innerHTML     = '';
+
+        document.getElementById('Dropoff_Province').style.display = 'none';
+        document.getElementById('Dropoff_Province').innerHTML     = '';
+
+        document.getElementById('Dropoff_Postal_Code').style.display = 'none';
+        document.getElementById('Dropoff_Postal_Code').innerHTML     = '';
+
+        document.getElementById('Weight').style.display = 'none';
+        document.getElementById('Weight').innerHTML     = '';
+
+        document.getElementById('quantity').style.display = 'none';
+        document.getElementById('quantity').innerHTML     = '';
+    }
+
+    const clearForm = () => {
+
+        setIdCompany('');
+        setIdStore('');
+        setDropoff_Contact_Name('');
+        setDropoff_Contact_Phone_Number('');
+        setDropoff_Address_Line_1('');
+        setDropoff_City('');
+        setDropoff_Province('');
+        setDropoff_Postal_Code('');
+        setWeight('');
+        setQuantity('');
+    }
+
+    const handlerChangeRoute = (routes) => {
+
+        setPage(1);
+
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
+
+            routes.map( (route) => {
+
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+
+            setRouteSearch(routesSearch);
+
+            listAllPackage(1, routesSearch, StateSearch);
+        }
+        else
+        {
+            setRouteSearch('all');
+
+            listAllPackage(1, 'all', StateSearch);
+        }
+    };
+
+    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+
+    const listOptionRoute = (listRoutes) => {
+
+        setOptionsRoleSearch([]);
+
+        listRoutes.map( (route, i) => {
+
+            optionsRoleSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRoleSearch(optionsRoleSearch);
+        });
+
+        console.log(optionsRoleSearch);
+    }
+
+    const handlerChangeState = (states) => {
+
+        setPage(1);
+
+        if(states.length != 0)
+        {
+            let statesSearch = '';
+
+            states.map( (state) => {
+
+                statesSearch = statesSearch == '' ? state.value : statesSearch +','+ state.value;
+            });
+
+            setStateSearch(statesSearch);
+
+            listAllPackage(1, RouteSearch, statesSearch);
+        }
+        else
+        {
+            setStateSearch('all');
+
+            listAllPackage(1, RouteSearch, 'all');
+        }
+    };
+
+    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+
+    const listOptionState = (listState) => {
+
+        setOptionsStateSearch([]);
+
+        listState.map( (state, i) => {
+
+            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+
+            setOptionsStateSearch(optionsStateSearch);
+        });
+    }
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={ company.id }>{ company.name }</option>
+    });
+
+    const optionStore = listStore.map( (store, i) => {
+
+        return <option value={ store.id }>{ store.name }</option>
+    });
+
+    const modalPackageInsert = <React.Fragment>
+                                    <form onSubmit={ handlerSavePackage }>
+                                        <div className="modal-content">
+                                            <div className="modal-header">
+                                                <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
+                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div className="modal-body">
+                                                <div className="row">
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>COMPANY</label>
+                                                            <div id="idCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <select name="" id="" className="form-control" onChange={ (e) => listAllStore(e.target.value) } required>
+                                                                <option value="" style={ {display: 'none'} }>Select...</option>
+                                                                { optionCompany }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>STORE</label>
+                                                            <div id="idStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdStore(e.target.value) } required>
+                                                                <option value="" style={ {display: 'none'} }>Select...</option>
+                                                                { optionStore }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>CLIENT</label>
+                                                            <div id="Dropoff_Contact_Name" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_Contact_Name } className="form-control" onChange={ (e) => setDropoff_Contact_Name(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>CONTACT</label>
+                                                            <div id="Dropoff_Contact_Phone_Number" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_Contact_Phone_Number } className="form-control" onChange={ (e) => setDropoff_Contact_Phone_Number(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        <div className="form-group">
+                                                            <label>ADDRESS</label>
+                                                            <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_Address_Line_1 } className="form-control" onChange={ (e) => setDropoff_Address_Line_1(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>CITY</label>
+                                                            <div id="Dropoff_City" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_City } className="form-control" onChange={ (e) => setDropoff_City(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>STATE</label>
+                                                            <div id="Dropoff_Province" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_Province } className="form-control" onChange={ (e) => setDropoff_Province(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>ZIP C</label>
+                                                            <div id="Dropoff_Postal_Code" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Dropoff_Postal_Code } className="form-control" onChange={ (e) => setDropoff_Postal_Code(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>WEIGHT</label>
+                                                            <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>QUANTITY</label>
+                                                            <div id="quantity" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="number" value={ quantity } className="form-control" onChange={ (e) => setQuantity(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={ () => handlerCloseForm() }>Close</button>
+                                                <button className="btn btn-primary" disabled={ disabledButton }>{ textButtonSave }</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </React.Fragment>;
+
+    const listPackageTable = listPackage.map( (pack, i) => {
+
+        return (
+
+            <tr key={i}>
+                <td>
+                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
+                </td>
+                <td>
+                    { pack.created_at.substring(11, 19) }
+                </td>
+                <td><b>{ pack.company }</b></td>
+                <td>{ pack.store }</td>
+                <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.Dropoff_Contact_Name }</td>
+                <td>{ pack.Dropoff_Contact_Phone_Number }</td>
+                <td>{ pack.Dropoff_Address_Line_1 }</td>
+                <td>{ pack.Dropoff_City }</td>
+                <td>{ pack.Dropoff_Province }</td>
+                <td>{ pack.Dropoff_Postal_Code }</td>
+                <td>{ pack.Weight }</td>
+                <td>{ pack.Route }</td>
+                <td>{ pack.quantity }</td>
+                <td>
+                    <button className="btn btn-danger btn-sm" onClick={ () => handlerCancelOrder(pack.Reference_Number_1) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
+    const onBtnClickFile = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRef.current.click();
+    }
+
+    return (
+
+        <section className="section">
+            <div className="row">
+                <div className="col-lg-12">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">
+                                <div className="row form-group">
+                                    <div className="col-lg-10 mb-2">
+                                        Orders List
+                                    </div>
+                                    <div className="col-lg-2 mb-2">
+                                        <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
+                                        </button>
+                                    </div>
+                                    <div className="col-lg-12 mb-2" style={ {display: viewForm}}>
+                                        { modalPackageInsert }
+                                    </div>
+                                    <div className="col-lg-2" style={ {display: 'none'} }>
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() } disabled={ disabledButton }>
+                                                    <i className="bx  bxs-save"></i> { textButtonImport }
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Orders: { quantityPackage }</b>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    State :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Route :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h5>
+                            <div className="row form-group table-responsive">
+                                <div className="col-lg-12">
+                                    <table className="table table-hover table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>HOUR</th>
+                                                <th>COMPANY</th>
+                                                <th>STORE</th>
+                                                <th>ORDER</th>
+                                                <th>CLIENT</th>
+                                                <th>CONTACT</th>
+                                                <th>ADDREESS</th>
+                                                <th>CITY</th>
+                                                <th>STATE</th>
+                                                <th>ZIP CODE</th>
+                                                <th>WEIGHT</th>
+                                                <th>ROUTE</th>
+                                                <th>QUANTITY</th>
+                                                <th>ACTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            { listPackageTable }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="col-lg-12">
+                                    <Pagination
+                                        activePage={page}
+                                        totalItemsCount={totalPackage}
+                                        itemsCountPerPage={totalPage}
+                                        onChange={(pageNumber) => handlerChangePage(pageNumber)}
+                                        itemClass="page-item"
+                                        linkClass="page-link"
+                                        firstPageText="First"
+                                        lastPageText="Last"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+export default Orders;
+
+// DOM element
+if(document.getElementById('orders'))
+{
+    ReactDOM.render(<Orders />, document.getElementById('orders'));
+}
