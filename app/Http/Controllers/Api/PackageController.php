@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageHistory, PackageManifest, PackageNotExists, Routes };
+use App\Models\{ Comment, Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, Routes };
 
 use DB;
 use Log;
@@ -494,10 +494,7 @@ class PackageController extends Controller
 
     public function UpdateManifestRouteByZipCode()
     {
-        $initDate = date('Y-m-d') .' 00:00:00';
-        $endDate  = date('Y-m-d') .' 23:59:59';
-
-        $listPackageManifest = PackageManifest::whereBetween('created_at', [$initDate, $endDate])->get();
+        $listPackageManifest = PackageManifest::all();
         
         foreach($listPackageManifest as $packageManifest)
         {
@@ -513,12 +510,12 @@ class PackageController extends Controller
             }
         }
 
-        echo "updated";
+        echo "updated manifest";
     }
 
     public function UpdateInboundRouteByZipCode()
     {
-        $listPackageInbound = PackageInbound::where('Route', 'CO1')->get();
+        $listPackageInbound = PackageInbound::all();
         
         foreach($listPackageInbound as $packageInbound)
         {
@@ -534,6 +531,27 @@ class PackageController extends Controller
             }
         }
 
-        echo "updated";
+        echo "updated inbound";
+    }
+
+    public function UpdateWarehouseRouteByZipCode()
+    {
+        $listPackageWarehouse = PackageWarehouse::all();
+        
+        foreach($listPackageWarehouse as $packageWarehouse)
+        {
+            $route = Routes::where('zipCode', $packageWarehouse->Dropoff_Postal_Code)->first();
+            
+            if($route)
+            {
+                $packageWarehouse = PackageWarehouse::find($packageWarehouse->Reference_Number_1);
+
+                $packageWarehouse->Route = $route->name;
+
+                $packageWarehouse->save();
+            }
+        }
+
+        echo "updated warehouse";
     }
 }
