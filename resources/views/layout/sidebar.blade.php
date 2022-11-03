@@ -4,14 +4,24 @@
             <div id="google_translate_element" class="google"></div>
         </li>
         @if(hasPermission('packageBlocked.index'))
-        <li class="nav-heading"></li>
-        <li >
-            <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
-                <i class="bx bx-block"></i>
-                <span>PACKAGE BLOCKED</span>
-            </a>
-        </li>
+            <li class="nav-heading"></li>
+            <li >
+                <a class="nav-link {{Request::is('package-blocked') ? 'active' : 'collapsed'}}" href="{{url('package-blocked')}}">
+                    <i class="bx bx-block"></i>
+                    <span>PACKAGE BLOCKED</span>
+                </a>
+            </li>
         @endif
+
+        @if(hasPermission('orders.index'))
+            <li >
+                <a class="nav-link {{Request::is('orders') ? 'show' : 'collapsed'}}" href="{{url('orders')}}">
+                    <i class="bx bx-book-open"></i>
+                    <span>ORDERS</span>
+                </a>
+            </li>
+        @endif
+            
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >
@@ -48,16 +58,7 @@
                     </a>
                 </li>
             @endif
-
-            @if(hasPermission('orders.index'))
-                <li >
-                    <a class="nav-link {{Request::is('orders') ? 'show' : 'collapsed'}}" href="{{url('orders')}}">
-                        <i class="bx bx-book-open"></i>
-                        <span>ORDERS</span>
-                    </a>
-                </li>
-            @endif
-
+            
             <li >
                 <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
                     <i class="bx bx-barcode-reader"></i>

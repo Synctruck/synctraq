@@ -197,7 +197,9 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Processof orders
 	Route::get('orders', [OrderController::class, 'Index'])->middleware('permission:orders.index');
     Route::get('orders/list/{routes}/{states}', [OrderController::class, 'List']);
+    Route::post('orders/number-search', [OrderController::class, 'SearchOrderNumber']);
     Route::post('orders/insert', [OrderController::class, 'Insert']);
+    Route::get('orders/print/{PACKAGE_ID}', [OrderController::class, 'Print']);
     Route::get('orders/delete/{PACKAGE_ID}', [OrderController::class, 'Delete']);
 
 	//============ Maintenance of teams

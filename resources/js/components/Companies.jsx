@@ -270,7 +270,13 @@ function Companies() {
     const [textButtonSaveStore, setTextButtonSaveStore] = useState('')
     const [idStore, setIdStore]                         = useState(0);
     const [nameStore, setNameStore]                     = useState('');
+    const [phoneNumberStore, setPhoneNumberStore]       = useState('');
     const [addressStore, setAddressStore]               = useState('');
+    const [address2Store, setAddress2Store]             = useState('');
+    const [cityStore, setCityStore]                     = useState('');
+    const [stateStore, setStateStore]                   = useState('');
+    const [routeStore, setRouteStore]                   = useState('');
+    const [zipCodeStore, setZipCodeStore]               = useState('');
 
     const listAllStore = (idCompany) => {
 
@@ -317,7 +323,13 @@ function Companies() {
 
         formData.append('idCompany', idCompany);
         formData.append('name', nameStore);
+        formData.append('phoneNumber', phoneNumberStore);
         formData.append('address', addressStore);
+        formData.append('address2', address2Store);
+        formData.append('city', cityStore);
+        formData.append('state', stateStore);
+        formData.append('route', routeStore);
+        formData.append('zipCode', zipCodeStore);
 
         clearValidationStore();
 
@@ -409,7 +421,13 @@ function Companies() {
 
             setIdStore(store.id);
             setNameStore(store.name);
+            setPhoneNumberStore(store.phoneNumber);
             setAddressStore(store.address);
+            setAddress2Store(store.address2);
+            setCityStore(store.city);
+            setStateStore(store.state);
+            setRouteStore(store.route);
+            setZipCodeStore(store.zipCode);
             setViewAddStore('block');
             setTextButtonSaveStore('Updated');
         });
@@ -488,7 +506,13 @@ function Companies() {
 
         setIdStore(0);
         setNameStore('');
+        setPhoneNumberStore('');
         setAddressStore('');
+        setAddress2Store('');
+        setCityStore('');
+        setStateStore('');
+        setRouteStore('');
+        setZipCodeStore('');
     }
 
     const clearValidationStore = () => {
@@ -498,6 +522,21 @@ function Companies() {
 
         document.getElementById('addressStore').style.display = 'none';
         document.getElementById('addressStore').innerHTML     = '';
+
+        document.getElementById('address2Store').style.display = 'none';
+        document.getElementById('address2Store').innerHTML     = '';
+
+        document.getElementById('cityStore').style.display = 'none';
+        document.getElementById('cityStore').innerHTML     = '';
+
+        document.getElementById('stateStore').style.display = 'none';
+        document.getElementById('stateStore').innerHTML     = '';
+
+        document.getElementById('routeStore').style.display = 'none';
+        document.getElementById('routeStore').innerHTML     = '';
+
+        document.getElementById('zipCodeStore').style.display = 'none';
+        document.getElementById('zipCodeStore').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -628,7 +667,13 @@ function Companies() {
 
             <tr key={i}>
                 <td><b>{ store.name }</b></td>
+                <td>{ store.phoneNumber }</td>
                 <td>{ store.address }</td>
+                <td>{ store.address2 }</td>
+                <td>{ store.city }</td>
+                <td>{ store.state }</td>
+                <td>{ store.route }</td>
+                <td>{ store.zipCode }</td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getStore(store.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -714,7 +759,7 @@ function Companies() {
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
                                                                     <option value="API" selected={ (typeServices == 'API' ? 'selected' : '' ) }>API</option>
                                                                     <option value="CSV" selected={ (typeServices == 'CSV' ? 'selected' : '' ) }>CSV</option>
-                                                                    <option value="DELIVERY" selected={ (typeServices == 'DELIVERY' ? 'selected' : '' ) }>DELIVERY</option>
+                                                                    <option value="PICK & DROP" selected={ (typeServices == 'PICK & DROP' ? 'selected' : '' ) }>PICK & DROP</option>
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
@@ -789,14 +834,55 @@ function Companies() {
                                                     <div className="modal-body" style={ {display: viewAddStore } }>
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label>Store Name</label>
-                                                                <div id="nameStore" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="text" className="form-control" value={ nameStore } maxLength="100" onChange={ (e) => setNameStore(e.target.value) } required/>
+                                                                <h4 className="text-primary">Store Data</h4>
                                                             </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Name</label>
+                                                                <div id="nameStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ nameStore } maxLength="50" onChange={ (e) => setNameStore(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Phone Number</label>
+                                                                <div id="phoneNumberStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ phoneNumberStore } maxLength="20" onChange={ (e) => setPhoneNumberStore(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label>Store Address</label>
+                                                                <label className="form">Address</label>
                                                                 <div id="addressStore" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ addressStore } maxLength="100" onChange={ (e) => setAddressStore(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">Address-2</label>
+                                                                <div id="address2Store" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ address2Store } maxLength="100" onChange={ (e) => setAddress2Store(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">City</label>
+                                                                <div id="cityStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ cityStore } maxLength="40" onChange={ (e) => setCityStore(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">State</label>
+                                                                <div id="stateStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ stateStore } maxLength="20" onChange={ (e) => setStateStore(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Route</label>
+                                                                <div id="routeStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ routeStore } maxLength="20" onChange={ (e) => setRouteStore(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Zip Code</label>
+                                                                <div id="zipCodeStore" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ zipCodeStore } maxLength="20" onChange={ (e) => setZipCodeStore(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
@@ -818,7 +904,13 @@ function Companies() {
                                                         <thead>
                                                             <tr>
                                                                 <th>NAME</th>
+                                                                <th>PHONE</th>
                                                                 <th>ADDREESS</th>
+                                                                <th>ADDREESS-2</th>
+                                                                <th>CITY</th>
+                                                                <th>STATE</th>
+                                                                <th>ROUTE</th>
+                                                                <th>ZIP C</th>
                                                                 <th>ACTIONS</th>
                                                             </tr>
                                                         </thead>

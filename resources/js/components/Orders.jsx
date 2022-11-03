@@ -185,19 +185,19 @@ function Orders() {
         setFile(e.target.files[0]);
     }
 
-    const [viewForm, setViewForm]   = useState('none');
-    const [idCompany, setIdCompany] = useState('');
-    const [idStore, setIdStore] = useState('');
-    const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
+    const [viewForm, setViewForm]                                         = useState('none');
+    const [idCompany, setIdCompany]                                       = useState('');
+    const [idStore, setIdStore]                                           = useState('');
+    const [Dropoff_Contact_Name, setDropoff_Contact_Name]                 = useState('');
     const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
-    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
-    const [Dropoff_City, setDropoff_City] = useState('');
-    const [Dropoff_Province, setDropoff_Province] = useState('');
-    const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
-    const [Weight, setWeight] = useState('');
-    const [quantity, setQuantity] = useState('');
-
-    const [action, setAction] = useState('');
+    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1]             = useState('');
+    const [Dropoff_City, setDropoff_City]                                 = useState('');
+    const [Dropoff_Province, setDropoff_Province]                         = useState('');
+    const [Dropoff_Postal_Code, setDropoff_Postal_Code]                   = useState('');
+    const [Weight, setWeight]                                             = useState('');
+    const [quantity, setQuantity]                                         = useState('');
+    const [orderNumber, setOrderNumber]                                   = useState('');
+    const [action, setAction]                                             = useState('');
 
     const handlerOpenModal = (PACKAGE_ID) => {
 
@@ -363,6 +363,11 @@ function Orders() {
         });
     }
 
+    const handlerPrintOrder = (Reference_Number_1) => {
+
+        window.open(url_general +'orders/print/'+ Reference_Number_1);
+    }
+
     const clearValidation = () => {
 
         document.getElementById('idCompany').style.display = 'none';
@@ -388,9 +393,6 @@ function Orders() {
 
         document.getElementById('Dropoff_Postal_Code').style.display = 'none';
         document.getElementById('Dropoff_Postal_Code').innerHTML     = '';
-
-        document.getElementById('Weight').style.display = 'none';
-        document.getElementById('Weight').innerHTML     = '';
 
         document.getElementById('quantity').style.display = 'none';
         document.getElementById('quantity').innerHTML     = '';
@@ -581,15 +583,6 @@ function Orders() {
                                                     </div>
                                                     <div className="col-lg-6">
                                                         <div className="form-group">
-                                                            <label>WEIGHT</label>
-                                                            <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                            <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="col-lg-6">
-                                                        <div className="form-group">
                                                             <label>QUANTITY</label>
                                                             <div id="quantity" className="text-danger" style={ {display: 'none'} }></div>
                                                             <input type="number" value={ quantity } className="form-control" onChange={ (e) => setQuantity(e.target.value) } required/>
@@ -632,6 +625,9 @@ function Orders() {
                     <button className="btn btn-danger btn-sm" onClick={ () => handlerCancelOrder(pack.Reference_Number_1) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
+                    <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintOrder(pack.Reference_Number_1) }>
+                        <i className="bx bxs-printer"></i>
+                    </button>
                 </td>
             </tr>
         );
@@ -642,6 +638,39 @@ function Orders() {
         setViewButtonSave('none');
 
         inputFileRef.current.click();
+    }
+
+    const handlerSearchOrderNumber = (e) => {
+
+        e.preventDefault();
+
+        let formData = new FormData();
+
+        formData.append('Reference_Number_1', orderNumber);
+
+        if(orderNumber != '')
+        {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'orders/number-search', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(response => response.json() )
+            .then(response => {
+
+                setListPackage(response.packageList.data);
+                setQuantityPackage(response.quantityPackage);
+                setTotalPackage(response.packageList.total);
+                setTotalPage(response.packageList.per_page);
+                setPage(response.packageList.current_page);
+            });
+        }
+        else
+        {
+            listAllPackage(1, RouteSearch, StateSearch);
+        }
     }
 
     return (
@@ -681,10 +710,24 @@ function Orders() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3">
                                         <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Orders: { quantityPackage }</b>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    ORDER NUMBER :
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <form onSubmit={ handlerSearchOrderNumber }>
+                                                    <input type="text" value={ orderNumber } onChange={ (e) => setOrderNumber(e.target.value) } className="form-control" placeholder="Ejem. OCC1667389408"/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div className="col-lg-3">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -696,7 +739,7 @@ function Orders() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">

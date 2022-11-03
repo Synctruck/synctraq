@@ -35,7 +35,7 @@ class CompanyController extends Controller
     public function GetAllDelivery(Request $request)
     {
         $companyList = Company::orderBy('name', 'asc')
-                                ->where('typeServices', 'DELIVERY')
+                                ->where('typeServices', 'PICK & DROP')
                                 ->where('status', 'Active')
                                 ->get();
         

@@ -50,14 +50,38 @@ class StoreController extends Controller
             [
                 "idCompany" => ["required"],
                 "name" => ["required", "max:50"],
+                "phoneNumber" => ["required", "max:20"],
                 "address" => ["required", "max:100"],
+                "address2" => ["required", "max:100"],
+                "city" => ["required", "max:40"],
+                "state" => ["required", "max:20"],
+                "route" => ["required", "max:20"],
+                "zipCode" => ["required", "max:20"],
             ],
             [
                 "name.required" => "The field is required",
                 "name.max"  => "You must enter a maximum of 50 digits",
 
+                "phoneNumber.required" => "The field is required",
+                "phoneNumber.max"  => "You must enter a maximum of 20 digits",
+
                 "address.required" => "The field is required",
                 "address.max"  => "You must enter a maximum of 100 digits",
+
+                "address2.required" => "The field is required",
+                "address2.max"  => "You must enter a maximum of 100 digits",
+
+                "city.required" => "The field is required",
+                "city.max"  => "You must enter a maximum of 40 digits",
+
+                "state.required" => "The field is required",
+                "state.max"  => "You must enter a maximum of 20 digits",
+
+                "route.required" => "The field is required",
+                "route.max"  => "You must enter a maximum of 20 digits",
+
+                "zipCode.required" => "The field is required",
+                "zipCode.max"  => "You must enter a maximum of 20 digits",
             ]
         );
 
@@ -68,9 +92,15 @@ class StoreController extends Controller
 
         $store = new Stores();
 
-        $store->idCompany = $request->get('idCompany');
-        $store->name      = $request->get('name');
-        $store->address   = $request->get('address');
+        $store->idCompany   = $request->get('idCompany');
+        $store->name        = $request->get('name');
+        $store->phoneNumber = $request->get('phoneNumber');
+        $store->address     = $request->get('address');
+        $store->address2    = $request->get('address2');
+        $store->city        = $request->get('city');
+        $store->state       = $request->get('state');
+        $store->route       = $request->get('route');
+        $store->zipCode     = $request->get('zipCode');
 
         $store->save();
 
@@ -108,14 +138,38 @@ class StoreController extends Controller
             [
                 "idCompany" => ["required"],
                 "name" => ["required", "max:50"],
+                "phoneNumber" => ["required", "max:20"],
                 "address" => ["required", "max:100"],
+                "address2" => ["required", "max:100"],
+                "city" => ["required", "max:40"],
+                "state" => ["required", "max:20"],
+                "route" => ["required", "max:20"],
+                "zipCode" => ["required", "max:20"],
             ],
             [
                 "name.required" => "The field is required",
                 "name.max"  => "You must enter a maximum of 50 digits",
 
+                "phoneNumber.required" => "The field is required",
+                "phoneNumber.max"  => "You must enter a maximum of 20 digits",
+
                 "address.required" => "The field is required",
                 "address.max"  => "You must enter a maximum of 100 digits",
+
+                "address2.required" => "The field is required",
+                "address2.max"  => "You must enter a maximum of 100 digits",
+
+                "city.required" => "The field is required",
+                "city.max"  => "You must enter a maximum of 40 digits",
+
+                "state.required" => "The field is required",
+                "state.max"  => "You must enter a maximum of 20 digits",
+
+                "route.required" => "The field is required",
+                "route.max"  => "You must enter a maximum of 20 digits",
+
+                "zipCode.required" => "The field is required",
+                "zipCode.max"  => "You must enter a maximum of 20 digits",
             ]
         );
 
@@ -126,8 +180,14 @@ class StoreController extends Controller
 
         $store = Stores::find($idStore);
 
-        $store->name      = $request->get('name');
-        $store->address   = $request->get('address');
+        $store->name        = $request->get('name');
+        $store->phoneNumber = $request->get('phoneNumber');
+        $store->address     = $request->get('address');
+        $store->address2    = $request->get('address2');
+        $store->city        = $request->get('city');
+        $store->state       = $request->get('state');
+        $store->route       = $request->get('route');
+        $store->zipCode     = $request->get('zipCode');
 
         $store->save();
 
