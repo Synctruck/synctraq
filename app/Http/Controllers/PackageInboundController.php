@@ -286,8 +286,8 @@ class PackageInboundController extends Controller
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                $packageHistory->quantity                     = $packageManifest->quantity;
                 $packageHistory->inbound                      = 1;
+                $packageHistory->quantity                     = $packageManifest->quantity;
                 $packageHistory->status                       = 'Inbound';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
@@ -478,6 +478,8 @@ class PackageInboundController extends Controller
                                     $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
                                     $packageInbound->idCompany                    = $packageManifest->idCompany;
                                     $packageInbound->company                      = $packageManifest->company;
+                                    $packageInbound->idStore                      = $packageManifest->idStore;
+                                    $packageInbound->store                        = $packageManifest->store;
                                     $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
                                     $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                                     $packageInbound->Ready_At                     = $packageManifest->Ready_At;
@@ -511,6 +513,7 @@ class PackageInboundController extends Controller
                                     $packageInbound->Route                        = $packageManifest->Route;
                                     $packageInbound->Name                         = $packageManifest->Name;
                                     $packageInbound->idUser                       = Auth::user()->id;
+                                    $packageInbound->quantity                     = $packageManifest->quantity;
                                     $packageInbound->status                       = 'Inbound';
 
                                     $packageInbound->save();
@@ -558,6 +561,7 @@ class PackageInboundController extends Controller
                                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                                     $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                                     $packageHistory->inbound                      = 1;
+                                    $packageHistory->quantity                     = $packageManifest->quantity;
                                     $packageHistory->status                       = 'Inbound';
                                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');

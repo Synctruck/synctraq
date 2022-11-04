@@ -191,6 +191,8 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
                 $packageHistory->idCompany                    = $packageWarehouse->idCompany;
                 $packageHistory->company                      = $packageWarehouse->company;
+                $packageHistory->idStore                      = $packageWarehouse->idStore;
+                $packageHistory->store                        = $packageWarehouse->store;
                 $packageHistory->Reference_Number_2           = $packageWarehouse->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageWarehouse->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageWarehouse->Ready_At;
@@ -225,6 +227,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Name                         = $packageWarehouse->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->quantity                     = $packageWarehouse->quantity;
                 $packageHistory->status                       = 'Warehouse';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
@@ -301,6 +304,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                     $packageHistory->idCompany                    = $package->idCompany;
                     $packageHistory->company                      = $package->company;
+                    $packageHistory->idStore                      = $package->idStore;
+                    $packageHistory->store                        = $package->store;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
@@ -340,6 +345,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                     $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
+                    $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Inbound';
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
@@ -415,6 +421,8 @@ class PackageWarehouseController extends Controller
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                     $packageReturn->idCompany                    = $packageDispatch->idCompany;
                     $packageReturn->company                      = $packageDispatch->company;
+                    $packageReturn->idStore                      = $packageDispatch->idStore;
+                    $packageReturn->store                        = $packageDispatch->store;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -459,6 +467,7 @@ class PackageWarehouseController extends Controller
                     $packageReturn->workerName                   = $workerName;
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
+                    $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->status                       = 'Return';
 
                     $packageReturn->save();
@@ -469,6 +478,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                     $packageHistory->idCompany                    = $packageDispatch->idCompany;
                     $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -510,6 +521,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Return';
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
@@ -532,6 +544,8 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->Reference_Number_1           = $package->Reference_Number_1;
                 $packageWarehouse->idCompany                    = $package->idCompany;
                 $packageWarehouse->company                      = $package->company;
+                $packageWarehouse->idStore                      = $package->idStore;
+                $packageWarehouse->store                        = $package->store;
                 $packageWarehouse->Reference_Number_2           = $package->Reference_Number_2;
                 $packageWarehouse->Reference_Number_3           = $package->Reference_Number_3;
                 $packageWarehouse->Ready_At                     = $package->Ready_At;
@@ -565,6 +579,7 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->Route                        = $package->Route;
                 $packageWarehouse->Name                         = $package->Name;
                 $packageWarehouse->idUser                       = Auth::user()->id;
+                $packageWarehouse->quantity                     = $package->quantity;
                 $packageWarehouse->status                       = 'Warehouse';
 
                 $packageWarehouse->save();
@@ -575,6 +590,8 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
+                $packageHistory->idStore                      = $package->idStore;
+                $packageHistory->store                        = $package->store;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;
@@ -609,6 +626,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->quantity                     = $package->quantity;
                 $packageHistory->status                       = 'Warehouse';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');

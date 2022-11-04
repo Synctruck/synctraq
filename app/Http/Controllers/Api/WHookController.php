@@ -65,6 +65,8 @@ class WHookController extends Controller
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                     $packageHistory->idCompany                    = $packageDispatch->idCompany;
                     $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -165,7 +167,7 @@ class WHookController extends Controller
 
         if($completionDetailsStatus == false)
         {
-            $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
+            $packageDispatch = PackageDispatch::find($Reference_Number_1);
 
             $user = User::find($packageDispatch->idUserDispatch);
 
@@ -179,6 +181,8 @@ class WHookController extends Controller
                 $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                 $packageHistory->idCompany                    = $packageDispatch->idCompany;
                 $packageHistory->company                      = $packageDispatch->company;
+                $packageHistory->idStore                      = $packageDispatch->idStore;
+                $packageHistory->store                        = $packageDispatch->store;
                 $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                 $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -285,6 +289,8 @@ class WHookController extends Controller
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                             $packageHistory->idCompany                    = $package->idCompany;
                             $packageHistory->company                      = $package->company;
+                            $packageHistory->idStore                      = $package->idStore;
+                            $packageHistory->store                        = $package->store;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -333,6 +339,8 @@ class WHookController extends Controller
                             $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                             $packageDispatch->idCompany                    = $package->idCompany;
                             $packageDispatch->company                      = $package->company;
+                            $packageDispatch->idStore                      = $package->idStore;
+                            $packageDispatch->store                        = $package->store;
                             $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                             $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                             $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -383,6 +391,8 @@ class WHookController extends Controller
                         $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                         $packageHistory->idCompany                    = $package->idCompany;
                         $packageHistory->company                      = $package->company;
+                        $packageHistory->idStore                      = $package->idStore;
+                        $packageHistory->store                        = $package->store;
                         $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                         $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                         $packageHistory->Ready_At                     = $package->Ready_At;
@@ -509,6 +519,8 @@ class WHookController extends Controller
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
+                $packageHistory->idStore                      = $package->idStore;
+                $packageHistory->store                        = $package->store;
                 $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                 $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                 $packageHistory->Ready_At                     = $package->Ready_At;

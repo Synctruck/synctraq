@@ -280,11 +280,13 @@ class PackageDispatchController extends Controller
                         if($package->status == 'On hold')
                         {
                             $packageHistory = new PackageHistory();
-
+ 
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                             $packageHistory->idCompany                    = $package->idCompany;
                             $packageHistory->company                      = $package->company;
+                            $packageHistory->idStore                      = $package->idStore;
+                            $packageHistory->store                        = $package->store;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -322,6 +324,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Date_Inbound                 = $created_at;
                             $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                             $packageHistory->inbound                      = 1;
+                            $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Inbound';
                             $packageHistory->created_at                   = $nowDate;
                             $packageHistory->updated_at                   = $nowDate;
@@ -334,6 +337,8 @@ class PackageDispatchController extends Controller
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
                         $packageDispatch->company                      = $package->company;
+                        $packageDispatch->idStore                      = $package->idStore;
+                        $packageDispatch->store                        = $package->store;
                         $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                         $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                         $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -370,6 +375,7 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idTeam                       = $request->get('idTeam');
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
                         $packageDispatch->Date_Dispatch                = $created_at;
+                        $packageDispatch->quantity                     = $package->quantity;
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
@@ -380,6 +386,8 @@ class PackageDispatchController extends Controller
                         $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                         $packageHistory->idCompany                    = $package->idCompany;
                         $packageHistory->company                      = $package->company;
+                        $packageHistory->idStore                      = $package->idStore;
+                        $packageHistory->store                        = $package->store;
                         $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                         $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                         $packageHistory->Ready_At                     = $package->Ready_At;
@@ -418,6 +426,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->Date_Dispatch                = $created_at;
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->Description                  = $description;
+                        $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
@@ -494,6 +503,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                     $packageHistory->idCompany                    = $package->idCompany;
                     $packageHistory->company                      = $package->company;
+                    $packageHistory->idStore                      = $package->idStore;
+                    $packageHistory->store                        = $package->store;
                     $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->Ready_At                     = $package->Ready_At;
@@ -532,6 +543,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                     $packageHistory->dispatch                     = 1;
                     $packageHistory->Description                  = $description;
+                    $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Dispatch';
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
@@ -901,6 +913,8 @@ class PackageDispatchController extends Controller
                             $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                             $packageDispatch->idCompany                    = $package->idCompany;
                             $packageDispatch->company                      = $package->company;
+                            $packageDispatch->idStore                      = $package->idStore;
+                            $packageDispatch->store                        = $package->store;
                             $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
                             $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
                             $packageDispatch->Ready_At                     = $package->Ready_At;
@@ -937,6 +951,7 @@ class PackageDispatchController extends Controller
                             $packageDispatch->idTeam                       = $request->get('idTeam');
                             $packageDispatch->idUserDispatch               = $idUserDispatch;
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
+                            $packageDispatch->quantity                     = $package->quantity;
                             $packageDispatch->status                       = 'Dispatch';
                             $packageDispatch->created_at                   = date('Y-m-d H:i:s');
                             $packageDispatch->updated_at                   = date('Y-m-d H:i:s');
@@ -949,6 +964,8 @@ class PackageDispatchController extends Controller
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                             $packageHistory->idCompany                    = $package->idCompany;
                             $packageHistory->company                      = $package->company;
+                            $packageHistory->idStore                      = $package->idStore;
+                            $packageHistory->store                        = $package->store;
                             $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
                             $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                             $packageHistory->Ready_At                     = $package->Ready_At;
@@ -987,6 +1004,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
                             $packageHistory->dispatch                     = 1;
                             $packageHistory->Description                  = $description;
+                            $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Dispatch';
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
@@ -1077,6 +1095,8 @@ class PackageDispatchController extends Controller
                     $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                     $packageReturn->idCompany                    = $packageDispatch->idCompany;
                     $packageReturn->company                      = $packageDispatch->company;
+                    $packageReturn->idStore                      = $packageDispatch->idStore;
+                    $packageReturn->store                        = $packageDispatch->store;
                     $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
@@ -1121,6 +1141,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->workerName                   = $workerName;
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
+                    $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->status                       = 'Return';
 
                     $packageReturn->save();
@@ -1159,6 +1180,8 @@ class PackageDispatchController extends Controller
                         $packageInbound->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                         $packageInbound->idCompany                    = $packageDispatch->idCompany;
                         $packageInbound->company                      = $packageDispatch->company;
+                        $packageInbound->idStore                      = $packageDispatch->idStore;
+                        $packageInbound->store                        = $packageDispatch->store;
                         $packageInbound->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                         $packageInbound->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                         $packageInbound->Ready_At                     = $packageDispatch->Ready_At;
@@ -1193,6 +1216,7 @@ class PackageDispatchController extends Controller
                         $packageInbound->Name                         = $packageDispatch->Name;
                         $packageInbound->idUser                       = Auth::user()->id;
                         $packageInbound->reInbound                    = 1;
+                        $packageInbound->quantity                     = $packageDispatch->quantity;
                         $packageInbound->status                       = 'Inbound';
 
                         $packageInbound->save();
@@ -1204,6 +1228,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                     $packageHistory->idCompany                    = $packageDispatch->idCompany;
                     $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
                     $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
                     $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
                     $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
@@ -1243,6 +1269,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->inbound                      = 1;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = $statusReturn;
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');

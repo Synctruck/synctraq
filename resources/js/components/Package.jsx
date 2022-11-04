@@ -92,12 +92,12 @@ function Package() {
 
         setListRoute([]);
 
-        fetch(url_general +'routes/list')
+        fetch(url_general +'routes/filter/list')
         .then(res => res.json())
         .then((response) => {
 
-            setListRoute(response.routeList.data);
-            listOptionRoute(response.routeList.data);
+            setListRoute(response.listRoute);
+            listOptionRoute(response.listRoute);
         });
     }
 
