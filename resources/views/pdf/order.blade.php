@@ -31,7 +31,15 @@
 		<table border="1" style="width: 100%;">
 			<tr>
 				<td colspan="4" style="text-align: center;">
-					Pick Up Barcode: <br><br>
+					<div style="float: left; width: 58%;">
+						Pick Up Barcode:
+					</div>
+					<div style="float: left; width: 42%; text-align: center;">
+						<br>
+						{!! DNS1D::getBarcodeHTML($orderList[0]->Reference_Number_1, 'C128', 2, 60) !!}
+						{{ $orderList[0]->Reference_Number_1 }}
+					</div>
+					<br><br><br><br><br>
 				</td>
 			</tr>
 			<tr>
@@ -74,7 +82,17 @@
 			<tr>
 				<td>Phone Number:</td>
 				<td>{{ $orderList[1]->Dropoff_Contact_Phone_Number }}</td>
-				<td colspan="2">Drop Off Barcode:</td>
+				<td colspan="2">
+					<div style="float: left; width: 25%;">
+						Drop Off Barcode:
+					</div>
+					<div style="float: left; width: 75%; text-align: center;">
+						<br>
+						{!! DNS1D::getBarcodeHTML($orderList[1]->Reference_Number_1, 'C128', 2, 60) !!}
+						{{ $orderList[1]->Reference_Number_1 }}
+					</div>
+					<br><br><br><br><br>
+				</td>
 			</tr>
 		</table>
 	</div>
