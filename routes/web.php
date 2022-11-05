@@ -14,8 +14,9 @@ use App\Http\Controllers\{AssignedController, ClientController, CommentsControll
 |
 */
 Route::get('/home/public', [IndexController::class, 'IndexPublic']);
-Route::get('/track', [Trackcontroller::class, 'index']);
+Route::get('/track', [Trackcontroller::class, 'Index']);
 Route::get('/track/detail/{package_id}', [Trackcontroller::class, 'trackDetail']);
+Route::get('/track-detail', [Trackcontroller::class, 'Index']);
 
 //============ User Login - Logout
 Route::get('/', [UserController::class, 'Login']);

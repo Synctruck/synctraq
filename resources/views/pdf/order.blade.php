@@ -48,11 +48,19 @@
 			</tr>
 			<tr>
 				<td>Location:</td>
-				<td colspan="3">{{ $orderList[0]->Dropoff_City }}</td>
+				<td colspan="3">{{ $orderList[0]->store .' \ '. $orderList[0]->Dropoff_Contact_Phone_Number }}</td>
 			</tr>
 			<tr>
 				<td>Address:</td>
-				<td colspan="3">{{ $orderList[0]->Dropoff_Address_Line_1 }}</td>
+				<td colspan="3">
+					{{
+						$orderList[0]->Dropoff_Address_Line_1 .', '. 
+						$orderList[0]->Dropoff_City .', '. 
+						$orderList[0]->Dropoff_Province .', '. 
+						$orderList[0]->Dropoff_Postal_Code .', '.
+						$orderList[0]->Route
+					}}
+				</td>
 			</tr>
 			<tr>
 				<td>Pick Up Date:</td>

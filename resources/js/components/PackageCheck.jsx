@@ -160,7 +160,7 @@ function PackageCheck() {
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="15" required/>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="20" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>

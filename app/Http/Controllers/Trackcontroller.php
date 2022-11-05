@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 
 class Trackcontroller extends Controller
 {
-    public function  index(){
-        return view('track.index');
+    public function Index(Request $request)
+    {
+        $textSearch = $request->get('textSearch');
+
+        return view('track.index', compact('textSearch'));
     }
 
     public function trackDetail(Request $request,$package_id){

@@ -248,7 +248,8 @@ class OrderController extends Controller
     {
         $Reference_Number_1 = substr($Reference_Number_1, 3, 13);
 
-        $orderList = PackageManifest::where('Reference_Number_1', 'like', '%'. $Reference_Number_1 .'%')
+        $orderList = PackageHistory::where('Reference_Number_1', 'like', '%'. $Reference_Number_1 .'%')
+                                    ->where('status', 'On hold')
                                     ->orderBy('Reference_Number_1', 'desc')
                                     ->get();
 

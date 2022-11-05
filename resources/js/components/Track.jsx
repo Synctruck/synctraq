@@ -25,13 +25,46 @@ function Track() {
         handleStep();
     }, [listDetails])
 
+    useEffect( () => {
 
+        if(textSearch != '')
+        {
+            setPackageId(textSearch);
+
+            history.pushState(null, "", "track-detail?textSearch="+ textSearch);
+
+            console.log('submit');
+
+            let url    = url_general +'track/detail/'+ textSearch;
+            let method = 'GET'
+
+            axios({
+                method: method,
+                url: url
+            })
+            .then((response) => {
+
+                console.log(response.data);
+                setListDetails(response.data.details);
+                setPackageClient(response.data.details[0].Dropoff_Contact_Name);
+            })
+            .catch(function(error) {
+               alert('Error:',error);
+            })
+            .finally();
+        }
+
+    }, []);
 
     const getDetail = (e) => {
+
+        history.pushState(null, "", "track-detail?textSearch="+ packageId);
+
         e.preventDefault();
+
         console.log('submit');
 
-        let url = url_general +'track/detail/'+packageId
+        let url    = url_general +'track/detail/'+ packageId;
         let method = 'GET'
 
         axios({
@@ -140,7 +173,7 @@ function Track() {
                         <h5 className="card-title text-center pb-0 fs-4">Order tracking</h5>
                         <p className="text-center"><span> NOTE: Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p><br></br>
                         <div className="col-lg-12">
-                            <form onSubmit={getDetail}>
+                            <form id="formSearch" onSubmit={getDetail}>
                                 <div className="form-group">
                                     <input
                                         type="text"

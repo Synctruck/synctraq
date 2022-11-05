@@ -43,7 +43,9 @@
 <body>
     <main>
         <div class="container-fluid">
-
+            <script>
+                let textSearch = '{{ $textSearch }}';
+            </script>
             <section class="section register min-vh-100 d-flex flex-column align-items-center ">
                 <div class="container-fluid">
                     <div class="row justify-content-center">
