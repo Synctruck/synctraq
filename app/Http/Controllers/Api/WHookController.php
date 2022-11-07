@@ -555,8 +555,8 @@ class WHookController extends Controller
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
-                $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                $packageHistory->created_at                   = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
 
                 $packageHistory->save();
 
