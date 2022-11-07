@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -102,6 +102,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-dispatch/update', [PackageDispatchController::class, 'Update']);
 	Route::post('/package-dispatch/change', [PackageDispatchController::class, 'Change']);
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
+
+	//============ Failed package
+	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');
+	Route::get('/package-failed/list/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'List']);
+	Route::get('/package-failed/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'Export']);
 
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index'])->middleware('permission:delivery.index');

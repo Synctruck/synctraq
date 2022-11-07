@@ -12,6 +12,7 @@ require('./components/Package');
 require('./components/PackageCheck');
 require('./components/PackageInbound');
 require('./components/PackageDispatch');
+require('./components/PackageFailed');
 require('./components/PackageDelivery');
 require('./components/PackageNotExists');
 require('./components/PackageReturn');

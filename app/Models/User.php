@@ -70,6 +70,11 @@ class User extends Authenticatable  implements Auditable
         return $this->hasMany('App\Models\Driver', 'idTeam');
     }
 
+    public function faileds_team()
+    {
+        return $this->hasMany('App\Models\PackageFailed', 'idTeam');
+    }
+
     public function inbounds()
     {
         return $this->hasMany('App\Models\PackageInbound', 'idUser');

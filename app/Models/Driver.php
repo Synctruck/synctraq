@@ -36,6 +36,11 @@ class Driver extends Model implements Auditable
         return $this->hasMany('App\Models\PackageDispatch', 'idUserDispatch');
     }
 
+    public function faileds()
+    {
+        return $this->hasMany('App\Models\PackageFailed', 'idUserDispatch');
+    }
+
     public function history_dispatch()
     {
         return $this->hasMany('App\Models\PackageHistory', 'idUserDispatch');

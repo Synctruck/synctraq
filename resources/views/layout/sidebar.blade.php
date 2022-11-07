@@ -58,6 +58,15 @@
                     </a>
                 </li>
             @endif
+
+            @if(hasPermission('failed.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-failed') ? 'show' : 'collapsed'}}" href="{{url('/package-failed')}}">
+                        <i class="bx bx-car"></i>
+                        <span>FAILED</span>
+                    </a>
+                </li>
+            @endif
             
             <li >
                 <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
