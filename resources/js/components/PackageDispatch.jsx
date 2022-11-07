@@ -1563,6 +1563,11 @@ function PackageDispatch() {
         }
     }
 
+    const handlerRedirectFailed = () => {
+
+        location.href = url_general +'package-failed';
+    }
+
     return (
 
         <section className="section">
@@ -1769,7 +1774,12 @@ function PackageDispatch() {
                                     </div>
                                     <div className="col-lg-4">
                                         <div className="form-group">
-                                            <b className="alert alert-danger" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERY PACKAGES: { quantityDispatchAll }</b>
+                                            <b className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERED: { quantityDispatchAll }</b>
+                                        </div><br/>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS</b>
                                         </div><br/>
                                     </div>
                                 </div>
