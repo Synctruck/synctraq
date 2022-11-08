@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Assigned, AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ Assigned, AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -1384,12 +1384,24 @@ class PackageDispatchController extends Controller
 
     public function RegisterOnfleet($package, $team, $driver)
     {
+        $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
+
+        $age21     = '';
+        $age21Text = '';
+
+        if($company && $company->age21)
+        {
+            $age21     = 21;
+            $age21Text = 'AGE VERIFICATION 21+';
+        }
+
         //"unparsed" =>  $package->Dropoff_Address_Line_1 .', '. $package->Dropoff_City .', '. $package->Dropoff_Province .' '. $package->Dropoff_Postal_Code .', USA',
 
         $number = explode(' ', $package->Dropoff_Address_Line_1)[0];
         $street = str_replace($number, '', $package->Dropoff_Address_Line_1);
 
-        $data = [   "destination" =>  [
+        $data = [   
+                    "destination" =>  [
                         "address" =>  [
                             "number" => $number,
                             "street" => $street,
@@ -1405,7 +1417,7 @@ class PackageDispatchController extends Controller
                         [
                             "name"  => $package->Dropoff_Contact_Name,
                             "phone" => "+". $package->Dropoff_Contact_Phone_Number,
-                            "notes" => "",
+                            "notes" => $age21Text,
                         ]
                     ],
                     "notes" => $package->Reference_Number_1,
@@ -1413,7 +1425,12 @@ class PackageDispatchController extends Controller
                         "type"   =>  "WORKER",
                         "team"   =>  $team->idOnfleet,
                         "worker" =>  $driver->idOnfleet
-                    ]
+                    ],
+                    "requirements" => [
+
+                        "photo" => true,
+                        "minimumAge" => $age21,
+                    ],
                 ];
 
         $curl = curl_init();

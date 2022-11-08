@@ -12,7 +12,8 @@ function Companies() {
     const [password, setPassword]         = useState('');
     const [lengthField, setLengthField]   = useState('');
     const [typeServices, setTypeServices] = useState('');
-    const [status, setStatus] = useState('');
+    const [age21, setAge21]               = useState('');
+    const [status, setStatus]             = useState('');
     const [keyWebhook, setKeyWebhook]     = useState('');
     const [urlWebhook, setUrlWebhook]     = useState('');
 
@@ -94,6 +95,7 @@ function Companies() {
         formData.append('password', password);
         formData.append('length_field', lengthField);
         formData.append('typeServices', typeServices);
+        formData.append('age21', age21);
         formData.append('status', status);
         formData.append('key_webhook', keyWebhook);
         formData.append('url_webhook', urlWebhook);
@@ -224,6 +226,7 @@ function Companies() {
             setEmail(company.email);
             setPassword(company.email);
             setTypeServices(company.typeServices);
+            setAge21(company.age21);
             setStatus(company.status);
             setLengthField(company.length_field);
             setKeyWebhook(company.key_webhook);
@@ -471,6 +474,7 @@ function Companies() {
         setEmail('');
         setPassword('');
         setTypeServices('');
+        setAge21('');
         setLengthField('');
         setStatus('');
         setOnHold('');
@@ -494,6 +498,9 @@ function Companies() {
 
         document.getElementById('typeServices').style.display = 'none';
         document.getElementById('typeServices').innerHTML     = '';
+
+        document.getElementById('age21').style.display = 'none';
+        document.getElementById('age21').innerHTML     = '';
 
         document.getElementById('length_field').style.display = 'none';
         document.getElementById('length_field').innerHTML     = '';
@@ -597,8 +604,10 @@ function Companies() {
         return (
 
             <tr key={i}>
-                <td><b>{ company.name }</b></td>
-                <td>{ company.email }</td>
+                <td>
+                    <b>{ company.name }</b><br/>
+                    { company.email }
+                </td>
                 <td>{ company.key_api }</td>
                 <td>{ company.key_webhook }</td>
                 <td title={ company.url_webhook }>
@@ -611,6 +620,15 @@ function Companies() {
                     }
                 </td>
                 <td>{ company.typeServices }</td>
+                <td>
+                    {
+                        (company.age21)
+                        ?
+                            <div className="alert alert-success"><b>Yes</b></div>
+                        :
+                            <div className="alert alert-danger"><b>Not</b></div>
+                    }
+                </td>
                 <td>
                     { status1 }
                     { status2 }
@@ -760,6 +778,15 @@ function Companies() {
                                                                     <option value="API" selected={ (typeServices == 'API' ? 'selected' : '' ) }>API</option>
                                                                     <option value="CSV" selected={ (typeServices == 'CSV' ? 'selected' : '' ) }>CSV</option>
                                                                     <option value="PICK & DROP" selected={ (typeServices == 'PICK & DROP' ? 'selected' : '' ) }>PICK & DROP</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label>Age 21</label>
+                                                                <div id="age21" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setAge21(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="1" selected={ (String(age21) == '1' ? 'selected' : '' ) }>Yes</option>
+                                                                    <option value="0" selected={ (String(age21) == '0' ? 'selected' : '' ) }>Not</option>
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
@@ -958,11 +985,11 @@ function Companies() {
                                         <thead>
                                             <tr>
                                                 <th>COMPANY NAME</th>
-                                                <th>EMAIL</th>
                                                 <th>KEY API</th>
                                                 <th>KEY WEBHOOK</th>
                                                 <th>URL WEBHOOK</th>
                                                 <th>TYPE SERVICES</th>
+                                                <th>AGE 21</th>
                                                 <th>STATUS CODE</th>
                                                 <th>STATUS</th>
                                                 <th>STORES</th>
