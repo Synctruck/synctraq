@@ -134,8 +134,7 @@ function PackageDispatch() {
 
     const exportAllPackageDispatch = ( StateSearch, RouteSearchList) => {
 
-
-        location.href = url_general +'package-dispatch/export/'+ dateStart+'/'+dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList;
+        location.href = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList;
     }
 
     const handlerExport = () => {

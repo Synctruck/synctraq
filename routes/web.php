@@ -95,7 +95,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Dispatch package
 	Route::get('/package-dispatch', [PackageDispatchController::class, 'Index'])->middleware('permission:dispatch.index');
 	Route::get('/package-dispatch/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'List']);
-	Route::get('/package-dispatch/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'Export']);
+	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'Export']);
 	Route::get('/package-dispatch/getAll', [PackageDispatchController::class, 'GetAll']);
 	Route::post('/package-dispatch/insert', [PackageDispatchController::class, 'Insert']);
 	Route::get('/package-dispatch/get/{PACKAGE_ID}', [PackageDispatchController::class, 'Get']);
