@@ -42,9 +42,9 @@ class PackageWarehouseController extends Controller
         return view('package.warehouse');
     }
 
-    public function List($idValidator, $dateStart,$dateEnd, $route, $state)
+    public function List($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
     {
-        $packageListWarehouse = $this->getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state);
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state);
 
         $quantityWarehouse      = $packageListWarehouse->total();
 
@@ -57,7 +57,7 @@ class PackageWarehouseController extends Controller
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
 
-    private function getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
+    private function getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
 
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -77,6 +77,11 @@ class PackageWarehouseController extends Controller
 
         $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
 
+        if($idCompany != 0)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
+        }
+        
         if($idValidator)
         {
             $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);

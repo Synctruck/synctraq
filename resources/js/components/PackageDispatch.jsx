@@ -17,6 +17,7 @@ function PackageDispatch() {
     const [listRoute, setListRoute]                     = useState([]);
     const [listRole, setListRole]                       = useState([]);
     const [listState , setListState]                    = useState([]);
+    const [listCompany , setListCompany]                = useState([]);
 
     const [id, setId]                                 = useState(0);
     const [idRole, setIdRole]                         = useState(0);
@@ -57,6 +58,7 @@ function PackageDispatch() {
 
     const [RouteSearchList, setRouteSearchList] = useState('all');
     const [StateSearch, setStateSearch]         = useState('all');
+    const [idCompany, setCompany]               = useState(0);
 
     const inputFileRef  = React.useRef();
 
@@ -66,6 +68,7 @@ function PackageDispatch() {
 
     useEffect(() => {
 
+        listAllCompany();
         listAllRoute();
 
         document.getElementById('Reference_Number_1').focus();
@@ -82,7 +85,7 @@ function PackageDispatch() {
 
         listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
-    }, [idTeam, idDriver, dateStart,dateEnd]);
+    }, [idCompany, idTeam, idDriver, dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -99,7 +102,7 @@ function PackageDispatch() {
 
     const listAllPackageDispatch = (pageNumber, StateSearch, RouteSearchList) => {
 
-        fetch(url_general +'package-dispatch/list/'+ dateStart+'/'+dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
+        fetch(url_general +'package-dispatch/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -157,6 +160,18 @@ function PackageDispatch() {
         listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
+        });
+    }
+
     const listAllRoute = (pageNumber) => {
 
         setListRoute([]);
@@ -193,6 +208,11 @@ function PackageDispatch() {
             <option key={ i } value={ route.name } selected={ Route == route.name ? true : false }> {route.name}</option>
         );
     });
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
 
     const handlerOpenModalEditPackage = (PACKAGE_ID) => {
 
@@ -778,6 +798,7 @@ function PackageDispatch() {
                 <td>
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ packageDispatch.company }</b></td>
                 {
                     roleUser == 'Administrador'
                     ?
@@ -1812,6 +1833,21 @@ function PackageDispatch() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
                                                     States :
                                                 </div>
                                             </div>
@@ -1820,7 +1856,7 @@ function PackageDispatch() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -1841,6 +1877,7 @@ function PackageDispatch() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?

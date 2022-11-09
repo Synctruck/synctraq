@@ -26,13 +26,18 @@ class PackageManifestController extends Controller
         return view('package.index');
     }
 
-    public function List(Request $request, $route, $state)
+    public function List(Request $request, $idCompany, $route, $state)
     {
         $routes = explode(',', $route);
         $states = explode(',', $state);
         $null   = env('APP_ENV') == 'local' ? 'NULL' : null;
 
         $packageList = PackageManifest::where('idStore', $null);
+
+        if($idCompany != 0)
+        {
+            $packageList = $packageList->where('idCompany', $idCompany);
+        }
 
         if($route != 'all')
         {

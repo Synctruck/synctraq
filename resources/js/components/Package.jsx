@@ -7,9 +7,10 @@ import Select from 'react-select'
 
 function Package() {
 
-    const [listPackage, setListPackage] = useState([]);
-    const [listRoute, setListRoute]     = useState([]);
-    const [listState , setListState]    = useState([]);
+    const [listPackage, setListPackage]  = useState([]);
+    const [listRoute, setListRoute]      = useState([]);
+    const [listState , setListState]     = useState([]);
+    const [listCompany , setListCompany] = useState([]);
 
     const [quantityPackage , setQuantityPackage] = useState(0);
 
@@ -32,6 +33,7 @@ function Package() {
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [idCompany, setCompany]       = useState(0);
 
     const inputFileRef  = React.useRef();
 
@@ -54,16 +56,22 @@ function Package() {
 
     useEffect(() => {
 
-        listAllPackage(page, RouteSearch, StateSearch);
         listAllRoute();
+        listAllCompany();
 
     }, []);
+
+    useEffect(() => {
+
+        listAllPackage(page, RouteSearch, StateSearch);
+
+    }, [idCompany]);
 
     const listAllPackage = (pageNumber, route, state) => {
 
         LoadingShow();
 
-        fetch(url_general +'package-manifest/list/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'package-manifest/list/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -425,6 +433,23 @@ function Package() {
         });
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
+        });
+    }
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    });
+
     const modalPackageInsert = <React.Fragment>
                                     <div className="modal fade" id="modalPackageInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -566,15 +591,12 @@ function Package() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-8">
-                                        Package List
-                                    </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 form-group">
                                         <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 form-group">
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
@@ -591,10 +613,25 @@ function Package() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <dvi className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -606,7 +643,7 @@ function Package() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">

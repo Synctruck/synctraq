@@ -924,7 +924,7 @@ class PackageController extends Controller
         return view('package.return');
     }
 
-    public function ListReturn($dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    public function ListReturn($idCompany, $dateStart, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $dateStart =date("Y-m-d",strtotime($dateStart)).' 00:00:00';
         $dateEnd  = date("Y-m-d",strtotime($dateEnd)).' 23:59:59';
@@ -977,6 +977,11 @@ class PackageController extends Controller
             $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
         }
 
+        if($idCompany != 0)
+        {
+            $packageReturnList = $packageReturnList->where('idCompany', $idCompany);
+        }
+        
         if($route != 'all')
         {
             $packageReturnList = $packageReturnList->whereIn('Route', $routes);

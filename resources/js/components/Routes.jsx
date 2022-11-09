@@ -817,7 +817,7 @@ function Routes() {
                                                     <Select isMulti onChange={ (e) => handlerChangeLongitude(e) } options={ optionsLongitudeSearch } />
                                                 </div>
                                             </td>
-                                        </tr>   
+                                        </tr>
                                         <thead>
                                             <tr>
                                                 <th>ZIP CODE</th>

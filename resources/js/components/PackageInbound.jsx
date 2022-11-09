@@ -94,12 +94,6 @@ function PackageInbound() {
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setQuantityInbound(response.quantityInbound);
-            setListState(response.listState);
-
-            if(listState.length == 0)
-            {
-                listOptionState(response.listState);
-            }
         });
     }
 
@@ -133,12 +127,15 @@ function PackageInbound() {
 
         setListRoute([]);
 
-        fetch(url_general +'routes/getAll')
+        fetch(url_general +'routes/filter/list')
         .then(res => res.json())
         .then((response) => {
 
-            setListRoute(response.routeList);
-            listOptionRoute(response.routeList);
+            setListState(response.listState);
+            listOptionState(response.listState);
+
+            setListRoute(response.listRoute);
+            listOptionRoute(response.listRoute);
         });
     }
 
@@ -652,21 +649,20 @@ function PackageInbound() {
         }
     };
 
-    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+    const [optionsRouteSearch, setOptionsRouteSearch] = useState([]);
 
     const listOptionRoute = (listRoutes) => {
 
-        setOptionsRoleSearch([]);
+        setOptionsRouteSearch([]);
 
+        console.log(listRoutes);
         listRoutes.map( (route, i) => {
 
-            optionsRoleSearch.push({ value: route.name, label: route.name });
+            optionsRouteSearch.push({ value: route.name, label: route.name });
 
-            setOptionsRoleSearch(optionsRoleSearch);
+            setOptionsRouteSearch(optionsRouteSearch);
         });
     }
-
-
 
     const handlerChangeState = (states) => {
 
@@ -699,7 +695,7 @@ function PackageInbound() {
 
         listState.map( (state, i) => {
 
-            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+            optionsStateSearch.push({ value: state.state, label: state.state });
 
             setOptionsStateSearch(optionsStateSearch);
         });
@@ -864,21 +860,6 @@ function PackageInbound() {
                                             <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
                                         </div>
                                     </div>
-                                    <dvi className="col-lg-2">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    Company:
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                    <option value="" style={ {display: 'none'} }>Select...</option>
-                                                    { optionCompany }
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </dvi>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
@@ -907,6 +888,21 @@ function PackageInbound() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
                                                     State :
                                                 </div>
                                             </div>
@@ -923,7 +919,7 @@ function PackageInbound() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
                                             </div>
                                         </div>
                                     </div>

@@ -13,6 +13,7 @@ function PackageWarehouse() {
     const [listStateValidate , setListStateValidate]  = useState([]);
     const [listState , setListState]                  = useState([]);
     const [listValidator , setListValidator]          = useState([]);
+    const [listCompany , setListCompany]              = useState([]);
 
     const [listRoute, setListRoute]     = useState([]);
 
@@ -21,6 +22,7 @@ function PackageWarehouse() {
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
+    const [idCompany, setCompany]                = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -62,6 +64,8 @@ function PackageWarehouse() {
 
         listAllRoute();
         listAllValidator();
+        listAllCompany();
+
         document.getElementById('Reference_Number_1').focus();
 
     }, []);
@@ -70,7 +74,7 @@ function PackageWarehouse() {
 
         listAllPackageWarehouse(page, RouteSearch, StateSearch);
 
-    }, [ idValidator, dateStart, dateEnd ]);
+    }, [ idCompany, idValidator, dateStart, dateEnd ]);
 
     useEffect(() => {
 
@@ -91,10 +95,9 @@ function PackageWarehouse() {
 
     const listAllPackageWarehouse = (pageNumber, route, state) => {
 
-        setOptionsStateSearch([]);
         setOptionsStateValidate([]);
 
-        fetch(url_general +'package-warehouse/list/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-warehouse/list/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -104,9 +107,7 @@ function PackageWarehouse() {
             setPage(response.packageList.current_page);
             setQuantityWarehouse(response.quantityWarehouse);
             setListStateValidate(response.listStateValidate);
-            setListState(response.listState);
 
-            listOptionState(response.listState);
             listOptionStateValidate(response.listStateValidate);
         });
     }
@@ -116,16 +117,31 @@ function PackageWarehouse() {
         listAllPackageWarehouse(pageNumber, RouteSearch, StateSearch);
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
+        });
+    }
+
     const listAllRoute = () => {
 
         setListRoute([]);
 
-        fetch(url_general +'routes/getAll')
+        fetch(url_general +'routes/filter/list')
         .then(res => res.json())
         .then((response) => {
 
-            setListRoute(response.routeList);
-            listOptionRoute(response.routeList);
+            setListState(response.listState);
+            listOptionState(response.listState);
+
+            setListRoute(response.listRoute);
+            listOptionRoute(response.listRoute);
         });
     }
 
@@ -557,6 +573,7 @@ function PackageWarehouse() {
                 <td>
                     { pack.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
@@ -689,7 +706,7 @@ function PackageWarehouse() {
 
         listState.map( (state, i) => {
 
-            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+            optionsStateSearch.push({ value: state.state, label: state.state });
 
             setOptionsStateSearch(optionsStateSearch);
         });
@@ -744,6 +761,11 @@ function PackageWarehouse() {
 
         document.getElementById('Reference_Number_1').focus();
     }
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
 
     return (
 
@@ -843,21 +865,8 @@ function PackageWarehouse() {
                                             <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Total: { totalPackage }</b>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    Validators:
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <select className="form-control" onChange={ (e) => setIdValidator(e.target.value) }>
-                                                    <option value="0">All</option>
-                                                    { optionValidator }
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                </div>
+                                <div className="row">
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
@@ -879,6 +888,36 @@ function PackageWarehouse() {
                                             </div>
                                             <div className="col-lg-12">
                                                 <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Validators:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select className="form-control" onChange={ (e) => setIdValidator(e.target.value) }>
+                                                    <option value="0">All</option>
+                                                    { optionValidator }
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -964,6 +1003,7 @@ function PackageWarehouse() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>

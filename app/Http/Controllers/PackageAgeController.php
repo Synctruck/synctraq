@@ -30,9 +30,9 @@ class PackageAgeController extends Controller
         return view('package.age');
     }
 
-    public function List($states, $routes)
+    public function List($idCompany, $states, $routes)
     {
-        $data = $this->GetData($states, $routes, 'paginate');
+        $data = $this->GetData($idCompany, $states, $routes, 'paginate');
         
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
@@ -87,7 +87,7 @@ class PackageAgeController extends Controller
         fpassthru($file);
     }
 
-    public function GetData($states, $routes, $typeData)
+    public function GetData($idCompany, $states, $routes, $typeData)
     {
         $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
         $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
@@ -114,7 +114,12 @@ class PackageAgeController extends Controller
                                             )
                                             ->whereIn('Reference_Number_1', $idsAll)
                                             ->where('status', 'Inbound');
-                                               
+        
+        if($idCompany != 0)
+        {
+            $packageHistoryList = $packageHistoryList->where('idCompany', $idCompany);
+        }
+
         if(count($states) != 0)
         {
             $packageHistoryList = $packageHistoryList->whereIn('Dropoff_Province', $states);
@@ -150,6 +155,7 @@ class PackageAgeController extends Controller
                 $package = [
 
                     "created_at" => $packageHistory->created_at,
+                    "company" => $packageHistory->company,
                     "lateDays" => $lateDays,
                     "company" => $packageHistory->company,
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,

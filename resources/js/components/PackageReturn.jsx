@@ -10,6 +10,7 @@ function PackageReturn() {
 
     const [listPackageReturn, setListPackageReturn] = useState([]);
     const [listComment, setListComment]             = useState([]);
+    const [listCompany , setListCompany]            = useState([]);
     const [roleUser, setRoleUser]                   = useState([]);
     const [listRoute, setListRoute]                 = useState([]);
     const [listState , setListState]                = useState([]);
@@ -44,6 +45,7 @@ function PackageReturn() {
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [idCompany, setCompany]       = useState(0);
 
     const [textSearch, setSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
@@ -54,6 +56,7 @@ function PackageReturn() {
 
         listAllComment(page);
         listAllRoute();
+        listAllCompany();
 
     }, [textSearch])
 
@@ -62,7 +65,7 @@ function PackageReturn() {
         listAllComment();
         listAllPackageReturn(page, RouteSearch, StateSearch);
 
-    }, [idTeam, idDriver,dateStart,dateEnd]);
+    }, [idCompany, idTeam, idDriver,dateStart,dateEnd]);
 
     const optionsComment = listComment.map( (comment, i) => {
 
@@ -80,7 +83,7 @@ function PackageReturn() {
 
     const listAllPackageReturn = (pageNumber, route, state) => {
 
-        fetch(url_general +'package/list/return/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'package/list/return/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -121,6 +124,18 @@ function PackageReturn() {
         .then((response) => {
 
             setListComment(response.commentList.data);
+        });
+    }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
         });
     }
 
@@ -321,6 +336,7 @@ function PackageReturn() {
                 <td>
                     { packageReturn.Date_Return ? packageReturn.Date_Return.substring(11, 19):'' }
                 </td>
+                <td><b>{ packageReturn.company }</b></td>
                 <td><b>{ team }</b></td>
                 <td><b>{ driver }</b></td>
                 <td><b>{ packageReturn.Reference_Number_1 }</b></td>
@@ -531,6 +547,11 @@ function PackageReturn() {
                                     </div>
                                 </React.Fragment>;
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     return (
 
         <section className="section">
@@ -680,6 +701,21 @@ function PackageReturn() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
                                                     State :
                                                 </div>
                                             </div>
@@ -709,6 +745,7 @@ function PackageReturn() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?

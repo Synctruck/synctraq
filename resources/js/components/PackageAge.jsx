@@ -20,7 +20,7 @@ function PackageAge() {
     const [listState , setListState] = useState([]);
 
     const [listCompany , setListCompany]  = useState([]);
-    const [idCompany, setCompany] = useState(0);
+    const [idCompany, setCompany]         = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -31,6 +31,7 @@ function PackageAge() {
 
     useEffect( () => {
 
+        listAllCompany();
         listFilter();
 
     }, []);
@@ -44,7 +45,7 @@ function PackageAge() {
 
     const listReportInbound = (pageNumber, stateSearch, routeSearch) => {
 
-        fetch(url_general +'package-age/list/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
+        fetch(url_general +'package-age/list/'+  idCompany +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -70,6 +71,18 @@ function PackageAge() {
         });
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
+        });
+    }
+
     const handlerChangePage = (pageNumber) => {
 
         listReportInbound(pageNumber, StateSearch, RouteSearch);
@@ -89,6 +102,7 @@ function PackageAge() {
                     { packageInbound.created_at.substring(5, 7) }-{ packageInbound.created_at.substring(8, 10) }-{ packageInbound.created_at.substring(0, 4) }
                 </td>
                 <td className="text-center"><b>{ packageInbound.lateDays }</b></td>
+                <td><b>{ packageInbound.company }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
                 <td>{ packageInbound.status }</td>
                 <td>{ packageInbound.Dropoff_Contact_Name }</td>
@@ -175,6 +189,11 @@ function PackageAge() {
         }
     };
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     return (
 
         <section className="section">
@@ -184,28 +203,46 @@ function PackageAge() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                </div>
+
+                                <div className="row form-group">
+                                    <div className="col-lg-2 form-group">
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Packages: { quantityInbound }</b>
                                     </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
-                                    </div>
-                                    <div className="col-lg-4">
                                         <div className="row">
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Company:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12 form-group">
                                                 State :
                                             </div>
-                                            <div className="col-lg-9">
+                                            <div className="col-lg-12 form-group">
                                                 <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-2">
                                         <div className="row">
-                                            <div className="col-lg-3">
+                                            <div className="col-lg-12 form-group">
                                                 Route :
                                             </div>
-                                            <div className="col-lg-9">
+                                            <div className="col-lg-12 form-group">
                                                 <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
                                             </div>
                                         </div>
@@ -219,6 +256,7 @@ function PackageAge() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>LATE DAYS</th>
+                                                <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
                                                 <th>CLIENT</th>

@@ -7,10 +7,11 @@ import Select from 'react-select'
 
 function Orders() {
 
-    const [listPackage, setListPackage]  = useState([]);
-    const [listRoute, setListRoute]      = useState([]);
-    const [listState , setListState]     = useState([]);
-    const [listCompany , setListCompany] = useState([]);
+    const [listPackage, setListPackage]              = useState([]);
+    const [listRoute, setListRoute]                  = useState([]);
+    const [listState , setListState]                 = useState([]);
+    const [listCompany , setListCompany]             = useState([]);
+    const [listCompanyFilter , setListCompanyFilter] = useState([]);
 
     const [quantityPackage , setQuantityPackage] = useState(0);
 
@@ -31,8 +32,9 @@ function Orders() {
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]         = useState('all');
+    const [StateSearch, setStateSearch]         = useState('all');
+    const [idCompanyFilter, setIdCompanyFilter] = useState(0);
 
     const inputFileRef  = React.useRef();
 
@@ -55,17 +57,22 @@ function Orders() {
 
     useEffect(() => {
 
-        listAllPackage(page, RouteSearch, StateSearch);
         listAllCompany();
         listAllRoute();
 
     }, []);
 
+    useEffect(() => {
+
+        listAllPackage(page, RouteSearch, StateSearch);
+
+    }, [idCompanyFilter]);
+
     const listAllPackage = (pageNumber, route, state) => {
 
         LoadingShow();
 
-        fetch(url_general +'orders/list/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'orders/list/'+ idCompanyFilter +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -94,6 +101,7 @@ function Orders() {
         .then((response) => {
 
             setListCompany(response.companyList);
+            setListCompanyFilter([{id:0,name:"ALL"}, ...response.companyList]);
         });
     }
 
@@ -673,6 +681,11 @@ function Orders() {
         }
     }
 
+    const optionCompanyFilter = listCompanyFilter.map( (company, i) => {
+
+        return <option value={ company.id }>{ company.name }</option>
+    });
+
     return (
 
         <section className="section">
@@ -682,13 +695,15 @@ function Orders() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10 mb-2">
-                                        Orders List
-                                    </div>
                                     <div className="col-lg-2 mb-2">
                                         <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
+                                    </div>
+                                    <div className="col-lg-10 mb-2">
+                                        <form onSubmit={ handlerSearchOrderNumber }>
+                                            <input type="text" value={ orderNumber } onChange={ (e) => setOrderNumber(e.target.value) } className="form-control" placeholder="Search ORDER NUMBER, Ejem. OCC1667389408"/>
+                                        </form>
                                     </div>
                                     <div className="col-lg-12 mb-2" style={ {display: viewForm}}>
                                         { modalPackageInsert }
@@ -710,24 +725,25 @@ function Orders() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-3">
+                                    <div className="col-lg-2">
                                         <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Orders: { quantityPackage }</b>
                                     </div>
-                                    <div className="col-lg-3">
+                                    <dvi className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    ORDER NUMBER :
+                                                    Company:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <form onSubmit={ handlerSearchOrderNumber }>
-                                                    <input type="text" value={ orderNumber } onChange={ (e) => setOrderNumber(e.target.value) } className="form-control" placeholder="Ejem. OCC1667389408"/>
-                                                </form>
+                                                <select name="" id="" className="form-control" onChange={ (e) => setIdCompanyFilter(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompanyFilter }
+                                                </select>
                                             </div>
                                         </div>
-                                    </div> 
-                                    <div className="col-lg-3">
+                                    </dvi>
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -739,7 +755,7 @@ function Orders() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-3">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">

@@ -15,9 +15,11 @@ function ReportManifest() {
 
     const [quantityManifest, setQuantityManifest] = useState(0);
 
-    const [listRoute, setListRoute]  = useState([]);
-    const [listState , setListState] = useState([]);
+    const [listRoute, setListRoute]      = useState([]);
+    const [listState , setListState]     = useState([]);
+    const [listCompany , setListCompany] = useState([]);
 
+    const [idCompany, setCompany]       = useState(0);
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
 
@@ -28,6 +30,7 @@ function ReportManifest() {
     useEffect( () => {
 
         listAllRoute();
+        listAllCompany();
 
     }, []);
 
@@ -35,12 +38,12 @@ function ReportManifest() {
 
         listReportManifest(page, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd]);
+    }, [ idCompany, dateInit, dateEnd ]);
 
 
     const listReportManifest = (pageNumber, routeSearch, stateSearch) => {
 
-        fetch(url_general +'report/list/manifest/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/manifest/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -55,6 +58,18 @@ function ReportManifest() {
             {
                 listOptionState(response.listState);
             }
+        });
+    }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany([{id:0,name:"ALL"},...response.companyList]);
         });
     }
 
@@ -112,6 +127,7 @@ function ReportManifest() {
                 <td>
                     { pack.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -201,6 +217,11 @@ function ReportManifest() {
         });
     }
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     return (
 
         <section className="section">
@@ -210,45 +231,54 @@ function ReportManifest() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-12 form-group">
-                                        <div className="row form-group">
-                                            <div className="col-lg-3">
-                                                <label htmlFor="">Start date:</label>
-                                                <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
-                                            </div>
-                                            <div className="col-lg-3">
-                                                <label htmlFor="">End date:</label>
-                                                <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
-                                            </div>
-                                            <div className="col-lg-3">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        State :
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-3">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Route :
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div className="col-lg-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-3">
+                                    <div className="col-lg-2 form-group">
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Manifest: { quantityManifest }</b>
                                     </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                    <div className="col-lg-2">
+                                        <label htmlFor="">Start date:</label>
+                                        <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <label htmlFor="">End date:</label>
+                                        <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                Company:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                State :
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                Route :
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </h5>
@@ -259,6 +289,7 @@ function ReportManifest() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>

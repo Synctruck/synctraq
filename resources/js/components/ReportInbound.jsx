@@ -280,6 +280,16 @@ function ReportInbound() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3">
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3">
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
+                                    </div>
+                                </div>
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
@@ -335,14 +345,6 @@ function ReportInbound() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-lg-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                 </div>
                             </h5>

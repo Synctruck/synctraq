@@ -31,10 +31,10 @@ class ReportController extends Controller
         return view('report.indexmanifest');
     }
 
-    public function ListManifest($dateInit, $dateEnd, $route, $state)
+    public function ListManifest($idCompany, $dateInit, $dateEnd, $route, $state)
     {
 
-        $listAll = $this->getDataManifest($dateInit, $dateEnd, $route, $state);
+        $listAll = $this->getDataManifest($idCompany, $dateInit, $dateEnd, $route, $state);
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'On hold')
@@ -44,7 +44,7 @@ class ReportController extends Controller
         return ['listAll' => $listAll, 'listState' => $listState];
     }
 
-    private function getDataManifest($dateInit, $dateEnd, $route, $state, $type = 'list')
+    private function getDataManifest($idCompany, $dateInit, $dateEnd, $route, $state, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -53,6 +53,11 @@ class ReportController extends Controller
         $states = explode(',', $state);
 
         $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'On hold');
+
+        if($idCompany != 0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
 
         if($route != 'all')
         {
@@ -227,11 +232,11 @@ class ReportController extends Controller
         return view('report.indexdelivery');
     }
 
-    public function ListDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ListDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $Reference_Number_1s = [];
 
-        $listAll = $this->getDataDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $listAll = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
 
         foreach($listAll as $delivery)
         {
@@ -252,7 +257,7 @@ class ReportController extends Controller
         return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
     }
 
-    private function getDataDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='list'){
+    private function getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='list'){
 
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -262,6 +267,11 @@ class ReportController extends Controller
 
         $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])->where('status', 'Delivery');
 
+        if($idCompany && $idCompany != 0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
+        
         if($idTeam && $idDriver)
         {
             $listAll = $listAll->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);

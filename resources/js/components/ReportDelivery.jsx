@@ -13,6 +13,7 @@ function ReportDelivery() {
     const [listTeam, setListTeam]             = useState([]);
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
+    const [listCompany , setListCompany]      = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -23,6 +24,7 @@ function ReportDelivery() {
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [idTeam, setIdTeam]     = useState(id_team);
     const [idDriver, setIdDriver] = useState(id_driver);
+    const [idCompany, setCompany] = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -53,9 +55,12 @@ function ReportDelivery() {
 
     useEffect( () => {
 
+        listAllCompany();
         listAllTeam();
         listAllRoute();
-        if(auth.idRole == 3){
+
+        if(auth.idRole == 3)
+        {
             listAllDriverByTeam(auth.id);
         }
 
@@ -65,14 +70,14 @@ function ReportDelivery() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam, idDriver]);
+    }, [ idCompany, dateInit, dateEnd, idTeam, idDriver ]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'report/list/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -100,6 +105,21 @@ function ReportDelivery() {
             // {
             //     listAllTeam();
             // }
+        });
+    }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
         });
     }
 
@@ -264,6 +284,7 @@ function ReportDelivery() {
                 <td>
                     { packageDelivery.updated_at.substring(11, 19) }
                 </td>
+                <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
                 <td><b>{ driver }</b></td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
@@ -492,6 +513,11 @@ function ReportDelivery() {
         setInterval(linkUpdateOnfleet, 90000);
     }
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     return (
 
         <section className="section">
@@ -501,6 +527,37 @@ function ReportDelivery() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3">
+                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-lg-2 mb-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div className="col-lg-2 mb-3">
+                                        <button className="btn btn-success form-control" onClick={ () => handlerUpdateState() }>Updated Onfleet</button>
+                                    </div>
+                                    <div className="col-lg-2 mb-3 text-warning">
+                                        { messageUpdateOnfleet }
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3">
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                    </div>
+                                </div>
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
@@ -512,6 +569,19 @@ function ReportDelivery() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
                                             {
                                                 roleUser == 'Administrador'
                                                 ?
@@ -580,35 +650,7 @@ function ReportDelivery() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerUpdateState() }>Updated Onfleet</button>
-                                    </div>
-                                    <div className="col-lg-2 text-warning">
-                                        { messageUpdateOnfleet }
-                                    </div>
-                                </div>
+                                
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
@@ -617,6 +659,7 @@ function ReportDelivery() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>

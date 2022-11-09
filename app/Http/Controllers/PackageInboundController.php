@@ -44,11 +44,7 @@ class PackageInboundController extends Controller
         $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state);
         $quantityInbound = $packageListInbound->total();
 
-        $listState  = PackageInbound::select('Dropoff_Province')
-                                            ->groupBy('Dropoff_Province')
-                                            ->get();
-
-        return ['packageList' => $packageListInbound, 'listState' => $listState, 'quantityInbound' => $quantityInbound];
+        return ['packageList' => $packageListInbound, 'quantityInbound' => $quantityInbound];
     }
 
     private function getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state,$type='list'){

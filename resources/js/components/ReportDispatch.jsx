@@ -357,121 +357,116 @@ function ReportDispatch() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
-                                <div className="row form-group">
-                                    <div className="col-lg-12 form-group">
-                                        <div className="row form-group">
-                                            <div className="col-lg-2" style={ {display: 'none'} }>
-                                                <div className="form-group">
-                                                    <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2">
-                                                <div className="form-group">
-                                                    <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="row form-group">
-
-                                            <div className="col-lg-2">
-                                                <label htmlFor="">Start date:</label>
-                                                <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
-                                            </div>
-                                            <div className="col-lg-2">
-                                                <label htmlFor="">End date:</label>
-                                                <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
-                                            </div>
-                                            <dvi className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Company:
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                            <option value="" style={ {display: 'none'} }>Select...</option>
-                                                            { optionCompany }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </dvi>
-
-                                            {
-                                                roleUser == 'Administrador'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Team</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            <div className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        State :
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        Route :
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
+                                    <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
+                                        <div className="form-group">
+                                            <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 mb-3">
+                                        <div className="form-group">
+                                            <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2 mb-3">
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                 </div>
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3">
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
+                                    </div>
+                                </div>
+                                <div className="row form-group">
+                                    <div className="col-lg-2">
+                                        <label htmlFor="">Start date:</label>
+                                        <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <label htmlFor="">End date:</label>
+                                        <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
+                                    </div>
+                                    <dvi className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                Company:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
+
+                                    {
+                                        roleUser == 'Administrador'
+                                        ?
+                                            <>
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">Team</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                           <option value="0">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">Driver</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                           <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        :
+                                            ''
+                                    }
+
+                                    {
+                                        roleUser == 'Team'
+                                        ?
+                                            <>
+                                                <div className="col-lg-3">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">DRIVER</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                           <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        :
+                                            ''
+                                    }
+
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                State :
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                Route :
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">

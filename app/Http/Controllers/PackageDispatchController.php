@@ -46,10 +46,10 @@ class PackageDispatchController extends Controller
         return view('package.dispatch');
     }
 
-    public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
+    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
-        $packageDispatchList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
-        $getDataDispatchAll  = $this->getDataDispatchAll($idTeam, $idDriver);
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $getDataDispatchAll  = $this->getDataDispatchAll($idCompany, $idTeam, $idDriver);
 
         $quantityDispatch    = $packageDispatchList->total();
         $quantityDispatchAll = $getDataDispatchAll->count();
@@ -63,13 +63,18 @@ class PackageDispatchController extends Controller
         return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'roleUser' => $roleUser, 'listState' => $listState]; 
     }
 
-    private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
+    private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
 
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Dispatch');
+
+        if($idCompany != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idCompany', $idCompany);
+        }
 
         if($idTeam && $idDriver)
         {
@@ -110,13 +115,18 @@ class PackageDispatchController extends Controller
 
     }
 
-    private function getDataDispatchAll($idTeam, $idDriver)
+    private function getDataDispatchAll($idCompany, $idTeam, $idDriver)
     {
         $startDate = date('Y-m-d') .' 00:00:00';
         $endDate   = date('Y-m-d') .' 23:59:59';
 
         $packageDispatchList = PackageDispatch::where('status', 'Dispatch')
                                                 ->whereNotBetween('created_at', [$startDate, $endDate]);
+
+        if($idCompany != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idCompany', $idCompany);
+        }
 
         if($idTeam && $idDriver)
         {
