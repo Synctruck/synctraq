@@ -379,25 +379,27 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-9 ">
-                                        <label for="">Onfleet Task#</label>
-                                        <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
-                                    </div>
-                                    <div class="col-lg-9 ">
-                                        <label for="">Onfleet Note</label>
-                                        <input type="text" id="notesOnfleetHistory" class="form-control" placeholder="Notes">
-                                    </div>
-                                </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
                                     <textarea name="internalComment" id="internalComment" cols="10" rows="2" class="form-control"></textarea>
                                 </div>
-                                <div class="col-lg-6 form-group">
+                                <div class="col-lg-3">
+                                    <label for="">Onfleet Task#</label>
+                                    <input type="text" id="taskOnfleetHistory" class="form-control" placeholder="Task #">
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="">Onfleet Note</label>
+                                    <input type="text" id="notesOnfleetHistory" class="form-control" placeholder="Notes">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for=""><a href="#viewMap" onclick="ViewMap();">GeoLocation (Delivery)</a></label>
+                                    <input type="text" id="latitudeLongitude" class="form-control" placeholder="Notes" readonly>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <br>
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
                             </div>
-                            
                             <hr>
                             <div class="row">
                                 <div class="col-lg-12">
@@ -546,6 +548,23 @@
             //document.getElementById('loader').style.display = 'none';
         }
 
+        function LoadingShowMap()
+        {
+            document.getElementById('loader').style.display = 'block';
+        }
+
+        function LoadingHideMap()
+        {
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function ViewMap()
+        {
+            let latitudeLongitude = document.getElementById('latitudeLongitude').value;
+
+            window.open('https://maps.google.com/?q='+ latitudeLongitude);
+        }
+
         function SearchPackage(e)
         {
             e.preventDefault();
@@ -561,9 +580,11 @@
                 let packageDelivery    = response.packageDelivery;
                 let packageDispatch    = response.packageDispatch;
                 let notesOnfleet       = response.notesOnfleet;
+                let latitudeLongitude  = response.latitudeLongitude;
 
                 document.getElementById('taskOnfleetHistory').value           = '';
                 document.getElementById('notesOnfleetHistory').value          = notesOnfleet;
+                document.getElementById('latitudeLongitude').value            = latitudeLongitude[1] +', '+ latitudeLongitude[0];
                 document.getElementById('tableHistoryPackageTbody').innerHTML = '';
 
                 if(packageDispatch)

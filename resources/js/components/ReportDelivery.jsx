@@ -190,6 +190,34 @@ function ReportDelivery() {
         }
     }
 
+    const handlerViewMap = (taskOnfleet) => {
+
+        LoadingShowMap();
+
+        fetch(url_general +'package-dispatch/getCoordinates/'+ taskOnfleet)
+        .then(res => res.json())
+        .then((response) => {
+
+            if(response)
+            {
+                console.log(response['completionDetails']['lastLocation']);
+
+                let lastLocation = response['completionDetails']['lastLocation'];
+                let latitude     = lastLocation[1];
+                let longitude    = lastLocation[0];
+                
+                window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
+            }
+            else
+            {
+                swal('Attention!', 'The TASK ONFLEET does not exists', 'warning');
+            }
+
+            LoadingHideMap();
+        });
+        //https://maps.google.com/?q=23.135249,-82.359685
+    }
+
     const listReportTable = listReport.map( (packageDelivery, i) => {
 
         let imgs = '';
@@ -296,7 +324,11 @@ function ReportDelivery() {
                 <td>{ packageDelivery.Dropoff_Postal_Code }</td>
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td>{ packageDelivery.taskOnfleet }</td>
+                <td>
+                    { packageDelivery.taskOnfleet }
+                    <br/><br/>
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet) }>View Map</button>
+                </td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
                 </td>
@@ -518,10 +550,32 @@ function ReportDelivery() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const[urlMap, setUrlMap] = useState('');
+
+    const modalViewMap = <React.Fragment>
+                                    <div className="modal fade" id="modalViewMap" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <iframe src={ urlMap } frameborder="0" style={ {width: '100%'} }></iframe>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
             { modalViewImages }
+            { modalViewMap }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

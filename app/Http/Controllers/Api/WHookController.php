@@ -28,6 +28,7 @@ class WHookController extends Controller
         {
             DB::beginTransaction();
 
+            $taskOnfleet             = $request['data']['task']['shortId'];
             $Reference_Number_1      = $request['data']['task']['notes'];
             $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
             $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
@@ -137,6 +138,11 @@ class WHookController extends Controller
                     $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl)[0]);
                     //end data for inland
                 }
+
+                $packageDispatchController = new packageDispatchController();
+                $dataTaskOnfleet = $packageDispatchController->GetOnfleetShorId($taskOnfleet);
+
+                Log::info($dataTaskOnfleet);
             }
 
             DB::commit();

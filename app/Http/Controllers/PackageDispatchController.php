@@ -1510,6 +1510,30 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function GetOnfleetShorId($taskOnfleet)
+    {
+        $curl = curl_init("https://onfleet.com/api/v2/tasks/shortId/". $taskOnfleet);
+
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+
+        $output = json_decode(curl_exec($curl), 1);
+
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
+        {
+            return $output;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public function DeleteOnfleet($idOnfleet)
     {
         $curl = curl_init("https://onfleet.com/api/v2/tasks/". $idOnfleet);

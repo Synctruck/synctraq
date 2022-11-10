@@ -222,12 +222,14 @@ class PackageController extends Controller
 
         $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
 
-        $noteOnfleet = '';
+        $noteOnfleet       = '';
+        $latitudeLongitude = [0, 0];
 
         if($packageDispatch && $packageDispatch->status == 'Delivery')
         {
-            $responseOnfleet = $this->SearchTask($packageDispatch->taskOnfleet);
-            $noteOnfleet     = $responseOnfleet['stateAction'] == false ? null: $responseOnfleet['onfleet']['destination']['notes'];
+            $responseOnfleet   = $this->SearchTask($packageDispatch->taskOnfleet);
+            $noteOnfleet       = $responseOnfleet['stateAction'] == false ? null : $responseOnfleet['onfleet']['destination']['notes'];
+            $latitudeLongitude = $responseOnfleet['stateAction'] == false ? $latitudeLongitude : $responseOnfleet['onfleet']['completionDetails']['lastLocation'];
         }
 
         return [
@@ -237,6 +239,7 @@ class PackageController extends Controller
             'packageDelivery' => $packageDelivery,
             'packageDispatch' => $packageDispatch,
             'notesOnfleet' => $noteOnfleet,
+            'latitudeLongitude' => $latitudeLongitude,
         ];
     }
 
