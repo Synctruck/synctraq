@@ -284,8 +284,20 @@ class PackageDispatchController extends Controller
                     {
                         DB::beginTransaction();
 
-                        $nowDate    = date('Y-m-d H:i:s');
-                        $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
+                        $nowDate = date('Y-m-d H:i:s');
+
+                        if(date('H:i:s') > date('20:00:00'))
+                        {
+                            $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
+                        }
+                        elseif(date('H:i:s') < date('04:00:00'))
+                        {
+                            $created_at = date('Y-m-d 04:00:00');
+                        }
+                        else
+                        {
+                            $created_at = date('Y-m-d H:i:s');
+                        }
 
                         if($package->status == 'On hold')
                         {
@@ -504,8 +516,20 @@ class PackageDispatchController extends Controller
                 }
                 elseif($package->status == 'Delete')
                 {
-                    $nowDate    = date('Y-m-d H:i:s');
-                    $created_at = date('H:i:s') > date('20:00:00') ? date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day') ) : date('Y-m-d H:i:s');
+                    $nowDate = date('Y-m-d H:i:s');
+
+                    if(date('H:i:s') > date('20:00:00'))
+                    {
+                        $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
+                    }
+                    elseif(date('H:i:s') < date('04:00:00'))
+                    {
+                        $created_at = date('Y-m-d 04:00:00');
+                    }
+                    else
+                    {
+                        $created_at = date('Y-m-d H:i:s');
+                    }
 
                     $packageHistory = new PackageHistory();
 
@@ -1104,12 +1128,17 @@ class PackageDispatchController extends Controller
                         $statusOnfleet       = 1;
                     }
 
-                    $nowDate    = date('Y-m-d H:i:s');
+                    $nowDate = date('Y-m-d H:i:s');
                     
                     if(date('H:i:s') > date('20:00:00'))
                     {
                         $created_at_ReInbound = date('Y-m-d 04:00:10', strtotime($nowDate .'+1 day'));
                         $created_at_Warehouse = date('Y-m-d 04:00:20', strtotime($nowDate .'+1 day'));
+                    }
+                    elseif(date('H:i:s') < date('04:00:00'))
+                    {
+                        $created_at_ReInbound = date('Y-m-d 04:00:10');
+                        $created_at_Warehouse = date('Y-m-d 04:00:20');
                     }
                     else
                     {
