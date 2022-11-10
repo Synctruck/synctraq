@@ -578,6 +578,17 @@ class WHookController extends Controller
 
                 $descriptionHistory = 'For: Onfleet[ '. $userCreatorOnfleet .' ]';
 
+                $nowDate    = date('Y-m-d H:i:s');
+
+                if(date('H:i:s') > date('20:00:00'))
+                {
+                    $created_at = date('Y-m-d 04:00:15', strtotime($nowDate .'+1 day'));
+                }
+                else
+                {
+                    $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
+                }
+
                 $packageHistory = new PackageHistory();
 
                 $packageHistory->id                           = uniqid();
@@ -620,8 +631,8 @@ class WHookController extends Controller
                 $packageHistory->Name                         = $package->Name;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
-                $packageHistory->created_at                   = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
 
                 $packageHistory->save();
 

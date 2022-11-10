@@ -1104,6 +1104,19 @@ class PackageDispatchController extends Controller
                         $statusOnfleet       = 1;
                     }
 
+                    $nowDate    = date('Y-m-d H:i:s');
+                    
+                    if(date('H:i:s') > date('20:00:00'))
+                    {
+                        $created_at_ReInbound = date('Y-m-d 04:00:10', strtotime($nowDate .'+1 day'));
+                        $created_at_Warehouse = date('Y-m-d 04:00:20', strtotime($nowDate .'+1 day'));
+                    }
+                    else
+                    {
+                        $created_at_ReInbound = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
+                        $created_at_Warehouse = date('Y-m-d H:i:s', strtotime('+6 second', strtotime(date('Y-m-d H:i:s'))));
+                    }
+
                     $packageReturn = new PackageReturn();
 
                     $packageReturn->id                           = uniqid();
@@ -1279,8 +1292,8 @@ class PackageDispatchController extends Controller
                         $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                         $packageHistory->quantity                     = $packageDispatch->quantity;
                         $packageHistory->status                       = 'Warehouse';
-                        $packageHistory->created_at                   = date('Y-m-d H:i:s', strtotime('+5 second', strtotime(date('Y-m-d H:i:s'))));
-                        $packageHistory->updated_at                   = date('Y-m-d H:i:s', strtotime('+5 second', strtotime(date('Y-m-d H:i:s'))));
+                        $packageHistory->created_at                   = $created_at_Warehouse;
+                        $packageHistory->updated_at                   = $created_at_Warehouse;
 
                         $packageHistory->save();
                     }
@@ -1334,8 +1347,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = $statusReturn;
-                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->created_at                   = $created_at_ReInbound;
+                    $packageHistory->updated_at                   = $created_at_ReInbound;
 
                     $packageHistory->save(); 
 
