@@ -1224,108 +1224,101 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
 
-                    $comment      = Comment::where('description', $request->get('Description_Return'))->first();
-                    $statusReturn = 'Final';
+                    $statusReturn = 'ReInbound';
 
+                    $packageWarehouse = new PackageWarehouse();
 
-                    if($comment->finalStatus == 0)
-                    {
-                        $statusReturn = 'ReInbound';
+                    $packageWarehouse->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageWarehouse->idCompany                    = $packageDispatch->idCompany;
+                    $packageWarehouse->company                      = $packageDispatch->company;
+                    $packageWarehouse->idStore                      = $packageDispatch->idStore;
+                    $packageWarehouse->store                        = $packageDispatch->store;
+                    $packageWarehouse->Reference_Number_2           = $packageDispatch->Reference_Number_2;
+                    $packageWarehouse->Reference_Number_3           = $packageDispatch->Reference_Number_3;
+                    $packageWarehouse->Ready_At                     = $packageDispatch->Ready_At;
+                    $packageWarehouse->Del_Date                     = $packageDispatch->Del_Date;
+                    $packageWarehouse->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
+                    $packageWarehouse->Del_no_later_than            = $packageDispatch->Del_no_later_than;
+                    $packageWarehouse->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
+                    $packageWarehouse->Pickup_Company               = $packageDispatch->Pickup_Company;
+                    $packageWarehouse->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
+                    $packageWarehouse->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
+                    $packageWarehouse->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
+                    $packageWarehouse->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
+                    $packageWarehouse->Pickup_City                  = $packageDispatch->Pickup_City;
+                    $packageWarehouse->Pickup_Province              = $packageDispatch->Pickup_Province;
+                    $packageWarehouse->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
+                    $packageWarehouse->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageWarehouse->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageWarehouse->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageWarehouse->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageWarehouse->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageWarehouse->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageWarehouse->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageWarehouse->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageWarehouse->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageWarehouse->Service_Level                = $packageDispatch->Service_Level;
+                    $packageWarehouse->Carrier_Name                 = $packageDispatch->Carrier_Name;
+                    $packageWarehouse->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
+                    $packageWarehouse->Notes                        = $packageDispatch->Notes;
+                    $packageWarehouse->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
+                    $packageWarehouse->Weight                       = $packageDispatch->Weight;
+                    $packageWarehouse->Route                        = $packageDispatch->Route;
+                    $packageWarehouse->Name                         = $packageDispatch->Name;
+                    $packageWarehouse->idUser                       = Auth::user()->id;
+                    $packageWarehouse->quantity                     = $packageDispatch->quantity;
+                    $packageWarehouse->status                       = 'Warehouse';
 
-                        $packageWarehouse = new PackageWarehouse();
+                    $packageWarehouse->save();
 
-                        $packageWarehouse->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                        $packageWarehouse->idCompany                    = $packageDispatch->idCompany;
-                        $packageWarehouse->company                      = $packageDispatch->company;
-                        $packageWarehouse->idStore                      = $packageDispatch->idStore;
-                        $packageWarehouse->store                        = $packageDispatch->store;
-                        $packageWarehouse->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                        $packageWarehouse->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                        $packageWarehouse->Ready_At                     = $packageDispatch->Ready_At;
-                        $packageWarehouse->Del_Date                     = $packageDispatch->Del_Date;
-                        $packageWarehouse->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                        $packageWarehouse->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                        $packageWarehouse->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                        $packageWarehouse->Pickup_Company               = $packageDispatch->Pickup_Company;
-                        $packageWarehouse->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                        $packageWarehouse->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                        $packageWarehouse->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                        $packageWarehouse->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                        $packageWarehouse->Pickup_City                  = $packageDispatch->Pickup_City;
-                        $packageWarehouse->Pickup_Province              = $packageDispatch->Pickup_Province;
-                        $packageWarehouse->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                        $packageWarehouse->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                        $packageWarehouse->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                        $packageWarehouse->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                        $packageWarehouse->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                        $packageWarehouse->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                        $packageWarehouse->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                        $packageWarehouse->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                        $packageWarehouse->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                        $packageWarehouse->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                        $packageWarehouse->Service_Level                = $packageDispatch->Service_Level;
-                        $packageWarehouse->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                        $packageWarehouse->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                        $packageWarehouse->Notes                        = $packageDispatch->Notes;
-                        $packageWarehouse->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                        $packageWarehouse->Weight                       = $packageDispatch->Weight;
-                        $packageWarehouse->Route                        = $packageDispatch->Route;
-                        $packageWarehouse->Name                         = $packageDispatch->Name;
-                        $packageWarehouse->idUser                       = Auth::user()->id;
-                        $packageWarehouse->quantity                     = $packageDispatch->quantity;
-                        $packageWarehouse->status                       = 'Warehouse';
+                    $packageHistory = new PackageHistory();
 
-                        $packageWarehouse->save();
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
+                    $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
+                    $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
+                    $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
+                    $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
+                    $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
+                    $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
+                    $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
+                    $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
+                    $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
+                    $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
+                    $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
+                    $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
+                    $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
+                    $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
+                    $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
+                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageHistory->Service_Level                = $packageDispatch->Service_Level;
+                    $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
+                    $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
+                    $packageHistory->Notes                        = $packageDispatch->Notes;
+                    $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
+                    $packageHistory->Weight                       = $packageDispatch->Weight;
+                    $packageHistory->Route                        = $packageDispatch->Route;
+                    $packageHistory->Name                         = $packageDispatch->Name;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->status                       = 'Warehouse';
+                    $packageHistory->created_at                   = $created_at_Warehouse;
+                    $packageHistory->updated_at                   = $created_at_Warehouse;
 
-                        $packageHistory = new PackageHistory();
-
-                        $packageHistory->id                           = uniqid();
-                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                        $packageHistory->company                      = $packageDispatch->company;
-                        $packageHistory->idStore                      = $packageDispatch->idStore;
-                        $packageHistory->store                        = $packageDispatch->store;
-                        $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                        $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                        $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                        $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                        $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                        $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                        $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                        $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                        $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                        $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                        $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                        $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                        $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                        $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                        $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                        $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                        $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                        $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                        $packageHistory->Notes                        = $packageDispatch->Notes;
-                        $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                        $packageHistory->Weight                       = $packageDispatch->Weight;
-                        $packageHistory->Route                        = $packageDispatch->Route;
-                        $packageHistory->Name                         = $packageDispatch->Name;
-                        $packageHistory->idUser                       = Auth::user()->id;
-                        $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                        $packageHistory->quantity                     = $packageDispatch->quantity;
-                        $packageHistory->status                       = 'Warehouse';
-                        $packageHistory->created_at                   = $created_at_Warehouse;
-                        $packageHistory->updated_at                   = $created_at_Warehouse;
-
-                        $packageHistory->save();
-                    }
+                    $packageHistory->save();
 
                     $packageHistory = new PackageHistory();
 
@@ -1392,12 +1385,16 @@ class PackageDispatchController extends Controller
                         }
                     }
 
-                    if($comment->finalStatus == 0)
+                    $comment = Comment::where('description', $Description_Return)->first();
+
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode);
+                    //end data for inland
+
+                    /*if($comment->finalStatus == 0)
                     {
-                        //data for INLAND
-                        $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageDispatch, 'ReInbound', null);
-                        //end data for inland
+                        
                     }
                     else
                     {
@@ -1405,7 +1402,7 @@ class PackageDispatchController extends Controller
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Return', $comment->statusCode);
                         //end data for inland
-                    }
+                    }*/
 
                     if($deleteDispatch)
                     {

@@ -161,6 +161,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Maintenance of comments
 	Route::get('comments', [CommentsController::class, 'Index'])->middleware('permission:comment.index');
 	Route::get('comments/list', [CommentsController::class, 'List']);
+	Route::get('comments/getAll/{finalStatus}', [CommentsController::class, 'GetAllFinalStatus']);
 	Route::post('comments/insert', [CommentsController::class, 'Insert']);
 	Route::get('comments/get/{id}', [CommentsController::class, 'Get']);
 	Route::post('comments/update/{id}', [CommentsController::class, 'Update']);

@@ -420,7 +420,7 @@ class PackageController extends Controller
         $url_webhook       = '';
         $pod_url           = "";
 
-        if($status == 'Return')
+        if($status == 'Return' || $status == 'ReInbound')
         {
             $company = Company::find($package->idCompany);
 

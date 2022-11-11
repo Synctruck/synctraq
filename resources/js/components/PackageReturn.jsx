@@ -47,22 +47,20 @@ function PackageReturn() {
     const [StateSearch, setStateSearch] = useState('all');
     const [idCompany, setCompany]       = useState(0);
 
-    const [textSearch, setSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
     useEffect(() => {
 
-        listAllComment(page);
+        listAllComment();
         listAllRoute();
         listAllCompany();
 
-    }, [textSearch])
+    }, []);
 
     useEffect(() => {
 
-        listAllComment();
         listAllPackageReturn(page, RouteSearch, StateSearch);
 
     }, [idCompany, idTeam, idDriver,dateStart,dateEnd]);
@@ -71,11 +69,7 @@ function PackageReturn() {
 
         return (
             (
-                comment.finalStatus == 1
-                ?
-                    <option key={ i } value={ comment.description } style={ {background: 'red', color: 'white'} }> { comment.description }</option>
-                :
-                    <option key={ i } value={ comment.description }> { comment.description }</option>
+                <option key={ i } value={ comment.description }> { comment.description }</option>
             )
 
         );
@@ -111,19 +105,13 @@ function PackageReturn() {
         });
     }
 
-    useEffect(() => {
+    const listAllComment = () => {
 
-        listAllComment(page);
-
-    }, [textSearch])
-
-    const listAllComment = (pageNumber) => {
-
-        fetch(url_general +'comments/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'comments/getAll/0')
         .then(res => res.json())
-        .then((response) => {
+        .then((response) => { 
 
-            setListComment(response.commentList.data);
+            setListComment(response.commentList);
         });
     }
 
