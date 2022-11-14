@@ -504,7 +504,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Delivery " . date('Y-m-d H:i:s') . ".csv";
@@ -517,7 +517,7 @@ class ReportController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageDelivery = $this->getDataDelivery($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='export');
+        $listPackageDelivery = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='export');
 
 
         foreach($listPackageDelivery as $packageDelivery)

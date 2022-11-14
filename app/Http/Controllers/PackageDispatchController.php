@@ -53,6 +53,7 @@ class PackageDispatchController extends Controller
 
         $quantityDispatch    = $packageDispatchList->total();
         $quantityDispatchAll = $getDataDispatchAll->count();
+        $quantityFailed      = PackageFailed::get()->count();
 
         $roleUser = Auth::user()->role->name;
 
@@ -60,7 +61,7 @@ class PackageDispatchController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'roleUser' => $roleUser, 'listState' => $listState]; 
+        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser, 'listState' => $listState]; 
     }
 
     private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')

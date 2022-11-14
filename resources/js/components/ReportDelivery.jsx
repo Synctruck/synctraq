@@ -186,7 +186,7 @@ function ReportDelivery() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
         }
     }
 

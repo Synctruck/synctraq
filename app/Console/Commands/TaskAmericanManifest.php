@@ -77,6 +77,8 @@ class TaskAmericanManifest extends Command
                             {
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
+                                    $created_at = date('Y-m-d H:i:s');
+
                                     $package = new PackageManifest();
 
                                     $package->Reference_Number_1           = $row[0];
@@ -96,6 +98,8 @@ class TaskAmericanManifest extends Command
                                     $package->Weight                       = $row[27];
                                     $package->height                       = $row[30];
                                     $package->status                       = 'On hold';
+                                    $package->created_at                   = $created_at;
+                                    $package->updated_at                   = $created_at;
 
                                     $route = Routes::where('zipCode', $row[20])->first();
                                     
@@ -123,11 +127,11 @@ class TaskAmericanManifest extends Command
                                     $packageHistory->Weight                       = $row[27];
                                     $packageHistory->height                       = $row[30];
                                     $packageHistory->status                       = 'On hold';
-                                    $packageHistory->Date_manifest                = date('Y-m-d H:i:s');
+                                    $packageHistory->Date_manifest                = $created_at;
                                     $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
                                     $packageHistory->Route                        = $route ? $route->name : '';
-                                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                                    $packageHistory->created_at                   = $created_at;
+                                    $packageHistory->updated_at                   = $created_at;
 
                                     $packageHistory->save();
                                 }

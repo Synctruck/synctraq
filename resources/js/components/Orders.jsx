@@ -204,6 +204,7 @@ function Orders() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code]                   = useState('');
     const [Weight, setWeight]                                             = useState('');
     const [quantity, setQuantity]                                         = useState('');
+    const [dateOrder, setDateOrder]                                       = useState('');
     const [orderNumber, setOrderNumber]                                   = useState('');
     const [action, setAction]                                             = useState('');
 
@@ -278,6 +279,7 @@ function Orders() {
         formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
         formData.append('Weight', Weight);
         formData.append('quantity', quantity);
+        formData.append('date', dateOrder);
 
         clearValidation();
 
@@ -594,6 +596,13 @@ function Orders() {
                                                             <label>QUANTITY</label>
                                                             <div id="quantity" className="text-danger" style={ {display: 'none'} }></div>
                                                             <input type="number" value={ quantity } className="form-control" onChange={ (e) => setQuantity(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>DATE</label>
+                                                            <div id="date" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="date" value={ dateOrder } className="form-control" onChange={ (e) => setDateOrder(e.target.value) } required/>
                                                         </div>
                                                     </div>
                                                 </div>

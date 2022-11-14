@@ -35,6 +35,7 @@ function PackageDispatch() {
 
     const [quantityDispatch, setQuantityDispatch]       = useState(0);
     const [quantityDispatchAll, setQuantityDispatchAll] = useState(0);
+    const [quantityFailed, setQuantityFailed]           = useState(0);
 
     // const [dataView, setDataView] = useState('today');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -112,6 +113,7 @@ function PackageDispatch() {
             setPage(response.packageDispatchList.current_page);
             setQuantityDispatch(response.quantityDispatch);
             setQuantityDispatchAll(response.quantityDispatchAll);
+            setQuantityFailed(response.quantityFailed);
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -1799,7 +1801,7 @@ function PackageDispatch() {
                                     </div>
                                     <div className="col-lg-4">
                                         <div className="form-group">
-                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS</b>
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS: { quantityFailed }</b>
                                         </div><br/>
                                     </div>
                                 </div>

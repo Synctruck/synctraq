@@ -85,6 +85,7 @@ class OrderController extends Controller
                 "Dropoff_Province" => ["required"],
                 "Dropoff_Postal_Code" => ["required"],
                 "quantity" => ["required", "numeric", "min:1", "max:127"],
+                "date" => ["required", "date"],
             ],
             [
                 "idCompany.required" => "Select an item",
@@ -104,6 +105,9 @@ class OrderController extends Controller
 
                 "quantity.required" => "The field is required.",
                 "quantity.numeric" => "Enter a numeric value",
+
+                "date.required" => "The field is required.",
+                "date.date" => "Enter a numeric value",
             ]
         );
 
@@ -126,7 +130,10 @@ class OrderController extends Controller
             $Reference_Number_1DCC  = 'DCC'. $time;
 
             //*******************************************
-            //REGISTER STORE
+            //REGISTER ORDER
+
+            $created_at = $request->get('date') .' '. date('H:i:s');
+
             $package = new PackageManifest();
 
             $package->idCompany                    = $request->get('idCompany');
@@ -142,13 +149,13 @@ class OrderController extends Controller
             $package->Dropoff_Province             = $store->state;
             $package->Dropoff_Postal_Code          = $store->zipCode;
             $package->Weight                       = $Weight;
-            $package->quantity                     = $quantity;
+            $package->quantity                     = $quantity; 
             $package->Route                        = $store->route;
             $package->status                       = 'On hold';
+            $package->created_at                   = $created_at;
+            $package->updated_at                   = $created_at;
 
             $package->save();
-
-            $created_at = date('Y-m-d H:i:s');
 
             $packageHistory = new PackageHistory();
 
@@ -198,6 +205,8 @@ class OrderController extends Controller
             $package->quantity                     = $quantity;
             $package->Route                        = $route ? $route->name : '';
             $package->status                       = 'On hold';
+            $package->created_at                   = $created_at;
+            $package->updated_at                   = $created_at;
 
             $package->save();
 
@@ -230,7 +239,6 @@ class OrderController extends Controller
             $packageHistory->updated_at                   = $created_at;
 
             $packageHistory->save();
-
 
             $store->delete = 1;
 

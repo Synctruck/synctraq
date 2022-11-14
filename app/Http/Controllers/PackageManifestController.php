@@ -75,7 +75,7 @@ class PackageManifestController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "Reference_Number_1" => ["required", "unique:package"],
+                "Reference_Number_1" => ["required", "unique:packagemanifest"],
                 "Dropoff_Contact_Name" => ["required"],
 
                 "Dropoff_Contact_Phone_Number" => ["required"],
@@ -121,6 +121,8 @@ class PackageManifestController extends Controller
             {
                 DB::beginTransaction();
 
+                $created_at = date('Y-m-d H:i:s');
+
                 $package = new PackageManifest();
 
                 $package->Reference_Number_1           = $request->get('Reference_Number_1');
@@ -133,6 +135,8 @@ class PackageManifestController extends Controller
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
                 $package->status                       = 'On hold';
+                $package->created_at                   = $created_at;
+                $package->updated_at                   = $created_at;
 
                 $package->save();
 
@@ -154,6 +158,8 @@ class PackageManifestController extends Controller
                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'On hold - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'On hold';
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
 
                 $packageHistory->save();
 
@@ -163,7 +169,6 @@ class PackageManifestController extends Controller
                 {
                     $packageNotExists->delete();
                 }
-
 
                 DB::commit();
 
@@ -241,6 +246,7 @@ class PackageManifestController extends Controller
         $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
         $package->Weight                       = $request->get('Weight');
         $package->Route                        = $request->get('Route');
+        $package->updated_at                   = date('Y-m-d H:i:s');
 
         $package->save();
 
@@ -371,7 +377,8 @@ class PackageManifestController extends Controller
                         {
                             $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
 
-                            $company = Company::find($row[32]);
+                            $created_at = date('Y-m-d H:i:s');
+                            $company    = Company::find($row[32]);
 
                             $package = new PackageManifest();
 
@@ -411,6 +418,8 @@ class PackageManifestController extends Controller
                             $package->Name = isset($row[31]) ? $row[31] : '';
                             $package->filter = $packageBlocked ? 1 : 0;
                             $package->status = 'On hold';
+                            $package->created_at = $created_at;
+                            $package->updated_at = $created_at;
 
                             $route = Routes::where('zipCode', $row[24])->first();
 
