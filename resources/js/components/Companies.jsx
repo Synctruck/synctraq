@@ -267,6 +267,197 @@ function Companies() {
         });
     }
 
+///////////////////////////////////////////////////////////////////////////////
+//////////          MAINTENANCE RANGES        //////////////////////
+    const [listRange, setListRange]                     = useState([]);
+    const [viewAddRange, setViewAddRange]               = useState('none');
+    const [titleModalRange, setTitleModalRange]         = useState('');
+    const [textButtonSaveRange, setTextButtonSaveRange] = useState('')
+    const [idRange, setIdRange]                         = useState(0);
+    const [minWeightRange, setMinWeightRange]           = useState('');
+    const [maxWeightRange, setMaxWeightRange]           = useState('');
+    const [priceWeightRange, setPriceWeightRange]       = useState('');
+
+    const handlerOpenModalRange = (idCompany, company) => {
+
+        listAllRange(idCompany);
+        setIdCompany(idCompany);
+        setViewAddRange('none');
+        setTitleModalRange('Company Stores: '+ company);
+
+        clearValidationRange();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalRangeInsert'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const handlerAddRange = () => {
+
+        clearFormRange();
+        clearValidationRange();
+        setViewAddRange('block');
+        setTextButtonSaveRange('Save');
+    }
+
+    const listAllRange = (idCompany) => {
+
+        fetch(url_general +'range-price-company/list/'+ idCompany)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRange(response.rangeList);
+        });
+    }
+
+    const handlerSaveRange = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idCompany', idCompany);
+        formData.append('minWeight', minWeightRange);
+        formData.append('maxWeight', maxWeightRange);
+        formData.append('price', priceWeightRange);
+
+        clearValidationRange();
+
+        if(idRange == 0)
+        {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShow();
+
+            fetch(url_general +'range-price-company/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Range was save!", {
+
+                            icon: "success",
+                        });
+
+                        clearFormRange();
+                        listAllRange(idCompany);
+                    }
+                    else if(response.status == 422)
+                    {
+                        for(const index in response.errors)
+                        {
+                            document.getElementById(index +'Range').style.display = 'block';
+                            document.getElementById(index +'Range').innerHTML     = response.errors[index][0];
+                        }
+                    }
+
+                    LoadingHide();
+                },
+            );
+        }
+        else
+        {
+            LoadingShow();
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'range-price-company/update/'+ idRange, {
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                if(response.stateAction)
+                {
+                    listAllRange(idCompany);
+
+                    swal("Store updated!", {
+
+                        icon: "success",
+                    });
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index +'Store').style.display = 'block';
+                        document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            });
+        }
+    }
+
+    const getRange = (id) => {
+
+        clearValidationStore();
+
+        fetch(url_general +'range-price-company/get/'+ id)
+        .then(response => response.json())
+        .then(response => {
+
+            let range = response.range;
+
+            console.log(range);
+
+            setIdRange(range.id);
+            setMinWeightRange(range.minWeight);
+            setMaxWeightRange(range.maxWeight);
+            setPriceWeightRange(range.price);
+            setViewAddRange('block');
+            setTextButtonSaveRange('Updated');
+        });
+    }
+
+    const deleteRange = (id) => {
+
+        swal({
+            title: "You want to delete?",
+            text: "Range will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'range-price-company/delete/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Range deleted successfully!", {
+
+                            icon: "success",
+                        }); 
+
+                        listAllRange(idCompany);
+                        setViewAddRange('none');
+                    }
+                });
+            } 
+        });
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+//////////          MAINTENANCE STORES        //////////////////////
     const [listStore, setListStore]                     = useState([]);
     const [viewAddStore, setViewAddStore]               = useState('none');
     const [titleModalStore, setTitleModalStore]         = useState('');
@@ -315,7 +506,6 @@ function Companies() {
         clearValidationStore();
         setViewAddStore('block');
         setTextButtonSaveStore('Save');
-
     }
 
     const handlerSaveStore = (e) => {
@@ -522,6 +712,14 @@ function Companies() {
         setZipCodeStore('');
     }
 
+    const clearFormRange = () => {
+
+        setIdRange(0);
+        setMinWeightRange('');
+        setMaxWeightRange('');
+        setPriceWeightRange('');
+    }
+
     const clearValidationStore = () => {
 
         document.getElementById('nameStore').style.display = 'none';
@@ -544,6 +742,18 @@ function Companies() {
 
         document.getElementById('zipCodeStore').style.display = 'none';
         document.getElementById('zipCodeStore').innerHTML     = '';
+    }
+
+    const clearValidationRange = () => {
+
+        document.getElementById('minWeightRange').style.display = 'none';
+        document.getElementById('minWeightRange').innerHTML     = '';
+
+        document.getElementById('maxWeightRange').style.display = 'none';
+        document.getElementById('maxWeightRange').innerHTML     = '';
+
+        document.getElementById('priceRange').style.display = 'none';
+        document.getElementById('priceRange').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -590,7 +800,7 @@ function Companies() {
 
     const listCompanyTable = listCompany.map( (company, i) => {
 
-        let buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
+        let buttonDelete =  <button className="btn btn-danger btn-sm mb-2" title="Eliminar" onClick={ () => deleteCompany(company.id) }>
                                 <i className="bx bxs-trash-alt"></i>
                             </button>
 
@@ -670,6 +880,10 @@ function Companies() {
                         <i className="bx bx-edit-alt"></i>
                     </button>
                     { buttonDelete }
+
+                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(company.id, company.name) }>
+                        <i className="bx bxs-badge-dollar"></i>
+                    </button>
                 </td>
             </tr>
         );
@@ -703,6 +917,26 @@ function Companies() {
                         :
                             ''
                     }
+                </td>
+            </tr>
+        );
+    });
+
+    const listRangeTable = listRange.map( (range, i) => {
+
+        return (
+
+            <tr key={i}>
+                <td><b>{ range.minWeight }</b></td>
+                <td><b>{ range.maxWeight }</b></td>
+                <td><b>{ range.price +' $' }</b></td>
+                <td className="text-center">
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button>&nbsp;
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRange(range.id) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
                 </td>
             </tr>
         );
@@ -849,6 +1083,72 @@ function Companies() {
                                     </div>
                                 </React.Fragment>;
 
+    const modalRangeInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalRangeInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-md">
+                                            <div className="modal-content">
+                                                <form onSubmit={ handlerSaveRange }>
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body" style={ {display: viewAddRange } }>
+                                                        <div className="row">
+                                                            <div className="col-lg-12 form-group">
+                                                                <h4 className="text-primary">Price Range Data</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">MIN. WEIGHT</label>
+                                                                <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">MAX WEIGHT</label>
+                                                                <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">Price $</label>
+                                                                <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-4 form-group">
+                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <div className="modal-footer">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 form-group pull-right">
+                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
+                                                                <i className="bx bxs-plus-square"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <table className="table table-condensed table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>MIN. WEIGHT</th>
+                                                                <th>MAX. WEIGHT</th>
+                                                                <th>PRICES </th>
+                                                                <th>ACTIONS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            { listRangeTable }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     const modalStoreInsert = <React.Fragment>
                                     <div className="modal fade" id="modalStoreInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-lg">
@@ -956,6 +1256,7 @@ function Companies() {
         <section className="section">
             { modalCategoryInsert }
             { modalStoreInsert }
+            { modalRangeInsert }
             { modalBaseRates }
             <div className="row">
                 <div className="col-lg-12">
