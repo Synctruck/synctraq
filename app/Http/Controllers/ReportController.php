@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Assigned, Package, PackageDelivery, PackageHistory, PackageInbound, PackageManifest, PackageDispatch, PackageNotExists, User};
+use App\Models\{Package, PackageDelivery, PackageHistory, PackageInbound, PackageManifest, PackageDispatch, PackageNotExists, User};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -685,97 +685,5 @@ class ReportController extends Controller
     public function IndexAssigns()
     {
         return view('report.indexassigns');
-    }
-
-    public function ListAssigns($dateInit, $dateEnd, $route, $state)
-    {
-        $dateInit = $dateInit .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        $listAll = Assigned::whereBetween('assignedDate', [$dateInit, $dateEnd])
-                                ->where('idDriver', '!=', 0);
-
-        if($route != 'all')
-        {
-            $listAll = $listAll->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $listAll = $listAll->whereIn('Dropoff_Province', $states);
-        }
-
-        $listAll = $listAll->paginate(50);
-
-        $listState = Assigned::select('Dropoff_Province')
-                                    ->where('idDriver', '!=', 0)
-                                    ->groupBy('Dropoff_Province')
-                                    ->get();
-
-        return ['listAll' => $listAll, 'listState' => $listState];
-    }
-
-    public function ExportAssigns($dateInit, $dateEnd, $route, $state)
-    {
-        $delimiter = ",";
-        $filename = "Report Assigns " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
-
-        //set column headers
-        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
-
-        fputcsv($file, $fields, $delimiter);
-
-        $dateInit = $dateInit .' 00:00:00';
-        $dateEnd  = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        $ListAssigns = Assigned::whereBetween('created_at', [$dateInit, $dateEnd])->where('idDriver', '!=', 0);
-
-        if($route != 'all')
-        {
-            $ListAssigns = $ListAssigns->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $ListAssigns = $ListAssigns->whereIn('Dropoff_Province', $states);
-        }
-
-        $ListAssigns = $ListAssigns->get();
-
-        foreach($ListAssigns as $assign)
-        {
-
-            $lineData = array(
-                                date('m-d-Y', strtotime($assign->Date_manifest)),
-                                date('H:i:s', strtotime($assign->Date_manifest)),
-                                $assign->Reference_Number_1,
-                                $assign->Dropoff_Contact_Name,
-                                $assign->Dropoff_Contact_Phone_Number,
-                                $assign->Dropoff_Address_Line_1,
-                                $assign->Dropoff_City,
-                                $assign->Dropoff_Province,
-                                $assign->Dropoff_Postal_Code,
-                                $assign->Weight,
-                                $assign->Route
-                            );
-
-            fputcsv($file, $lineData, $delimiter);
-        }
-
-        fseek($file, 0);
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
-
-        fpassthru($file);
     }
 }

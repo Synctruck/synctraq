@@ -493,9 +493,7 @@ function PackageReturn() {
     }
     const exportAllPackageReturn = (  route, state) => {
 
-
-        location.href = url_general +'package/list/return/export/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
-
+        location.href = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {

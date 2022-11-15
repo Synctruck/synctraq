@@ -94,7 +94,6 @@ class PackageController extends Controller
             $data['Dropoff_Contact_Phone_Number'] = $request->get('shipment')['ship_to']['phone_number'];
             $data['Dropoff_Address_Line_1']  = $request->get('shipment')['ship_to']['address_line1'];
             $data['Dropoff_Address_Line_2']  = $request->get('shipment')['ship_to']['address_line2'];
-            $data['address_line3']  = $request->get('shipment')['ship_to']['address_line3'];
             $data['Dropoff_City']  = $request->get('shipment')['ship_to']['city_locality'];
             $data['Dropoff_Province'] = $request->get('shipment')['ship_to']['state_province'];
             $data['Dropoff_Postal_Code']    = $request->get('shipment')['ship_to']['postal_code'];
@@ -111,12 +110,10 @@ class PackageController extends Controller
             $data['hazardous_goods_type']  = $request->get('shipment')['shipment_details']['hazardous_goods_type'];
             $data['label_message']         = $request->get('shipment')['shipment_details']['label_message'];
             $data['shipper_notes_1']       = $request->get('shipment')['shipment_details']['shipper_notes_1'];
-            $data['shipper_notes_2']       = $request->get('shipment')['shipment_details']['shipper_notes_2'];
             $data['contains_alcohol']      = $request->get('shipment')['shipment_details']['contains_alcohol'];
             $data['insured_value']         = $request->get('shipment')['shipment_details']['insured_value'];
             $data['service_code']          = $request->get('shipment')['shipment_details']['service_code'];
             $data['Route']                 = isset($request->get('shipment')['shipment_details']['route_name']) ? $request->get('shipment')['shipment_details']['route_name'] : '';
-            $data['extra_data']            = $request->get('shipment')['shipment_details']['extra_data'];
 
             $validator = Validator::make($data,
 
@@ -216,7 +213,6 @@ class PackageController extends Controller
                     $package->mixing_center_shortcode       = $data['mixing_center_shortcode'];
                     $package->address_type                  = $data['address_type'];
                     $package->Dropoff_Address_Line_2        = $data['Dropoff_Address_Line_2'];
-                    $package->address_line3                 = $data['address_line3'];
                     $package->address_residential_indicator = $data['address_residential_indicator'];
                     $package->weight_unit                   = $data['weight_unit'];
                     $package->width                         = $data['width'];
@@ -227,11 +223,9 @@ class PackageController extends Controller
                     $package->hazardous_goods_type          = $data['hazardous_goods_type'];
                     $package->label_message                 = $data['label_message'];
                     $package->shipper_notes_1               = $data['shipper_notes_1'];
-                    $package->shipper_notes_2               = $data['shipper_notes_2'];
                     $package->contains_alcohol              = $data['contains_alcohol'];
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
-                    $package->extra_data                    = $data['extra_data'];
 
                     $package->save();
 
@@ -254,7 +248,6 @@ class PackageController extends Controller
                     $packageHistory->mixing_center_shortcode       = $data['mixing_center_shortcode'];
                     $packageHistory->address_type                  = $data['address_type'];
                     $packageHistory->Dropoff_Address_Line_2        = $data['Dropoff_Address_Line_2'];
-                    $packageHistory->address_line3                 = $data['address_line3'];
                     $packageHistory->address_residential_indicator = $data['address_residential_indicator'];
                     $packageHistory->weight_unit                   = $data['weight_unit'];
                     $packageHistory->width                         = $data['width'];
@@ -265,11 +258,9 @@ class PackageController extends Controller
                     $packageHistory->hazardous_goods_type          = $data['hazardous_goods_type'];
                     $packageHistory->label_message                 = $data['label_message'];
                     $packageHistory->shipper_notes_1               = $data['shipper_notes_1'];
-                    $packageHistory->shipper_notes_2               = $data['shipper_notes_2'];
                     $packageHistory->contains_alcohol              = $data['contains_alcohol'];
                     $packageHistory->insured_value                 = $data['insured_value'];
                     $packageHistory->service_code                  = $data['service_code'];
-                    $packageHistory->extra_data                    = $data['extra_data'];
                     $packageHistory->Description                   = 'On hold - for company: '. $company->name;
                     $packageHistory->created_at                    = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                    = date('Y-m-d H:i:s');

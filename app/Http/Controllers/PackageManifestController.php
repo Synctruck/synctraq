@@ -385,21 +385,6 @@ class PackageManifestController extends Controller
                             $package->Reference_Number_1 = $row[0];
                             $package->idCompany          = $company->id;
                             $package->company            = $company->name;
-                            $package->Reference_Number_2 = $row[1];
-                            $package->Reference_Number_3 = $row[2];
-                            $package->Ready_At = $row[3];
-                            $package->Del_Date = $row[4];
-                            $package->Del_no_earlier_than = $row[5];
-                            $package->Del_no_later_than = $row[6];
-                            $package->Pickup_Contact_Name = $row[7];
-                            $package->Pickup_Company = $row[8];
-                            $package->Pickup_Contact_Phone_Number = $row[9];
-                            $package->Pickup_Contact_Email = $row[10];
-                            $package->Pickup_Address_Line_1 = $row[11];
-                            $package->Pickup_Address_Line_2 = $row[12];
-                            $package->Pickup_City = $row[13];
-                            $package->Pickup_Province = $row[14];
-                            $package->Pickup_Postal_Code = $row[15];
                             $package->Dropoff_Contact_Name = $row[16];
                             $package->Dropoff_Company = $row[17];
                             $package->Dropoff_Contact_Phone_Number = $row[18];
@@ -409,13 +394,8 @@ class PackageManifestController extends Controller
                             $package->Dropoff_City = $row[22];
                             $package->Dropoff_Province = $row[23];
                             $package->Dropoff_Postal_Code = $row[24];
-                            $package->Service_Level = $row[25];
-                            $package->Carrier_Name = $row[26];
-                            $package->Vehicle_Type_Id = $row[27];
                             $package->Notes = $row[28];
-                            $package->Number_Of_Pieces = $row[29];
                             $package->Weight = $row[30];
-                            $package->Name = isset($row[31]) ? $row[31] : '';
                             $package->filter = $packageBlocked ? 1 : 0;
                             $package->status = 'On hold';
                             $package->created_at = $created_at;
@@ -430,7 +410,6 @@ class PackageManifestController extends Controller
                                 $route->zipCode = $row[24];
                                 $route->name    = $row[31];
                                 $route->save();
-
                             }
 
                             $package->Route = $route->name;
@@ -443,21 +422,6 @@ class PackageManifestController extends Controller
                             $packageHistory->Reference_Number_1           = $row[0];
                             $packageHistory->idCompany                    = $company->id;
                             $packageHistory->company                      = $company->name;
-                            $packageHistory->Reference_Number_2           = $row[1];
-                            $packageHistory->Reference_Number_3           = $row[2];
-                            $packageHistory->Ready_At                     = $row[3];
-                            $packageHistory->Del_Date                     = $row[4];
-                            $packageHistory->Del_no_earlier_than          = $row[5];
-                            $packageHistory->Del_no_later_than            = $row[6];
-                            $packageHistory->Pickup_Contact_Name          = $row[7];
-                            $packageHistory->Pickup_Company               = $row[8];
-                            $packageHistory->Pickup_Contact_Phone_Number  = $row[9];
-                            $packageHistory->Pickup_Contact_Email         = $row[10];
-                            $packageHistory->Pickup_Address_Line_1        = $row[11];
-                            $packageHistory->Pickup_Address_Line_2        = $row[12];
-                            $packageHistory->Pickup_City                  = $row[13];
-                            $packageHistory->Pickup_Province              = $row[14];
-                            $packageHistory->Pickup_Postal_Code           = $row[15];
                             $packageHistory->Dropoff_Contact_Name         = $row[16];
                             $packageHistory->Dropoff_Company              = $row[17];
                             $packageHistory->Dropoff_Contact_Phone_Number = $row[18];
@@ -467,14 +431,9 @@ class PackageManifestController extends Controller
                             $packageHistory->Dropoff_City                 = $row[22];
                             $packageHistory->Dropoff_Province             = $row[23];
                             $packageHistory->Dropoff_Postal_Code          = $row[24];
-                            $packageHistory->Service_Level                = $row[25];
-                            $packageHistory->Carrier_Name                 = $row[26];
-                            $packageHistory->Vehicle_Type_Id              = $row[27];
                             $packageHistory->Notes                        = $row[28];
-                            $packageHistory->Number_Of_Pieces             = $row[29];
                             $packageHistory->Weight                       = $row[30];
                             $packageHistory->Route                        = $route->name;
-                            $packageHistory->Name                         = isset($row[32]) ? $row[32] : '';
                             $packageHistory->idUser                       =  Auth::user()->id;
                             $packageHistory->idUserManifest               =  Auth::user()->id;
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');

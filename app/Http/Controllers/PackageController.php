@@ -324,20 +324,6 @@ class PackageController extends Controller
 
                         $package->Reference_Number_1 = $row[0];
                         $package->Reference_Number_2 = $row[1];
-                        $package->Reference_Number_3 = $row[2];
-                        $package->Ready_At = $row[3];
-                        $package->Del_Date = $row[4];
-                        $package->Del_no_earlier_than = $row[5];
-                        $package->Del_no_later_than = $row[6];
-                        $package->Pickup_Contact_Name = $row[7];
-                        $package->Pickup_Company = $row[8];
-                        $package->Pickup_Contact_Phone_Number = $row[9];
-                        $package->Pickup_Contact_Email = $row[10];
-                        $package->Pickup_Address_Line_1 = $row[11];
-                        $package->Pickup_Address_Line_2 = $row[12];
-                        $package->Pickup_City = $row[13];
-                        $package->Pickup_Province = $row[14];
-                        $package->Pickup_Postal_Code = $row[15];
                         $package->Dropoff_Contact_Name = $row[16];
                         $package->Dropoff_Company = $row[17];
                         $package->Dropoff_Contact_Phone_Number = $row[18];
@@ -347,14 +333,9 @@ class PackageController extends Controller
                         $package->Dropoff_City = $row[22];
                         $package->Dropoff_Province = $row[23];
                         $package->Dropoff_Postal_Code = $row[24];
-                        $package->Service_Level = $row[25];
-                        $package->Carrier_Name = $row[26];
-                        $package->Vehicle_Type_Id = $row[27];
                         $package->Notes = $row[28];
-                        $package->Number_Of_Pieces = $row[29];
                         $package->Weight = $row[30];
                         $package->Route = $row[31];
-                        $package->Name = isset($row[32]) ? $row[32] : '';
                         $package->status = 'On hold';
 
                         $packageHistory = new PackageHistory();
@@ -1007,7 +988,7 @@ class PackageController extends Controller
     }
 
 
-    public function ListReturnExport($dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - RETURN " . date('Y-m-d H:i:s') . ".csv";
@@ -1016,7 +997,7 @@ class PackageController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE' ,'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+        $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1055,6 +1036,11 @@ class PackageController extends Controller
 
         }
 
+        if($idCompany != 0)
+        {
+            $packageReturnList = PackageReturn::where('idCompany', $idCompany);
+        }
+
         if($idTeam && $idDriver)
         {
             $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
@@ -1080,8 +1066,7 @@ class PackageController extends Controller
 
         $packageReturnList = $packageReturnList->with(['team', 'driver'])->orderBy('Date_Return', 'desc')->get();
 
-
-       foreach($packageReturnList as $packageReturn)
+        foreach($packageReturnList as $packageReturn)
         {
 
             if($packageReturn->driver && $packageReturn->driver->idTeam)
@@ -1098,6 +1083,7 @@ class PackageController extends Controller
             $lineData = array(
                 date('m-d-Y', strtotime($packageReturn->Date_Return)),
                 date('H:i:s', strtotime($packageReturn->Date_Return)),
+                $packageReturn->company,
                 $team,
                 $driver,
                 $packageReturn->Reference_Number_1,
