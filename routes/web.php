@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, RangePriceCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -202,12 +202,19 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('stores/update/{id}', [StoreController::class, 'Update']);
 	Route::get('stores/delete/{id}', [StoreController::class, 'Delete']);
 
-	//============ Maintenance of ranges
+	//============ Maintenance of ranges company
 	Route::get('range-price-company/list/{idCompany}', [RangePriceCompanyController::class, 'List']);
 	Route::post('range-price-company/insert', [RangePriceCompanyController::class, 'Insert']);
 	Route::get('range-price-company/get/{id}', [RangePriceCompanyController::class, 'Get']);
 	Route::post('range-price-company/update/{id}', [RangePriceCompanyController::class, 'Update']);
 	Route::get('range-price-company/delete/{id}', [RangePriceCompanyController::class, 'Delete']);
+
+	//============ Maintenance of ranges teams
+	Route::get('range-price-team-route-company/list/{idTeam}/{idCompany}/{Route}', [RangePriceTeamRouteCompanyController::class, 'List']);
+	Route::post('range-price-team-route-company/insert', [RangePriceTeamRouteCompanyController::class, 'Insert']);
+	Route::get('range-price-team-route-company/get/{id}', [RangePriceTeamRouteCompanyController::class, 'Get']);
+	Route::post('range-price-team-route-company/update/{id}', [RangePriceTeamRouteCompanyController::class, 'Update']);
+	Route::get('range-price-team-route-company/delete/{id}', [RangePriceTeamRouteCompanyController::class, 'Delete']);
 
 	//============ Processof orders
 	Route::get('orders', [OrderController::class, 'Index'])->middleware('permission:orders.index');

@@ -37,6 +37,12 @@ function Team() {
 
     useEffect(() => {
 
+        listAllCompany();
+
+    }, []);
+
+    useEffect(() => {
+
         listAllTeam(page);
         listAllRoute();
 
@@ -79,6 +85,18 @@ function Team() {
         .then((response) => {
 
             setListRoute(response.routeList);
+        });
+    }
+
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCompany(response.companyList);
         });
     }
 
@@ -328,6 +346,239 @@ function Team() {
         });
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+//////////          MAINTENANCE RANGES        //////////////////////
+    const [listCompany , setListCompany]                = useState([]);
+    const [listRange, setListRange]                     = useState([]);
+    const [idTeam, setIdTeam]                           = useState(0);
+    const [idCompany, setIdCompany]                     = useState(0);
+    const [Route, setRoute]                             = useState('');
+    const [viewAddRange, setViewAddRange]               = useState('none');
+    const [titleModalRange, setTitleModalRange]         = useState('');
+    const [textButtonSaveRange, setTextButtonSaveRange] = useState('')
+    const [idRange, setIdRange]                         = useState(0);
+    const [minWeightRange, setMinWeightRange]           = useState('');
+    const [maxWeightRange, setMaxWeightRange]           = useState('');
+    const [priceWeightRange, setPriceWeightRange]       = useState('');
+
+    const handlerAddRange = () => {
+
+        clearFormRange();
+        clearValidationRange();
+        setViewAddRange('block');
+        setTextButtonSaveRange('Save');
+
+        if(idTeam != 0 && idCompany != 0 && Route != '')
+        {
+            listAllRange(idTeam, idCompany, Route);
+        }
+    }
+
+    const handlerOpenModalRange = (idTeam, team) => {
+ 
+        //listAllRange(idCompany);
+        setListRange([]);
+        setIdTeam(idTeam);
+        setViewAddRange('none');
+        setTitleModalRange('Team Prices Ranges: '+ team);
+
+        clearValidationRange();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalRangeInsert'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const listAllRange = (idTeam, idCompany, route) => {
+
+        fetch(url_general +'range-price-team-route-company/list/'+ idTeam +'/'+ idCompany +'/'+ route)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRange(response.rangeList);
+        });
+    }
+
+    const handlerSaveRange = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idTeam', idTeam);
+        formData.append('idCompany', idCompany);
+        formData.append('route', Route);
+        formData.append('minWeight', minWeightRange);
+        formData.append('maxWeight', maxWeightRange);
+        formData.append('price', priceWeightRange);
+
+        clearValidationRange();
+
+        if(idRange == 0)
+        {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShow();
+
+            fetch(url_general +'range-price-team-route-company/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Range was save!", {
+
+                            icon: "success",
+                        });
+
+                        clearFormRange();
+                        listAllRange(idTeam, idCompany, Route);
+                    }
+                    else if(response.status == 422)
+                    {
+                        for(const index in response.errors)
+                        {
+                            document.getElementById(index +'Range').style.display = 'block';
+                            document.getElementById(index +'Range').innerHTML     = response.errors[index][0];
+                        }
+                    }
+
+                    LoadingHide();
+                },
+            );
+        }
+        else
+        {
+            LoadingShow();
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'range-price-team-route-company/update/'+ idRange, {
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                if(response.stateAction)
+                {
+                    listAllRange(idTeam, idCompany, Route);
+
+                    swal("Store updated!", {
+
+                        icon: "success",
+                    });
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index +'Store').style.display = 'block';
+                        document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            });
+        }
+    }
+
+    const getRange = (id) => {
+
+        clearValidationRange();
+
+        fetch(url_general +'range-price-team-route-company/get/'+ id)
+        .then(response => response.json())
+        .then(response => {
+
+            let range = response.range;
+
+            console.log(range);
+
+            setIdRange(range.id);
+            setMinWeightRange(range.minWeight);
+            setMaxWeightRange(range.maxWeight);
+            setPriceWeightRange(range.price);
+            setViewAddRange('block');
+            setTextButtonSaveRange('Updated');
+        });
+    }
+
+    const deleteRange = (id) => {
+
+        swal({
+            title: "You want to delete?",
+            text: "Range will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'range-price-team-route-company/delete/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Range deleted successfully!", {
+
+                            icon: "success",
+                        }); 
+
+                        listAllRange(idTeam, idCompany, Route);
+                    }
+                });
+            } 
+        });
+    }
+
+    const optionsRoute = listRoute.map( (route, i) => {
+
+        return (
+
+            <option key={ i } value={ route.name } selected={ Route == route.name ? true : false }> {route.name}</option>
+        );
+    });
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
+    const listRangeTable = listRange.map( (range, i) => {
+
+        return (
+
+            <tr key={i}>
+                <td><b>{ range.minWeight }</b></td>
+                <td><b>{ range.maxWeight }</b></td>
+                <td><b>{ range.price +' $' }</b></td>
+                <td className="text-center">
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button>&nbsp;
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRange(range.id) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
     const clearForm = () => {
 
         setId(0);
@@ -338,6 +589,14 @@ function Team() {
         setPhone('');
         setEmail('');
         setStatus('Active');
+    }
+
+    const clearFormRange = () => {
+
+        setIdRange(0);
+        setMinWeightRange('');
+        setMaxWeightRange('');
+        setPriceWeightRange('');
     }
 
     const clearValidation = () => {
@@ -359,6 +618,24 @@ function Team() {
 
         document.getElementById('status').style.display = 'none';
         document.getElementById('status').innerHTML     = '';
+    }
+
+    const clearValidationRange = () => {
+
+        document.getElementById('idCompanyRange').style.display = 'none';
+        document.getElementById('idCompanyRange').innerHTML     = '';
+
+        document.getElementById('routeRange').style.display = 'none';
+        document.getElementById('routeRange').innerHTML     = '';
+
+        document.getElementById('minWeightRange').style.display = 'none';
+        document.getElementById('minWeightRange').innerHTML     = '';
+
+        document.getElementById('maxWeightRange').style.display = 'none';
+        document.getElementById('maxWeightRange').innerHTML     = '';
+
+        document.getElementById('priceRange').style.display = 'none';
+        document.getElementById('priceRange').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -385,12 +662,14 @@ function Team() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getTeam(user.id) }>
+                    <button className="btn btn-primary btn-sm mb-2" title="Editar" onClick={ () => getTeam(user.id) }>
                         <i className="bx bx-edit-alt"></i>
-                    </button> &nbsp;
-
-                    <button className="btn btn-danger btn-sm" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
+                    </button>&nbsp;
+                    <button className="btn btn-danger btn-sm mb-2" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
                         <i className="bx bxs-trash-alt"></i>
+                    </button>&nbsp;
+                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
+                        <i className="bx bxs-badge-dollar"></i>
                     </button>
                 </td>
             </tr>
@@ -441,6 +720,30 @@ function Team() {
 
         setIdsRoutes(routesIds);
     };
+
+    const listAllRangeAux = (idCompany, route) => {
+
+        clearFormRange();
+        setTextButtonSaveRange('Save');
+
+        if(idTeam != 0 && idCompany != 0 && route != '')
+        {
+            listAllRange(idTeam, idCompany, route);
+        }
+    }
+    const changeCompany = (idCompany) => {
+
+        setIdCompany(idCompany);
+
+        listAllRangeAux(idCompany, Route);
+    }
+
+    const changeRoute = (route) => {
+
+        setRoute(route);
+
+        listAllRangeAux(idCompany, route);
+    }
 
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -550,10 +853,90 @@ function Team() {
                                     </div>
                                 </React.Fragment>;
 
+    const modalRangeInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalRangeInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-md">
+                                            <div className="modal-content">
+                                                <form onSubmit={ handlerSaveRange }>
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body" style={ {display: viewAddRange } }>
+                                                        <div className="row">
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">COMPANY</label>
+                                                                <div id="idCompanyRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => changeCompany(e.target.value) }>
+                                                                    <option value="">Select...</option>
+                                                                    { optionCompany }
+                                                                </select>
+                                                            </div> 
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">ROUTE</label>
+                                                                <div id="routeRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => changeRoute(e.target.value) } required>
+                                                                    <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
+                                                                    { optionsRoute }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">MIN. WEIGHT</label>
+                                                                <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">MAX WEIGHT</label>
+                                                                <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-4 form-group">
+                                                                <label className="form">Price $</label>
+                                                                <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-4 form-group">
+                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <div className="modal-footer">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 form-group pull-right">
+                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
+                                                                <i className="bx bxs-plus-square"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <table className="table table-condensed table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>MIN. WEIGHT</th>
+                                                                <th>MAX. WEIGHT</th>
+                                                                <th>PRICES </th>
+                                                                <th>ACTIONS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            { listRangeTable }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
             { modalCategoryInsert }
+            { modalRangeInsert }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

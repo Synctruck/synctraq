@@ -283,7 +283,7 @@ function Companies() {
         listAllRange(idCompany);
         setIdCompany(idCompany);
         setViewAddRange('none');
-        setTitleModalRange('Company Stores: '+ company);
+        setTitleModalRange('Company Prices Ranges: '+ company);
 
         clearValidationRange();
 
@@ -880,7 +880,6 @@ function Companies() {
                         <i className="bx bx-edit-alt"></i>
                     </button>
                     { buttonDelete }
-
                     <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(company.id, company.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
