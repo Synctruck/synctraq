@@ -28,6 +28,7 @@ class RangePriceCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
+                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
@@ -43,6 +44,11 @@ class RangePriceCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
+
+                "fuelPercentage.required" => "The field is required",
+                "fuelPercentage.min"  => "Enter minimum 0",
+                "fuelPercentage.max"  => "Enter maximum 100",
+                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -51,14 +57,18 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $store = new RangePriceCompany();
+        $pricePecercentaje = $this->PricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
-        $store->idCompany = $request->get('idCompany');
-        $store->minWeight = $request->get('minWeight');
-        $store->maxWeight = $request->get('maxWeight');
-        $store->price     = $request->get('price');
+        $range = new RangePriceCompany();
 
-        $store->save();
+        $range->idCompany      = $request->get('idCompany');
+        $range->minWeight      = $request->get('minWeight');
+        $range->maxWeight      = $request->get('maxWeight');
+        $range->price          = $request->get('price');
+        $range->fuelPercentage = $request->get('fuelPercentage');
+        $range->total          = $pricePecercentaje['total'];
+
+        $range->save();
 
         return ['stateAction' => true];
     }
@@ -79,6 +89,7 @@ class RangePriceCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
+                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
@@ -94,6 +105,11 @@ class RangePriceCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
+
+                "fuelPercentage.required" => "The field is required",
+                "fuelPercentage.min"  => "Enter minimum 0",
+                "fuelPercentage.max"  => "Enter maximum 100",
+                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -102,12 +118,17 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $pricePecercentaje = $this->PricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+
         $range = RangePriceCompany::find($idRange);
 
-        $range->idCompany = $request->get('idCompany');
-        $range->minWeight = $request->get('minWeight');
-        $range->maxWeight = $request->get('maxWeight');
-        $range->price     = $request->get('price');
+
+        $range->idCompany      = $request->get('idCompany');
+        $range->minWeight      = $request->get('minWeight');
+        $range->maxWeight      = $request->get('maxWeight');
+        $range->price          = $request->get('price');
+        $range->fuelPercentage = $request->get('fuelPercentage');
+        $range->total          = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -121,5 +142,13 @@ class RangePriceCompanyController extends Controller
         $range->delete();
 
         return ['stateAction' => true];
+    }
+
+    public function PricePecercentaje($price, $fuelPercentage)
+    {
+        $pricePercentage = ($price * $fuelPercentage) / 100;
+        $total           = $price + $pricePercentage;
+
+        return ['pricePercentage' => $pricePercentage, 'total' => $total];
     }
 }

@@ -277,6 +277,7 @@ function Companies() {
     const [minWeightRange, setMinWeightRange]           = useState('');
     const [maxWeightRange, setMaxWeightRange]           = useState('');
     const [priceWeightRange, setPriceWeightRange]       = useState('');
+    const [fuelPercentageRange, setfuelPercentageRange] = useState('');
 
     const handlerOpenModalRange = (idCompany, company) => {
 
@@ -324,6 +325,7 @@ function Companies() {
         formData.append('minWeight', minWeightRange);
         formData.append('maxWeight', maxWeightRange);
         formData.append('price', priceWeightRange);
+        formData.append('fuelPercentage', fuelPercentageRange);
 
         clearValidationRange();
 
@@ -419,6 +421,7 @@ function Companies() {
             setMinWeightRange(range.minWeight);
             setMaxWeightRange(range.maxWeight);
             setPriceWeightRange(range.price);
+            setfuelPercentageRange(range.fuelPercentage);
             setViewAddRange('block');
             setTextButtonSaveRange('Updated');
         });
@@ -718,6 +721,7 @@ function Companies() {
         setMinWeightRange('');
         setMaxWeightRange('');
         setPriceWeightRange('');
+        setfuelPercentageRange('');
     }
 
     const clearValidationStore = () => {
@@ -754,6 +758,9 @@ function Companies() {
 
         document.getElementById('priceRange').style.display = 'none';
         document.getElementById('priceRange').innerHTML     = '';
+
+        document.getElementById('fuelRange').style.display = 'none';
+        document.getElementById('fuelRange').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -923,12 +930,17 @@ function Companies() {
 
     const listRangeTable = listRange.map( (range, i) => {
 
+        let pricePercentage = (parseFloat(range.price) * parseFloat(range.fuelPercentage)) / 100;
+
         return (
 
             <tr key={i}>
                 <td><b>{ range.minWeight }</b></td>
                 <td><b>{ range.maxWeight }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
+                <td><b>{ range.fuelPercentage +' %' }</b></td>
+                <td><b>{ pricePercentage +' $' }</b></td>
+                <td><b>{ range.total +' $' }</b></td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -1084,7 +1096,7 @@ function Companies() {
 
     const modalRangeInsert = <React.Fragment>
                                     <div className="modal fade" id="modalRangeInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog modal-md">
+                                        <div className="modal-dialog modal-lg">
                                             <div className="modal-content">
                                                 <form onSubmit={ handlerSaveRange }>
                                                     <div className="modal-header">
@@ -1098,25 +1110,29 @@ function Companies() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-4 form-group">
+                                                            <div className="col-lg-3 form-group">
                                                                 <label className="form">MIN. WEIGHT</label>
                                                                 <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
                                                             </div>
-                                                            <div className="col-lg-4 form-group">
+                                                            <div className="col-lg-3 form-group">
                                                                 <label className="form">MAX WEIGHT</label>
                                                                 <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
                                                             </div>
-                                                            <div className="col-lg-4 form-group">
+                                                            <div className="col-lg-3 form-group">
                                                                 <label className="form">Price $</label>
                                                                 <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
                                                             </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-4 form-group">
-                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                            <div className="col-lg-3 form-group">
+                                                                <label className="form">FUEL PERCENTAGE</label>
+                                                                <div id="fuelRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="1" max="99" step="0.01" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-3 form-group">
+                                                                <label className="text-white">--</label>
+                                                                <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1134,7 +1150,10 @@ function Companies() {
                                                             <tr>
                                                                 <th>MIN. WEIGHT</th>
                                                                 <th>MAX. WEIGHT</th>
-                                                                <th>PRICES </th>
+                                                                <th>BASE PRICE</th>
+                                                                <th>FUEL PERCENTAGE</th>
+                                                                <th>PRICE PERCENTAGE</th>
+                                                                <th>TOTAL</th>
                                                                 <th>ACTIONS</th>
                                                             </tr>
                                                         </thead>
