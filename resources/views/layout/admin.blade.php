@@ -11,7 +11,7 @@
     <meta name="csrf-token" content="{{csrf_token()}}">
 
     <!-- Favicons -->
-    {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
+    <link href="{{asset('img/favicon.ico')}}" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
 
@@ -79,7 +79,7 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="{{url('home')}}" class="logo d-flex align-items-center">
-        <img src="{{asset('img/logo.PNG')}}" width="200" height="200" alt="">
+        <img src="{{asset('img/logo.png')}}" width="200" height="200" alt="">
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

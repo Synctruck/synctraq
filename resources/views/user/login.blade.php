@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
   <meta name="csrf-token" content="{{csrf_token()}}">
   <!-- Favicons -->
-  {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
+  <link href="{{asset('img/favicon.ico')}}" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
