@@ -930,8 +930,6 @@ function Companies() {
 
     const listRangeTable = listRange.map( (range, i) => {
 
-        let pricePercentage = (parseFloat(range.price) * parseFloat(range.fuelPercentage)) / 100;
-
         return (
 
             <tr key={i}>
@@ -939,7 +937,7 @@ function Companies() {
                 <td><b>{ range.maxWeight }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
                 <td><b>{ range.fuelPercentage +' %' }</b></td>
-                <td><b>{ pricePercentage +' $' }</b></td>
+                <td><b>{ range.pricePercentage +' $' }</b></td>
                 <td><b>{ range.total +' $' }</b></td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
@@ -1128,7 +1126,7 @@ function Companies() {
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">FUEL PERCENTAGE</label>
                                                                 <div id="fuelRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="1" max="99" step="0.01" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="0" max="99" step="0.01" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="text-white">--</label>

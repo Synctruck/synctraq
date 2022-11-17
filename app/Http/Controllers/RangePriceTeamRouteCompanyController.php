@@ -32,6 +32,7 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
+                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "idCompany.required" => "Select item",
@@ -51,6 +52,11 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
+
+                "fuelPercentage.required" => "The field is required",
+                "fuelPercentage.min"  => "Enter minimum 0",
+                "fuelPercentage.max"  => "Enter maximum 100",
+                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -59,14 +65,19 @@ class RangePriceTeamRouteCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+
         $range = new RangePriceTeam();
 
-        $range->idTeam    = $request->get('idTeam');
-        $range->idCompany = $request->get('idCompany');
-        $range->route     = $request->get('route');
-        $range->minWeight = $request->get('minWeight');
-        $range->maxWeight = $request->get('maxWeight');
-        $range->price     = $request->get('price');
+        $range->idTeam          = $request->get('idTeam');
+        $range->idCompany       = $request->get('idCompany');
+        $range->route           = $request->get('route');
+        $range->minWeight       = $request->get('minWeight');
+        $range->maxWeight       = $request->get('maxWeight');
+        $range->price           = $request->get('price');
+        $range->fuelPercentage  = $request->get('fuelPercentage');
+        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
+        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -91,6 +102,7 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
+                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "idCompany.required" => "Select item",
@@ -110,6 +122,11 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
+
+                "fuelPercentage.required" => "The field is required",
+                "fuelPercentage.min"  => "Enter minimum 0",
+                "fuelPercentage.max"  => "Enter maximum 100",
+                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -118,14 +135,19 @@ class RangePriceTeamRouteCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+
         $range = RangePriceTeam::find($idRange);
 
-        $range->idTeam    = $request->get('idTeam');
-        $range->idCompany = $request->get('idCompany');
-        $range->route     = $request->get('route');
-        $range->minWeight = $request->get('minWeight');
-        $range->maxWeight = $request->get('maxWeight');
-        $range->price     = $request->get('price');
+        $range->idTeam          = $request->get('idTeam');
+        $range->idCompany       = $request->get('idCompany');
+        $range->route           = $request->get('route');
+        $range->minWeight       = $request->get('minWeight');
+        $range->maxWeight       = $request->get('maxWeight');
+        $range->price           = $request->get('price');
+        $range->fuelPercentage  = $request->get('fuelPercentage');
+        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
+        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -139,5 +161,13 @@ class RangePriceTeamRouteCompanyController extends Controller
         $range->delete();
 
         return ['stateAction' => true];
+    }
+
+    public function CalculatePricePecercentaje($price, $fuelPercentage)
+    {
+        $pricePercentage = ($price * $fuelPercentage) / 100;
+        $total           = $price + $pricePercentage;
+
+        return ['pricePercentage' => $pricePercentage, 'total' => $total];
     }
 }

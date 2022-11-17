@@ -597,7 +597,8 @@ class PackageDispatchController extends Controller
                     return ['stateAction' => 'returCompany', 'packageReturnCompany' => $packageReturnCompany];
                 }
 
-                $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                $packageHistory = PackageHistory::with('driver')
+                                                ->where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                 ->where('status', 'Dispatch')
                                                 ->where('dispatch', 1)
                                                 ->first();

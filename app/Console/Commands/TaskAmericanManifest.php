@@ -92,8 +92,7 @@ class TaskAmericanManifest extends Command
                                     $package->Dropoff_City                 = $row[18];
                                     $package->Dropoff_Province             = $row[19];
                                     $package->Dropoff_Postal_Code          = $row[20];
-                                    $package->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                    $package->Number_Of_Pieces             = $row[25];
+                                    $package->Notes                        = '';
                                     $package->weight_unit                  = $row[26];
                                     $package->Weight                       = $row[27];
                                     $package->height                       = $row[30];
@@ -121,8 +120,7 @@ class TaskAmericanManifest extends Command
                                     $packageHistory->Dropoff_City                 = $row[18];
                                     $packageHistory->Dropoff_Province             = $row[19];
                                     $packageHistory->Dropoff_Postal_Code          = $row[20];
-                                    $packageHistory->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                    $packageHistory->Number_Of_Pieces             = $row[25];
+                                    $packageHistory->Notes                        = '';
                                     $packageHistory->weight_unit                  = $row[26];
                                     $packageHistory->Weight                       = $row[27];
                                     $packageHistory->height                       = $row[30];

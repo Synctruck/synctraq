@@ -601,7 +601,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportManifest($dateInit, $dateEnd, $route, $state)
+    public function ExportManifest($idCompany, $dateInit, $dateEnd, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Manifest " . date('Y-m-d H:i:s') . ".csv";
@@ -615,7 +615,7 @@ class ReportController extends Controller
         fputcsv($file, $fields, $delimiter);
 
 
-        $listPackageManifest = $this->getDataManifest($dateInit, $dateEnd, $route, $state,$type='export');
+        $listPackageManifest = $this->getDataManifest($idCompany, $dateInit, $dateEnd, $route, $state, $type = 'export');
 
         foreach($listPackageManifest as $packageManifest)
         {

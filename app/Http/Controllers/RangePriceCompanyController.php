@@ -57,16 +57,17 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $pricePecercentaje = $this->PricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = new RangePriceCompany();
 
-        $range->idCompany      = $request->get('idCompany');
-        $range->minWeight      = $request->get('minWeight');
-        $range->maxWeight      = $request->get('maxWeight');
-        $range->price          = $request->get('price');
-        $range->fuelPercentage = $request->get('fuelPercentage');
-        $range->total          = $pricePecercentaje['total'];
+        $range->idCompany       = $request->get('idCompany');
+        $range->minWeight       = $request->get('minWeight');
+        $range->maxWeight       = $request->get('maxWeight');
+        $range->price           = $request->get('price');
+        $range->fuelPercentage  = $request->get('fuelPercentage');
+        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
+        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -118,17 +119,17 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $pricePecercentaje = $this->PricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = RangePriceCompany::find($idRange);
 
-
-        $range->idCompany      = $request->get('idCompany');
-        $range->minWeight      = $request->get('minWeight');
-        $range->maxWeight      = $request->get('maxWeight');
-        $range->price          = $request->get('price');
-        $range->fuelPercentage = $request->get('fuelPercentage');
-        $range->total          = $pricePecercentaje['total'];
+        $range->idCompany       = $request->get('idCompany');
+        $range->minWeight       = $request->get('minWeight');
+        $range->maxWeight       = $request->get('maxWeight');
+        $range->price           = $request->get('price');
+        $range->fuelPercentage  = $request->get('fuelPercentage');
+        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
+        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -144,7 +145,7 @@ class RangePriceCompanyController extends Controller
         return ['stateAction' => true];
     }
 
-    public function PricePecercentaje($price, $fuelPercentage)
+    public function CalculatePricePecercentaje($price, $fuelPercentage)
     {
         $pricePercentage = ($price * $fuelPercentage) / 100;
         $total           = $price + $pricePercentage;

@@ -112,7 +112,7 @@ function ReportManifest() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/export/manifest/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/export/manifest/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
         }
     }
 

@@ -105,7 +105,7 @@ class PackageWarehouseController extends Controller
 
         return $packageListWarehouse;
     }
-    public function Export($idValidator, $dateStart,$dateEnd, $route, $state)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv";
@@ -114,17 +114,18 @@ class PackageWarehouseController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
             $lineData = array(
                                 date('m-d-Y', strtotime($packageWarehouse->created_at)),
                                 date('H:i:s', strtotime($packageWarehouse->created_at)),
+                                $packageWarehouse->company,
                                 $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
                                 $packageWarehouse->Reference_Number_1,
                                 $packageWarehouse->Dropoff_Contact_Name,

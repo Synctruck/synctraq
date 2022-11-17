@@ -145,7 +145,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index'])->middleware('permission:warehouse.index');
 	Route::get('/package-warehouse/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'List']);
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
-	Route::get('/package-warehouse/export/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
+	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
@@ -267,7 +267,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/manifest', [ReportController::class, 'IndexManifest'])->middleware('permission:reportManifest.index');
 	Route::get('/report/list/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
-	Route::get('/report/export/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
+	Route::get('/report/export/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
 
 	Route::get('/report/inbound', [ReportController::class, 'IndexInbound'])->middleware('permission:reportInbound.index');
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);

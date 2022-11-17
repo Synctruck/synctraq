@@ -599,7 +599,7 @@ function PackageWarehouse() {
 
     const exportAllPackageWarehouse = (route, state) => {
 
-        location.href = url_general +'package-warehouse/export/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        location.href = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
