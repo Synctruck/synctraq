@@ -145,6 +145,21 @@ class RangePriceCompanyController extends Controller
         return ['stateAction' => true];
     }
 
+    public function GetPriceCompany($idCompany, $weight)
+    {
+        $range = RangePriceCompany::where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->first();
+
+        if($range == null)
+        {
+            $range = RangePriceCompany::orderBy('total', 'desc')->first();
+        }
+
+        return $range->total;
+    }
+
     public function CalculatePricePecercentaje($price, $fuelPercentage)
     {
         $pricePercentage = ($price * $fuelPercentage) / 100;

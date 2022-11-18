@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, Configuration, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, TeamRoute, User};
+use App\Models\{Company, Configuration, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -96,9 +96,14 @@ class PackageReturnCompanyController extends Controller
 
         if($packageInbound == null)
         {
-            $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
+            $packageInbound = PackageWarehouse::find($request->get('Reference_Number_1'));
         }
 
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
+        }
+        
         if($packageInbound)
         {
             try
@@ -163,7 +168,9 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
-
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                
                 $packageHistory->save();
 
                 $packageInbound->delete();

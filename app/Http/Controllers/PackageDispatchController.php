@@ -8,14 +8,8 @@ use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, Packa
 
 use Illuminate\Support\Facades\Validator;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
-
 use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\{ RangePriceCompanyController, RangePriceTeamRouteCompanyController };
 
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -281,6 +275,12 @@ class PackageDispatchController extends Controller
 
                 if($package->status != 'Delete')
                 {
+                    $pricePaymentCompany = new RangePriceCompanyController();
+                    $pricePaymentCompany = $pricePaymentCompany->GetPriceCompany($package->idCompany, $package->Weight);
+
+                    $pricePaymentTeam = new RangePriceTeamRouteCompanyController();
+                    $pricePaymentTeam = $pricePaymentTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $package->Weight, $package->Route);
+
                     try
                     {
                         DB::beginTransaction();
@@ -299,7 +299,7 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
                         }
-
+ 
                         if($package->status == 'On hold')
                         {
                             $packageHistory = new PackageHistory();
@@ -359,6 +359,9 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
+                        $packageDispatch->pricePaymentCompany          = $pricePaymentCompany;
+                        $packageDispatch->pricePaymentTeam             = $pricePaymentTeam;
+                        $packageDispatch->idPaymentTeam                = '';
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;

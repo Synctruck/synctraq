@@ -163,6 +163,47 @@ class RangePriceTeamRouteCompanyController extends Controller
         return ['stateAction' => true];
     }
 
+    public function GetPriceTeam($idTeam, $idCompany, $weight, $route)
+    {
+        $range = RangePriceTeam::where('idTeam', $idTeam)
+                                ->where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->where('route', $route)
+                                ->first();
+
+        if($range == null)
+        {
+            $range = RangePriceTeam::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->where('route', $route)
+                                    ->orderBy('total', 'asc')
+                                    ->first();
+
+            if($range == null)
+            {
+                $range = RangePriceTeam::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->orderBy('total', 'asc')
+                                    ->first();
+
+                if($range == null)
+                {
+                    $range = RangePriceTeam::where('idTeam', $idTeam)
+                                        ->orderBy('total', 'asc')
+                                        ->first();
+
+                    if($range == null)
+                    {
+                        $range = RangePriceTeam::orderBy('total', 'asc')->first();
+                    }
+                }
+            }
+        }
+
+        return $range->total;
+    }
+
     public function CalculatePricePecercentaje($price, $fuelPercentage)
     {
         $pricePercentage = ($price * $fuelPercentage) / 100;
