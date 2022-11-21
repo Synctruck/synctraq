@@ -905,12 +905,12 @@ function Team() {
                                                             <div className="col-lg-6 form-group">
                                                                 <label className="form">Price $</label>
                                                                 <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
                                                                 <label className="form">FUEL PERCENTAGE</label>
                                                                 <div id="fuelRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="0" max="99" step="0.01" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="0" max="99" step="0.0001" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">

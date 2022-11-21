@@ -44,9 +44,9 @@ class PackageAgeController extends Controller
         ];
     }
 
-    public function Export($states, $routes)
+    public function Export($idCompany, $states, $routes)
     {
-        $data           = $this->GetData($states, $routes, 'all');
+        $data           = $this->GetData($idCompany, $states, $routes, 'all');
         $packageListOld = $data['listAll'];
 
         $delimiter = ",";
