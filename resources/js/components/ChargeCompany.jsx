@@ -20,12 +20,13 @@ function ChargeCompany() {
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
 
-    const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateInit);
-    const [team, setTeam]         = useState('');
-    const [idTeam, setIdTeam]     = useState(0);
-    const [idDriver, setIdDriver] = useState(0);
-    const [idCompany, setCompany] = useState(0);
+    const [dateInit, setDateInit]             = useState(auxDateInit);
+    const [dateEnd, setDateEnd]               = useState(auxDateInit);
+    const [fuelPrice, setFuelPrice]           = useState('');
+    const [fuelPercentage, setFuelPercentage] = useState('');
+    const [idTeam, setIdTeam]                 = useState(0);
+    const [idDriver, setIdDriver]             = useState(0);
+    const [idCompany, setCompany]             = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -35,7 +36,7 @@ function ChargeCompany() {
     const [totalPackage, setTotalPackage] = useState(0);
 
     const [file, setFile]             = useState('');
-    const [btnDisplay, setbtnDisplay] = useState('none');
+    const [buttonDisplay, setButtonDisplay] = useState('update');
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
@@ -87,13 +88,24 @@ function ChargeCompany() {
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
+            if(response.chargeCompany)
+            {
+                setFuelPercentage(response.chargeCompany.fuelPercentage);
+                setButtonDisplay('download');
+            }
+            else
+            {
+                setFuelPercentage('');
+                setButtonDisplay('update');
+            }
+
             setTotalPriceCompany(parseFloat(response.totalPriceCompany).toFixed(4));
 
             if(listState.length == 0)
             {
                 listOptionState(response.listState);
             }
-            
+
             if(response.roleUser == 'Team')
             {
                 listAllDriverByTeam(idUserGeneral);
@@ -247,14 +259,8 @@ function ChargeCompany() {
                 <td style={ { width: '100px'} }>
                     { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
                 </td>
-                <td>
-                    { packageDelivery.updated_at.substring(11, 19) }
-                </td>
                 <td><b>{ packageDelivery.company }</b></td>
-                <td><b>{ packageDelivery.team.name }</b></td>
-                <td>{ packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner }</td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                
                 <td>{ packageDelivery.Dropoff_Contact_Name }</td>
                 <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
@@ -315,7 +321,7 @@ function ChargeCompany() {
 
     const optionCompany = listCompany.map( (company, i) => {
 
-        return <option value={company.id}>{company.name}</option>
+        return <option value={ company.id }>{company.name}</option>
     })
 
     const listTeamSelect = listTeam.map( (team, i) => {
@@ -410,10 +416,20 @@ function ChargeCompany() {
 
     const handlerRegisterPayment = () => {
 
-        if(idTeam != 0)
+        if(idCompany != 0)
         {
+            let companyName = '';
+
+            listCompany.forEach( company => {
+
+                if(company.id == idCompany)
+                {
+                    companyName = company.name;
+                }
+            });
+
             swal({
-                title: "You want to register the payment of the TEAM: "+ team +" ?",
+                title: "You want to register the charge of the COMPANY: "+ companyName +" ?",
                 text: "Start Date: "+ dateInit +' | End Date: '+ dateEnd,
                 icon: "warning",
                 buttons: true,
@@ -425,15 +441,16 @@ function ChargeCompany() {
                 {
                     const formData = new FormData();
 
-                    formData.append('idTeam', idTeam);
+                    formData.append('idCompany', idCompany);
                     formData.append('startDate', dateInit);
                     formData.append('endDate', dateEnd);
+                    formData.append('fuelPrice', fuelPrice);
 
                     let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                     LoadingShow(); 
 
-                    fetch(url_general +'payment-delivery/insert', {
+                    fetch(url_general +'charge-company/insert', {
                         headers: { "X-CSRF-TOKEN": token },
                         method: 'post',
                         body: formData
@@ -448,24 +465,31 @@ function ChargeCompany() {
                                     icon: "error",
                                 });
                             }
-                            else if(response.stateAction == 'paymentExists')
+                            else if(response.stateAction == 'nullFuel')
                             {
-                                swal("There is already a payment for the selected filters!", {
+                                swal("Enter the Fuel Price!", {
+
+                                    icon: "warning",
+                                });
+                            }
+                            else if(response.stateAction == 'notRangeDiesel')
+                            {
+                                swal("There is no percentage range for the Fuel Price!", {
 
                                     icon: "warning",
                                 });
                             }
                             else if(response.stateAction)
                             {
-                                swal("Payment was made correctly!", {
+                                swal("Charge was made correctly!", {
 
                                     icon: "success",
                                 });
 
-                                document.getElementById('fileImport').value = '';
+                                setFuelPercentage(response.fuelPercentage);
 
-                                listAllPackage();
-                                setbtnDisplay('none');
+                                //listAllPackage();
+                                setButtonDisplay('download');
                             }
 
                             LoadingHide();
@@ -476,7 +500,22 @@ function ChargeCompany() {
         }
         else
         {
-            swal("You must select a TEAM for checkout registration!", {
+            swal("You must select a COMPANY to update prices!", {
+
+                icon: "warning",
+            });
+        }
+    }
+
+    const handlerDownloadCharge = () => {
+
+        if(idCompany != 0)
+        {
+            location.href = url_general +'charge-company/export/'+ idCompany +'/'+ dateInit +'/'+ dateEnd;
+        }
+        else
+        {
+            swal("You must select a COMPANY to export!", {
 
                 icon: "warning",
             });
@@ -508,7 +547,7 @@ function ChargeCompany() {
                                         <label htmlFor="">End date:</label>
                                         <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                     </div>
-                                    <dvi className="col-lg-2 mb-3">
+                                    <dvi className="col-lg-2 mb-3"> 
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 Company:
@@ -521,6 +560,22 @@ function ChargeCompany() {
                                             </div>
                                         </div>
                                     </dvi>
+                                    <div className="col-lg-2 mb-3">
+                                        <label htmlFor="">Fuel Price $:</label>
+                                        <input type="text" value={ fuelPrice } onChange={ (e) => setFuelPrice(e.target.value) } className="form-control"/>
+                                    </div>
+                                    <div className="col-lg-2 mb-3">
+                                        <label htmlFor="">Fuel Percentaje %:</label>
+                                        <input type="text" value={ fuelPercentage } onChange={ (e) => setFuelPercentage(e.target.value) } className="form-control" readOnly/>
+                                    </div>
+                                    <div className="col-lg-2 mb-3" style={ {display: ( buttonDisplay == 'update' ? 'block' : 'none') } }>
+                                        <label htmlFor="" className="text-white">--</label>
+                                        <button className="btn btn-primary form-control" onClick={ () => handlerRegisterPayment() }>Update Prices</button>
+                                    </div>
+                                    <div className="col-lg-2 mb-3" style={ {display: ( buttonDisplay == 'download' ? 'block' : 'none') } }>
+                                        <label htmlFor="" className="text-white">--</label>
+                                        <button className="btn btn-success form-control" onClick={ () => handlerDownloadCharge() }>Download Charges</button>
+                                    </div>
                                     {
                                         roleUser == 'Administrador'
                                         ?
@@ -592,7 +647,7 @@ function ChargeCompany() {
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDelivery }</b>
                                     </div>
                                     <div className="col-lg-4 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Charge Company: { totalPriceCompany +' $' }</b>
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Company Base Price : { totalPriceCompany +' $' }</b>
                                     </div>
                                 </div>
                             </h5>
@@ -602,10 +657,7 @@ function ChargeCompany() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                <th><b>TEAM</b></th>
-                                                <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
@@ -613,7 +665,7 @@ function ChargeCompany() {
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ROUTE</th>
-                                                <th>PRICE COMPANY</th>
+                                                <th>BASE PRICE</th>
                                                 <th>IMAGE</th>
                                             </tr>
                                         </thead>

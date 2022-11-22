@@ -127,6 +127,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/charge-company', [ChargeCompanyController::class, 'Index'])->middleware('permission:chargeCompany.index');;
 	Route::get('/charge-company/list/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ChargeCompanyController::class, 'List']);
 	Route::post('/charge-company/insert', [ChargeCompanyController::class, 'Insert']);
+	Route::get('/charge-company/export/{idCompany}/{dateInit}/{dateEnd}', [ChargeCompanyController::class, 'Export']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
