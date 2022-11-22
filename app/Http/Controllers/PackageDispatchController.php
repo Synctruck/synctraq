@@ -53,7 +53,15 @@ class PackageDispatchController extends Controller
 
         $quantityDispatch    = $packageDispatchList->total();
         $quantityDispatchAll = $getDataDispatchAll->count();
-        $quantityFailed      = PackageFailed::get()->count();
+
+        if($idTeam != 0)
+        {
+            $quantityFailed = PackageFailed::where('idTeam', $idTeam)->get()->count();
+        }
+        else
+        {
+            $quantityFailed = PackageFailed::get()->count();
+        }
 
         $roleUser = Auth::user()->role->name;
 
@@ -131,7 +139,8 @@ class PackageDispatchController extends Controller
 
         if($idTeam && $idDriver)
         {
-            $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam)
+                                                        ->where('idUserDispatch', $idDriver);
         }
         elseif($idTeam)
         {
@@ -218,6 +227,11 @@ class PackageDispatchController extends Controller
 
     public function Insert(Request $request)
     {
+        if($request->get('autorizationDispatch') == false)
+        {
+            return ['stateAction' => 'notAutorization'];
+        }
+
         $validateDispatch = false;
 
         $package = PackageInbound::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -388,6 +402,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->idUserDispatch               = $idUserDispatch;
                         $packageHistory->Date_Dispatch                = $created_at;
                         $packageHistory->dispatch                     = 1;
+                        $packageHistory->autorizationDispatch         = 1;
                         $packageHistory->Description                  = $description;
                         $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';

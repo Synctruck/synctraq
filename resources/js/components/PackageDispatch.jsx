@@ -44,6 +44,7 @@ function PackageDispatch() {
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
+    const [autorizationDispatch, setAutorizationDispatch] = useState(false);
 
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
@@ -130,6 +131,15 @@ function PackageDispatch() {
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
+            }
+
+            if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
+            {
+                setAutorizationDispatch(false);
+            }
+            else
+            {
+                setAutorizationDispatch(true);
             }
         });
     }
@@ -478,199 +488,216 @@ function PackageDispatch() {
 
         console.log(sendDispatch);
 
-        if(sendDispatch)
+        if(autorizationDispatch == true)
         {
-            setReadOnly(true);
-            setSendDispatch(0);
+            if(sendDispatch)
+            {
+                setReadOnly(true);
+                setSendDispatch(0);
 
-            const formData = new FormData();
+                const formData = new FormData();
 
-            formData.append('Reference_Number_1', Reference_Number_1);
-            formData.append('idTeam', idTeam);
-            formData.append('idDriver', idDriver);
-            formData.append('RouteSearch', RouteSearch);
+                formData.append('Reference_Number_1', Reference_Number_1);
+                formData.append('idTeam', idTeam);
+                formData.append('idDriver', idDriver);
+                formData.append('RouteSearch', RouteSearch);
+                formData.append('autorizationDispatch', autorizationDispatch);
 
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'package-dispatch/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json()).
-            then((response) => {
+                fetch(url_general +'package-dispatch/insert', {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                })
+                .then(res => res.json()).
+                then((response) => {
 
-                    if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
+                        if(response.stateAction == 'notAutorization')
                         {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
-                                showConfirmButton: false,
-                                timer: 2000,
-                            });
+                            setTextMessage("YOU MUST MARK THE AUTHORIZATION TO CARRY OUT THE DISPATCH #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+                        }
+                        else if(response.stateAction == 'validatedFilterPackage')
+                        {
+                            let packageBlocked  = response.packageBlocked;
+                            let packageManifest = response.packageManifest;
+
+                            if(packageBlocked)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                    text: packageBlocked.comment,
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                });
+                            }
+
+                            if(packageManifest)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                    text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                })
+                            }
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+
+                            setTypeMessage('primary');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoBlocked').play();
+                        }
+                        else if(response.stateAction == 'notInbound')
+                        {
+                            setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'notRoute')
+                        {
+                            setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'repairPackage')
+                        {
+                            setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                            setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+                            setTypeMessageDispatch('error');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'notSelectTeamDriver')
+                        {
+                            setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                            setTextMessageDate("SELECT A TEAM AND A DRIVER");
+                            setTypeMessageDispatch('error');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'notInland')
+                        {
+                            setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'notExists')
+                        {
+                            setTextMessage("NO EXISTS #"+ Reference_Number_1);
+                            setTypeMessageDispatch('error');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'notValidatedRoute')
+                        {
+                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                            setTypeMessageDispatch('error');
+                            setNumberPackage('');
+
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'validated')
+                        {
+                            let packageDispatch = response.packageDispatch;
+
+                            let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
+                            let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
+
+                            let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
+                                            packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
+                                            team +' / '+ driver;
+
+                            setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
+                            setTextMessageDate(textDate);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'returCompany')
+                        {
+                            setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'packageExist')
+                        {
+                            setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'delivery')
+                        {
+                            setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'assigned')
+                        {
+                            setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
+                            setTypeMessageDispatch('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction)
+                        {
+                            setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
+                            setTextMessageDate('');
+                            setTypeMessageDispatch('success');
+                            setNumberPackage('');
+
+                            listAllPackageDispatch(1, StateSearch, RouteSearchList);
+
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoSuccess').play();
+                        }
+                        else
+                        {
+                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                            setTypeMessageDispatch('error');
+                            setNumberPackage('');
+
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoError').play();
                         }
 
-                        if(packageManifest)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                                showConfirmButton: false,
-                                timer: 2000,
-                            })
-                        }
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                        setReadOnly(false);
+                        setSendDispatch(1);
+                    },
+                );
+            }
+        }
+        else
+        {
+            swal("You must mark the authorization to carry out the dispatch!", {
 
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'notInbound')
-                    {
-                        setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notRoute')
-                    {
-                        setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'repairPackage')
-                    {
-                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
-                        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notSelectTeamDriver')
-                    {
-                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
-                        setTextMessageDate("SELECT A TEAM AND A DRIVER");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notInland')
-                    {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO EXISTS #"+ Reference_Number_1);
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notValidatedRoute')
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        let packageDispatch = response.packageDispatch;
-
-                        let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
-                        let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
-
-                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
-                                        packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
-                                        team +' / '+ driver;
-
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
-                        setTextMessageDate(textDate);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'returCompany')
-                    {
-                        setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'packageExist')
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'delivery')
-                    {
-                        setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'assigned')
-                    {
-                        setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction)
-                    {
-                        setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
-                        setTextMessageDate('');
-                        setTypeMessageDispatch('success');
-                        setNumberPackage('');
-
-                        listAllPackageDispatch(1, StateSearch, RouteSearchList);
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-
-                    setReadOnly(false);
-                    setSendDispatch(1);
-                },
-            );
+                icon: "warning",
+            });
         }
     }
 
@@ -1590,6 +1617,11 @@ function PackageDispatch() {
         location.href = url_general +'package-failed';
     }
 
+    const handlerAutorization = () => {
+
+        setAutorizationDispatch(!autorizationDispatch);
+    }
+
     return (
 
         <section className="section">
@@ -1602,7 +1634,6 @@ function PackageDispatch() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
                                             <div className="col-lg-1">
@@ -1730,7 +1761,6 @@ function PackageDispatch() {
                                                     :
                                                         ''
                                                 }
-
                                             </div>
                                             <div className="row">
                                                 <div className="col-lg-12 text-center">
@@ -1774,6 +1804,18 @@ function PackageDispatch() {
                                             <div className="col-lg-12">
                                                 <label htmlFor="">ROUTES</label>
                                                 <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <div className="form-check">
+                                                    <input className="form-check-input" type="checkbox" id="gridCheck1" checked={ autorizationDispatch } onChange={ () => handlerAutorization() }/>
+                                                    <label className="form-check-label text-danger" for="gridCheck1" >
+                                                        DISPATCH RESPONSABLE DE QUE EL DRIVER SE LLEVA PAQUETES SIN HABER HECHO SU RUTA AYER
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
