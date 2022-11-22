@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageDispatchReturn,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -1037,9 +1037,31 @@ class PackageDispatchController extends Controller
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
                     $packageReturn->quantity                     = $packageDispatch->quantity;
+                    $packageReturn->pricePaymentCompany          = $packageDispatch->pricePaymentCompany;
+                    $packageReturn->pricePaymentTeam             = $packageDispatch->pricePaymentTeam;
+                    $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
 
-                    $packageReturn->save();
+                    $packageReturn->save(); 
+
+                    if($packageDispatch->idPaymentTeam != '')
+                    {
+                        //update payment team company
+                        $paymentTeam = PaymentTeamReturn($packageDispatch->idPaymentTeam);
+
+                        $paymentTeam->totalReturn = $paymentTeam->totalReturn + $packageDispatch->pricePaymentTeam;
+                        $paymentTeam->total       = $paymentTeam->total - $packageDispatch->pricePaymentTeam
+
+                        $paymentTeam->save();
+
+                        //update payment and return, prices totals
+                        $team = User::find($packageDispatch->idTeam);
+
+                        $team->totalDelivery = ($team->totalDelivery + $totalDelivery) - $team->totalReturn;
+
+                        $team->save();
+                        //===============================
+                    }
 
                     //update dispatch
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))

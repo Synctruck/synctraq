@@ -18,6 +18,7 @@ require('./components/PackageDelivery');
 require('./components/PackageNotExists');
 require('./components/PackageReturn');
 require('./components/PaymentDeliveryTeam');
+require('./components/Payments');
 require('./components/Report');
 require('./components/ReportDelivery');
 require('./components/ReportDispatch');

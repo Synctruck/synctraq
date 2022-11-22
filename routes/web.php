@@ -133,6 +133,9 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
 	Route::get('/payment-delivery/list/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'List']);
 	Route::post('/payment-delivery/insert', [PaymentDeliveryTeamController::class, 'Insert']);
+	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment']);
+	Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
+
 
 	//=========== Age of Package
 	Route::get('/package-age', [PackageAgeController::class, 'Index']);
