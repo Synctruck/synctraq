@@ -82,16 +82,6 @@ class ChargeCompanyController extends Controller
             return ['stateAction' => 'incorrectDate'];
         }
 
-        /*$paymentTeam = ChargeCompany::where('startDate', $request->get('startDate'))
-                                        ->where('endDate', $request->get('endDate'))
-                                        ->where('idCompany', $request->get('idCompany'))
-                                        ->first();
-
-        if($paymentTeam != null)
-        {
-            return ['stateAction' => 'paymentExists'];
-        }*/
-
         if($request->get('fuelPrice') == null)
         {
             return ['stateAction' => 'nullFuel'];
@@ -112,29 +102,8 @@ class ChargeCompanyController extends Controller
             DB::beginTransaction();
 
             $idCharge = date('Y-m-d-H-i-s');
-            $dateInit      = $request->get('startDate') .' 00:00:00';
-            $dateEnd       = $request->get('endDate') .' 23:59:59';
-
-            /*$listPackageDelivery = PackageDispatch::where('idCharge', '')
-                                                    ->where('idTeam', $request->get('idTeam'))
-                                                    ->whereBetween('updated_at', [$dateInit, $dateEnd])
-                                                    ->where('status', 'Delivery')
-                                                    ->get();
-
-            $totalDelivery = 0;
-
-            foreach($listPackageDelivery as $delivery)
-            {
-                $packageDelivery = PackageDispatch::find($delivery->Reference_Number_1);
-
-                $packageDelivery->idCharge = $idCharge;
-
-                $packageDelivery->save();
-
-                $totalDelivery = $totalDelivery + $packageDelivery->pricePaymentTeam;
-            }*/
-
-
+            $dateInit = $request->get('startDate') .' 00:00:00';
+            $dateEnd  = $request->get('endDate') .' 23:59:59';
 
             $chargeCompany = new ChargeCompany();
 

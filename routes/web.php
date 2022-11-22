@@ -219,6 +219,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('range-price-company/get/{id}', [RangePriceCompanyController::class, 'Get']);
 	Route::post('range-price-company/update/{id}', [RangePriceCompanyController::class, 'Update']);
 	Route::get('range-price-company/delete/{id}', [RangePriceCompanyController::class, 'Delete']);
+	Route::get('range-price-company/update/prices', [RangePriceCompanyController::class, 'UpdatePrices']);
 
 	//============ Maintenance of ranges teams
 	Route::get('range-price-team-route-company/list/{idTeam}/{idCompany}/{Route}', [RangePriceTeamRouteCompanyController::class, 'List']);

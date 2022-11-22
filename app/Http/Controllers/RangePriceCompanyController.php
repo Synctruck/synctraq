@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\RangePriceCompany;
+use App\Models\{ PackageDispatch, RangePriceCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -154,5 +154,29 @@ class RangePriceCompanyController extends Controller
         $total           = $price + $pricePercentage;
 
         return ['pricePercentage' => $pricePercentage, 'total' => $total];
+    }
+
+    public function UpdatePrices()
+    {
+        $listAll = PackageDispatch::where('pricePaymentCompany', 0.00)->get();
+
+        foreach($listAll as $packageDispatch)
+        {
+            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+
+            $range = RangePriceCompany::where('idCompany', $packageDispatch->idCompany)
+                                ->where('minWeight', '<=', $packageDispatch->Weight)
+                                ->where('maxWeight', '>=', $packageDispatch->Weight)
+                                ->first();
+
+            if($range)
+            {
+                $packageDispatch->pricePaymentCompany = $range->price;
+
+                $packageDispatch->save();
+            }
+        }
+
+        return 'updated completed';
     }
 }
