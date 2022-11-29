@@ -170,7 +170,7 @@ class PackageInboundController extends Controller
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                         //end data for inland
-                        
+
                         Log::info("============== CORRECT - INBOUND  ========");
                         Log::info("===================================");
                     }
