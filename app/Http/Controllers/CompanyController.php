@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, CompanyStatus };
+use App\Models\{ Company, CompanyStatus, PeakeSeasonCompany, RangeDieselCompany };
 
 //use App\Models\{ BasicRates, Company, CompanyStatus, Configuration, DimFactor, PeakeSeason, RangeDieselSurcharge };
 
@@ -297,7 +297,40 @@ class CompanyController extends Controller
         }
     }
 
-    public function GetConfigurationRates($idCompany)
+    public function GetPeakeSeason($idCompany, $weight)
+    {
+        $peakeSeason = PeakeSeasonCompany::where('idCompany', $idCompany)->first();
+
+        if(date('Y-m-d') >= $peakeSeason->start_date && date('Y-m-d') <= $peakeSeason->end_date)
+        {
+            if($weight <= $peakeSeason->lb1_weight)
+            {
+                $pricePeakeSeason = $peakeSeason->lb1_weight_price;
+            }
+            else if($weight > $peakeSeason->lb1_weight && $weight <= $peakeSeason->lb2_weight)
+            {
+                $pricePeakeSeason = $peakeSeason->lb2_weight_price;
+            }
+        }
+        else
+        {
+            $pricePeakeSeason = 0.00;
+        }
+
+        return $pricePeakeSeason;
+    }
+
+    public function GetPercentage($idCompany, $dieselPrice)
+    {
+        $surchargePercentage = RangeDieselCompany::where('idCompany', $idCompany)
+                                                    ->where('at_least', '<=', $dieselPrice)
+                                                    ->where('but_less', '>=',  $dieselPrice)
+                                                    ->first()->surcharge_percentage;
+
+        return $surchargePercentage; 
+    } 
+
+    /*public function GetConfigurationRates($idCompany)
     {
         $dieselPrice = Configuration::first()->diesel_price;
 
@@ -305,7 +338,7 @@ class CompanyController extends Controller
                                     ->orderBy('weight', 'asc')
                                     ->get();
 
-        $peakeSeason = PeakeSeason::where('idCompany', $idCompany)->first();
+        $peakeSeason = PeakeSeasonCompany::where('idCompany', $idCompany)->first();
 
         if(date('Y-m-d') >= $peakeSeason->start_date && date('Y-m-d') <= $peakeSeason->end_date)
         {
@@ -325,5 +358,5 @@ class CompanyController extends Controller
         $lengthField = Company::select('length_field')->find($idCompany)->length_field;
 
         return ['basicRates' => $basicRates, 'peakeSeason' => $peakeSeason, 'surchargePercentage' => $surchargePercentage, 'lengthField' => $lengthField, 'dimFactor' => $dimFactor];
-    }
+    }*/
 }

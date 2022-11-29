@@ -142,7 +142,7 @@ class RangePriceCompanyController extends Controller
 
         if($range == null)
         {
-            $range = RangePriceCompany::orderBy('total', 'desc')->first();
+            $range = RangePriceCompany::orderBy('price', 'desc')->first();
         }
 
         return $range->price;

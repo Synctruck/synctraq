@@ -4,11 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class RangeDiesel extends Model
+class RangeDieselCompany extends Model
 {
     //use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'range_diesel_surcharge';
+    protected $table      = 'range_diesel_surcharge_company';
     protected $primaryKey = 'id';
 
     public $timestamps   = false;

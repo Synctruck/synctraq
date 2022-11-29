@@ -281,6 +281,23 @@ class PackageDispatchController extends Controller
                     $pricePaymentTeam = new RangePriceTeamRouteCompanyController();
                     $pricePaymentTeam = $pricePaymentTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $package->Weight, $package->Route);
 
+                    ////////// TEAM ///////////////////////////////////////////////////7
+                    //calculando dimensiones y precios para company
+                    $dimFactorTeam = DimFactorTeam::first();
+                    $dimFactorTeam = $dimFactorTeam->factor;
+
+                    $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
+                    $dimWeightRoundTeam = ceil($dimWeight);
+
+                    $weightTeam = $weight > $dimWeightRoundTeam ? $weight : $dimWeightRoundTeam;
+
+                    $priceTeam = new RangePriceTeamController(); 
+                    $priceTeam = $priceTeam->GetPriceCompany($packageManifest->idCompany, $weightTeam);
+
+
+
+                    $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+                    
                     try
                     {
                         DB::beginTransaction();

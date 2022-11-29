@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, PackageDelivery, PackageDispatch, PackageHistory, PeakeSeason, RangeDiesel };
+use App\Models\{ ChargeCompany, PackageDelivery, PackageDispatch, PackageHistory, PeakeSeasonCompany, RangeDieselCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -87,7 +87,7 @@ class ChargeCompanyController extends Controller
             return ['stateAction' => 'nullFuel'];
         }
 
-        $rangeDiesel = RangeDiesel::where('idCompany', $request->get('idCompany'))
+        $rangeDiesel = RangeDieselCompany::where('idCompany', $request->get('idCompany'))
                                     ->where('at_least', '<=', $request->get('fuelPrice'))
                                     ->where('but_less', '>=', $request->get('fuelPrice'))
                                     ->first();
@@ -156,7 +156,7 @@ class ChargeCompanyController extends Controller
 
         foreach($listAll as $packageDispatch)
         {
-            $peakeSeason = PeakeSeason::where('idCompany', $packageDispatch->idCompany)->first();
+            $peakeSeason = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)->first();
 
             if($peakeSeason->start_date != null && $peakeSeason->end_date != null)
             {

@@ -11,6 +11,7 @@ use App\Models\{PackageHistory, PackageDelivery, PackageDispatch, PackageInbound
 use Illuminate\Support\Facades\Validator;
 
 use DB;
+use Log;
 use Session;
 
 class IndexController extends Controller

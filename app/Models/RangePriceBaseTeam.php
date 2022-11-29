@@ -1,17 +1,18 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class PeakeSeason extends Model
+class RangePriceBaseTeam extends Authenticatable  implements Auditable
 {
-    protected $table      = 'peake_season';
+    use \OwenIt\Auditing\Auditable;
+
+    protected $table      = 'range_payment_team';
     protected $primaryKey = 'id';
 
     public $timestamps   = false;
-    public $incrementing = false;
-
-    protected $fillable = ['id', 'description', 'statusCode', 'finalStatus'];
+    public $incrementing = true;
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
