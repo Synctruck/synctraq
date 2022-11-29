@@ -105,6 +105,7 @@ class PackageWarehouseController extends Controller
 
         return $packageListWarehouse;
     }
+
     public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
@@ -166,7 +167,7 @@ class PackageWarehouseController extends Controller
                 }
             }
             
-            $initDate = date('Y-m-d 00:00:00');
+            /*$initDate = date('Y-m-d 00:00:00');
             $endDate  = date('Y-m-d 23:59:59');
 
             $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -179,12 +180,12 @@ class PackageWarehouseController extends Controller
             if($countValidations >= 2)
             {
                 return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
-            }
+            }*/
 
-            /*if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
+            if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
             {
                 return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
-            }*/
+            }
 
             try
             {
