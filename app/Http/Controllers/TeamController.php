@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Configuration, Driver, Routes, TeamRoute, User};
+use App\Models\{ Configuration, Driver, PeakeSeasonTeam, RangeDieselTeam, Routes, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -294,6 +294,39 @@ class TeamController extends Controller
         $user->save();
 
         return ['stateAction' => true];
+    }
+
+    public function GetPeakeSeason($idTeam, $weight)
+    {
+        $peakeSeason = PeakeSeasonTeam::where('idTeam', $idTeam)->first();
+
+        if(date('Y-m-d') >= $peakeSeason->start_date && date('Y-m-d') <= $peakeSeason->end_date)
+        {
+            if($weight <= $peakeSeason->lb1_weight)
+            {
+                $pricePeakeSeason = $peakeSeason->lb1_weight_price;
+            }
+            else if($weight > $peakeSeason->lb1_weight && $weight <= $peakeSeason->lb2_weight)
+            {
+                $pricePeakeSeason = $peakeSeason->lb2_weight_price;
+            }
+        }
+        else
+        {
+            $pricePeakeSeason = 0.00;
+        }
+
+        return $pricePeakeSeason;
+    }
+
+    public function GetPercentage($idTeam, $dieselPrice)
+    {
+        $surchargePercentage = RangeDieselTeam::where('idTeam', $idTeam)
+                                                    ->where('at_least', '<=', $dieselPrice)
+                                                    ->where('but_less', '>=',  $dieselPrice)
+                                                    ->first()->surcharge_percentage;
+
+        return $surchargePercentage;
     }
 
     public function Delete($id)

@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageDispatchReturn,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageDispatchReturn,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Api\PackageController;
-use App\Http\Controllers\{ RangePriceCompanyController, RangePriceTeamRouteCompanyController };
+use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -251,7 +251,7 @@ class PackageDispatchController extends Controller
             $package = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                 ->where('status', 'Delete')
                                                 ->first();
-        } 
+        }
 
         if($package)
         {
@@ -275,29 +275,43 @@ class PackageDispatchController extends Controller
 
                 if($package->status != 'Delete')
                 {
-                    $pricePaymentCompany = new RangePriceCompanyController();
-                    $pricePaymentCompany = $pricePaymentCompany->GetPriceCompany($package->idCompany, $package->Weight);
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $package->Reference_Number_1)->first();
 
-                    $pricePaymentTeam = new RangePriceTeamRouteCompanyController();
-                    $pricePaymentTeam = $pricePaymentTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $package->Weight, $package->Route);
+                    if($packagePriceCompanyTeam == null)
+                    {
+                        return ['stateAction' => 'notDimensions'];
+                    }
 
                     ////////// TEAM ///////////////////////////////////////////////////7
-                    //calculando dimensiones y precios para company
+                    //calculando dimensiones y precios para team
+                    $weight = $packagePriceCompanyTeam->weight;
+                    $cuIn   = $packagePriceCompanyTeam->cuIn;
+
                     $dimFactorTeam = DimFactorTeam::first();
                     $dimFactorTeam = $dimFactorTeam->factor;
 
                     $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
-                    $dimWeightRoundTeam = ceil($dimWeight);
+                    $dimWeightTeamRound = ceil($dimWeightTeam);
 
-                    $weightTeam = $weight > $dimWeightRoundTeam ? $weight : $dimWeightRoundTeam;
+                    $weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
 
-                    $priceTeam = new RangePriceTeamController(); 
-                    $priceTeam = $priceTeam->GetPriceCompany($packageManifest->idCompany, $weightTeam);
+                    $priceTeam = new RangePriceTeamRouteCompanyController();
+                    $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route); 
 
-
-
-                    $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+                    //precio peakeseason
+                    $teamController       = new TeamController(); 
+                    $peakeSeasonPriceTeam = $teamController->GetPeakeSeason($request->get('idTeam'), $weightTeam);
                     
+                    //precio base
+                    $priceBaseTeam = number_format($priceTeam + $peakeSeasonPriceTeam, 2);
+
+                    $dieselPrice = Configuration::first()->diesel_price;
+
+                    $surchargePercentageTeam = $teamController->GetPercentage($request->get('idTeam'), $dieselPrice);
+                    $surchargePriceTeam      = number_format(($priceBaseTeam * $surchargePercentageTeam) / 100, 4);
+                    $totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
+                    ///////// END TEAM
+
                     try
                     {
                         DB::beginTransaction();
@@ -316,7 +330,21 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
                         }
- 
+                        
+                        //update PACKAGE prices team
+                        $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
+                        $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
+                        $packagePriceCompanyTeam->dimWeightTeam           = $dimWeightTeam;
+                        $packagePriceCompanyTeam->dimWeightTeamRound      = $dimWeightTeamRound;
+                        $packagePriceCompanyTeam->priceWeightTeam         = $priceTeam;
+                        $packagePriceCompanyTeam->peakeSeasonPriceTeam    = $peakeSeasonPriceTeam;
+                        $packagePriceCompanyTeam->priceBaseTeam           = $priceBaseTeam;
+                        $packagePriceCompanyTeam->surchargePercentageTeam = $surchargePercentageTeam;
+                        $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
+                        $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
+
+                        $packagePriceCompanyTeam->save();
+
                         if($package->status == 'On hold')
                         {
                             $packageHistory = new PackageHistory();
@@ -376,8 +404,8 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
-                        $packageDispatch->pricePaymentCompany          = $pricePaymentCompany;
-                        $packageDispatch->pricePaymentTeam             = $pricePaymentTeam;
+                        $packageDispatch->pricePaymentCompany          = $packagePriceCompanyTeam->totalPriceCompany;
+                        $packageDispatch->pricePaymentTeam             = $packagePriceCompanyTeam->totalPriceTeam;
                         $packageDispatch->idPaymentTeam                = '';
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
@@ -1064,10 +1092,10 @@ class PackageDispatchController extends Controller
                     if($packageDispatch->idPaymentTeam != '')
                     {
                         //update payment team company
-                        $paymentTeam = PaymentTeamReturn($packageDispatch->idPaymentTeam);
+                        $paymentTeam = PaymentTeamReturn::find($packageDispatch->idPaymentTeam);
 
                         $paymentTeam->totalReturn = $paymentTeam->totalReturn + $packageDispatch->pricePaymentTeam;
-                        $paymentTeam->total       = $paymentTeam->total - $packageDispatch->pricePaymentTeam
+                        $paymentTeam->total       = $paymentTeam->total - $packageDispatch->pricePaymentTeam;
 
                         $paymentTeam->save();
 

@@ -328,7 +328,7 @@ class CompanyController extends Controller
                                                     ->first()->surcharge_percentage;
 
         return $surchargePercentage; 
-    } 
+    }
 
     /*public function GetConfigurationRates($idCompany)
     {

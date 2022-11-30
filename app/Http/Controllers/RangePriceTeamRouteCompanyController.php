@@ -174,7 +174,8 @@ class RangePriceTeamRouteCompanyController extends Controller
 
         if($range == null)
         {
-            $range = RangePriceBaseTeam::where('minWeight', '<=', $weight)
+            $range = RangePriceBaseTeam::where('idTeam', $idTeam)
+                                        ->where('minWeight', '<=', $weight)
                                         ->where('maxWeight', '>=', $weight)
                                         ->first();
         }

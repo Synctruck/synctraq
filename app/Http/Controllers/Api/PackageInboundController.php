@@ -76,7 +76,7 @@ class PackageInboundController extends Controller
 
                     $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
                     $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
-                    $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 2);
+                    $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
                     ///////// END COMPANY
 
                     try
@@ -91,6 +91,7 @@ class PackageInboundController extends Controller
                         $packagePriceCompanyTeam->length                     = $length;
                         $packagePriceCompanyTeam->height                     = $height;
                         $packagePriceCompanyTeam->width                      = $width;
+                        $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
                         $packagePriceCompanyTeam->cuIn                       = $cuIn;
                         $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
                         $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
