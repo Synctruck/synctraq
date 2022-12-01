@@ -18,10 +18,10 @@ class PackagePriceCompanyTeam extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    /*public function company()
+    public function package_dispatch()
     {
-        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
-    }*/
+        return $this->belongsTo('App\Models\PackageDispatch', 'Reference_Number_1', 'id');
+    }
 
 
     //observers

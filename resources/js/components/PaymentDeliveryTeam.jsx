@@ -7,14 +7,16 @@ import Select from 'react-select'
 
 function PaymentDeliveryTeam() {
 
+    const [paymentTeam, setPaymentTeam]       = useState('null');
     const [listReport, setListReport]         = useState([]);
     const [listDeliveries, setListDeliveries] = useState([]);
     const [listTeam, setListTeam]             = useState([]);
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
 
-    const [quantityDelivery, setQuantityDelivery] = useState(0);
-    const [totalPriceTeam, setTotalPriceTeam]     = useState(0);
+    const [quantityDelivery, setQuantityDelivery]   = useState(0);
+    const [totalPriceCompany, setTotalPriceCompany] = useState(0);
+    const [totalPriceTeam, setTotalPriceTeam]       = useState(0);
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
@@ -74,6 +76,7 @@ function PaymentDeliveryTeam() {
         .then(res => res.json())
         .then((response) => {
 
+            setPaymentTeam(response.paymentTeam);
             setListReport(response.reportList.data);
             setListDeliveries(response.listDeliveries);
             setTotalPackage(response.reportList.total);
@@ -83,8 +86,9 @@ function PaymentDeliveryTeam() {
 
             setRoleUser(response.roleUser);
             setListState(response.listState);
-
-            setTotalPriceTeam(parseFloat(response.totalPriceTeam).toFixed(2));
+ 
+            setTotalPriceCompany(parseFloat(response.totalPriceCompany).toFixed(4));
+            setTotalPriceTeam(parseFloat(response.totalPriceTeam).toFixed(4));
 
             if(listState.length == 0)
             {
@@ -93,7 +97,7 @@ function PaymentDeliveryTeam() {
 
             if(response.roleUser == 'Administrador')
             {
-                listAllTeam();
+                //listAllTeam();
             }
             else
             {
@@ -162,11 +166,6 @@ function PaymentDeliveryTeam() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
-
-        location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
-    }
-
     const handlerCheckbox = (Reference_Number_1, checkPayment) => {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -202,6 +201,10 @@ function PaymentDeliveryTeam() {
                 document.getElementById('checkIncorrect'+ packageDelivery.Reference_Number_1).checked = true;
             }
         });
+    }
+
+    const handlerViewDetailPrices = (detailsPrices) => {
+
     }
 
     const listReportTable = listReport.map( (packageDelivery, i) => {
@@ -240,18 +243,11 @@ function PaymentDeliveryTeam() {
                 <td><b>{ packageDelivery.team.name }</b></td>
                 <td>{ packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner }</td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                
-                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
-                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
-                <td>{ packageDelivery.Dropoff_City }</td>
                 <td>{ packageDelivery.Dropoff_Province }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td><b>{ packageDelivery.pricePaymentTeam +' $' }</b></td>
-                <td><b>{ packageDelivery.pricePaymentCompany +' $' }</b></td>
-                <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
-                    { imgs }
-                </td>
+                <td><b>{ packageDelivery.pricePaymentCompany }</b></td>
+                <td><b>{ packageDelivery.pricePaymentTeam }</b></td>
+                
             </tr>
         );
     });
@@ -281,6 +277,14 @@ function PaymentDeliveryTeam() {
         }
     });
 
+    const listViewPricesModal = listViewImages.map( (image, i) => {
+
+        return (
+
+            <img src={ 'https'+ image } className="img-fluid mt-2"/>
+        );
+    });
+
     const modalViewImages = <React.Fragment>
                                     <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -299,6 +303,25 @@ function PaymentDeliveryTeam() {
                                         </div>
                                     </div>
                                 </React.Fragment>;
+
+    const modalViewPackagePrices =  <React.Fragment>
+                                        <div className="modal fade" id="modalViewPackagePrices" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div className="modal-dialog modal-lg">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Data of dimensions and prices of the package</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        { listViewPricesModal }
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </React.Fragment>;
 
     const listTeamSelect = listTeam.map( (team, i) => {
 
@@ -392,6 +415,16 @@ function PaymentDeliveryTeam() {
 
     const handlerRegisterPayment = () => {
 
+        if(quantityDelivery == 0)
+        {
+            swal("No packages in delivery!", {
+
+                icon: "warning",
+            });
+
+            return 0;
+        }
+
         if(idTeam != 0)
         {
             swal({
@@ -430,6 +463,13 @@ function PaymentDeliveryTeam() {
                                     icon: "error",
                                 });
                             }
+                            else if(response.stateAction == 'daysDifferenceIncorrect')
+                            {
+                                swal("Days difference incorrect!", {
+
+                                    icon: "error",
+                                });
+                            }
                             else if(response.stateAction == 'paymentExists')
                             {
                                 swal("There is already a payment for the selected filters!", {
@@ -444,10 +484,7 @@ function PaymentDeliveryTeam() {
                                     icon: "success",
                                 });
 
-                                document.getElementById('fileImport').value = '';
-
-                                listAllPackage();
-                                setbtnDisplay('none');
+                                listReportDispatch(1, RouteSearch, StateSearch);
                             }
 
                             LoadingHide();
@@ -465,6 +502,11 @@ function PaymentDeliveryTeam() {
         }
     }
 
+    const handlerExportPayment = () => {
+
+        location.href = url_general +'payment-delivery/export/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+    }
+
     return (
 
         <section className="section">
@@ -475,9 +517,14 @@ function PaymentDeliveryTeam() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
+                                    <div className="col-lg-2 mb-3" style={ {display: (String(paymentTeam) == 'null' ? 'block' : 'none')} }>
                                         <button className="btn btn-success form-control" onClick={ () => handlerRegisterPayment() }>
                                             Register Payment
+                                        </button>
+                                    </div>
+                                    <div className="col-lg-2 mb-3">
+                                        <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment() }>
+                                            <i className="ri-file-excel-fill"></i> Export
                                         </button>
                                     </div>
                                 </div>
@@ -561,6 +608,9 @@ function PaymentDeliveryTeam() {
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDelivery }</b>
                                     </div>
                                     <div className="col-lg-4 mb-3">
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Charge Company: { totalPriceCompany +' $' }</b>
+                                    </div>
+                                    <div className="col-lg-4 mb-3">
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Payment Team: { totalPriceTeam +' $' }</b>
                                     </div>
                                 </div>
@@ -576,15 +626,10 @@ function PaymentDeliveryTeam() {
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
-                                                <th>CLIENT</th>
-                                                <th>CONTACT</th>
-                                                <th>ADDREESS</th>
-                                                <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ROUTE</th>
-                                                <th>PRICE TEAM</th>
                                                 <th>PRICE COMPANY</th>
-                                                <th>IMAGE</th>
+                                                <th>PRICE TEAM</th>
                                             </tr>
                                         </thead>
                                         <tbody>
