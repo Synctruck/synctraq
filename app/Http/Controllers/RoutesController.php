@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, Routes, TeamRoute, User};
+use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -299,6 +299,68 @@ class RoutesController extends Controller
         $route->delete();
 
         return ['stateAction' => true];
+    }
+
+    public function UpdateRoutePackageManifestInboundWarehouse()
+    {        
+        $listPackageManifest = PackageManifest::all();
+
+        foreach($listPackageManifest as $package)
+        {
+            $package = PackageManifest::find($package->Reference_Number_1);
+
+            if($package)
+            {
+                $route = Routes::where('zipCode', $package->Dropoff_Postal_Code)->first();
+
+                if($route)
+                {
+                    $package->Route = $route->name;
+
+                    $package->save();
+                }
+            }
+        }
+
+        $listPackageInbound = PackageInbound::all();
+
+        foreach($listPackageInbound as $package)
+        {
+            $package = PackageInbound::find($package->Reference_Number_1);
+            
+            if($package)
+            {
+                $route = Routes::where('zipCode', $package->Dropoff_Postal_Code)->first();
+
+                if($route)
+                {
+                    $package->Route = $route->name;
+
+                    $package->save();
+                }
+            }
+        }
+
+        $listPackageWarehouse = PackageWarehouse::all();
+
+        foreach($listPackageWarehouse as $package)
+        {
+            $package = PackageWarehouse::find($package->Reference_Number_1);
+            
+            if($package)
+            {
+                $route = Routes::where('zipCode', $package->Dropoff_Postal_Code)->first();
+
+                if($route)
+                {
+                    $package->Route = $route->name;
+
+                    $package->save();
+                }
+            }
+        }
+
+        dd('updated');
     }
 
     public function UpdateRoutePackage()

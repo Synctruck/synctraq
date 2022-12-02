@@ -226,7 +226,9 @@ class PackageController extends Controller
                     $package->contains_alcohol              = $data['contains_alcohol'];
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
-
+                    $package->created_at                    = date('Y-m-d H:i:s');
+                    $package->updated_at                    = date('Y-m-d H:i:s');
+                    
                     $package->save();
 
                     $packageHistory = new PackageHistory();

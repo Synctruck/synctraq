@@ -18,7 +18,7 @@ class PackageWarehouse extends Model
     ];
 
     public $timestamps   = false;
-    public $incrementing = true;
+    public $incrementing = false;
 
     public function user()
     {

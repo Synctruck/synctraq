@@ -12,8 +12,8 @@ class PackageManifest extends Model
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
-    public $timestamps = false;
-    public $false      = true;
+    public $timestamps   = false;
+    public $incrementing = false;
 
     /*protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',

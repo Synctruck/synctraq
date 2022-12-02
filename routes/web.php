@@ -233,6 +233,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('routes/get/{id}', [RoutesController::class, 'Get']);
 	Route::post('routes/update/{id}', [RoutesController::class, 'Update']);
 	Route::get('routes/delete/{id}', [RoutesController::class, 'Delete']);
+	Route::get('routes/update/package/manifest/inbound/warehouse', [RoutesController::class, 'UpdateRoutePackageManifestInboundWarehouse']);
 	Route::get('routes/update/package', [RoutesController::class, 'UpdateRoutePackage']);
 
 	//============ Maintenance of teams
