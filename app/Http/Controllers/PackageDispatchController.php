@@ -227,10 +227,10 @@ class PackageDispatchController extends Controller
 
     public function Insert(Request $request)
     {
-        if($request->get('autorizationDispatch') == false)
+        /*if($request->get('autorizationDispatch') == false)
         {
             return ['stateAction' => 'notAutorization'];
-        }
+        }*/
 
         $validateDispatch = false;
 
@@ -271,7 +271,7 @@ class PackageDispatchController extends Controller
             $package = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                                 ->where('status', 'Delete')
                                                 ->first();
-        } 
+        }
 
         if($package)
         {
