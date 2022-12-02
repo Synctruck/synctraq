@@ -20,7 +20,7 @@ class ChargeCompanyController extends Controller
         return view('charge.index');
     }
 
-    public function List($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function List($idCompany, $dateInit, $dateEnd)
     {
         $chargeCompany = ChargeCompany::where('startDate', $dateInit)
                                         ->where('endDate', $dateEnd);
@@ -28,14 +28,14 @@ class ChargeCompanyController extends Controller
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
+        //$routes = explode(',', $route);
+        //$states = explode(',', $state);
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
                                 ->whereBetween('updated_at', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
-        if($idCompany != 0)
+        if($idCompany != 0) 
         {
             $chargeCompany = $chargeCompany->where('idCompany', $idCompany)->first();
             $listAll       = $listAll->where('idCompany', $idCompany);
@@ -45,7 +45,7 @@ class ChargeCompanyController extends Controller
             $chargeCompany = $chargeCompany->first();
         }
 
-        if($idTeam != 0)
+        /*if($idTeam != 0)
         {
             $listAll = $listAll->where('idTeam', $idTeam);
         }
@@ -58,7 +58,7 @@ class ChargeCompanyController extends Controller
         if($state != 'all')
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
-        }
+        }*/
 
         $totalPriceCompany = $listAll->get()->sum('pricePaymentCompany');
 
@@ -78,10 +78,10 @@ class ChargeCompanyController extends Controller
 
     public function Insert(Request $request)
     {
-        $sunday   = date("w", strtotime($request->get('startDate')));
-        $saturday = date("w", strtotime($request->get('endDate')));
+        $monday = date("w", strtotime($request->get('startDate')));
+        $sunday = date("w", strtotime($request->get('endDate')));
 
-        if($sunday != 0 || $saturday != 6)
+        if($monday != 1 || $sunday != 0)
         {
             return ['stateAction' => 'incorrectDate'];
         }
@@ -103,7 +103,7 @@ class ChargeCompanyController extends Controller
         }
 
         try
-        { 
+        {
             DB::beginTransaction();
 
             $idChargeCompany = date('Y-m-d-H-i-s');
@@ -156,80 +156,55 @@ class ChargeCompanyController extends Controller
         }
     }
 
-    public function Export($idCompany, $dateInit, $dateEnd)
+    public function Export($dateInit, $dateEnd, $idCompany)
     {
         $delimiter = ",";
-        $filename = "Report Charge Company " . date('Y-m-d H:i:s') . ".csv";
+        $filename = "CHARGE - DELIVERY - COMPANY" . date('Y-m-d H:i:s') . ".csv";
 
         //create a file pointer
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'COMPANY', 'PACKAGE ID', 'WEIGHT', 'WEIGHT PRICE', 'PEAKE SEASON PRICE', 'DIESEL PRICE', 'SURCHAGE PERCENTAGE', 'BASE PRICE', 'SURCHAGE PRICE', 'TOTAL');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'WEIGHT', 'LENGTH', 'HEIGHT', 'WIDTH', 'CUIN', 'DIESEL PRICE C', 'DIESEL PRICE T', 'DIM FACTOR C', 'DIM WEIGHT C', 'DIM WEIGHT ROUND C', 'PRICE WEIGHT C', 'PEAKE SEASON PRICE C', 'PRICE BASE C', 'SURCHARGE PERCENTAGE C', 'SURCHAGE PRICE C', 'TOTAL PRICE C', 'DIM FACTOR T', 'DIM WEIGHT T', 'DIM WEIGHT ROUND T', 'PRICE WEIGHT T', 'PEAKE SEASON PRICE C', 'PRICE BASE T', 'SURCHARGE PERCENTAGE T', 'SURCHAGE PRICE T', 'TOTAL PRICE T');
 
         fputcsv($file, $fields, $delimiter);
 
-        $chargeCompany = ChargeCompany::where('startDate', $dateInit)
-                                        ->where('endDate', $dateEnd)
-                                        ->where('idCompany', $idCompany)
-                                        ->first();
-
-
-
-        $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('created_at', [$dateInit, $dateEnd])
-                                ->where('status', 'Delivery')
-                                ->get();
-
-        foreach($listAll as $packageDispatch)
+        $listPackageDelivery = $this->GetDataDelivery($dateInit, $dateEnd, $idCompany);
+        
+        foreach($listPackageDelivery as $packageDelivery)
         {
-            $peakeSeason = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)->first();
-
-            if($peakeSeason->start_date != null && $peakeSeason->end_date != null)
-            {
-                $deliveryDate        = strtotime(date('Y-m-d', strtotime($packageDispatch->updated_at)));
-                $peakeSeasonDateInit = strtotime($peakeSeason->start_date);
-                $peakeSeasonDateEnd  = strtotime($peakeSeason->end_date);
-
-                if($deliveryDate >= $peakeSeasonDateInit && $deliveryDate <= $peakeSeasonDateEnd)
-                {
-                    if($packageDispatch->Weight <= $peakeSeason->lb1_weight)
-                    {
-                        $peakeSeason = $peakeSeason->lb1_weight_price;
-                    }
-                    else
-                    {
-                        $peakeSeason = $peakeSeason->lb2_weight_price;
-                    }
-                }
-                else
-                {
-                    $peakeSeason = 0.00;
-                }
-            }
-            else
-            {
-                $peakeSeason = 0.00;
-            }
-
-            $dieselPrice    = $chargeCompany->fuelPrice;
-            $fuelPercentage = $chargeCompany->fuelPercentage;
-            $basePrice      = number_format($packageDispatch->pricePaymentCompany + $peakeSeason, 4);
-            $surchargePrice = number_format(($basePrice * $fuelPercentage) / 100, 4);
-            $total          = number_format($basePrice + $surchargePrice, 4);
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDispatch->updated_at)),
-                                $packageDispatch->company,
-                                $packageDispatch->Reference_Number_1,
-                                $packageDispatch->Weight,
-                                $packageDispatch->pricePaymentCompany,
-                                $peakeSeason,
-                                $dieselPrice,
-                                $fuelPercentage,
-                                $basePrice,
-                                $surchargePrice,
-                                $total
+                                date('m-d-Y', strtotime($packageDelivery->updated_at)),
+                                date('H:i:s', strtotime($packageDelivery->updated_at)),
+                                $packageDelivery->company,
+                                $packageDelivery->team->name,
+                                $packageDelivery->Reference_Number_1,
+                                $packageDelivery->package_price_company_team[0]->weight,
+                                $packageDelivery->package_price_company_team[0]->length,
+                                $packageDelivery->package_price_company_team[0]->height,
+                                $packageDelivery->package_price_company_team[0]->width,
+                                $packageDelivery->package_price_company_team[0]->cuIn,
+                                $packageDelivery->package_price_company_team[0]->dieselPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->dieselPriceTeam,
+                                $packageDelivery->package_price_company_team[0]->dimFactorCompany,
+                                $packageDelivery->package_price_company_team[0]->dimWeightCompany,
+                                $packageDelivery->package_price_company_team[0]->dimWeightCompanyRound,
+                                $packageDelivery->package_price_company_team[0]->priceWeightCompany,
+                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->priceBaseCompany,
+                                $packageDelivery->package_price_company_team[0]->surchargePercentageCompany,
+                                $packageDelivery->package_price_company_team[0]->surchargePriceCompany,
+                                $packageDelivery->package_price_company_team[0]->totalPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->dimFactorTeam,
+                                $packageDelivery->package_price_company_team[0]->dimWeightTeam,
+                                $packageDelivery->package_price_company_team[0]->dimWeightTeamRound,
+                                $packageDelivery->package_price_company_team[0]->priceWeightTeam,
+                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceTeam,
+                                $packageDelivery->package_price_company_team[0]->priceBaseTeam,
+                                $packageDelivery->package_price_company_team[0]->surchargePercentageTeam,
+                                $packageDelivery->package_price_company_team[0]->surchargePriceTeam,
+                                $packageDelivery->package_price_company_team[0]->totalPriceTeam,
                             );
 
             fputcsv($file, $lineData, $delimiter);
@@ -241,5 +216,62 @@ class ChargeCompanyController extends Controller
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+    }
+
+    public function GetDataDelivery($dateInit, $dateEnd, $idCompany)
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        //$routes = explode(',', $route);
+        //$states = explode(',', $state);
+
+        $listAll = PackageDispatch::whereBetween('updated_at', [$dateInit, $dateEnd])->where('status', 'Delivery');
+
+        if($idCompany != 0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
+
+        /*if($route != 'all')
+        {
+            $listAll = $listAll->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }*/
+
+        $listAll = $listAll->with(['team', 'driver', 'package_histories', 'package_price_company_team'])
+                            ->orderBy('updated_at', 'asc')
+                            ->get();
+
+        return $listAll;
+    }
+
+    public function IndexCharge()
+    {
+        return view('charge.company');
+    }
+
+    public function ChargeList($dateStart, $dateEnd, $idCompany)
+    {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd   = $dateEnd .' 23:59:59';
+
+        $chargeList = ChargeCompany::whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idCompany != 0)
+        {
+            $chargeList = $chargeList->where('idCompany', $idCompany);
+        }
+
+        $totalPayment = $chargeList->get()->sum('total');
+        $chargeList   = $chargeList->with('company')
+                                    ->orderBy('created_at', 'desc')
+                                    ->paginate(50);
+
+        return ['chargeList' => $chargeList, 'totalPayment' => number_format($totalPayment, 4)];
     }
 }

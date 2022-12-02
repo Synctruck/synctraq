@@ -1,8 +1,8 @@
 @extends('layout.admin')
-@section('title', 'CHARGE - COMPANY')
+@section('title', 'CHARGE - DELIVERY - COMPANY')
 @section('content')
 <div class="pagetitle">
-  	<h1><b>CHARGE - COMPANY</b></h1>
+  	<h1><b>CHARGE - DELIVERY - COMPANY</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>

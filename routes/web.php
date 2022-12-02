@@ -124,17 +124,20 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
 
 	//=========== Charge Company
-	Route::get('/charge-company', [ChargeCompanyController::class, 'Index'])->middleware('permission:chargeCompany.index');;
-	Route::get('/charge-company/list/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ChargeCompanyController::class, 'List']);
-	Route::post('/charge-company/insert', [ChargeCompanyController::class, 'Insert']);
-	Route::get('/charge-company/export/{idCompany}/{dateInit}/{dateEnd}', [ChargeCompanyController::class, 'Export']);
+	Route::get('/charge-delivery-company', [ChargeCompanyController::class, 'Index'])->middleware('permission:chargeDeliveryCompany.index');;
+	Route::get('/charge-delivery-company/list/{idCompany}/{dateInit}/{dateEnd}', [ChargeCompanyController::class, 'List']);
+	Route::post('/charge-delivery-company/insert', [ChargeCompanyController::class, 'Insert']);
+	Route::get('/charge-delivery-company/export/{dateInit}/{dateEnd}/{idCompany}', [ChargeCompanyController::class, 'Export']);
+	Route::get('/charge-company', [ChargeCompanyController::class, 'IndexCharge']);
+	Route::get('/charge-company/list/{dateInit}/{endDate}/{idCompany}', [ChargeCompanyController::class, 'ChargeList']);
+	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'ExportCompany']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
 	Route::get('/payment-delivery/list/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'List']);
 	Route::post('/payment-delivery/insert', [PaymentDeliveryTeamController::class, 'Insert']);
 	Route::get('/payment-delivery/export/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'Export']);
-	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment']);
+	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment'])->middleware('permission:chargeCompany.index');
 	Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
 	Route::get('/payment-team/export/{id}', [PaymentDeliveryTeamController::class, 'ExportPayment']);
 

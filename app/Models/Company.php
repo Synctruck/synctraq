@@ -41,6 +41,10 @@ class Company extends Authenticatable implements Auditable
         return $this->hasMany('App\Models\PackageInbound', 'idCompany');
     }
 
+    public function charges()
+    {
+        return $this->hasMany('App\Models\ChargeCompany', 'idCompany');
+    }
 
     //observers
     protected static function booted()

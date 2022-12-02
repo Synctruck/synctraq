@@ -18,6 +18,11 @@ class ChargeCompany extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function company()
+    {
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
+    }
+
     //observers
     protected static function booted()
     {

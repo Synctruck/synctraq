@@ -35,9 +35,8 @@ function ChargeCompany() {
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
 
-    const [file, setFile]             = useState('');
-    const [buttonDisplay, setButtonDisplay] = useState('update');
-
+    const [file, setFile]                     = useState('');
+    const [buttonDisplay, setButtonDisplay]   = useState('null');
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
     const inputFileRef  = React.useRef();
@@ -74,7 +73,7 @@ function ChargeCompany() {
 
         setListReport([]);
 
-        fetch(url_general +'charge-company/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'charge-delivery-company/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -438,7 +437,7 @@ function ChargeCompany() {
 
                     LoadingShow(); 
 
-                    fetch(url_general +'charge-company/insert', {
+                    fetch(url_general +'charge-delivery-company/insert', {
                         headers: { "X-CSRF-TOKEN": token },
                         method: 'post',
                         body: formData
@@ -492,19 +491,9 @@ function ChargeCompany() {
         }
     }
 
-    const handlerDownloadCharge = () => {
+    const handlerExportCharge = () => {
 
-        if(idCompany != 0)
-        {
-            location.href = url_general +'charge-company/export/'+ idCompany +'/'+ dateInit +'/'+ dateEnd;
-        }
-        else
-        {
-            swal("You must select a COMPANY to export!", {
-
-                icon: "warning",
-            });
-        }
+        location.href = url_general +'charge-delivery-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany;
     }
 
     return (
@@ -518,12 +507,10 @@ function ChargeCompany() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 mb-3" style={ {display: (String(buttonDisplay) == 'null' ? 'block' : 'none')} }>
-                                        <label htmlFor="" className="text-white">--</label>
                                         <button className="btn btn-success form-control" onClick={ () => handlerRegisterPayment() }>Register Charge</button>
                                     </div>
                                     <div className="col-lg-2 mb-3">
-                                        <label htmlFor="" className="text-white">--</label>
-                                        <button className="btn btn-primary form-control" onClick={ () => handlerDownloadCharge() }>
+                                        <button className="btn btn-primary form-control" onClick={ () => handlerExportCharge() }>
                                             <i className="ri-file-excel-fill"></i> Export
                                         </button>
                                     </div>

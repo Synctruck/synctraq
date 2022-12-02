@@ -111,7 +111,6 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
-
     const listReportTable = listReport.map( (payment, i) => {
 
         return (

@@ -17,7 +17,7 @@ class PaymentDeliveryTeamController extends Controller
 {
     public function Index()
     {
-        return view('paymentcompanyteam.team');
+        return view('payment.index');
     }
 
     public function List($dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
@@ -266,7 +266,7 @@ class PaymentDeliveryTeamController extends Controller
 
     public function IndexPayment()
     {
-        return view('paymentcompanyteam.payment');
+        return view('payment.payment');
     }
 
     public function PaymentList($dateStart, $dateEnd, $idTeam)

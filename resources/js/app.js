@@ -5,6 +5,7 @@ require('./components/Assigned');
 require('./components/AssignedTeam');
 require('./components/Comments');
 require('./components/Companies');
+require('./components/Charge');
 require('./components/ChargeCompany');
 require('./components/Driver');
 require('./components/Home');
