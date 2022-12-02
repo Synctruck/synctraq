@@ -68,8 +68,6 @@ function Charge() {
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
-            setButtonDisplay(response.chargeCompany);
-
             setTotalChargeCompany(response.totalCharge);
 
             if(listState.length == 0)

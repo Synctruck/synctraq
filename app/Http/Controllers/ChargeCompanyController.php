@@ -285,7 +285,7 @@ class ChargeCompanyController extends Controller
         $charge = ChargeCompany::find($idCharge);
 
         //set column headers
-        $fields = array('CHARGE', 'REGISTER DATE', date('m-d-Y H:i:s', strtotime($charge->created_at)), 'TEAM', $charge->company->name, 'TOTAL', $charge->total);
+        $fields = array('CHARGE', 'REGISTER DATE', date('m-d-Y H:i:s', strtotime($charge->created_at)), 'COMPANY', $charge->company->name, 'TOTAL', $charge->total);
         fputcsv($file, $fields, $delimiter);
 
         //set column headers

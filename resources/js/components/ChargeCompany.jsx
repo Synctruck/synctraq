@@ -73,7 +73,7 @@ function ChargeCompany() {
 
         setListReport([]);
 
-        fetch(url_general +'charge-delivery-company/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'charge-delivery-company/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
