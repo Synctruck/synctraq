@@ -106,9 +106,9 @@ function Payments() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExportPayment = (id) => {
 
-        location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        location.href = url_general +'payment-team/export/'+ id;
     }
 
 
@@ -130,6 +130,11 @@ function Payments() {
                 <td className="text-danger text-right"><b>{ payment.totalReturn +' $' }</b></td>
                 <td className="text-danger text-right"><b>{ payment.refund +' $' }</b></td>
                 <td className="text-primary text-right"><b>{ payment.total +' $' }</b></td>
+                <td>
+                    <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment(payment.id) }>
+                        <i className="ri-file-excel-fill"></i> Export
+                    </button>
+                </td>
             </tr>
         );
     });
@@ -394,6 +399,7 @@ function Payments() {
                                                 <th>TOTAL RETURN</th>
                                                 <th>REFUND</th>
                                                 <th>TOTAL</th>
+                                                <th>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

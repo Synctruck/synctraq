@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, PackageDelivery, PackageDispatch, PackageHistory, PeakeSeasonCompany, RangeDieselCompany };
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, PackageDispatch, PackageHistory, PeakeSeasonCompany, RangeDieselCompany };
 
 use Illuminate\Support\Facades\Validator;
 
 use Auth;
+use DateTime;
 use DB;
 use Session;
 
@@ -22,9 +23,7 @@ class ChargeCompanyController extends Controller
     public function List($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $chargeCompany = ChargeCompany::where('startDate', $dateInit)
-                                        ->where('endDate', $dateEnd)
-                                        ->where('idCompany', $idCompany)
-                                        ->first();
+                                        ->where('endDate', $dateEnd);
 
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -33,12 +32,17 @@ class ChargeCompanyController extends Controller
         $states = explode(',', $state);
 
         $listAll = PackageDispatch::with(['driver.role', 'driver', 'package_histories'])
-                                ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                ->whereBetween('updated_at', [$dateInit, $dateEnd])
                                 ->where('status', 'Delivery');
 
         if($idCompany != 0)
         {
-            $listAll = $listAll->where('idCompany', $idCompany);
+            $chargeCompany = $chargeCompany->where('idCompany', $idCompany)->first();
+            $listAll       = $listAll->where('idCompany', $idCompany);
+        }
+        else
+        {
+            $chargeCompany = $chargeCompany->first();
         }
 
         if($idTeam != 0)
@@ -82,44 +86,67 @@ class ChargeCompanyController extends Controller
             return ['stateAction' => 'incorrectDate'];
         }
 
-        if($request->get('fuelPrice') == null)
-        {
-            return ['stateAction' => 'nullFuel'];
-        }
+        $date1 = new DateTime($request->get('startDate'));
+        $date2 = new DateTime($request->get('endDate'));
+        $diff  = $date1->diff($date2);
 
-        $rangeDiesel = RangeDieselCompany::where('idCompany', $request->get('idCompany'))
-                                    ->where('at_least', '<=', $request->get('fuelPrice'))
-                                    ->where('but_less', '>=', $request->get('fuelPrice'))
-                                    ->first();
+        if($diff->days != 6) return ['stateAction' => 'daysDifferenceIncorrect'];
 
-        if($rangeDiesel == null)
+        $chargeCompany = ChargeCompany::where('startDate', $request->get('startDate'))
+                                        ->where('endDate', $request->get('endDate'))
+                                        ->where('idCompany', $request->get('idCompany'))
+                                        ->first();
+
+        if($chargeCompany != null)
         {
-            return ['stateAction' => 'notRangeDiesel'];
+            return ['stateAction' => 'chargeExists']; 
         }
 
         try
-        {
+        { 
             DB::beginTransaction();
 
-            $idCharge = date('Y-m-d-H-i-s');
-            $dateInit = $request->get('startDate') .' 00:00:00';
-            $dateEnd  = $request->get('endDate') .' 23:59:59';
+            $idChargeCompany = date('Y-m-d-H-i-s');
+            $dateInit        = $request->get('startDate') .' 00:00:00';
+            $dateEnd         = $request->get('endDate') .' 23:59:59';
 
-            $chargeCompany = new ChargeCompany();
+            $listPackageDelivery = PackageDispatch::whereBetween('updated_at', [$dateInit, $dateEnd])
+                                                    ->where('status', 'Delivery')
+                                                    ->get();
 
-            $chargeCompany->id             = $idCharge;
+            $total = 0;
+
+            foreach($listPackageDelivery as $packageDelivery)
+            {
+                $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
+
+                if($chargeCompanyDetail == null)
+                {
+                    $chargeCompanyDetail = new ChargeCompanyDetail();
+
+                    $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
+                    $chargeCompanyDetail->idChargeCompany    = $idChargeCompany;
+
+                    $chargeCompanyDetail->save();
+
+                    $total = number_format($total + $packageDelivery->pricePaymentCompany, 4);
+                }
+            }
+
+            $chargeCompany = new ChargeCompany(); 
+
+            $chargeCompany->id             = $idChargeCompany;
             $chargeCompany->idCompany      = $request->get('idCompany');
             $chargeCompany->idUser         = Auth::user()->id;
             $chargeCompany->startDate      = $request->get('startDate');
             $chargeCompany->endDate        = $request->get('endDate');
-            $chargeCompany->fuelPrice      = $request->get('fuelPrice');
-            $chargeCompany->fuelPercentage = $rangeDiesel->surcharge_percentage;
+            $chargeCompany->total          = $total;
 
             $chargeCompany->save();
 
             DB::commit();
 
-            return ['stateAction' => true, 'fuelPercentage' => $rangeDiesel->surcharge_percentage];
+            return ['stateAction' => true];
         }
         catch(Exception $e)
         {

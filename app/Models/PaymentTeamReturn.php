@@ -18,6 +18,11 @@ class PaymentTeamReturn extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function team()
+    {
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
+    }
+
     //observers
     protected static function booted()
     {

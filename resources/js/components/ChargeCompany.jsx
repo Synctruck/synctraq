@@ -88,16 +88,7 @@ function ChargeCompany() {
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
-            if(response.chargeCompany)
-            {
-                setFuelPercentage(response.chargeCompany.fuelPercentage);
-                setButtonDisplay('download');
-            }
-            else
-            {
-                setFuelPercentage('');
-                setButtonDisplay('update');
-            }
+            setButtonDisplay(response.chargeCompany);
 
             setTotalPriceCompany(parseFloat(response.totalPriceCompany).toFixed(4));
 
@@ -112,11 +103,11 @@ function ChargeCompany() {
                 setIdTeam(idUserGeneral);
             }
 
-            setTimeout( () => {
+            /*setTimeout( () => {
 
                 handlerCheckUncheckDelivery(response.reportList.data);
 
-            }, 100);
+            }, 100);*/
         });
     }
 
@@ -259,18 +250,16 @@ function ChargeCompany() {
                 <td style={ { width: '100px'} }>
                     { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
                 </td>
+                <td>
+                    { packageDelivery.updated_at.substring(11, 19) }
+                </td>
                 <td><b>{ packageDelivery.company }</b></td>
+                <td><b>{ packageDelivery.team.name }</b></td>
+                <td>{ packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner }</td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
-                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
-                <td>{ packageDelivery.Dropoff_City }</td>
                 <td>{ packageDelivery.Dropoff_Province }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td><b>{ packageDelivery.pricePaymentCompany +' $' }</b></td>
-                <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
-                    { imgs }
-                </td>
+                <td><b>{ packageDelivery.pricePaymentCompany }</b></td>
             </tr>
         );
     });
@@ -444,7 +433,6 @@ function ChargeCompany() {
                     formData.append('idCompany', idCompany);
                     formData.append('startDate', dateInit);
                     formData.append('endDate', dateEnd);
-                    formData.append('fuelPrice', fuelPrice);
 
                     let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -465,16 +453,16 @@ function ChargeCompany() {
                                     icon: "error",
                                 });
                             }
-                            else if(response.stateAction == 'nullFuel')
+                            else if(response.stateAction == 'daysDifferenceIncorrect')
                             {
-                                swal("Enter the Fuel Price!", {
+                                swal("Days difference incorrect!", {
 
-                                    icon: "warning",
+                                    icon: "error",
                                 });
                             }
-                            else if(response.stateAction == 'notRangeDiesel')
+                            else if(response.stateAction == 'chargeExists')
                             {
-                                swal("There is no percentage range for the Fuel Price!", {
+                                swal("There is already a payment for the selected filters!", {
 
                                     icon: "warning",
                                 });
@@ -486,10 +474,7 @@ function ChargeCompany() {
                                     icon: "success",
                                 });
 
-                                setFuelPercentage(response.fuelPercentage);
-
-                                //listAllPackage();
-                                setButtonDisplay('download');
+                                listReportDispatch(1, RouteSearch, StateSearch);
                             }
 
                             LoadingHide();
@@ -531,10 +516,15 @@ function ChargeCompany() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
-                                <div className="row" style={ {display: 'none'} }>
+                                <div className="row">
+                                    <div className="col-lg-2 mb-3" style={ {display: (String(buttonDisplay) == 'null' ? 'block' : 'none')} }>
+                                        <label htmlFor="" className="text-white">--</label>
+                                        <button className="btn btn-success form-control" onClick={ () => handlerRegisterPayment() }>Register Charge</button>
+                                    </div>
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerRegisterPayment() }>
-                                            Register Payment
+                                        <label htmlFor="" className="text-white">--</label>
+                                        <button className="btn btn-primary form-control" onClick={ () => handlerDownloadCharge() }>
+                                            <i className="ri-file-excel-fill"></i> Export
                                         </button>
                                     </div>
                                 </div>
@@ -560,22 +550,6 @@ function ChargeCompany() {
                                             </div>
                                         </div>
                                     </dvi>
-                                    <div className="col-lg-2 mb-3">
-                                        <label htmlFor="">Fuel Price $:</label>
-                                        <input type="text" value={ fuelPrice } onChange={ (e) => setFuelPrice(e.target.value) } className="form-control"/>
-                                    </div>
-                                    <div className="col-lg-2 mb-3">
-                                        <label htmlFor="">Fuel Percentaje %:</label>
-                                        <input type="text" value={ fuelPercentage } onChange={ (e) => setFuelPercentage(e.target.value) } className="form-control" readOnly/>
-                                    </div>
-                                    <div className="col-lg-2 mb-3" style={ {display: ( buttonDisplay == 'update' ? 'block' : 'none') } }>
-                                        <label htmlFor="" className="text-white">--</label>
-                                        <button className="btn btn-primary form-control" onClick={ () => handlerRegisterPayment() }>Update Prices</button>
-                                    </div>
-                                    <div className="col-lg-2 mb-3" style={ {display: ( buttonDisplay == 'download' ? 'block' : 'none') } }>
-                                        <label htmlFor="" className="text-white">--</label>
-                                        <button className="btn btn-success form-control" onClick={ () => handlerDownloadCharge() }>Download Charges</button>
-                                    </div>
                                     {
                                         roleUser == 'Administrador'
                                         ?
@@ -657,16 +631,14 @@ function ChargeCompany() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
+                                                <th><b>TEAM</b></th>
+                                                <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
-                                                <th>CLIENT</th>
-                                                <th>CONTACT</th>
-                                                <th>ADDREESS</th>
-                                                <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ROUTE</th>
-                                                <th>BASE PRICE</th>
-                                                <th>IMAGE</th>
+                                                <th>PRICE COMPANY</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -136,6 +136,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-delivery/export/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'Export']);
 	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment']);
 	Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
+	Route::get('/payment-team/export/{id}', [PaymentDeliveryTeamController::class, 'ExportPayment']);
 
 
 	//=========== Age of Package

@@ -23,6 +23,10 @@ class PackagePriceCompanyTeam extends Model
         return $this->belongsTo('App\Models\PackageDispatch', 'Reference_Number_1', 'id');
     }
 
+    public function package_return()
+    {
+        return $this->belongsTo('App\Models\PackageReturn', 'Reference_Number_1');
+    }
 
     //observers
     protected static function booted()

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageDispatchReturn,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -1102,7 +1102,7 @@ class PackageDispatchController extends Controller
                         //update payment and return, prices totals
                         $team = User::find($packageDispatch->idTeam);
 
-                        $team->totalDelivery = ($team->totalDelivery + $totalDelivery) - $team->totalReturn;
+                        $team->totalReturn = $team->totalReturn + $packageDispatch->pricePaymentTeam;
 
                         $team->save();
                         //===============================

@@ -245,9 +245,7 @@ function PaymentDeliveryTeam() {
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
                 <td>{ packageDelivery.Dropoff_Province }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td><b>{ packageDelivery.pricePaymentCompany }</b></td>
                 <td><b>{ packageDelivery.pricePaymentTeam }</b></td>
-                
             </tr>
         );
     });
@@ -628,7 +626,6 @@ function PaymentDeliveryTeam() {
                                                 <th>PACKAGE ID</th>
                                                 <th>STATE</th>
                                                 <th>ROUTE</th>
-                                                <th>PRICE COMPANY</th>
                                                 <th>PRICE TEAM</th>
                                             </tr>
                                         </thead>
