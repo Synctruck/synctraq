@@ -254,7 +254,7 @@ class ChargeCompanyController extends Controller
     {
         return view('charge.company');
     }
-
+ 
     public function ChargeList($dateStart, $dateEnd, $idCompany)
     {
         $dateStart = $dateStart .' 00:00:00';
@@ -267,11 +267,90 @@ class ChargeCompanyController extends Controller
             $chargeList = $chargeList->where('idCompany', $idCompany);
         }
 
-        $totalPayment = $chargeList->get()->sum('total');
-        $chargeList   = $chargeList->with('company')
+        $totalCharge = $chargeList->get()->sum('total');
+        $chargeList  = $chargeList->with('company')
                                     ->orderBy('created_at', 'desc')
                                     ->paginate(50);
 
-        return ['chargeList' => $chargeList, 'totalPayment' => number_format($totalPayment, 4)];
+        return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
+    }
+
+    public function ExportCharge($idCharge)
+    {
+        $delimiter = ",";
+        $filename = "CHARGE - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file    = fopen('php://memory', 'w');
+        $charge = ChargeCompany::find($idCharge);
+
+        //set column headers
+        $fields = array('CHARGE', 'REGISTER DATE', date('m-d-Y H:i:s', strtotime($charge->created_at)), 'TEAM', $charge->company->name, 'TOTAL', $charge->total);
+        fputcsv($file, $fields, $delimiter);
+
+        //set column headers
+        $fields = array('', 'RANGE DATE', date('m-d-Y', strtotime($charge->startDate)), date('m-d-Y', strtotime($charge->endDate)));
+        fputcsv($file, $fields, $delimiter);
+
+        $fields = array('');
+        fputcsv($file, $fields, $delimiter);
+
+        $fields = array('PACKAGE DELIVERIES');
+        fputcsv($file, $fields, $delimiter);
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'TEAM', 'PACKAGE ID', 'WEIGHT', 'LENGTH', 'HEIGHT', 'WIDTH', 'CUIN', 'DIESEL PRICE C', 'DIESEL PRICE T', 'DIM FACTOR C', 'DIM WEIGHT C', 'DIM WEIGHT ROUND C', 'PRICE WEIGHT C', 'PEAKE SEASON PRICE C', 'PRICE BASE C', 'SURCHARGE PERCENTAGE C', 'SURCHAGE PRICE C', 'TOTAL PRICE C', 'DIM FACTOR T', 'DIM WEIGHT T', 'DIM WEIGHT ROUND T', 'PRICE WEIGHT T', 'PEAKE SEASON PRICE C', 'PRICE BASE T', 'SURCHARGE PERCENTAGE T', 'SURCHAGE PRICE T', 'TOTAL PRICE T');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $Reference_Number_1s = ChargeCompanyDetail::where('idChargeCompany', $idCharge)->get('Reference_Number_1');
+        $listPackageDelivery = PackageDispatch::with(['team', 'driver', 'package_price_company_team'])
+                                            ->whereIn('Reference_Number_1', $Reference_Number_1s)
+                                            ->get();
+        
+        foreach($listPackageDelivery as $packageDelivery)
+        {
+
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageDelivery->updated_at)),
+                                date('H:i:s', strtotime($packageDelivery->updated_at)),
+                                $packageDelivery->team->name,
+                                $packageDelivery->Reference_Number_1,
+                                $packageDelivery->package_price_company_team[0]->weight,
+                                $packageDelivery->package_price_company_team[0]->length,
+                                $packageDelivery->package_price_company_team[0]->height,
+                                $packageDelivery->package_price_company_team[0]->width,
+                                $packageDelivery->package_price_company_team[0]->cuIn,
+                                $packageDelivery->package_price_company_team[0]->dieselPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->dieselPriceTeam,
+                                $packageDelivery->package_price_company_team[0]->dimFactorCompany,
+                                $packageDelivery->package_price_company_team[0]->dimWeightCompany,
+                                $packageDelivery->package_price_company_team[0]->dimWeightCompanyRound,
+                                $packageDelivery->package_price_company_team[0]->priceWeightCompany,
+                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->priceBaseCompany,
+                                $packageDelivery->package_price_company_team[0]->surchargePercentageCompany,
+                                $packageDelivery->package_price_company_team[0]->surchargePriceCompany,
+                                $packageDelivery->package_price_company_team[0]->totalPriceCompany,
+                                $packageDelivery->package_price_company_team[0]->dimFactorTeam,
+                                $packageDelivery->package_price_company_team[0]->dimWeightTeam,
+                                $packageDelivery->package_price_company_team[0]->dimWeightTeamRound,
+                                $packageDelivery->package_price_company_team[0]->priceWeightTeam,
+                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceTeam,
+                                $packageDelivery->package_price_company_team[0]->priceBaseTeam,
+                                $packageDelivery->package_price_company_team[0]->surchargePercentageTeam,
+                                $packageDelivery->package_price_company_team[0]->surchargePriceTeam,
+                                $packageDelivery->package_price_company_team[0]->totalPriceTeam,
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 }

@@ -130,7 +130,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/charge-delivery-company/export/{dateInit}/{dateEnd}/{idCompany}', [ChargeCompanyController::class, 'Export']);
 	Route::get('/charge-company', [ChargeCompanyController::class, 'IndexCharge']);
 	Route::get('/charge-company/list/{dateInit}/{endDate}/{idCompany}', [ChargeCompanyController::class, 'ChargeList']);
-	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'ExportCompany']);
+	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'ExportCharge']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);

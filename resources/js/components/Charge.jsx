@@ -14,8 +14,8 @@ function Charge() {
     const [listCompany , setListCompany]      = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
 
-    const [quantityDelivery, setQuantityDelivery] = useState(0);
-    const [totalPriceCompany, setTotalPriceCompany]     = useState(0);
+    const [quantityDelivery, setQuantityDelivery]     = useState(0);
+    const [totalChargeCompany, setTotalChargeCompany] = useState(0);
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
@@ -70,7 +70,7 @@ function Charge() {
 
             setButtonDisplay(response.chargeCompany);
 
-            setTotalPriceCompany(parseFloat(response.totalPriceCompany).toFixed(4));
+            setTotalChargeCompany(response.totalCharge);
 
             if(listState.length == 0)
             {
@@ -153,7 +153,7 @@ function Charge() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExportCharge = (id) => {
+    const handlerExportCharge = (id) => { 
 
         location.href = url_general +'charge-company/export/'+ id;
     }
@@ -400,10 +400,10 @@ function Charge() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDelivery }</b>
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Charges: { quantityDelivery }</b>
                                     </div>
                                     <div className="col-lg-4 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Company Base Price : { totalPriceCompany +' $' }</b>
+                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Charge Company: { totalChargeCompany +' $' }</b>
                                     </div>
                                 </div>
                             </h5>
