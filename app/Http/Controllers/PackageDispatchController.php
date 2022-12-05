@@ -1095,7 +1095,6 @@ class PackageDispatchController extends Controller
                         $paymentTeam = PaymentTeamReturn::find($packageDispatch->idPaymentTeam);
 
                         $paymentTeam->totalReturn = $paymentTeam->totalReturn + $packageDispatch->pricePaymentTeam;
-                        $paymentTeam->total       = $paymentTeam->total - $packageDispatch->pricePaymentTeam;
 
                         $paymentTeam->save();
 
