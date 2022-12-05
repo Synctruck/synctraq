@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, States, User };
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, States, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -152,6 +152,27 @@ class PackageWarehouseController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        else
+        {
+            $package = PackageManifest::with('blockeds')
+                                    ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                    ->first();
+
+            if($package)
+            {
+                if($package->filter || count($package->blockeds) > 0)
+                {
+                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package, 'packageBlocked' => null];
+                }
+            }
+        }
+        
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
         $stateValidate    = $request->get('StateValidate');
         $stateValidate    = $stateValidate != '' ? explode(',', $stateValidate) : [];
@@ -165,7 +186,7 @@ class PackageWarehouseController extends Controller
                 {
                     return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
                 }
-            }
+            } 
             
             /*$initDate = date('Y-m-d 00:00:00');
             $endDate  = date('Y-m-d 23:59:59');

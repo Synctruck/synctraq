@@ -86,7 +86,7 @@ function States() {
 
     const listAllManifest = (pageNumber) => {
 
-        fetch(url_general +'package-manifest/list/all/all?page='+ pageNumber +'&textSearch='+ textSearchManifest)
+        fetch(url_general +'package-manifest/list/0/all/all?page='+ pageNumber +'&textSearch='+ textSearchManifest)
         .then(res => res.json())
         .then((response) => {
 
