@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, Configuration, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -92,6 +92,13 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+
         $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
 
         if($packageInbound == null)

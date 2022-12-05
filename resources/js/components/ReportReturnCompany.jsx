@@ -303,7 +303,21 @@ function ReportReturnCompany() {
                 setTextButtonSave('Guardar');
                 setDisabledButton(false);
 
-                if(response.stateAction == 'notExists')
+                if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        text: packageBlocked.comment,
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                    
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'notExists')
                 {
                     swal('Packet does not exist in Inbound or Dispatch!', {
 
@@ -367,7 +381,7 @@ function ReportReturnCompany() {
                                                                 <div className="form-group">
                                                                     <label>PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="16" required/>
+                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -469,6 +483,7 @@ function ReportReturnCompany() {
                                         <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
                                     </div>
                                 </div>
+                                <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">

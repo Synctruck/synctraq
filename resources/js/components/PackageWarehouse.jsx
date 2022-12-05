@@ -487,7 +487,7 @@ function PackageWarehouse() {
                         setTypeMessage('primary');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoError').play();
+                        document.getElementById('soundPitidoBlocked').play();
                     }
                     else if(response.stateAction == 'nonValidatedState')
                     {
@@ -869,6 +869,7 @@ function PackageWarehouse() {
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
                                     </div>

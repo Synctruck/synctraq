@@ -420,7 +420,24 @@ function PackageReturn() {
 
                 clearForm();
 
-                if(response.stateAction == true)
+                if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        text: packageBlocked.comment,
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == true)
                 {
                     setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
@@ -650,6 +667,7 @@ function PackageReturn() {
                                             <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
                                             <audio id="soundPitidoError" src="../sound/pitido-error.mp3" preload="auto"></audio>
                                             <audio id="soundPitidoWarning" src="../sound/pitido-warning.mp3" preload="auto"></audio>
+                                            <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
                                         </div>
                                     </div>
                                 </div>

@@ -939,6 +939,13 @@ class PackageDispatchController extends Controller
 
     public function Return(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+
         $packageDispatch = PackageFailed::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageDispatch == null)
