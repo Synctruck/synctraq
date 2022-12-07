@@ -379,6 +379,13 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactRoute">HIGH PRIORITY</label>
+                                    <select name="" id="highPriority" class="form-control">
+                                        <option value="Normal">NORMAL</option>
+                                        <option value="High">HIGH</option>
+                                    </select>
+                                </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
                                     <textarea name="internalComment" id="internalComment" cols="10" rows="2" class="form-control"></textarea>
@@ -673,10 +680,12 @@
                     }
                 }
 
+
                 document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;
                 document.getElementById('contactName').value           = '';
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
+                document.getElementById('highPriority').value          = 'Normal';
 
                 if(packageHistoryList.length > 0)
                 {
@@ -690,6 +699,7 @@
                     document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
                     document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
+                    document.getElementById('highPriority').value    = packageHistoryList[0].highPriority;
                 }
 
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
@@ -795,6 +805,7 @@
             formData.append('Weight', document.getElementById('contactWeight').value);
             formData.append('Route', document.getElementById('contactRoute').value);
             formData.append('internal_comment', document.getElementById('internalComment').value);
+            formData.append('highPriority', document.getElementById('highPriority').value);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 

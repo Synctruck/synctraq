@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -173,7 +173,21 @@ class PackageController extends Controller
                 $package->save();
             }
 
-            $packageHistoryList = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
+            $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
+            $packageHighPriority = PackageHighPriority::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($request->get('highPriority') == 'Normal' && $packageHighPriority)
+            {
+                $packageHighPriority->delete();
+            }
+            elseif($packageHighPriority == null)
+            {
+                $packageHighPriority = new PackageHighPriority();
+
+                $packageHighPriority->Reference_Number_1 = $request->get('Reference_Number_1');
+
+                $packageHighPriority->save();
+            }
 
             foreach($packageHistoryList as $packageHistory)
             {
@@ -188,7 +202,8 @@ class PackageController extends Controller
                 $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $packageHistory->Weight                       = $request->get('Weight');
                 $packageHistory->Route                        = $request->get('Route');
-                $packageHistory->internal_comment             = $request->internal_comment;
+                $packageHistory->internal_comment             = $request->get('internal_comment');
+                $packageHistory->highPriority                 = $request->get('highPriority');
 
                 $packageHistory->save();
             }

@@ -76,6 +76,13 @@
             </li>
 
             <li>
+                <a class="nav-link {{Request::is('package-high-priority') ? 'show' : 'collapsed'}}" href="{{url('/package-high-priority')}}">
+                    <i class="bx bx-car"></i>
+                    <span>HIGH PRIORITY</span>
+                </a>
+            </li>
+
+            <li>
                 <a class="nav-link {{Request::is('package-age') ? 'show' : 'collapsed'}}" href="{{url('/package-age')}}">
                     <i class="bx bx-calendar-exclamation"></i>
                     <span>AGE OF PACKAGES</span>
@@ -97,9 +104,6 @@
                     <span>DELIVERIES</span>
                 </a>
             </li>
-
-
-
 
             {{-- <li class="nav-heading">* DESELECT</li> --}}
             {{-- @if(Auth::user()->role->name == 'Administrador')
