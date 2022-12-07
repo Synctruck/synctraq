@@ -426,7 +426,7 @@ function PackageReturn() {
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        title: 'PACKAGE BLOCKED #'+ returnReference_Number_1,
                         text: packageBlocked.comment,
                         showConfirmButton: false,
                         timer: 2000,
@@ -436,6 +436,14 @@ function PackageReturn() {
                     setNumberPackage('');
 
                     document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'validatedReturnCompany')
+                {
+                    setTextMessage("The package was registered before for return to the company #"+ returnReference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
                 }
                 else if(response.stateAction == true)
                 {
@@ -571,32 +579,7 @@ function PackageReturn() {
                                             <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
                                         </div>
                                     </div>
-                                    <div className="col-lg-8 text-center">
-                                        {
-                                            typeMessage == 'success'
-                                            ?
-                                                <h2 className="text-success">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-
-                                        {
-                                            typeMessage == 'error'
-                                            ?
-                                                <h2 className="text-danger">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-
-                                        {
-                                            typeMessage == 'warning'
-                                            ?
-                                                <h2 className="text-warning">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                    </div>
-                                    <div className="col-lg-12">
+                                    <div className="col-lg-12 mb-2">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
                                                 <div className="col-lg-4">
@@ -663,12 +646,35 @@ function PackageReturn() {
                                                 }
                                             </div>
                                         </form>
-                                        <div className="col-lg-2 form-group">
-                                            <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
-                                            <audio id="soundPitidoError" src="../sound/pitido-error.mp3" preload="auto"></audio>
-                                            <audio id="soundPitidoWarning" src="../sound/pitido-warning.mp3" preload="auto"></audio>
-                                            <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
-                                        </div>
+                                        <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoError" src="../sound/pitido-error.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoWarning" src="../sound/pitido-warning.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
+                                    </div>
+                                    <div className="col-lg-12 mb-3 text-center">
+                                        {
+                                            typeMessage == 'success'
+                                            ?
+                                                <h2 className="text-success">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
+
+                                        {
+                                            typeMessage == 'error'
+                                            ?
+                                                <h2 className="text-danger">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
+
+                                        {
+                                            typeMessage == 'warning'
+                                            ?
+                                                <h2 className="text-warning">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
                                     </div>
                                 </div>
                                 <div className="row">

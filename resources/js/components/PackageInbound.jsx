@@ -446,21 +446,13 @@ function PackageInbound() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'notInland')
+                    if(response.stateAction == 'validatedReturnCompany')
                     {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
                         setTypeMessage('warning');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                        setTypeMessage('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
+                        document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction == 'validatedInbound')
                     {

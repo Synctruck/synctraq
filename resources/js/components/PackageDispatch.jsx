@@ -517,6 +517,14 @@ function PackageDispatch() {
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
                     }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'validatedFilterPackage')
                     {
                         let packageBlocked  = response.packageBlocked;

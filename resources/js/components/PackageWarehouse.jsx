@@ -489,6 +489,14 @@ function PackageWarehouse() {
 
                         document.getElementById('soundPitidoBlocked').play();
                     }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'nonValidatedState')
                     {
                         setTextMessage("#"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);

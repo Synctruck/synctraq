@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
+use App\Models\{ Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturnCompany, PackageWarehouse, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -265,6 +265,13 @@ class PackageInboundController extends Controller
         }
         else
         {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
+
             $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->where('status', 'Inbound')
                                             ->where('inbound', 1)

@@ -40,6 +40,7 @@ require('./components/PackageAge');
 require('./components/PackageWarehouse');
 require('./components/PackageCheckDelivery');
 require('./components/PackageFinance');
+require('./components/PackageRts');
 require('./components/Roles');
 require('./components/PackageBlocked');
 require('./components/Track');

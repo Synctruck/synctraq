@@ -98,9 +98,6 @@
                 </a>
             </li>
 
-
-
-
             {{-- <li class="nav-heading">* DESELECT</li> --}}
             {{-- @if(Auth::user()->role->name == 'Administrador')
                 <li >
@@ -117,7 +114,7 @@
                         <i class="bx bx-car"></i>
                         <span>RE-INBOUND</span>
                     </a>
-                </li>
+                </li> 
             @endif
 
             @if(hasPermission('warehouse.index'))
@@ -125,6 +122,15 @@
                     <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/package-warehouse')}}">
                         <i class="bx bx-car"></i>
                         <span>WAREHOUSE</span>
+                    </a>
+                </li>
+            @endif
+
+            @if(hasPermission('prerts.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-pre-rts') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-rts')}}">
+                        <i class="bx bx-car"></i>
+                        <span>PRE - RTS</span>
                     </a>
                 </li>
             @endif

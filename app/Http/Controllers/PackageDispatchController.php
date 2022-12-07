@@ -587,6 +587,13 @@ class PackageDispatchController extends Controller
                 return ['stateAction' => 'notInbound'];
             }*/
 
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
+
             $packageDispatch = PackageDispatch::with('driver')
                                             ->where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->first();
@@ -1220,6 +1227,15 @@ class PackageDispatchController extends Controller
             }
 
             return ['stateAction' => 'notUser'];
+        }
+        else
+        {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
         }
 
         return ['stateAction' => 'notDispatch'];
