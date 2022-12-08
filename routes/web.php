@@ -128,7 +128,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-age/list/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'List']);
 	Route::get('/package-age/export/{routes}/{states}', [PackageAgeController::class, 'Export']);
 
-	Route::get('/package-high-priority', [PackageHighPriorityController::class, 'Index']);
+	Route::get('/package-high-priority', [PackageHighPriorityController::class, 'Index'])->middleware('permission:highPriority.index');
 	Route::get('/package-high-priority/list/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'List']);
 	Route::get('/package-high-priority/export/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'Export']);
 

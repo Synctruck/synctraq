@@ -90,6 +90,7 @@ class PackageHighPriorityController extends Controller
                                                 'created_at',
                                                 'company',
                                                 'Reference_Number_1',
+                                                'internal_comment',
                                                 'Dropoff_Contact_Name',
                                                 'Dropoff_Contact_Name',
                                                 'Dropoff_Contact_Phone_Number',
@@ -138,7 +139,7 @@ class PackageHighPriorityController extends Controller
 
                 $lateDays = $this->CalculateDaysLate($initDate, $endDate);
                 $status   = $this->GetStatus($packageHistory->Reference_Number_1);
-
+ 
                 $package = [
 
                     "created_at" => $packageHistory->created_at,
@@ -146,6 +147,7 @@ class PackageHighPriorityController extends Controller
                     "lateDays" => $lateDays,
                     "company" => $packageHistory->company,
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                    "internal_comment" => $packageHistory->internal_comment,
                     "status" => $status['status'],
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,

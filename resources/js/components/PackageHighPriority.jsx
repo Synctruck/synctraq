@@ -104,6 +104,7 @@ function PackageHighPriority() {
                 <td className="text-center"><b>{ packageInbound.lateDays }</b></td>
                 <td><b>{ packageInbound.company }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
+                <td>{ packageInbound.internal_comment }</td>
                 <td>
                     <div className="alert alert-danger">
                         <b>HIGH</b>
@@ -263,6 +264,7 @@ function PackageHighPriority() {
                                                 <th>LATE DAYS</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>INTERNAL COMMENT</th>
                                                 <th>PRIORITY</th>
                                                 <th>ACTUAL STATUS</th>
                                                 <th>CLIENT</th>
