@@ -4,12 +4,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PackageBlocked extends Model implements Auditable
+class PackageHighPriority extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'packageblocked';
-    protected $primaryKey = 'id';
+    protected $table      = 'packagehighpriority';
+    protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
@@ -19,11 +19,6 @@ class PackageBlocked extends Model implements Auditable
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    public function manifest()
-    {
-        return $this->belongsTo('App\Models\PackageManifest', 'Reference_Number_1');
-    }
 
     //observers
     protected static function booted()

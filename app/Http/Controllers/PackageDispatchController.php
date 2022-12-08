@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -51,8 +51,9 @@ class PackageDispatchController extends Controller
         $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
         $getDataDispatchAll  = $this->getDataDispatchAll($idCompany, $idTeam, $idDriver);
 
-        $quantityDispatch    = $packageDispatchList->total();
-        $quantityDispatchAll = $getDataDispatchAll->count();
+        $quantityDispatch     = $packageDispatchList->total();
+        $quantityDispatchAll  = $getDataDispatchAll->count();
+        $quantityHighPriority = PackageHighPriority::get()->count();
 
         if($idTeam != 0)
         {
@@ -69,7 +70,15 @@ class PackageDispatchController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser, 'listState' => $listState]; 
+        return [
+            'packageDispatchList' => $packageDispatchList,
+            'quantityDispatch' => $quantityDispatch,
+            'quantityDispatchAll' => $quantityDispatchAll,
+            'quantityFailed' => $quantityFailed,
+            'quantityHighPriority' => $quantityHighPriority,
+            'roleUser' => $roleUser,
+            'listState' => $listState
+        ]; 
     }
 
     private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')

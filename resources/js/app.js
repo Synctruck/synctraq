@@ -39,6 +39,7 @@ require('./components/Orders');
 require('./components/PackageAge');
 require('./components/PackageWarehouse');
 require('./components/PackageCheckDelivery');
+require('./components/PackageHighPriority');
 require('./components/PackageFinance');
 require('./components/Roles');
 require('./components/PackageBlocked');
