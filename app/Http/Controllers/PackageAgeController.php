@@ -44,9 +44,9 @@ class PackageAgeController extends Controller
         ];
     }
 
-    public function Export($states, $routes)
+    public function Export($idCompany, $states, $routes)
     {
-        $data           = $this->GetData($states, $routes, 'all');
+        $data           = $this->GetData($idCompany, $states, $routes, 'all');
         $packageListOld = $data['listAll'];
 
         $delimiter = ",";
@@ -189,7 +189,14 @@ class PackageAgeController extends Controller
 
         $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
 
-        return ['status' => $package->status];
+        if($package)
+        {
+            return ['status' => $package->status];
+        }
+        else
+        {
+            return ['status' => ''];
+        }
     }
 
     public function CalculateDaysLate($initDate, $endDate)

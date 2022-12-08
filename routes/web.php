@@ -126,7 +126,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//=========== Age of Package
 	Route::get('/package-age', [PackageAgeController::class, 'Index']);
 	Route::get('/package-age/list/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'List']);
-	Route::get('/package-age/export/{routes}/{states}', [PackageAgeController::class, 'Export']);
+	Route::get('/package-age/export/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'Export']);
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);
