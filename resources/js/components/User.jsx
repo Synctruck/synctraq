@@ -284,15 +284,6 @@ function User() {
 
     const listUserTable = listUser.map( (user, i) => {
 
-        let buttonDelete ='';
-
-        if (!user.history && user.routes_team.length == 0 && user.package_not_exists.length == 0)
-        {
-            buttonDelete =  <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
-                                <i className="bx bxs-trash-alt"></i>
-                            </button>;
-        }
-
         return (
 
             <tr key={i}>
@@ -318,7 +309,17 @@ function User() {
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    {buttonDelete}
+                    {
+                        (
+                            user.deleteUser == 0
+                            ?
+                                <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteUser(user.id) }>
+                                    <i className="bx bxs-trash-alt"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );

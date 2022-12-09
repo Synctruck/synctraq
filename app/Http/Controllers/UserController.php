@@ -50,22 +50,6 @@ class UserController extends Controller
                                 ->status($request->status)
                                 ->paginate($this->paginate);
 
-
-        foreach ($userList as $key => $user) {
-
-            $history = PackageHistory::where('idUser',$user->id)
-                                        ->orWhere('idUserManifest',$user->id)
-                                        ->orWhere('idUserInbound',$user->id)
-                                        ->orWhere('idUserReInbound',$user->id)
-                                        ->orWhere('idUserDispatch',$user->id)
-                                        ->orWhere('idUserReturn',$user->id)
-                                        ->orWhere('idUserDelivery',$user->id)
-                                        ->orWhere('idUserFailed',$user->id)
-                                        ->select('id')
-                                        ->first();
-            $user->history = ($history)?true:false;
-        }
-
         return ['userList' => $userList];
     }
 

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Models\{Configuration, Driver, Routes, TeamRoute, User};
 
+use App\Http\Controllers\UserController;
+
 use Illuminate\Support\Facades\Validator;
 
 use DB;
@@ -36,6 +38,14 @@ class TeamController extends Controller
 
     public function Index()
     {
+        $configuration = Configuration::first();
+
+        if($configuration->dateDeleteUser != date('Y-m-d'))
+        {
+            $userController = new UserController();
+            $userController->UpdateDeleteUser();
+        }
+
         return view('team.index');
     } 
 

@@ -675,9 +675,18 @@ function Team() {
                     <button className="btn btn-primary btn-sm mb-2" title="Editar" onClick={ () => getTeam(user.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button>&nbsp;
-                    <button className="btn btn-danger btn-sm mb-2" title="Eliminar" style={{ display: user.drivers.length == 0 ? 'block' : 'none' }} onClick={ () => deleteTeam(user.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>&nbsp;
+                    {
+                        (
+                            user.deleteUser == 0
+                            ?
+                                <button className="btn btn-danger btn-sm mb-2" title="Delete" onClick={ () => deleteTeam(user.id) }>
+                                    <i className="bx bxs-trash-alt"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
+                    &nbsp;
                     <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
