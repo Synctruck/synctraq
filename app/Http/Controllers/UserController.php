@@ -12,7 +12,7 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Company, PackageManifest, PackageHistory, Permission, Role, Routes };
+use App\Models\{ Audits, Company, Configuration, PackageDispatch, PackageManifest, PackageHistory, Permission, Role, Routes };
 
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Str;
@@ -28,6 +28,13 @@ class UserController extends Controller
 
     public function Index()
     {
+        $configuration = Configuration::first();
+
+        if($configuration->dateDeleteUser != date('Y-m-d'))
+        {
+            $this->UpdateDeleteUser();
+        }
+        
         return view('user.index');
     }
 
@@ -285,5 +292,48 @@ class UserController extends Controller
         $user = User::with(['role','role.permissions', 'routes_team.route'])->where('id',Auth::user()->id)->first();
 
        return ['user'=> $user,'allPermissions'=> $permissions];
+    }
+
+    public function UpdateDeleteUser()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $userList = User::all();
+
+            foreach($userList as $user)
+            {
+                $user = User::find($user->id);
+
+                $delete = Audits::where('user_id', $user->id)->first();
+
+                if($delete == null)
+                {
+                    $delete = PackageHistory::where('idUser', $user->id)
+                                            ->orWhere('idUserDispatch', $user->id)
+                                            ->first();
+                }
+
+                if($delete)
+                {
+                    $user->deleteUser = 1;
+
+                    $user->save();
+                }
+            }
+
+            $configuration = Configuration::first();
+
+            $configuration->dateDeleteUser = date('Y-m-d');
+
+            $configuration->save();
+
+            DB::commit();
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 }

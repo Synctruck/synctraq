@@ -434,8 +434,8 @@ class PackageManifestController extends Controller
                             $packageHistory->Notes                        = $row[28];
                             $packageHistory->Weight                       = $row[30];
                             $packageHistory->Route                        = $route->name;
-                            $packageHistory->idUser                       =  Auth::user()->id;
-                            $packageHistory->idUserManifest               =  Auth::user()->id;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->idUserManifest               = Auth::user()->id;
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                             $packageHistory->Description                  = 'On hold - for: '.  Auth::user()->name .' '. Auth::user()->nameOfOwner;
                             $packageHistory->status                       = 'On hold';
