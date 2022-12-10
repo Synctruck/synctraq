@@ -283,7 +283,7 @@ class UserController extends Controller
 
             $userList = User::where('verificationForDelete', 0)
                                 ->get()
-                                ->take(20);
+                                ->take(2);
 
             foreach($userList as $user)
             {
