@@ -41,11 +41,8 @@ class DriverController extends Controller
     {
         $configuration = Configuration::first();
 
-        if($configuration->dateDeleteUser != date('Y-m-d'))
-        {
-            $userController = new UserController();
-            $userController->UpdateDeleteUser();
-        }
+        $userController = new UserController();
+        $userController->UpdateDeleteUser();
 
         return view('driver.index');
     }

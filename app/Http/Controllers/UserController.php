@@ -30,10 +30,7 @@ class UserController extends Controller
     {
         $configuration = Configuration::first();
 
-        if($configuration->dateDeleteUser != date('Y-m-d'))
-        {
-            $this->UpdateDeleteUser();
-        }
+        $this->UpdateDeleteUser();
         
         return view('user.index');
     }
@@ -284,7 +281,9 @@ class UserController extends Controller
         {
             DB::beginTransaction();
 
-            $userList = User::all();
+            $userList = User::where('verificationForDelete', 0)
+                                ->get()
+                                ->take(20);
 
             foreach($userList as $user)
             {
@@ -302,9 +301,11 @@ class UserController extends Controller
                 if($delete)
                 {
                     $user->deleteUser = 1;
-
-                    $user->save();
                 }
+
+                $user->verificationForDelete = 1;
+
+                $user->save();
             }
 
             $configuration = Configuration::first();
