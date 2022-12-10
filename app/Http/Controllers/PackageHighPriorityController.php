@@ -178,7 +178,12 @@ class PackageHighPriorityController extends Controller
 
         $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
 
-        return ['status' => $package->status];
+        if($package)
+        {
+            return ['status' => $package->status]; 
+        }
+
+        return ['status' => ''];
     }
 
     public function CalculateDaysLate($initDate, $endDate)

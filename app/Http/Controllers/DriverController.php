@@ -51,7 +51,7 @@ class DriverController extends Controller
     {
         if(Auth::user()->role->name == 'Administrador')
         {
-            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
+            $userList = Driver::with(['role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
@@ -61,27 +61,13 @@ class DriverController extends Controller
         }
         else
         {
-            $userList = Driver::with(['history_dispatch', 'dispatchs', 'role'])
+            $userList = Driver::with(['role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idTeam', Auth::user()->id)
                                 ->paginate($this->paginate);
-        }
-
-        foreach ($userList as $key => $user) {
-            $history = PackageHistory::where('idUser',$user->id)
-                                        ->orWhere('idUserManifest',$user->id)
-                                        ->orWhere('idUserInbound',$user->id)
-                                        ->orWhere('idUserReInbound',$user->id)
-                                        ->orWhere('idUserDispatch',$user->id)
-                                        ->orWhere('idUserReturn',$user->id)
-                                        ->orWhere('idUserDelivery',$user->id)
-                                        ->orWhere('idUserFailed',$user->id)
-                                        ->select('id')
-                                        ->first();
-            $user->history = ($history)?true:false;
         }
 
         $roleUser = Auth::user()->role->name;

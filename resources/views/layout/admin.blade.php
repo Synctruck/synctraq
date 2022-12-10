@@ -87,20 +87,22 @@
     <div class="search-bar">
         @if(Auth::check())
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
                         <input type="text" id="searchPackage" name="searchPackage" placeholder="Search PACKAGE ID" title="Enter search keyword">
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <form class="search-form d-flex align-items-center" onsubmit="SearchPackageTask(event)">
                         <input type="text" id="searchPackageTask" name="searchPackageTask" placeholder="Search TASK#" title="Enter search keyword">
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
                 </div>
+                <div class="col-lg-4">
+                    <button class="btn btn-success form-control" onclick="ViewModalSearchFilters();">Search by filters</button>
+                </div>
             </div>
-
         @else
             <div class="row">
                 <div class="col-lg-6">
@@ -508,6 +510,67 @@
             </div>
         </div>
 
+        <div class="modal fade" id="searchByFiltersModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5 class="text-primary">SEARCH PACKAGES BY FILTERS</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="" onsubmit="SearchPackageByFilters(event);">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-3 form-group">
+                                    <label for="clientNameFilters">CLIENT</label>
+                                    <input type="text" id="clientNameFilters" name="clientNameFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactPhoneFilters">CONTACT</label>
+                                    <input type="text" id="contactPhoneFilters" name="contactPhoneFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactAddressFilters">ADDREESS</label>
+                                    <input type="text" id="contactAddressFilters" name="contactAddressFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactCity">-</label>
+                                    <button class="btn btn-primary form-control">Search</button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row table-responsive">
+                                <div class="col-lg-12">
+                                    <table id="tableListPackageByFiltersTable" class="table table-condensed table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>COMPANY</th>
+                                                <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
+                                                <th>CLIENT</th>
+                                                <th>CONTACT</th>
+                                                <th>ADDRESS</th>
+                                                <th>CITY</th>
+                                                <th>STATE</th>
+                                                <th>ZIP C</th>
+                                                <th>ROUTE</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableListPackageByFiltersBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('searchByFiltersModal');">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--Contenid -->
         @yield('content')
     </main><!-- End #main -->
@@ -829,6 +892,72 @@
                     swal('Error!', 'The package was not updated', 'success');
                 }
             });
+        }
+
+        function SearchPackageByFilters(e)
+        {
+            e.preventDefault();
+
+            let PACKAGE_ID = document.getElementById('searchPackage').value;
+
+            let formData = new FormData();
+
+            formData.append('Dropoff_Contact_Name', document.getElementById('clientNameFilters').value);
+            formData.append('Dropoff_Contact_Phone_Number', document.getElementById('contactPhoneFilters').value);
+            formData.append('Dropoff_Address_Line_1', document.getElementById('contactAddressFilters').value);
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'package-history/search-by-filters',
+
+                {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                }
+            )
+            .then(response => response.json())
+            .then(response => {
+
+                let packageHistoryList = response.packageHistoryList;
+
+                document.getElementById('tableListPackageByFiltersBody').innerHTML = '';
+
+                let tableHistoryPackage = document.getElementById('tableListPackageByFiltersBody');
+
+                let tr = '';
+
+                if(packageHistoryList.length > 0)
+                {
+                    packageHistoryList.forEach(packageHistory => {
+
+                        tr =    '<tr>'+
+                                    '<td>'+ packageHistory.created_at.substring(5, 7) +'-'+ packageHistory.created_at.substring(8, 10) +'-'+ packageHistory.created_at.substring(0, 4) +'</td>'+
+                                    '<td>'+ packageHistory.company +'</td>'+
+                                    '<td>'+ packageHistory.Reference_Number_1 +'</td>'+
+                                    '<td>'+ packageHistory.status +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Contact_Name +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Contact_Phone_Number +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Address_Line_1 +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_City +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Province +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Postal_Code +'</td>'+
+                                    '<td>'+ packageHistory.Route +'</td>'+
+                                '</tr>';
+
+                        tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                    });
+                }
+                else
+                {
+                    swal('Atention!', 'There are no packages for the entered filters', 'warning');
+                }
+            });
+        }
+
+        function ViewModalSearchFilters()
+        {
+            $('#searchByFiltersModal').modal('show');
         }
 
         function CloseModal(idModal)

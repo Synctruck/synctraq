@@ -26,6 +26,7 @@ Route::get('routes/getAll', [RoutesController::class, 'GetAll']);
 
 Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
 Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);
+Route::post('/package-history/search-by-filters', [PackageController::class, 'SearchByFilters']);
 
 Route::group(['middleware' => 'auth'], function() {
 

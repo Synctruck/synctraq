@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -304,6 +304,118 @@ class PackageController extends Controller
         {
             return ['stateAction' => false];
         }
+    }
+
+    public function SearchByFilters(Request $request)
+    {
+        if($request->get('Dropoff_Contact_Name') == null && $request->get('Dropoff_Contact_Phone_Number') == null && $request->get('Dropoff_Address_Line_1') == null)
+        {
+            return ['packageHistoryList' => []];
+        }
+
+        $data = $this->GetData($request);
+        
+        $packageHistoryList    = $data['packageHistoryList'];
+
+        return [
+
+            'packageHistoryList' => $packageHistoryList,
+        ];
+    }
+
+    public function GetData($request)
+    {
+        $idsAll = PackageHighPriority::get('Reference_Number_1');
+
+        $packageHistoryList = PackageHistory::select(
+
+                                                'created_at',
+                                                'company',
+                                                'Reference_Number_1',
+                                                'internal_comment',
+                                                'Dropoff_Contact_Name',
+                                                'Dropoff_Contact_Name',
+                                                'Dropoff_Contact_Phone_Number',
+                                                'Dropoff_Address_Line_1',
+                                                'Dropoff_City',
+                                                'Dropoff_Province',
+                                                'Dropoff_Postal_Code',
+                                                'Route'
+                                            )
+                                            ->where('status', 'On hold');
+        
+        if($request->get('Dropoff_Contact_Name'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Contact_Name', 'like', '%'. $request->get('Dropoff_Contact_Name') .'%');
+        }
+
+        if($request->get('Dropoff_Contact_Phone_Number'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Contact_Phone_Number', 'like', '%'. $request->get('Dropoff_Contact_Phone_Number') .'%');
+        }
+
+        if($request->get('Dropoff_Address_Line_1'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Address_Line_1', 'like', '%'. $request->get('Dropoff_Address_Line_1') .'%');
+        }
+
+        $packageHistoryList    = $packageHistoryList->get();
+        $idsExists             = [];
+        $packageHistoryListNew = [];
+
+        foreach($packageHistoryList as $packageHistory)
+        {
+            if(in_array($packageHistory->Reference_Number_1, $idsExists) === false)
+            {
+                $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
+                $endDate  = date('Y-m-d');
+
+                $status   = $this->GetStatus($packageHistory->Reference_Number_1);
+ 
+                $package = [
+
+                    "created_at" => $packageHistory->created_at,
+                    "company" => $packageHistory->company,
+                    "company" => $packageHistory->company,
+                    "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                    "internal_comment" => $packageHistory->internal_comment,
+                    "status" => $status['status'],
+                    "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                    "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                    "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                    "Dropoff_City" => $packageHistory->Dropoff_City,
+                    "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                    "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                    "Route" => $packageHistory->Route,
+                ];
+
+                array_push($packageHistoryListNew, $package);
+                array_push($idsExists, $packageHistory->Reference_Number_1);
+            }
+        }
+
+        return [
+
+            'packageHistoryList' => $packageHistoryListNew,
+        ];
+    }
+
+    public function GetStatus($Reference_Number_1)
+    {
+        $package = PackageManifest::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+
+        if($package)
+        {
+            return ['status' => $package->status]; 
+        }
+
+        return ['status' => ''];
     }
 
     public function IndexInbound()
