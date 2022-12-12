@@ -88,7 +88,7 @@
         @if(Auth::check())
             <div class="row">
                 <div class="col-lg-4">
-                    <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
+                    <form id="formSearhPackage" class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
                         <input type="text" id="searchPackage" name="searchPackage" placeholder="Search PACKAGE ID" title="Enter search keyword">
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
@@ -428,7 +428,8 @@
                         </div>
                     </form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
+                        <button type="button" id="btnBackGoTo" class="btn btn-primary close" style="display: none;" onclick="ViewModalSearchFilters()">Go to back</button>
+                        <button type="button" id="btnCloseHistorialPackage" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
                     </div>
                 </div>
             </div>
@@ -566,7 +567,7 @@
                         </div>
                     </form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('searchByFiltersModal');">Close</button>
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="ViewModalSearchFilters();">Close</button>
                     </div>
                 </div>
             </div>
@@ -637,8 +638,15 @@
 
         function SearchPackage(e)
         {
+            searchGlobal = 0;
+
             e.preventDefault();
 
+            SearchPackageReferenceId();
+        }
+
+        function SearchPackageReferenceId()
+        {
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
             fetch(url_general +'package-history/search/'+ PACKAGE_ID)
@@ -765,12 +773,12 @@
                     document.getElementById('highPriority').value    = packageHistoryList[0].highPriority;
                 }
 
-                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                if(searchGlobal == 1)
+                    $('#btnBackGoTo').css('display', 'block');
+                else
+                    $('#btnBackGoTo').css('display', 'none');
 
-                    keyboard: false
-                })
-
-                myModal.toggle();
+                $('#exampleModal').modal('toggle');
             });
         }
 
@@ -836,12 +844,7 @@
                         }
                     }
 
-                    var myModal = new bootstrap.Modal(document.getElementById('exampleModalTask'), {
-
-                        keyboard: false
-                    })
-
-                    myModal.toggle();
+                    $('#exampleModalTask').modal('toggle');
                 }
                 else
                 {
@@ -931,10 +934,12 @@
                 {
                     packageHistoryList.forEach(packageHistory => {
 
+                        let Reference_Number_1 = "'"+ packageHistory.Reference_Number_1 +"'";
+
                         tr =    '<tr>'+
                                     '<td>'+ packageHistory.created_at.substring(5, 7) +'-'+ packageHistory.created_at.substring(8, 10) +'-'+ packageHistory.created_at.substring(0, 4) +'</td>'+
                                     '<td>'+ packageHistory.company +'</td>'+
-                                    '<td>'+ packageHistory.Reference_Number_1 +'</td>'+
+                                    '<td class="text-primary pointer" onclick="SearchByPackageID('+ Reference_Number_1 +')">'+ packageHistory.Reference_Number_1 +'</td>'+
                                     '<td>'+ packageHistory.status +'</td>'+
                                     '<td>'+ packageHistory.Dropoff_Contact_Name +'</td>'+
                                     '<td>'+ packageHistory.Dropoff_Contact_Phone_Number +'</td>'+
@@ -955,21 +960,28 @@
             });
         }
 
+        function SearchByPackageID(Reference_Number_1)
+        {
+            document.getElementById('searchPackage').value = Reference_Number_1;
+
+            $('#searchByFiltersModal').modal('toggle');
+
+            SearchPackageReferenceId();
+        }
+
+        let searchGlobal = 0;
+
         function ViewModalSearchFilters()
         {
-            $('#searchByFiltersModal').modal('show');
+            searchGlobal = 1;
+
+            $('#exampleModal').modal('hide');
+            $('#searchByFiltersModal').modal('toggle');
         }
 
         function CloseModal(idModal)
         {
-            document.getElementById(idModal).style.display = 'none';
-
-            var modal = document.getElementsByClassName('modal-backdrop');
-
-            for(var i = 0; i < modal.length; i++)
-            {
-                modal[i].style.display = "none"; // depending on what you're doing
-            }
+            $('#'+ idModal).modal('toggle');
 
             document.getElementById('bodyAdmin').setAttribute('style', 'position: relative; min-height: 100%; top: 0px;');
         }

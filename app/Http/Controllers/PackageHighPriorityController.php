@@ -139,27 +139,30 @@ class PackageHighPriorityController extends Controller
 
                 $lateDays = $this->CalculateDaysLate($initDate, $endDate);
                 $status   = $this->GetStatus($packageHistory->Reference_Number_1);
- 
-                $package = [
+                    
+                if($status['status'] != 'Delivery')
+                {
+                    $package = [
 
-                    "created_at" => $packageHistory->created_at,
-                    "company" => $packageHistory->company,
-                    "lateDays" => $lateDays,
-                    "company" => $packageHistory->company,
-                    "Reference_Number_1" => $packageHistory->Reference_Number_1,
-                    "internal_comment" => $packageHistory->internal_comment,
-                    "status" => $status['status'],
-                    "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
-                    "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
-                    "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
-                    "Dropoff_City" => $packageHistory->Dropoff_City,
-                    "Dropoff_Province" => $packageHistory->Dropoff_Province,
-                    "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
-                    "Route" => $packageHistory->Route,
-                ];
+                        "created_at" => $packageHistory->created_at,
+                        "company" => $packageHistory->company,
+                        "lateDays" => $lateDays,
+                        "company" => $packageHistory->company,
+                        "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                        "internal_comment" => $packageHistory->internal_comment,
+                        "status" => $status['status'],
+                        "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                        "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                        "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                        "Dropoff_City" => $packageHistory->Dropoff_City,
+                        "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                        "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                        "Route" => $packageHistory->Route,
+                    ];
 
-                array_push($packageHistoryListNew, $package);
-                array_push($idsExists, $packageHistory->Reference_Number_1);
+                    array_push($packageHistoryListNew, $package);
+                    array_push($idsExists, $packageHistory->Reference_Number_1);
+                }
             }
         }
 
@@ -174,9 +177,23 @@ class PackageHighPriorityController extends Controller
     {
         $package = PackageInbound::find($Reference_Number_1);
 
-        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+        if($package == null)
+        {
+            $package = PackageWarehouse::find($Reference_Number_1);
+        }
 
-        $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+        if($package == null)
+        {
+            $package = PackageDispatch::find($Reference_Number_1);
+
+            if($package->status == 'Delivery')
+            {
+                $packageHighPriority = PackageHighPriority::find($Reference_Number_1);
+
+                if($packageHighPriority)
+                    $packageHighPriority->delete();
+            }
+        }
 
         if($package)
         {
