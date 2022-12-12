@@ -186,7 +186,7 @@ class PackageHighPriorityController extends Controller
         {
             $package = PackageDispatch::find($Reference_Number_1);
 
-            if($package->status == 'Delivery')
+            if($package && $package->status == 'Delivery')
             {
                 $packageHighPriority = PackageHighPriority::find($Reference_Number_1);
 
