@@ -408,7 +408,7 @@ class PackageController extends Controller
 
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
 
-        $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
 
         if($package)
         {
