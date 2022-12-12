@@ -571,6 +571,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'notDimensions')
+                    {
+                        setTextMessage("PACKAGE HAS NO RECORDED DIMENSIONS #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'repairPackage')
                     {
                         setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);

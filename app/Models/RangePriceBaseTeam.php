@@ -1,14 +1,14 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class ScheduleTask extends Model implements Auditable
+class RangePriceBaseTeam extends Authenticatable  implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'schedule_task';
+    protected $table      = 'range_payment_team';
     protected $primaryKey = 'id';
 
     public $timestamps   = false;

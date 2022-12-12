@@ -34,7 +34,12 @@ class PackageDispatch extends Model
     {
         return $this->hasMany('App\Models\PackageHistory', 'Reference_Number_1');
     }
-
+    
+    public function package_price_company_team()
+    {
+        return $this->hasMany('App\Models\PackagePriceCompanyTeam', 'Reference_Number_1');
+    }
+    
     //observers
     /*protected static function booted()
     {

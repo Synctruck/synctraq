@@ -2,17 +2,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
 
-class Comment extends Model implements Auditable
+class ChargeCompany extends Model
 {
-    use \OwenIt\Auditing\Auditable;
-
-    protected $table      = 'comments';
+    protected $table      = 'charge_company';
     protected $primaryKey = 'id';
 
     public $timestamps   = false;
-    public $incrementing = true;
+    public $incrementing = false;
 
     protected $fillable = ['id', 'description', 'statusCode', 'finalStatus'];
 
@@ -20,6 +17,11 @@ class Comment extends Model implements Auditable
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
+    }
 
     //observers
     protected static function booted()

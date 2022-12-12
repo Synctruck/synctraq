@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\RangePriceTeam;
+use App\Models\{ RangePriceTeam, RangePriceBaseTeam };
 
 use Illuminate\Support\Facades\Validator;
 
 class RangePriceTeamRouteCompanyController extends Controller
 {
-    public function List($idTeam, $idCompany, $route)
+    public function List($idTeam, $idCompany, $route) 
     {
         $rangeList = RangePriceTeam::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
@@ -161,6 +161,26 @@ class RangePriceTeamRouteCompanyController extends Controller
         $range->delete();
 
         return ['stateAction' => true];
+    }
+
+    public function GetPriceTeam($idTeam, $idCompany, $weight, $route)
+    {
+        $range = RangePriceTeam::where('idTeam', $idTeam)
+                                ->where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->where('route', $route)
+                                ->first();
+
+        if($range == null)
+        {
+            $range = RangePriceBaseTeam::where('idTeam', $idTeam)
+                                        ->where('minWeight', '<=', $weight)
+                                        ->where('maxWeight', '>=', $weight)
+                                        ->first();
+        }
+
+        return $range->price;
     }
 
     public function CalculatePricePecercentaje($price, $fuelPercentage)

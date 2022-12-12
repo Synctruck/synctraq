@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\RangePriceCompany;
+use App\Models\{ PackageDispatch, RangePriceCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -28,7 +28,6 @@ class RangePriceCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
-                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
@@ -44,11 +43,6 @@ class RangePriceCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
-
-                "fuelPercentage.required" => "The field is required",
-                "fuelPercentage.min"  => "Enter minimum 0",
-                "fuelPercentage.max"  => "Enter maximum 100",
-                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -57,7 +51,7 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+        //$pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = new RangePriceCompany();
 
@@ -65,9 +59,9 @@ class RangePriceCompanyController extends Controller
         $range->minWeight       = $request->get('minWeight');
         $range->maxWeight       = $request->get('maxWeight');
         $range->price           = $request->get('price');
-        $range->fuelPercentage  = $request->get('fuelPercentage');
+        /*$range->fuelPercentage  = $request->get('fuelPercentage');
         $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];
+        $range->total           = $pricePecercentaje['total'];*/
 
         $range->save();
 
@@ -90,7 +84,6 @@ class RangePriceCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
-                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
@@ -106,11 +99,6 @@ class RangePriceCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
-
-                "fuelPercentage.required" => "The field is required",
-                "fuelPercentage.min"  => "Enter minimum 0",
-                "fuelPercentage.max"  => "Enter maximum 100",
-                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -119,7 +107,7 @@ class RangePriceCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
+        //$pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = RangePriceCompany::find($idRange);
 
@@ -127,9 +115,9 @@ class RangePriceCompanyController extends Controller
         $range->minWeight       = $request->get('minWeight');
         $range->maxWeight       = $request->get('maxWeight');
         $range->price           = $request->get('price');
-        $range->fuelPercentage  = $request->get('fuelPercentage');
+        /*$range->fuelPercentage  = $request->get('fuelPercentage');
         $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];
+        $range->total           = $pricePecercentaje['total'];*/
 
         $range->save();
 
@@ -145,11 +133,50 @@ class RangePriceCompanyController extends Controller
         return ['stateAction' => true];
     }
 
+    public function GetPriceCompany($idCompany, $weight)
+    {
+        $range = RangePriceCompany::where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->first();
+
+        if($range == null)
+        {
+            $range = RangePriceCompany::orderBy('price', 'desc')->first();
+        }
+
+        return $range->price;
+    }
+
     public function CalculatePricePecercentaje($price, $fuelPercentage)
     {
         $pricePercentage = ($price * $fuelPercentage) / 100;
         $total           = $price + $pricePercentage;
 
         return ['pricePercentage' => $pricePercentage, 'total' => $total];
+    }
+
+    public function UpdatePrices()
+    {
+        $listAll = PackageDispatch::where('pricePaymentCompany', 0.00)->get();
+
+        foreach($listAll as $packageDispatch)
+        {
+            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+
+            $range = RangePriceCompany::where('idCompany', $packageDispatch->idCompany)
+                                ->where('minWeight', '<=', $packageDispatch->Weight)
+                                ->where('maxWeight', '>=', $packageDispatch->Weight)
+                                ->first();
+
+            if($range)
+            {
+                $packageDispatch->pricePaymentCompany = $range->price;
+
+                $packageDispatch->save();
+            }
+        }
+
+        return 'updated completed';
     }
 }

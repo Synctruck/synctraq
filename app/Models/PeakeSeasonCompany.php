@@ -2,17 +2,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
 
-class Comment extends Model implements Auditable
+class PeakeSeasonCompany extends Model
 {
-    use \OwenIt\Auditing\Auditable;
-
-    protected $table      = 'comments';
+    protected $table      = 'peake_season_company';
     protected $primaryKey = 'id';
 
     public $timestamps   = false;
-    public $incrementing = true;
+    public $incrementing = false;
 
     protected $fillable = ['id', 'description', 'statusCode', 'finalStatus'];
 

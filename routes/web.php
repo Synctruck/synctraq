@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -124,6 +124,25 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:validatedDelivery.index');
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
 
+	//=========== Charge Company
+	Route::get('/charge-delivery-company', [ChargeCompanyController::class, 'Index'])->middleware('permission:chargeDeliveryCompany.index');;
+	Route::get('/charge-delivery-company/list/{idCompany}/{dateInit}/{dateEnd}', [ChargeCompanyController::class, 'List']);
+	Route::post('/charge-delivery-company/insert', [ChargeCompanyController::class, 'Insert']);
+	Route::get('/charge-delivery-company/export/{dateInit}/{dateEnd}/{idCompany}', [ChargeCompanyController::class, 'Export']);
+	Route::get('/charge-company', [ChargeCompanyController::class, 'IndexCharge']);
+	Route::get('/charge-company/list/{dateInit}/{endDate}/{idCompany}', [ChargeCompanyController::class, 'ChargeList']);
+	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'ExportCharge']);
+
+	//=========== PAYMENT TEAM
+	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
+	Route::get('/payment-delivery/list/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'List']);
+	Route::post('/payment-delivery/insert', [PaymentDeliveryTeamController::class, 'Insert']);
+	Route::get('/payment-delivery/export/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'Export']);
+	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment'])->middleware('permission:chargeCompany.index');
+	Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
+	Route::get('/payment-team/export/{id}', [PaymentDeliveryTeamController::class, 'ExportPayment']);
+
+
 	//=========== Age of Package
 	Route::get('/package-age', [PackageAgeController::class, 'Index']);
 	Route::get('/package-age/list/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'List']);
@@ -213,6 +232,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('range-price-company/get/{id}', [RangePriceCompanyController::class, 'Get']);
 	Route::post('range-price-company/update/{id}', [RangePriceCompanyController::class, 'Update']);
 	Route::get('range-price-company/delete/{id}', [RangePriceCompanyController::class, 'Delete']);
+	Route::get('range-price-company/update/prices', [RangePriceCompanyController::class, 'UpdatePrices']);
 
 	//============ Maintenance of ranges teams
 	Route::get('range-price-team-route-company/list/{idTeam}/{idCompany}/{Route}', [RangePriceTeamRouteCompanyController::class, 'List']);
