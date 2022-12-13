@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{ RangePriceTeam, RangePriceBaseTeam };
+use App\Models\{ Company, RangePriceTeam, RangePriceBaseTeam, User };
 
 use Illuminate\Support\Facades\Validator;
+
+use DB;
 
 class RangePriceTeamRouteCompanyController extends Controller
 {
@@ -32,7 +34,6 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
-                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "idCompany.required" => "Select item",
@@ -52,11 +53,6 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
-
-                "fuelPercentage.required" => "The field is required",
-                "fuelPercentage.min"  => "Enter minimum 0",
-                "fuelPercentage.max"  => "Enter maximum 100",
-                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -64,8 +60,6 @@ class RangePriceTeamRouteCompanyController extends Controller
         {
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
-
-        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = new RangePriceTeam();
 
@@ -75,9 +69,6 @@ class RangePriceTeamRouteCompanyController extends Controller
         $range->minWeight       = $request->get('minWeight');
         $range->maxWeight       = $request->get('maxWeight');
         $range->price           = $request->get('price');
-        $range->fuelPercentage  = $request->get('fuelPercentage');
-        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -102,7 +93,6 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
-                "fuelPercentage" => ["required", "min:0", "max:100", "numeric"],
             ],
             [
                 "idCompany.required" => "Select item",
@@ -122,11 +112,6 @@ class RangePriceTeamRouteCompanyController extends Controller
                 "price.required" => "The field is required",
                 "price.max"  => "Enter maximum 999",
                 "price.numeric"  => "Enter only numbers",
-
-                "fuelPercentage.required" => "The field is required",
-                "fuelPercentage.min"  => "Enter minimum 0",
-                "fuelPercentage.max"  => "Enter maximum 100",
-                "fuelPercentage.numeric"  => "Enter only numbers",
             ]
         );
 
@@ -134,8 +119,6 @@ class RangePriceTeamRouteCompanyController extends Controller
         {
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
-
-        $pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = RangePriceTeam::find($idRange);
 
@@ -145,9 +128,6 @@ class RangePriceTeamRouteCompanyController extends Controller
         $range->minWeight       = $request->get('minWeight');
         $range->maxWeight       = $request->get('maxWeight');
         $range->price           = $request->get('price');
-        $range->fuelPercentage  = $request->get('fuelPercentage');
-        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];
 
         $range->save();
 
@@ -172,15 +152,20 @@ class RangePriceTeamRouteCompanyController extends Controller
                                 ->where('route', $route)
                                 ->first();
 
-        if($range == null)
+        /*if($range == null)
         {
             $range = RangePriceBaseTeam::where('idTeam', $idTeam)
                                         ->where('minWeight', '<=', $weight)
                                         ->where('maxWeight', '>=', $weight)
                                         ->first();
+        }*/
+
+        if($range)
+        {
+            return $range->price;
         }
 
-        return $range->price;
+        return 0;
     }
 
     public function CalculatePricePecercentaje($price, $fuelPercentage)
@@ -189,5 +174,78 @@ class RangePriceTeamRouteCompanyController extends Controller
         $total           = $price + $pricePercentage;
 
         return ['pricePercentage' => $pricePercentage, 'total' => $total];
+    }
+
+    public function Import(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $file = $request->file('file');
+
+            $file->move(public_path() .'/file-import', 'rangepriceteamroutecompany.csv');
+
+            $handle = fopen(public_path('file-import/rangepriceteamroutecompany.csv'), "r");
+
+            $lineNumber = 1;
+
+            $countSave = 0;
+
+            while (($raw_string = fgets($handle)) !== false)
+            {
+                if($lineNumber > 1)
+                {
+                    $row = str_getcsv($raw_string);
+
+                    $team    = User::where('name', $row[0])->where('idRole', 3)->first();
+                    $company = Company::where('name', $row[5])->first();
+
+                    if($team && $company)
+                    {
+                        $range = RangePriceTeam::where('idTeam', $team->id)
+                                                ->where('route', $row[3])
+                                                ->where('idCompany', $company->id)
+                                                ->where('minWeight', $row[1])
+                                                ->where('maxWeight', $row[2])
+                                                ->first();
+
+                        if($range)
+                        {
+                            if($range->price != $row[4])
+                            {
+                                $range->price = $row[4];
+                            }
+                        }
+                        else
+                        {
+                            $range = new RangePriceTeam();
+
+                            $range->idTeam          = $team->id;
+                            $range->idCompany       = $company->id;
+                            $range->route           = $row[3];
+                            $range->minWeight       = $row[1];
+                            $range->maxWeight       = $row[2];
+                            $range->price           = $row[4];
+                        }
+
+                        $range->save();
+                    }
+
+                }
+
+                $lineNumber++;
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];  
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
     }
 }

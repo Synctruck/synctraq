@@ -297,15 +297,15 @@ class PackageDispatchController extends Controller
                 {
                     $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $package->Reference_Number_1)->first();
 
-                    if($packagePriceCompanyTeam == null)
+                    /*if($packagePriceCompanyTeam == null)
                     {
                         return ['stateAction' => 'notDimensions'];
-                    }
+                    }*/
 
                     ////////// TEAM ///////////////////////////////////////////////////7
                     //calculando dimensiones y precios para team
-                    $weight = $packagePriceCompanyTeam->weight;
-                    $cuIn   = $packagePriceCompanyTeam->cuIn;
+                    $weight = 0;//$packagePriceCompanyTeam->weight;
+                    $cuIn   = 0;//$packagePriceCompanyTeam->cuIn;
 
                     $dimFactorTeam = DimFactorTeam::first();
                     $dimFactorTeam = $dimFactorTeam->factor;
@@ -313,7 +313,8 @@ class PackageDispatchController extends Controller
                     $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
                     $dimWeightTeamRound = ceil($dimWeightTeam);
 
-                    $weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
+                    $weightTeam = $package->Weight;
+                    //$weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
 
                     $priceTeam = new RangePriceTeamRouteCompanyController();
                     $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route); 
@@ -329,7 +330,8 @@ class PackageDispatchController extends Controller
 
                     $surchargePercentageTeam = $teamController->GetPercentage($request->get('idTeam'), $dieselPrice);
                     $surchargePriceTeam      = number_format(($priceBaseTeam * $surchargePercentageTeam) / 100, 4);
-                    $totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
+                    //$totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
+                    $totalPriceTeam          = number_format($priceTeam, 4);
                     ///////// END TEAM
 
                     try
@@ -351,7 +353,15 @@ class PackageDispatchController extends Controller
                             $created_at = date('Y-m-d H:i:s');
                         }
                         
+                        if($packagePriceCompanyTeam == null)
+                        {
+                            $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+
+                            $packagePriceCompanyTeam->id = date('YmdHis');
+                        }
+                        
                         //update PACKAGE prices team
+                        $packagePriceCompanyTeam->Reference_Number_1      = $package->Reference_Number_1;
                         $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
                         $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
                         $packagePriceCompanyTeam->dimWeightTeam           = $dimWeightTeam;
@@ -362,7 +372,7 @@ class PackageDispatchController extends Controller
                         $packagePriceCompanyTeam->surchargePercentageTeam = $surchargePercentageTeam;
                         $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
                         $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
-
+                        
                         $packagePriceCompanyTeam->save();
 
                         if($package->status == 'On hold')

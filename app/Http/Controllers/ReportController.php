@@ -513,7 +513,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', ' URL-IMAGES');
+        $fields = array('DATE', 'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', ' URL-IMAGES');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -539,7 +539,8 @@ class ReportController extends Controller
                                 $packageDelivery->Dropoff_Postal_Code,
                                 $packageDelivery->Weight,
                                 $packageDelivery->Route,
-                                $packageDelivery->photoUrl,
+                                $packageDelivery->pricePaymentTeam,
+                                $packageDelivery->photoUrl
                             );
 
             fputcsv($file, $lineData, $delimiter);

@@ -35,7 +35,12 @@ function Team() {
     const [textSearch, setSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
-    useEffect(() => {
+    const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [file, setFile]             = useState('');
+
+    const inputFileRef  = React.useRef();
+
+    useEffect(() => { 
 
         listAllCompany();
 
@@ -47,6 +52,19 @@ function Team() {
         listAllRoute();
 
     }, [textSearch])
+
+    useEffect(() => {
+
+        if(String(file) == 'undefined' || file == '')
+        {
+            setViewButtonSave('none');
+        }
+        else
+        {
+            setViewButtonSave('block');
+        }
+
+    }, [file]);
 
     const handlerChangePage = (pageNumber) => {
 
@@ -570,9 +588,6 @@ function Team() {
                 <td><b>{ range.minWeight }</b></td>
                 <td><b>{ range.maxWeight }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
-                <td><b>{ range.fuelPercentage +' %' }</b></td>
-                <td><b>{ range.pricePercentage +' $' }</b></td>
-                <td><b>{ range.total +' $' }</b></td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -643,9 +658,6 @@ function Team() {
 
         document.getElementById('priceRange').style.display = 'none';
         document.getElementById('priceRange').innerHTML     = '';
-
-        document.getElementById('fuelRange').style.display = 'none';
-        document.getElementById('fuelRange').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -762,6 +774,56 @@ function Team() {
         setRoute(route);
 
         listAllRangeAux(idCompany, route);
+    }
+
+    const handlerImport = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', file);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'range-price-team-route-company/import', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The file was imported successfully!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("Error importing file!", {
+
+                        icon: "danger",
+                    });
+                }
+
+                document.getElementById('fileImport').value = '';
+                setViewButtonSave('none');
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const onBtnClickFile = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRef.current.click();
     }
 
     const modalCategoryInsert = <React.Fragment>
@@ -899,7 +961,7 @@ function Team() {
                                                                     { optionsRoute }
                                                                 </select>
                                                             </div>
-                                                        </div>
+                                                        </div> 
                                                         <div className="row">
                                                             <div className="col-lg-6 form-group">
                                                                 <label className="form">MIN. WEIGHT</label>
@@ -915,11 +977,6 @@ function Team() {
                                                                 <label className="form">Price $</label>
                                                                 <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
-                                                            </div>
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">FUEL PERCENTAGE</label>
-                                                                <div id="fuelRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="0" max="99" step="0.0001" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
@@ -943,9 +1000,6 @@ function Team() {
                                                                 <th>MIN. WEIGHT</th>
                                                                 <th>MAX. WEIGHT</th>
                                                                 <th>BASE PRICE</th>
-                                                                <th>FUEL PERCENTAGE</th>
-                                                                <th>PRICE PERCENTAGE</th>
-                                                                <th>TOTAL</th>
                                                                 <th>ACTIONS</th>
                                                             </tr>
                                                         </thead>
@@ -970,13 +1024,25 @@ function Team() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10">
-                                        Team List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
+                                    </div>
+                                    <div className="col-lg-3 mb-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import prices ranges
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </h5>
