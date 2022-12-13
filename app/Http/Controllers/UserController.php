@@ -28,8 +28,6 @@ class UserController extends Controller
 
     public function Index()
     {
-        $configuration = Configuration::first();
-
         $this->UpdateDeleteUser();
         
         return view('user.index');
@@ -307,12 +305,6 @@ class UserController extends Controller
 
                 $user->save();
             }
-
-            $configuration = Configuration::first();
-
-            $configuration->dateDeleteUser = date('Y-m-d');
-
-            $configuration->save();
 
             DB::commit();
         }

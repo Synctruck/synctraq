@@ -110,7 +110,7 @@ class PackageReturnCompanyController extends Controller
         {
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
         }
-
+        
         if($packageInbound)
         {
             try
@@ -175,7 +175,9 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
-
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                
                 $packageHistory->save();
 
                 $packageInbound->delete();

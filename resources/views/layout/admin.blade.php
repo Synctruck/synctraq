@@ -203,7 +203,7 @@
 
         </li><!-- End Notification Nav -->
 
-        <li class="nav-item dropdown" style="display: none;">
+        <li class="nav-item dropdown" style="display: block;">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
@@ -272,17 +272,17 @@
         <li class="nav-item dropdown pe-3">
 
             @if(Auth::check())
-                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
-                @if(Auth::user()->role->name != 'Team')
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
-                @else
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
-                @endif
+                <a id="dropdown-menu" class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown-menu">
+                    <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
+                    @if(Auth::user()->role->name != 'Team')
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
+                    @else
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
+                    @endif
 
-              </a><!-- End Profile Iamge Icon -->
+                </a><!-- End Profile Iamge Icon -->
 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                <ul id="dropdown-menu-children" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         @if(Auth::user()->role->name != 'Team')
                             <h6>{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</h6>
@@ -990,35 +990,7 @@
 
     <script>
 
-        //reports
-        var childsReport = document.getElementById('ulReports').children.length
-        console.log('report: ',childsReport);
-        if(childsReport==0){
-            console.log('reports es cero')
-            document.getElementById('liUlReports').style.display = 'none';
-            document.getElementById('titleReports').style.display = 'none';
-        }
-        //maintanences
-        var childsUsers = document.getElementById('ulUsers').children.length
-        console.log('users: ',childsUsers);
-        if(childsUsers==0){
-            document.getElementById('liUlUsers').style.display = 'none';
-        }
-        var childsConfiguration = document.getElementById('ulConfiguration').children.length
-        console.log('config: ',childsConfiguration);
-        if(childsConfiguration==0){
-            document.getElementById('liUlConfiguration').style.display = 'none';
-        }
-
-        //finanzas
-        var childsFinanzas = document.getElementById('ulFinanzas').children.length
-        console.log('finanzas: ',childsFinanzas);
-        if(childsFinanzas==0){
-            document.getElementById('liUlFinanzas').style.display = 'none';
-        }
-        if(childsUsers == 0 && childsFinanzas == 0 && childsConfiguration == 0){
-            document.getElementById('titleMaintenances').style.display = 'none';
-        }
+       
 
 
     </script>

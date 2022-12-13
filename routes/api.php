@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\{ PackageController, WHookController };
+use App\Http\Controllers\Api\{ PackageController, PackageInboundController, WHookController };
+use App\Http\Controllers\{ IndexController };
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,3 +39,5 @@ Route::post('packages-webhook-taskDelete', [WHookController::class, 'TaskDelete'
 Route::get('packages-manifest/updated-route', [PackageController::class, 'UpdateManifestRouteByZipCode']);
 Route::get('packages-inbound/updated-route', [PackageController::class, 'UpdateInboundRouteByZipCode']);
 Route::get('packages-warehouse/updated-route', [PackageController::class, 'UpdateWarehouseRouteByZipCode']);
+
+Route::post('package-inbound/insert', [PackageInboundController::class, 'Insert']);

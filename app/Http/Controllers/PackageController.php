@@ -1124,7 +1124,7 @@ class PackageController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+        $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION RETURN', 'DESCRIPTION ONFLEET', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1214,6 +1214,8 @@ class PackageController extends Controller
                 $team,
                 $driver,
                 $packageReturn->Reference_Number_1,
+                $packageReturn->Description_Return,
+                $packageReturn->Description_Onfleet,
                 $packageReturn->Dropoff_Contact_Name,
                 $packageReturn->Dropoff_Contact_Phone_Number,
                 $packageReturn->Dropoff_Address_Line_1,
