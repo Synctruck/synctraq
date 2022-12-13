@@ -318,5 +318,36 @@ class PackageReturnCompanyController extends Controller
         }
     }
 
+    public function UpdateCreatedAt()
+    {
+        try
+        {
+            DB::beginTransaction();
 
+            $listPackageReturnCompany = PackageReturnCompany::all();
+
+            foreach($listPackageReturnCompany as $packageReturnCompany)
+            {
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                ->where('status', 'ReturnCompany')
+                                                ->first();
+
+
+                $packageHistory->created_at = $packageReturnCompany->created_at;
+                $packageHistory->updated_at = $packageReturnCompany->created_at;
+                
+                $packageHistory->save();
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
+    }
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -108,6 +108,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');
 	Route::get('/package-failed/list/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'List']);
+	Route::get('/package-failed/move/prefailed-to-failed', [PackageFailedController::class, 'MovePreFailedToFailed']);
 	Route::get('/package-failed/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'Export']);
 
 	//============ Validation delivery
@@ -324,6 +325,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
 	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::get('/report/return-company/update-created-at', [PackageReturnCompanyController::class, 'UpdateCreatedAt']);
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 

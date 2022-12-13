@@ -803,8 +803,8 @@
                     document.getElementById('teamOnfleet').value   = team;
                     document.getElementById('driverOnfleet').value = driver;
 
-                    document.getElementById('contactOnfleetName').value    = onfleet['recipients'][0]['name'];
-                    document.getElementById('contactOnfleetPhone').value   = onfleet['recipients'][0]['phone'];
+                    document.getElementById('contactOnfleetName').value    = (onfleet['recipients'].length > 0 ? onfleet['recipients'][0]['name'] : '') ;
+                    document.getElementById('contactOnfleetPhone').value   = (onfleet['recipients'].length > 0 ? onfleet['recipients'][0]['phone'] : '') ;
                     document.getElementById('contactOnfleetAddress').value = onfleet['destination']['address']['apartment'] +' '+ onfleet['destination']['address']['country'] +' '+ onfleet['destination']['address']['number'] +' '+ onfleet['destination']['address']['postalCode'] +' '+ onfleet['destination']['address']['street'];
                     document.getElementById('contactOnfleetCity').value    = onfleet['destination']['address']['city'];
                     document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state'];

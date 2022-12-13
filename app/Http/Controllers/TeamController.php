@@ -305,7 +305,7 @@ class TeamController extends Controller
 
     public function GetPeakeSeason($idTeam, $weight)
     {
-        $peakeSeason = PeakeSeasonTeam::where('idTeam', $idTeam)->first();
+        /*$peakeSeason = PeakeSeasonTeam::where('idTeam', $idTeam)->first();
 
         if(date('Y-m-d') >= $peakeSeason->start_date && date('Y-m-d') <= $peakeSeason->end_date)
         {
@@ -321,19 +321,21 @@ class TeamController extends Controller
         else
         {
             $pricePeakeSeason = 0.00;
-        }
+        }*/
+
+        $pricePeakeSeason = 0.00;
 
         return $pricePeakeSeason;
     }
 
     public function GetPercentage($idTeam, $dieselPrice)
     {
-        $surchargePercentage = RangeDieselTeam::where('idTeam', $idTeam)
+        /*$surchargePercentage = RangeDieselTeam::where('idTeam', $idTeam)
                                                     ->where('at_least', '<=', $dieselPrice)
                                                     ->where('but_less', '>=',  $dieselPrice)
-                                                    ->first()->surcharge_percentage;
+                                                    ->first()->surcharge_percentage;*/
 
-        return $surchargePercentage;
+        return 0;
     }
 
     public function Delete($id)
