@@ -127,9 +127,10 @@ class TaskPackageFailed extends Command
 
                     $packageHistory->save();
                     
-                    $packagePreFailed->delete();
                     $packageDispatch->delete();
                 }
+
+                $packagePreFailed->delete();
             }
 
             Log::info("==================== CORRECT SCHEDULE TASK MOVE PRE-FAILED TO FAILED");

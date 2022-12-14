@@ -104,6 +104,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-dispatch/change', [PackageDispatchController::class, 'Change']);
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
 	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
+	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
 
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');

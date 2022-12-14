@@ -1313,6 +1313,45 @@ class PackageDispatchController extends Controller
         return ['stateAction' => 'notDispatch'];
     }
 
+    public function UpdatePriceTeams($dateStart, $dateEnd)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $dateStart = $dateStart .' 00:00:00';
+            $dateEnd   = $dateEnd .' 23:59:59';
+
+            $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])->get();
+
+            foreach($listPackageDispatch as $packageDispatch)
+            {
+                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $priceTeam = new RangePriceTeamRouteCompanyController();
+                    $priceTeam = $priceTeam->GetPriceTeam($packageDispatch->idTeam, $packageDispatch->idCompany, $packageDispatch->Weight, $packageDispatch->Route);
+
+                    if($priceTeam > 0)
+                    {
+                        $packageDispatch->pricePaymentTeam = $priceTeam;
+
+                        $packageDispatch->save();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return 'updated successfully';
+        }
+        catch(Exception $e)
+        {
+            return 'erros'; 
+        }
+    }
+
     public function RegisterOnfleet($package, $team, $driver)
     {
         $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
