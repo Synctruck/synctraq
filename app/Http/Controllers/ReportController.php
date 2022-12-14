@@ -513,7 +513,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', ' URL-IMAGES');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -525,6 +525,17 @@ class ReportController extends Controller
             $team   = isset($packageDelivery->team) ? $packageDelivery->team->name : '';
             $driver = isset($packageDelivery->driver) ? $packageDelivery->driver->name .' '. $packageDelivery->driver->nameOfOwner : '';
 
+            $urlImage1 = '';
+            $urlImage2 = '';
+
+            if($packageDelivery->photoUrl != '')
+            {
+                $imagesIds = explode(',', $packageDelivery->photoUrl);
+
+                $urlImage1 = count($imagesIds) > 0 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[0] .'/800x.png' : '';
+                $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
+            }
+            
             $lineData = array(
                                 date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
                                 date('H:i:s', strtotime($packageDelivery->Date_Delivery)),
@@ -541,7 +552,9 @@ class ReportController extends Controller
                                 $packageDelivery->Weight,
                                 $packageDelivery->Route,
                                 $packageDelivery->pricePaymentTeam,
-                                $packageDelivery->photoUrl
+                                $packageDelivery->pieces,
+                                $urlImage1,
+                                $urlImage2,
                             );
 
             fputcsv($file, $lineData, $delimiter);
