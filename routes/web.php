@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -105,6 +105,18 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
 	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
 	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
+
+	//============ PALET DISPACTH
+	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/', [PalletDispatchController::class, 'List']);
+	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
+
+	//============ Dispatch package
+	Route::get('/package-pre-dispatch', [PackagePreDispatchController::class, 'Index'])->middleware('permission:predispatch.index');
+	Route::get('/package-pre-dispatch/list/{numberPallet}', [PackagePreDispatchController::class, 'List']);
+	Route::get('/package-pre-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackagePreDispatchController::class, 'Export']);
+	Route::get('/package-pre-dispatch/getAll', [PackagePreDispatchController::class, 'GetAll']);
+	Route::post('/package-pre-dispatch/insert', [PackagePreDispatchController::class, 'Insert']);
+	Route::get('/package-pre-dispatch/chage-to-dispatch/{PalletNumberForm}', [PackagePreDispatchController::class, 'ChangeToDispatch']);
 
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');

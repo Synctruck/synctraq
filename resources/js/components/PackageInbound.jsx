@@ -446,13 +446,38 @@ function PackageInbound() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'notInland')
+                    if(response.stateAction == 'validatedFilterPackage')
                     {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+                        
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        setTextMessage('');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
                         setTypeMessage('warning');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoError').play();
+                        document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction == 'notExists')
                     {

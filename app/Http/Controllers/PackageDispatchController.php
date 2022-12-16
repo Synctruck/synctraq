@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -243,6 +243,13 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
             
         $package = PackageInbound::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
@@ -317,7 +324,7 @@ class PackageDispatchController extends Controller
                     //$weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
 
                     $priceTeam = new RangePriceTeamRouteCompanyController();
-                    $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route); 
+                    $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route);
 
                     //precio peakeseason
                     $teamController       = new TeamController(); 
@@ -1008,6 +1015,13 @@ class PackageDispatchController extends Controller
         if($packageBlocked)
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
         }
 
         $packageDispatch = PackageFailed::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();

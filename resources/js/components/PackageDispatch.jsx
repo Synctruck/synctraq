@@ -519,6 +519,14 @@ function PackageDispatch() {
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
                     }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'validatedFilterPackage')
                     {
                         let packageBlocked  = response.packageBlocked;

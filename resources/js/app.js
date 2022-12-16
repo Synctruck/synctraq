@@ -17,6 +17,7 @@ require('./components/PackageDispatch');
 require('./components/PackageFailed');
 require('./components/PackageDelivery');
 require('./components/PackageNotExists');
+require('./components/PackagePreDispatch');
 require('./components/PackageReturn');
 require('./components/PaymentDeliveryTeam');
 require('./components/Payments');

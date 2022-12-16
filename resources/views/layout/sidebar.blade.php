@@ -50,7 +50,16 @@
                 </li>
             @endif
 
-            @if(hasPermission('dispatch.index'))
+            @if(hasPermission('predispatch.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-pre-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-dispatch')}}">
+                        <i class="bx bx-car"></i>
+                        <span>PRE - DISPATCH</span>
+                    </a>
+                </li>
+            @endif
+
+            @if(hasPermission('predispatch.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch')}}">
                         <i class="bx bx-car"></i>
