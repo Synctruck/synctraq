@@ -66,8 +66,6 @@ function PackagePreDispatch() {
 
     const [RoutePallet, setRoutePallet] = useState('');
 
-
-
     const [RouteSearchList, setRouteSearchList] = useState('all');
     const [StateSearch, setStateSearch]         = useState('all');
     const [idCompany, setCompany]               = useState(0);
@@ -82,6 +80,7 @@ function PackagePreDispatch() {
 
         listAllCompany();
         listAllRoute();
+        listAllTeam();
 
         document.getElementById('Reference_Number_1').focus();
 
@@ -310,25 +309,59 @@ function PackagePreDispatch() {
 
     const handlerClosePallete = () => {
 
-        fetch(url_general +'package-pre-dispatch/chage-to-dispatch/'+ PalletNumberForm)
-        .then(res => res.json())
-        .then((response) => {
+        if(idTeam != 0 && idDriver != 0)
+        {
+            const formData = new FormData();
 
-            if(response.stateAction == true)
-            {
-                swal("The palette was closed correctly!", {
+            formData.append('numberPallet', PalletNumberForm);
+            formData.append('idTeam', idTeam);
+            formData.append('idDriver', idDriver);
 
-                    icon: "success",
-                });
-            }
-            else
-            {
-                swal("There was a problem trying to close the palette, please try again!", {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                    icon: "warning",
-                });
-            }
-        });
+            let url = 'package-pre-dispatch/chage-to-dispatch';
+
+            fetch(url_general + url, {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    if(response.closePallet == 1)
+                    {
+                        swal("The palette was dispatched correctly!", {
+
+                            icon: "success",
+                        });
+
+                        handlerCloseModalPackage();
+                        listAllPalet(page);
+                    }
+                    else
+                    {
+                        listPackagePreDispatch(PalletNumberForm);
+                    }
+                }
+                else
+                {
+                    swal("There was a problem trying to close the palette, please try again!", {
+
+                        icon: "warning",
+                    });
+                }
+            });
+        }
+        else
+        {
+            swal("You must select a team and a driver!", {
+
+                icon: "warning",
+            });
+        }
         /*swal({
             title: "want to close the palette?",
             text: "",
@@ -385,6 +418,22 @@ function PackagePreDispatch() {
                 <td>{ packagePreDispatch.Weight }</td>
                 <td>{ packagePreDispatch.Route }</td>
             </tr>
+        );
+    });
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id }>{ team.name }</option>
+        );
+    });
+
+    const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
         );
     });
 
@@ -475,9 +524,34 @@ function PackagePreDispatch() {
                                                     </div>
                                                 </div>
                                                 <div className="modal-footer">
-                                                    <button type="button" className="btn btn-primary" onClick={ () => handlerClosePallete () }>
-                                                        CLOSE PALLET
-                                                    </button>
+                                                    <div className="row" style={ {width: '100%'} }>
+                                                        <div className="col-lg-4">
+                                                            <div className="form-group">
+                                                                <label className="form">TEAM</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                                    <option value="">All</option>
+                                                                    { listTeamSelect }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-lg-4">
+                                                            <div className="form-group">
+                                                                <label className="form">DRIVER</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                                    <option value="0">All</option>
+                                                                    { listDriverSelect }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-lg-4">
+                                                            <div className="form-group">
+                                                                <label className="text-white">---</label>
+                                                                <button type="button" className="btn btn-success form-control" onClick={ () => handlerClosePallete () }>
+                                                                    DISPATCH PALLET
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -713,14 +787,12 @@ function PackagePreDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
-                    else if(response.stateAction)
+                    else if(response.stateAction == true)
                     {
                         setTextMessage("SUCCESSFULLY PRE DISPATCHED #"+ Reference_Number_1);
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
                         setNumberPackage('');
-
-                        listPackagePreDispatch(PalletNumberForm);
 
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
@@ -834,6 +906,16 @@ function PackagePreDispatch() {
         });
 
         myModal.show();
+    }
+
+    const handlerCloseModalPackage = () => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalPackageList'), {
+
+            keyboard: true
+        });
+
+        myModal.hide();
     }
 
     const palletListTable = palletList.map( (pallet, i) => {

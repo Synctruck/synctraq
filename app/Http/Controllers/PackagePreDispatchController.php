@@ -213,13 +213,14 @@ class PackagePreDispatchController extends Controller
         }
     }
 
-    public function ChangeToDispatch($numberPallet)
+    public function ChangeToDispatch(Request $request)
     {
-        $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $numberPallet)->get();
-
+        dd($request->all());
         try
         {
             DB::beginTransaction();
+
+            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
 
             foreach($packagePreDispatchList as $packagePreDispatch)
             {
@@ -370,18 +371,22 @@ class PackagePreDispatchController extends Controller
 
             DB::commit();
 
-            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $numberPallet)->get();
+            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
+
+            $closePallet = 0;
 
             if(count($packagePreDispatchList) == 0)
             {
-                $palletDispatch = PalletDispatch::find($numberPallet);
+                $closePallet = 1;
+
+                $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
 
                 $palletDispatch->status = 'Closed';
 
                 $palletDispatch->save();
             }
 
-            return ['stateAction' => true];
+            return ['stateAction' => true, 'closePallet' => $closePallet];
         }
         catch (Exception $e)
         {

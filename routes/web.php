@@ -116,7 +116,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-pre-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackagePreDispatchController::class, 'Export']);
 	Route::get('/package-pre-dispatch/getAll', [PackagePreDispatchController::class, 'GetAll']);
 	Route::post('/package-pre-dispatch/insert', [PackagePreDispatchController::class, 'Insert']);
-	Route::get('/package-pre-dispatch/chage-to-dispatch/{PalletNumberForm}', [PackagePreDispatchController::class, 'ChangeToDispatch']);
+	Route::post('/package-pre-dispatch/chage-to-dispatch', [PackagePreDispatchController::class, 'ChangeToDispatch']);
 
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');
