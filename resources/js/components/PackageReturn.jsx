@@ -426,7 +426,7 @@ function PackageReturn() {
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        title: 'PACKAGE BLOCKED #'+ returnReference_Number_1,
                         text: packageBlocked.comment,
                         showConfirmButton: false,
                         timer: 2000,
@@ -437,9 +437,17 @@ function PackageReturn() {
 
                     document.getElementById('soundPitidoBlocked').play();
                 }
+                else if(response.stateAction == 'packageInPreDispatch')
+                {
+                    setTextMessage('The package is in  PRE DISPATCH #'+ returnReference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
                 else if(response.stateAction == true)
                 {
-                    setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
+                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
 
@@ -459,7 +467,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notUser')
                 {
-                    setTextMessage("El paquete N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
+                    setTextMessage("The package N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
                     setTypeMessage('error');
                     setReturnNumberPackage('');
 
@@ -468,7 +476,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notDispatch')
                 {
-                    setTextMessage("El paquete #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
+                    setTextMessage("The package #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
                     setTypeMessage('warning');
                     setNumberPackage('');
 
@@ -477,7 +485,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction)
                 {
-                    setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
+                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
 
@@ -566,12 +574,12 @@ function PackageReturn() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 mb-2">
                                         <div className="form-group">
                                             <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
                                         </div>
                                     </div>
-                                    <div className="col-lg-8 text-center">
+                                    <div className="col-lg-12 mb-2 text-center">
                                         {
                                             typeMessage == 'success'
                                             ?

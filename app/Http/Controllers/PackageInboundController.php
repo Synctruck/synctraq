@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, PackagePriceCompanyTeam, States };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -142,6 +142,20 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
+
         $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 

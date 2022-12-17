@@ -71,6 +71,12 @@
         writing-mode: vertical-lr;
         transform: rotate(360deg);
     }
+    @media (min-width: 992px) {
+      .modal-lg,
+    .modal-xl {
+        max-width: 1250px;
+      }
+    }
 </style>
 <body id="bodyAdmin">
 

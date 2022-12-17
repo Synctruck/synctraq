@@ -469,16 +469,6 @@ function PackageWarehouse() {
                             });
                         }
 
-                        if(packageManifest)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                                showConfirmButton: false,
-                                timer: 2000,
-                            })
-                        }
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                         //setTextMessage(" LABEL #"+ Reference_Number_1);
@@ -488,6 +478,14 @@ function PackageWarehouse() {
                         setNumberPackage('');
 
                         document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction == 'nonValidatedState')
                     {
