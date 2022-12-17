@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -1501,5 +1501,144 @@ class PackageController extends Controller
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+    }
+
+    public function DeleteClearPackage()
+    {
+        $startDate = date('2022-11-01 00:00:00');
+        $endDate   = date('2022-12-17 23:59:59');
+
+        $routes = ['DE1', 'DE2', 'DE3', 'PA5', 'J2H', 'J2G'];
+
+        try
+        {
+            DB::beginTransaction();
+
+            $Reference_Number_1s = [];
+
+            $packageInboundList = PackageInbound::whereBetween('created_at', [$startDate, $endDate])
+                                            ->whereIn('Route', $routes)
+                                            ->get();
+
+            foreach($packageInboundList as $packageInbound)
+            {
+                $packageInbound = PackageInbound::find($packageInbound->Reference_Number_1);
+
+                if($packageInbound)
+                {
+                    $packageInbound->delete();
+                }
+
+                $packageDispatch = PackageDispatch::find($packageInbound->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->delete();
+                }
+
+                $packageHighPriority = PackageHighPriority::find($packageInbound->Reference_Number_1);
+
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
+
+                $packageFailed = PackageFailed::find($packageInbound->Reference_Number_1);
+
+                if($packageFailed)
+                {
+                    $packageFailed->delete();
+                }
+
+                $packageReturn = PackageReturn::where('Reference_Number_1', $packageInbound->Reference_Number_1)->first();
+
+                if($packageReturn)
+                {
+                    $packageReturn->delete();
+                }
+
+                $packageReturnCompany = PackageReturnCompany::find($packageInbound->Reference_Number_1);
+
+                if($packageReturnCompany)
+                {
+                    $packageReturnCompany->delete();
+                }
+
+                array_push($Reference_Number_1s, $packageInbound->Reference_Number_1);
+            }
+
+            $packageWarehouseList = PackageWarehouse::whereBetween('created_at', [$startDate, $endDate])
+                                                ->whereIn('Route', $routes)
+                                                ->get();
+
+            foreach($packageWarehouseList as $packageWarehouse)
+            {
+                $packageWarehouse = PackageWarehouse::find($packageWarehouse->Reference_Number_1);
+
+                if($packageWarehouse)
+                {
+                    $packageWarehouse->delete();
+                }
+
+                $packageDispatch = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->delete();
+                }
+
+                $packageHighPriority = PackageHighPriority::find($packageWarehouse->Reference_Number_1);
+
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
+
+                $packageFailed = PackageFailed::find($packageWarehouse->Reference_Number_1);
+
+                if($packageFailed)
+                {
+                    $packageFailed->delete();
+                }
+
+                $packageReturn = PackageReturn::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)->first();
+
+                if($packageReturn)
+                {
+                    $packageReturn->delete();
+                }
+
+                $packageReturnCompany = PackageReturnCompany::find($packageWarehouse->Reference_Number_1);
+
+                if($packageReturnCompany)
+                {
+                    $packageReturnCompany->delete();
+                }
+
+                array_push($Reference_Number_1s, $packageWarehouse->Reference_Number_1);
+            }
+
+            $packageHistoryList = PackageHistory::whereIn('Reference_Number_1', $Reference_Number_1s)->get();
+
+            foreach($packageHistoryList as $packageHistory)
+            {
+                $packageHistory = PackageHistory::find($packageHistory->id);
+
+                if($packageHistory)
+                {
+                    $packageHistory->delete();
+                }
+            }
+
+            DB::commit();
+
+            return "correct update";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
     }
 }

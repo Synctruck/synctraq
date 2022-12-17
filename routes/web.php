@@ -28,7 +28,14 @@ Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'S
 Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);
 Route::post('/package-history/search-by-filters', [PackageController::class, 'SearchByFilters']);
 
+Route::get('/package/all-delete/clear-package', [PackageController::class, 'DeleteClearPackage']);
+
 Route::group(['middleware' => 'auth'], function() {
+
+	Route::get('errors/maintenance', function(){
+
+		return view('errors.maintenance');
+	});
 
     Route::get('package-blocked', [PackageBlockedController::class, 'Index'])->middleware('permission:packageBlocked.index');
     Route::get('package-blocked/list', [PackageBlockedController::class, 'List']);

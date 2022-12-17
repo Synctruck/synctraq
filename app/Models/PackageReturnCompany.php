@@ -10,7 +10,7 @@ class PackageReturnCompany extends Model
 
 
     protected $table      = 'packagereturncompany';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
