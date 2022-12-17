@@ -9,7 +9,7 @@ use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Api\PackageController;
-use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
+use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, PackageDispatchController, TeamController };
 
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -42,11 +42,23 @@ class PackagePreDispatchController extends Controller
 
     public function List($numberPallet)
     {
-        $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $numberPallet)
+        $palletDispatch = PalletDispatch::find($numberPallet);
+
+        if($palletDispatch->status == 'Closed')
+        {
+            $packagePreDispatchList = PackageHistory::where('numberPallet', $numberPallet)
                                                 ->orderBy('created_at', 'desc')
                                                 ->get();
+        }
+        else
+        {
+            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $numberPallet)
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
+        }
+        
 
-        return ['packagePreDispatchList' => $packagePreDispatchList]; 
+        return ['packagePreDispatchList' => $packagePreDispatchList, 'palletDispatch' => $palletDispatch]; 
     }
 
     public function Insert(Request $request)
@@ -215,7 +227,6 @@ class PackagePreDispatchController extends Controller
 
     public function ChangeToDispatch(Request $request)
     {
-        dd($request->all());
         try
         {
             DB::beginTransaction();
@@ -348,7 +359,8 @@ class PackagePreDispatchController extends Controller
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 
-                $registerTask = $this->RegisterOnfleet($packagePreDispatch, $team, $driver);
+                $registerTask = new PackageDispatchController();
+                $registerTask = $registerTask->RegisterOnfleet($packagePreDispatch, $team, $driver);
 
                 if($registerTask['status'] == 200)
                 {

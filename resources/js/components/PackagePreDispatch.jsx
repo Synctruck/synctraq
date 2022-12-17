@@ -41,6 +41,8 @@ function PackagePreDispatch() {
     const [quantityHighPriority, setQuantityHighPriority] = useState(0);
 
     // const [dataView, setDataView] = useState('today');
+    const [statusPallet, setStatusPallet] = useState('');
+    const [filterDispatch, setFilterDispatch] = useState('');
     const [PalletNumberForm, setPalletNumberForm] = useState('');
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
@@ -331,20 +333,13 @@ function PackagePreDispatch() {
 
                 if(response.stateAction == true)
                 {
-                    if(response.closePallet == 1)
-                    {
-                        swal("The palette was dispatched correctly!", {
+                    swal("The palette was dispatched correctly!", {
 
-                            icon: "success",
-                        });
+                        icon: "success",
+                    });
 
-                        handlerCloseModalPackage();
-                        listAllPalet(page);
-                    }
-                    else
-                    {
-                        listPackagePreDispatch(PalletNumberForm);
-                    }
+                    listAllPalet(page);
+                    listPackagePreDispatch(PalletNumberForm);
                 }
                 else
                 {
@@ -442,11 +437,14 @@ function PackagePreDispatch() {
                                         <div className="modal-dialog modal-lg">
                                             <div className="modal-content">
                                                 <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">Package List Of The Pallet: <span className="text-success">{ PalletNumberForm }</span></h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">
+                                                        Package List Of The Pallet: <span className="text-success">{ PalletNumberForm }</span>
+                                                        <p>STATUS: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ statusPallet }</span></p>
+                                                    </h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
                                                 </div>
                                                 <div className="modal-body">
-                                                    <div className="row">
+                                                    <div className="row" style={ {display: (filterDispatch == 'Closed' ? 'none' : 'block')} }>
                                                         <div className="col-lg-12 mb-2">
                                                             <form onSubmit={ (e) => handlerValidation(e) } autoComplete="off">
                                                                 <div className="form-group">
@@ -523,7 +521,7 @@ function PackagePreDispatch() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="modal-footer">
+                                                <div className="modal-footer" style={ {display: (filterDispatch == 'Closed' ? 'none' : 'block')} }>
                                                     <div className="row" style={ {width: '100%'} }>
                                                         <div className="col-lg-4">
                                                             <div className="form-group">
@@ -792,7 +790,9 @@ function PackagePreDispatch() {
                         setTextMessage("SUCCESSFULLY PRE DISPATCHED #"+ Reference_Number_1);
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
-                        setNumberPackage('');
+                        setNumberPackage(''); 
+
+                        listPackagePreDispatch(PalletNumberForm);
 
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
@@ -880,6 +880,7 @@ function PackagePreDispatch() {
         .then((response) => {
 
             setListPackage(response.packagePreDispatchList);
+            setFilterDispatch(response.palletDispatch.status);
         });
     }
 
@@ -891,8 +892,9 @@ function PackagePreDispatch() {
         handlerOpenModalPackage();
     }
 
-    const handlerViewPackage = (palletNumber) => {
+    const handlerViewPackage = (palletNumber, status) => {
 
+        setStatusPallet(status);
         setPalletNumberForm(palletNumber);
         listPackagePreDispatch(palletNumber);
         handlerOpenModalPackage();
@@ -944,7 +946,7 @@ function PackagePreDispatch() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success" onClick={ () => handlerViewPackage(pallet.number) }>View package</button>
+                    <button className="btn btn-success" onClick={ () => handlerViewPackage(pallet.number, pallet.status) }>View package</button>
                 </td>
             </tr>
         );
