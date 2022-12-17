@@ -113,9 +113,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
 	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
 
-	//============ PALET DISPACTH
+	//============ PALET DISPACTH 
 	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/', [PalletDispatchController::class, 'List']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
+	Route::get('/pallet-dispatch/print/{numberPallet}', [PalletDispatchController::class, 'Print']);
 
 	//============ Dispatch package
 	Route::get('/package-pre-dispatch', [PackagePreDispatchController::class, 'Index'])->middleware('permission:predispatch.index');

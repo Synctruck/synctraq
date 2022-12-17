@@ -900,6 +900,11 @@ function PackagePreDispatch() {
         handlerOpenModalPackage();
     }
 
+    const handlerPrintPallet = (palletNumber) => {
+
+        window.open(url_general +'pallet-dispatch/print/'+ palletNumber);
+    }
+
     const handlerOpenModalPackage = () => {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalPackageList'), {
@@ -946,7 +951,10 @@ function PackagePreDispatch() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success" onClick={ () => handlerViewPackage(pallet.number, pallet.status) }>View package</button>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.status) }>View package</button><br/>
+                    <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
+                        <i className="bx bxs-printer"></i> View package
+                    </button>
                 </td>
             </tr>
         );

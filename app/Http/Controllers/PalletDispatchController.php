@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 use Auth;
 use DB;
+use PDF;
 use Session;
 
 class PalletDispatchController extends Controller
@@ -48,5 +49,16 @@ class PalletDispatchController extends Controller
         $pallet->save();
 
         return ['stateAction' => true];
+    }
+
+    public function Print($numberPallet)
+    {
+        $pallet = PalletDispatch::find($numberPallet);
+
+        $pdf = PDF::loadView('pdf.numberpallet', ['pallet' => $pallet]);
+                    
+        $pdf->setPaper('A4');
+
+        return $pdf->stream('NUMBER PALLET.pdf');
     }
 }
