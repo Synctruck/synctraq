@@ -30,9 +30,8 @@ class PackageManifestController extends Controller
     {
         $routes = explode(',', $route);
         $states = explode(',', $state);
-        $null   = env('APP_ENV') == 'local' ? 'NULL' : null;
 
-        $packageList = PackageManifest::where('idStore', $null);
+        $packageList = PackageManifest::where('idStore', 0);
 
         if($idCompany != 0)
         {
