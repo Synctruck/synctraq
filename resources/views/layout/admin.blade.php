@@ -71,6 +71,12 @@
         writing-mode: vertical-lr;
         transform: rotate(360deg);
     }
+    @media (min-width: 992px) {
+      .modal-lg,
+    .modal-xl {
+        max-width: 1250px;
+      }
+    }
 </style>
 <body id="bodyAdmin">
 
@@ -87,20 +93,22 @@
     <div class="search-bar">
         @if(Auth::check())
             <div class="row">
-                <div class="col-lg-6">
-                    <form class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
+                <div class="col-lg-4">
+                    <form id="formSearhPackage" class="search-form d-flex align-items-center" onsubmit="SearchPackage(event)">
                         <input type="text" id="searchPackage" name="searchPackage" placeholder="Search PACKAGE ID" title="Enter search keyword">
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <form class="search-form d-flex align-items-center" onsubmit="SearchPackageTask(event)">
                         <input type="text" id="searchPackageTask" name="searchPackageTask" placeholder="Search TASK#" title="Enter search keyword">
                         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                     </form>
                 </div>
+                <div class="col-lg-4">
+                    <button class="btn btn-success form-control" onclick="ViewModalSearchFilters();">Search by filters</button>
+                </div>
             </div>
-
         @else
             <div class="row">
                 <div class="col-lg-6">
@@ -201,7 +209,7 @@
 
         </li><!-- End Notification Nav -->
 
-        <li class="nav-item dropdown" style="display: none;">
+        <li class="nav-item dropdown" style="display: block;">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
@@ -270,17 +278,17 @@
         <li class="nav-item dropdown pe-3">
 
             @if(Auth::check())
-                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
-                @if(Auth::user()->role->name != 'Team')
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
-                @else
-                    <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
-                @endif
+                <a id="dropdown-menu" class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown-menu">
+                    <img src="{{Auth::user()->url_image}}" alt="Profile" class="rounded-circle">
+                    @if(Auth::user()->role->name != 'Team')
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</span>
+                    @else
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
+                    @endif
 
-              </a><!-- End Profile Iamge Icon -->
+                </a><!-- End Profile Iamge Icon -->
 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                <ul id="dropdown-menu-children" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         @if(Auth::user()->role->name != 'Team')
                             <h6>{{Auth::user()->name .' '. Auth::user()->nameOfOwner}}</h6>
@@ -379,6 +387,13 @@
                                     <label for="contactRoute">ROUTE</label>
                                     <input type="text" id="contactRoute" name="contactRoute" class="form-control" required>
                                 </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactRoute">HIGH PRIORITY</label>
+                                    <select name="" id="highPriority" class="form-control">
+                                        <option value="Normal">NORMAL</option>
+                                        <option value="High">HIGH</option>
+                                    </select>
+                                </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
                                     <textarea name="internalComment" id="internalComment" cols="10" rows="2" class="form-control"></textarea>
@@ -419,7 +434,8 @@
                         </div>
                     </form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
+                        <button type="button" id="btnBackGoTo" class="btn btn-primary close" style="display: none;" onclick="ViewModalSearchFilters()">Go to back</button>
+                        <button type="button" id="btnCloseHistorialPackage" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
                     </div>
                 </div>
             </div>
@@ -501,6 +517,67 @@
             </div>
         </div>
 
+        <div class="modal fade" id="searchByFiltersModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5 class="text-primary">SEARCH PACKAGES BY FILTERS</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="" onsubmit="SearchPackageByFilters(event);">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-3 form-group">
+                                    <label for="clientNameFilters">CLIENT</label>
+                                    <input type="text" id="clientNameFilters" name="clientNameFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactPhoneFilters">CONTACT</label>
+                                    <input type="text" id="contactPhoneFilters" name="contactPhoneFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactAddressFilters">ADDREESS</label>
+                                    <input type="text" id="contactAddressFilters" name="contactAddressFilters" class="form-control">
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactCity">-</label>
+                                    <button class="btn btn-primary form-control">Search</button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row table-responsive">
+                                <div class="col-lg-12">
+                                    <table id="tableListPackageByFiltersTable" class="table table-condensed table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>COMPANY</th>
+                                                <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
+                                                <th>CLIENT</th>
+                                                <th>CONTACT</th>
+                                                <th>ADDRESS</th>
+                                                <th>CITY</th>
+                                                <th>STATE</th>
+                                                <th>ZIP C</th>
+                                                <th>ROUTE</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableListPackageByFiltersBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="ViewModalSearchFilters();">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--Contenid -->
         @yield('content')
     </main><!-- End #main -->
@@ -567,8 +644,15 @@
 
         function SearchPackage(e)
         {
+            searchGlobal = 0;
+
             e.preventDefault();
 
+            SearchPackageReferenceId();
+        }
+
+        function SearchPackageReferenceId()
+        {
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
             fetch(url_general +'package-history/search/'+ PACKAGE_ID)
@@ -673,10 +757,12 @@
                     }
                 }
 
+
                 document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;
                 document.getElementById('contactName').value           = '';
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
+                document.getElementById('highPriority').value          = 'Normal';
 
                 if(packageHistoryList.length > 0)
                 {
@@ -690,14 +776,15 @@
                     document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
                     document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
+                    document.getElementById('highPriority').value    = packageHistoryList[0].highPriority;
                 }
 
-                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+                if(searchGlobal == 1)
+                    $('#btnBackGoTo').css('display', 'block');
+                else
+                    $('#btnBackGoTo').css('display', 'none');
 
-                    keyboard: false
-                })
-
-                myModal.toggle();
+                $('#exampleModal').modal('toggle');
             });
         }
 
@@ -722,8 +809,8 @@
                     document.getElementById('teamOnfleet').value   = team;
                     document.getElementById('driverOnfleet').value = driver;
 
-                    document.getElementById('contactOnfleetName').value    = onfleet['recipients'][0]['name'];
-                    document.getElementById('contactOnfleetPhone').value   = onfleet['recipients'][0]['phone'];
+                    document.getElementById('contactOnfleetName').value    = (onfleet['recipients'].length > 0 ? onfleet['recipients'][0]['name'] : '') ;
+                    document.getElementById('contactOnfleetPhone').value   = (onfleet['recipients'].length > 0 ? onfleet['recipients'][0]['phone'] : '') ;
                     document.getElementById('contactOnfleetAddress').value = onfleet['destination']['address']['apartment'] +' '+ onfleet['destination']['address']['country'] +' '+ onfleet['destination']['address']['number'] +' '+ onfleet['destination']['address']['postalCode'] +' '+ onfleet['destination']['address']['street'];
                     document.getElementById('contactOnfleetCity').value    = onfleet['destination']['address']['city'];
                     document.getElementById('contactOnfleetState').value   = onfleet['destination']['address']['state'];
@@ -763,12 +850,7 @@
                         }
                     }
 
-                    var myModal = new bootstrap.Modal(document.getElementById('exampleModalTask'), {
-
-                        keyboard: false
-                    })
-
-                    myModal.toggle();
+                    $('#exampleModalTask').modal('toggle');
                 }
                 else
                 {
@@ -795,6 +877,7 @@
             formData.append('Weight', document.getElementById('contactWeight').value);
             formData.append('Route', document.getElementById('contactRoute').value);
             formData.append('internal_comment', document.getElementById('internalComment').value);
+            formData.append('highPriority', document.getElementById('highPriority').value);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -820,16 +903,91 @@
             });
         }
 
+        function SearchPackageByFilters(e)
+        {
+            e.preventDefault();
+
+            let PACKAGE_ID = document.getElementById('searchPackage').value;
+
+            let formData = new FormData();
+
+            formData.append('Dropoff_Contact_Name', document.getElementById('clientNameFilters').value);
+            formData.append('Dropoff_Contact_Phone_Number', document.getElementById('contactPhoneFilters').value);
+            formData.append('Dropoff_Address_Line_1', document.getElementById('contactAddressFilters').value);
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'package-history/search-by-filters',
+
+                {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                }
+            )
+            .then(response => response.json())
+            .then(response => {
+
+                let packageHistoryList = response.packageHistoryList;
+
+                document.getElementById('tableListPackageByFiltersBody').innerHTML = '';
+
+                let tableHistoryPackage = document.getElementById('tableListPackageByFiltersBody');
+
+                let tr = '';
+
+                if(packageHistoryList.length > 0)
+                {
+                    packageHistoryList.forEach(packageHistory => {
+
+                        let Reference_Number_1 = "'"+ packageHistory.Reference_Number_1 +"'";
+
+                        tr =    '<tr>'+
+                                    '<td>'+ packageHistory.created_at.substring(5, 7) +'-'+ packageHistory.created_at.substring(8, 10) +'-'+ packageHistory.created_at.substring(0, 4) +'</td>'+
+                                    '<td>'+ packageHistory.company +'</td>'+
+                                    '<td class="text-primary pointer" onclick="SearchByPackageID('+ Reference_Number_1 +')">'+ packageHistory.Reference_Number_1 +'</td>'+
+                                    '<td>'+ packageHistory.status +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Contact_Name +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Contact_Phone_Number +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Address_Line_1 +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_City +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Province +'</td>'+
+                                    '<td>'+ packageHistory.Dropoff_Postal_Code +'</td>'+
+                                    '<td>'+ packageHistory.Route +'</td>'+
+                                '</tr>';
+
+                        tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                    });
+                }
+                else
+                {
+                    swal('Atention!', 'There are no packages for the entered filters', 'warning');
+                }
+            });
+        }
+
+        function SearchByPackageID(Reference_Number_1)
+        {
+            document.getElementById('searchPackage').value = Reference_Number_1;
+
+            $('#searchByFiltersModal').modal('toggle');
+
+            SearchPackageReferenceId();
+        }
+
+        let searchGlobal = 0;
+
+        function ViewModalSearchFilters()
+        {
+            searchGlobal = 1;
+
+            $('#exampleModal').modal('hide');
+            $('#searchByFiltersModal').modal('toggle');
+        }
+
         function CloseModal(idModal)
         {
-            document.getElementById(idModal).style.display = 'none';
-
-            var modal = document.getElementsByClassName('modal-backdrop');
-
-            for(var i = 0; i < modal.length; i++)
-            {
-                modal[i].style.display = "none"; // depending on what you're doing
-            }
+            $('#'+ idModal).modal('toggle');
 
             document.getElementById('bodyAdmin').setAttribute('style', 'position: relative; min-height: 100%; top: 0px;');
         }
@@ -838,35 +996,7 @@
 
     <script>
 
-        //reports
-        var childsReport = document.getElementById('ulReports').children.length
-        console.log('report: ',childsReport);
-        if(childsReport==0){
-            console.log('reports es cero')
-            document.getElementById('liUlReports').style.display = 'none';
-            document.getElementById('titleReports').style.display = 'none';
-        }
-        //maintanences
-        var childsUsers = document.getElementById('ulUsers').children.length
-        console.log('users: ',childsUsers);
-        if(childsUsers==0){
-            document.getElementById('liUlUsers').style.display = 'none';
-        }
-        var childsConfiguration = document.getElementById('ulConfiguration').children.length
-        console.log('config: ',childsConfiguration);
-        if(childsConfiguration==0){
-            document.getElementById('liUlConfiguration').style.display = 'none';
-        }
-
-        //finanzas
-        var childsFinanzas = document.getElementById('ulFinanzas').children.length
-        console.log('finanzas: ',childsFinanzas);
-        if(childsFinanzas==0){
-            document.getElementById('liUlFinanzas').style.display = 'none';
-        }
-        if(childsUsers == 0 && childsFinanzas == 0 && childsConfiguration == 0){
-            document.getElementById('titleMaintenances').style.display = 'none';
-        }
+       
 
 
     </script>

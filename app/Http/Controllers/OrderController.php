@@ -51,7 +51,21 @@ class OrderController extends Controller
             $packageList = $packageList->orderBy('created_at', 'desc');
         }
 
-        $packageList = $packageList->paginate(50);
+        $packageList = $packageList->select(
+                                    'created_at',
+                                    'company',
+                                    'Reference_Number_1',
+                                    'Dropoff_Contact_Name',
+                                    'Dropoff_Contact_Phone_Number',
+                                    'Dropoff_Address_Line_1',
+                                    'Dropoff_City',
+                                    'Dropoff_Province',
+                                    'Dropoff_Postal_Code',
+                                    'Weight',
+                                    'Route',
+                                    'quantity',
+                                )
+                                ->paginate(50);
 
         $quantityPackage = $packageList->total();
 
@@ -66,6 +80,20 @@ class OrderController extends Controller
     {
         $packageList = PackageManifest::where('idStore', '!=', 'NULL')
                                     ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                    ->select(
+                                        'created_at',
+                                        'company',
+                                        'Reference_Number_1',
+                                        'Dropoff_Contact_Name',
+                                        'Dropoff_Contact_Phone_Number',
+                                        'Dropoff_Address_Line_1',
+                                        'Dropoff_City',
+                                        'Dropoff_Province',
+                                        'Dropoff_Postal_Code',
+                                        'Weight',
+                                        'Route',
+                                        'quantity',
+                                    )
                                     ->paginate(50); 
         
         return ['packageList' => $packageList];

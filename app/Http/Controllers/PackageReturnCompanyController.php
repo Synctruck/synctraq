@@ -116,7 +116,7 @@ class PackageReturnCompanyController extends Controller
         {
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
         }
-
+        
         if($packageInbound)
         {
             try
@@ -181,7 +181,9 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
-
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                
                 $packageHistory->save();
 
                 $packageInbound->delete();
@@ -383,5 +385,38 @@ class PackageReturnCompanyController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function UpdateCreatedAt()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $listPackageReturnCompany = PackageReturnCompany::all();
+
+            foreach($listPackageReturnCompany as $packageReturnCompany)
+            {
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                ->where('status', 'ReturnCompany')
+                                                ->first();
+
+
+                $packageHistory->created_at = $packageReturnCompany->created_at;
+                $packageHistory->updated_at = $packageReturnCompany->created_at;
+                
+                $packageHistory->save();
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
     }
 }

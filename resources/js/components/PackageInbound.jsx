@@ -449,10 +449,47 @@ function PackageInbound() {
                     if(response.stateAction == 'validatedReturnCompany')
                     {
                         setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+                        
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        setTextMessage('');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
                         setTypeMessage('warning');
                         setNumberPackage('');
 
                         document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notExists')
+                    {
+                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                        setTypeMessage('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
                     }
                     else if(response.stateAction == 'validatedInbound')
                     {

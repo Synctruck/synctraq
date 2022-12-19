@@ -33,9 +33,10 @@ function PackageDispatch() {
     const [readOnly, setReadOnly] = useState(false);
     const [checkAll, setCheckAll] = useState(0);
 
-    const [quantityDispatch, setQuantityDispatch]       = useState(0);
-    const [quantityDispatchAll, setQuantityDispatchAll] = useState(0);
-    const [quantityFailed, setQuantityFailed]           = useState(0);
+    const [quantityDispatch, setQuantityDispatch]         = useState(0);
+    const [quantityDispatchAll, setQuantityDispatchAll]   = useState(0);
+    const [quantityFailed, setQuantityFailed]             = useState(0);
+    const [quantityHighPriority, setQuantityHighPriority] = useState(0);
 
     // const [dataView, setDataView] = useState('today');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -115,6 +116,7 @@ function PackageDispatch() {
             setQuantityDispatch(response.quantityDispatch);
             setQuantityDispatchAll(response.quantityDispatchAll);
             setQuantityFailed(response.quantityFailed);
+            setQuantityHighPriority(response.quantityHighPriority);
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -520,6 +522,10 @@ function PackageDispatch() {
                     else if(response.stateAction == 'validatedReturnCompany')
                     {
                         setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
@@ -572,6 +578,14 @@ function PackageDispatch() {
                     else if(response.stateAction == 'notRoute')
                     {
                         setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notDimensions')
+                    {
+                        setTextMessage("PACKAGE HAS NO RECORDED DIMENSIONS #"+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
@@ -1626,6 +1640,11 @@ function PackageDispatch() {
         location.href = url_general +'package-failed';
     }
 
+    const handlerRedirectHighPriority = () => {
+
+        location.href = url_general +'package-high-priority';
+    }
+
     const handlerAutorization = () => {
 
         setAutorizationDispatch(!autorizationDispatch);
@@ -1840,20 +1859,25 @@ function PackageDispatch() {
                                 <hr/><br/>
 
                                 <div className="row">
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3 mb-2">
                                         <div className="form-group">
                                             <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
-                                        </div><br/>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3 mb-2">
                                         <div className="form-group">
                                             <b className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERED: { quantityDispatchAll }</b>
                                         </div><br/>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3 mb-2">
                                         <div className="form-group">
                                             <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS: { quantityFailed }</b>
-                                        </div><br/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-3 mb-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectHighPriority()  } style={ {borderRadius: '10px', padding: '10px'} }> HIGH PRIORITY: { quantityHighPriority }</b>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">

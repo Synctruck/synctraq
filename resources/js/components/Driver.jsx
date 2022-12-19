@@ -363,15 +363,6 @@ function Driver() {
 
     const listDriverTable = listUser.map( (user, i) => {
 
-        let buttonDelete ='';
-
-        if(user.history_dispatch.length == 0)
-        {
-            buttonDelete =  <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
-                                <i className="bx bxs-trash-alt"></i>
-                            </button>;
-        }
-
         return (
 
             <tr key={i}>
@@ -404,7 +395,17 @@ function Driver() {
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    { buttonDelete }
+                    {
+                        (
+                            user.deleteUser == 0
+                            ?
+                                <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
+                                    <i className="bx bxs-trash-alt"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );

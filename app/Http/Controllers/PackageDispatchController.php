@@ -4,18 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
-
 use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -51,8 +45,9 @@ class PackageDispatchController extends Controller
         $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
         $getDataDispatchAll  = $this->getDataDispatchAll($idCompany, $idTeam, $idDriver);
 
-        $quantityDispatch    = $packageDispatchList->total();
-        $quantityDispatchAll = $getDataDispatchAll->count();
+        $quantityDispatch     = $packageDispatchList->total();
+        $quantityDispatchAll  = $getDataDispatchAll->count();
+        $quantityHighPriority = PackageHighPriority::get()->count();
 
         if($idTeam != 0)
         {
@@ -69,7 +64,15 @@ class PackageDispatchController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['packageDispatchList' => $packageDispatchList, 'quantityDispatch' => $quantityDispatch, 'quantityDispatchAll' => $quantityDispatchAll, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser, 'listState' => $listState]; 
+        return [
+            'packageDispatchList' => $packageDispatchList,
+            'quantityDispatch' => $quantityDispatch,
+            'quantityDispatchAll' => $quantityDispatchAll,
+            'quantityFailed' => $quantityFailed,
+            'quantityHighPriority' => $quantityHighPriority,
+            'roleUser' => $roleUser,
+            'listState' => $listState
+        ]; 
     }
 
     private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
@@ -240,6 +243,13 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
             
         $package = PackageInbound::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
@@ -292,6 +302,45 @@ class PackageDispatchController extends Controller
 
                 if($package->status != 'Delete')
                 {
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $package->Reference_Number_1)->first();
+
+                    /*if($packagePriceCompanyTeam == null)
+                    {
+                        return ['stateAction' => 'notDimensions'];
+                    }*/
+
+                    ////////// TEAM ///////////////////////////////////////////////////7
+                    //calculando dimensiones y precios para team
+                    $weight = 0;//$packagePriceCompanyTeam->weight;
+                    $cuIn   = 0;//$packagePriceCompanyTeam->cuIn;
+
+                    $dimFactorTeam = DimFactorTeam::first();
+                    $dimFactorTeam = $dimFactorTeam->factor;
+
+                    $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
+                    $dimWeightTeamRound = ceil($dimWeightTeam);
+
+                    $weightTeam = $package->Weight;
+                    //$weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
+
+                    $priceTeam = new RangePriceTeamRouteCompanyController();
+                    $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route);
+
+                    //precio peakeseason
+                    $teamController       = new TeamController(); 
+                    $peakeSeasonPriceTeam = $teamController->GetPeakeSeason($request->get('idTeam'), $weightTeam);
+                    
+                    //precio base
+                    $priceBaseTeam = number_format($priceTeam + $peakeSeasonPriceTeam, 2);
+
+                    $dieselPrice = Configuration::first()->diesel_price;
+
+                    $surchargePercentageTeam = $teamController->GetPercentage($request->get('idTeam'), $dieselPrice);
+                    $surchargePriceTeam      = number_format(($priceBaseTeam * $surchargePercentageTeam) / 100, 4);
+                    //$totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
+                    $totalPriceTeam          = number_format($priceTeam, 4);
+                    ///////// END TEAM
+
                     try
                     {
                         DB::beginTransaction();
@@ -310,6 +359,28 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
                         }
+                        
+                        if($packagePriceCompanyTeam == null)
+                        {
+                            $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+
+                            $packagePriceCompanyTeam->id = date('YmdHis');
+                        }
+                        
+                        //update PACKAGE prices team
+                        $packagePriceCompanyTeam->Reference_Number_1      = $package->Reference_Number_1;
+                        $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
+                        $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
+                        $packagePriceCompanyTeam->dimWeightTeam           = $dimWeightTeam;
+                        $packagePriceCompanyTeam->dimWeightTeamRound      = $dimWeightTeamRound;
+                        $packagePriceCompanyTeam->priceWeightTeam         = $priceTeam;
+                        $packagePriceCompanyTeam->peakeSeasonPriceTeam    = $peakeSeasonPriceTeam;
+                        $packagePriceCompanyTeam->priceBaseTeam           = $priceBaseTeam;
+                        $packagePriceCompanyTeam->surchargePercentageTeam = $surchargePercentageTeam;
+                        $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
+                        $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
+                        
+                        $packagePriceCompanyTeam->save();
 
                         if($package->status == 'On hold')
                         {
@@ -370,6 +441,9 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
+                        $packageDispatch->pricePaymentCompany          = $packagePriceCompanyTeam->totalPriceCompany;
+                        $packageDispatch->pricePaymentTeam             = $packagePriceCompanyTeam->totalPriceTeam;
+                        $packageDispatch->idPaymentTeam                = '';
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
@@ -949,6 +1023,13 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
 
         $packageDispatch = PackageFailed::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
@@ -1060,9 +1141,30 @@ class PackageDispatchController extends Controller
                     $packageReturn->photoUrl                     = $photoUrl;
                     $packageReturn->statusOnfleet                = $statusOnfleet;
                     $packageReturn->quantity                     = $packageDispatch->quantity;
+                    $packageReturn->pricePaymentCompany          = $packageDispatch->pricePaymentCompany;
+                    $packageReturn->pricePaymentTeam             = $packageDispatch->pricePaymentTeam;
+                    $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
 
-                    $packageReturn->save();
+                    $packageReturn->save(); 
+
+                    if($packageDispatch->idPaymentTeam != '')
+                    {
+                        //update payment team company
+                        $paymentTeam = PaymentTeamReturn::find($packageDispatch->idPaymentTeam);
+
+                        $paymentTeam->totalReturn = $paymentTeam->totalReturn + $packageDispatch->pricePaymentTeam;
+
+                        $paymentTeam->save();
+
+                        //update payment and return, prices totals
+                        $team = User::find($packageDispatch->idTeam);
+
+                        $team->totalReturn = $team->totalReturn + $packageDispatch->pricePaymentTeam;
+
+                        $team->save();
+                        //===============================
+                    }
 
                     //update dispatch
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -1239,6 +1341,45 @@ class PackageDispatchController extends Controller
         }
 
         return ['stateAction' => 'notDispatch'];
+    }
+
+    public function UpdatePriceTeams($dateStart, $dateEnd)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $dateStart = $dateStart .' 00:00:00';
+            $dateEnd   = $dateEnd .' 23:59:59';
+
+            $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateStart, $dateEnd])->get();
+
+            foreach($listPackageDispatch as $packageDispatch)
+            {
+                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $priceTeam = new RangePriceTeamRouteCompanyController();
+                    $priceTeam = $priceTeam->GetPriceTeam($packageDispatch->idTeam, $packageDispatch->idCompany, $packageDispatch->Weight, $packageDispatch->Route);
+
+                    if($priceTeam > 0)
+                    {
+                        $packageDispatch->pricePaymentTeam = $priceTeam;
+
+                        $packageDispatch->save();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return 'updated successfully';
+        }
+        catch(Exception $e)
+        {
+            return 'erros'; 
+        }
     }
 
     public function RegisterOnfleet($package, $team, $driver)

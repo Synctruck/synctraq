@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -158,19 +158,12 @@ class PackageWarehouseController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
-        else
-        {
-            $package = PackageManifest::with('blockeds')
-                                    ->where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                    ->first();
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-            if($package)
-            {
-                if($package->filter || count($package->blockeds) > 0)
-                {
-                    return ['stateAction' => 'validatedFilterPackage', 'packageManifest' => $package, 'packageBlocked' => null];
-                }
-            }
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
         }
         
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));

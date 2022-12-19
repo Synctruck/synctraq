@@ -758,9 +758,6 @@ function Companies() {
 
         document.getElementById('priceRange').style.display = 'none';
         document.getElementById('priceRange').innerHTML     = '';
-
-        document.getElementById('fuelRange').style.display = 'none';
-        document.getElementById('fuelRange').innerHTML     = '';
     }
 
     const [idCompany, setIdCompany]                     = useState(0);
@@ -936,9 +933,6 @@ function Companies() {
                 <td><b>{ range.minWeight }</b></td>
                 <td><b>{ range.maxWeight }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
-                <td><b>{ range.fuelPercentage +' %' }</b></td>
-                <td><b>{ range.pricePercentage +' $' }</b></td>
-                <td><b>{ range.total +' $' }</b></td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -1121,12 +1115,7 @@ function Companies() {
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">Price $</label>
                                                                 <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.01" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
-                                                            </div>
-                                                            <div className="col-lg-3 form-group">
-                                                                <label className="form">FUEL PERCENTAGE</label>
-                                                                <div id="fuelRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ fuelPercentageRange } min="0" max="99" step="0.01" onChange={ (e) => setfuelPercentageRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="text-white">--</label>
@@ -1149,9 +1138,6 @@ function Companies() {
                                                                 <th>MIN. WEIGHT</th>
                                                                 <th>MAX. WEIGHT</th>
                                                                 <th>BASE PRICE</th>
-                                                                <th>FUEL PERCENTAGE</th>
-                                                                <th>PRICE PERCENTAGE</th>
-                                                                <th>TOTAL</th>
                                                                 <th>ACTIONS</th>
                                                             </tr>
                                                         </thead>

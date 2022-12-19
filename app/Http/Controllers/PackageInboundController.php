@@ -3,17 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturnCompany, PackageWarehouse, States };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, States };
 
 use Illuminate\Support\Facades\Validator;
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -21,14 +15,12 @@ use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
+use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
+
 use DB;
-
-use Illuminate\Support\Facades\Auth;
-
 use Log;
-
 use Session;
 
 class PackageInboundController extends Controller
@@ -150,6 +142,20 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
+
         $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 
@@ -184,10 +190,67 @@ class PackageInboundController extends Controller
             {
                 DB::beginTransaction();
 
+                $dimensions = 0;
+                $weight     = $packageManifest->Weight;
+                $width      = 0;
+                $height     = 0;
+                $length     = 0;
+                $cuIn       = $length * $height * $width;
+
                 //data for INLAND
-                $packageController = new PackageController();
+                /*$packageController = new PackageController();
                 $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                 //end data for inland
+                
+                ////////// COMPANY ///////////////////////////////////////////////////
+                //calculando dimensiones y precios para company
+                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+                $dimFactorCompany = $dimFactorCompany->factor;
+
+                $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
+                $dimWeightCompanyRound = ceil($dimWeightCompany);
+
+                $weightCompany = $weight;
+
+                //precio base de cobro a compañia
+                $priceCompany = new RangePriceCompanyController();
+                $priceCompany = $priceCompany->GetPriceCompany($packageManifest->idCompany, $weightCompany);
+
+                //precio peakeseason
+                $companyController       = new CompanyController();
+                $peakeSeasonPriceCompany = $companyController->GetPeakeSeason($packageManifest->idCompany, $weightCompany);
+                
+                //precio base
+                $priceBaseCompany = number_format($priceCompany + $peakeSeasonPriceCompany, 2);
+
+                $dieselPrice = Configuration::first()->diesel_price;
+
+                $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
+                $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
+                $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
+                ///////// END COMPANY
+
+                $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+
+                $packagePriceCompanyTeam->id                         = date('YmdHis');
+                $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
+                $packagePriceCompanyTeam->weight                     = $weightCompany;
+                $packagePriceCompanyTeam->length                     = 0;
+                $packagePriceCompanyTeam->height                     = 0;
+                $packagePriceCompanyTeam->width                      = 0;
+                $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
+                $packagePriceCompanyTeam->cuIn                       = 0;
+                $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
+                $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
+                $packagePriceCompanyTeam->dimWeightCompanyRound      = $dimWeightCompanyRound;
+                $packagePriceCompanyTeam->priceWeightCompany         = $priceCompany;
+                $packagePriceCompanyTeam->peakeSeasonPriceCompany    = $peakeSeasonPriceCompany;
+                $packagePriceCompanyTeam->priceBaseCompany           = $priceBaseCompany;
+                $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
+                $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
+                $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
+
+                $packagePriceCompanyTeam->save();*/
 
                 $packageInbound = new PackageInbound();
 
