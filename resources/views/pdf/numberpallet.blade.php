@@ -18,6 +18,7 @@
 			<td style="width: 100px; text-align: center;">
 				<h1 class="verticalText" style="font-size: 35px; text-align: center;">{{ $pallet->number }}</h1>
 				<img src="data:image/png;base64,{{ base64_encode($generatorPNG->getBarcode($pallet->number, $generatorPNG::TYPE_CODE_128)) }}" style="height: 50px; width: 100%; margin-bottom: 0px;">
+				<h1 class="verticalText" style="font-size: 35px; text-align: center;">{{ $pallet->Route }}</h1>
 			</td>
 		</tr>
 	</table>
