@@ -198,10 +198,11 @@ class PackageInboundController extends Controller
                 $cuIn       = $length * $height * $width;
 
                 //data for INLAND
-                /*$packageController = new PackageController();
+                $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                 //end data for inland
                 
+                /*
                 ////////// COMPANY ///////////////////////////////////////////////////
                 //calculando dimensiones y precios para company
                 $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
