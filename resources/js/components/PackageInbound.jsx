@@ -446,6 +446,10 @@ function PackageInbound() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
+                    if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
                     if(response.stateAction == 'validatedFilterPackage')
                     {
                         let packageBlocked  = response.packageBlocked;

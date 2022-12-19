@@ -479,6 +479,10 @@ function PackageWarehouse() {
 
                         document.getElementById('soundPitidoBlocked').play();
                     }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
                     else if(response.stateAction == 'packageInPreDispatch')
                     {
                         setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);

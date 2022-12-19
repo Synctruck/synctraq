@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackagePreDispatch, PackageReturn, PackageWarehouse, States, User };
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -545,6 +545,15 @@ class PackageWarehouseController extends Controller
                 DB::rollback();
 
                 return ['stateAction' => true];
+            }
+        }
+        else
+        {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
             }
         }
 

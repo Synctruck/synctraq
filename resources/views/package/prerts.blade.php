@@ -1,12 +1,12 @@
 @extends('layout.admin')
-@section('title', 'RETURN COMPANY')
+@section('title', 'PACKAGE - PRE - RTS')
 @section('content')
 <div class="pagetitle">
-  	<h1><b>RETURN COMPANY</b></h1>
+  	<h1><b>PACKAGE - PRE - RTS</b></h1>
   	<nav>
     	<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="#">Reports</a></li>
-			<li class="breadcrumb-item active">Return Company</li>
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
+			<li class="breadcrumb-item active">Pre Rts</li>
     	</ol>
   	</nav>
 </div><!-- End Page Title -->
@@ -15,6 +15,6 @@
 	let auxDateInit   = '{{date('Y-m-d')}}';
 	let auxDateEnd    = '{{date('Y-m-t')}}';
 </script>
-<div id="reportReturnCompany">
+<div id="packageRts">
 </div>
 @endsection

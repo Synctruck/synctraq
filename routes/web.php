@@ -193,6 +193,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
 	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
 
+	Route::get('/package-pre-rts', [PackageReturnCompanyController::class, 'IndexPreRts'])->middleware('permission:prerts.index');
+	Route::get('/package-pre-rts/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'ListPreRts']);
+	Route::post('/package-pre-rts/insert', [PackageReturnCompanyController::class, 'InsertPreRts']);
+	Route::get('/package-pre-rts/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
 

@@ -328,6 +328,13 @@ class PackageInboundController extends Controller
         }
         else
         {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
+
             $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->where('status', 'Inbound')
                                             ->where('inbound', 1)

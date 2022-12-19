@@ -46,11 +46,10 @@ class PackageReturnCompanyController extends Controller
 
     public function List($dateInit, $dateEnd, $route, $state)
     {
-
         $roleUser = Auth::user()->role->name;
 
 
-        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state);
+        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'ReturnCompany');
 
         $quantityReturn = $packageReturnCompanyList->total();
 
@@ -61,7 +60,7 @@ class PackageReturnCompanyController extends Controller
         return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
     }
 
-    private function getDataReturn($dateInit, $dateEnd, $route, $state,$type='list')
+    private function getDataReturn($dateInit, $dateEnd, $route, $state, $status, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -80,10 +79,17 @@ class PackageReturnCompanyController extends Controller
             $packageReturnCompanyList = $packageReturnCompanyList->whereIn('Dropoff_Province', $states);
         }
 
-        if($type=='list'){
+        if($status == 'PreRts')
+        {
+            $packageReturnCompanyList = $packageReturnCompanyList->where('status', 'PreRts');
+        }
+
+        if($type=='list')
+        {
             $packageReturnCompanyList = $packageReturnCompanyList->paginate(50);
         }
-        else{
+        else
+        {
             $packageReturnCompanyList = $packageReturnCompanyList->get();
         }
 
@@ -210,7 +216,7 @@ class PackageReturnCompanyController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageReturnCompany = $this->getDataReturn($dateInit, $dateEnd, $route, $state,$type='export');
+        $listPackageReturnCompany = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'ReturnCompany', $type = 'export');
 
         foreach($listPackageReturnCompany as $packageReturnCompany)
         {
@@ -243,79 +249,142 @@ class PackageReturnCompanyController extends Controller
         fpassthru($file);
     }
 
-    public function ImportInbound(Request $request)
+    public function IndexPreRts()
     {
-        $file = $request->file('file');
+        return view('package.prerts');
+    }
 
-        $file->move(public_path() .'/file-import', 'inbound.csv');
+    public function ListPreRts($dateInit, $dateEnd, $route, $state)
+    {
+        $roleUser = Auth::user()->role->name;
 
-        $handle = fopen(public_path('file-import/inbound.csv'), "r");
+        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'PreRts');
 
-        $lineNumber = 1;
+        $quantityReturn = $packageReturnCompanyList->total();
 
-        $countSave = 0;
+        $listState = PackageReturnCompany::select('Dropoff_Province')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
 
-        try
+        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+    }
+
+    public function InsertPreRts(Request $request)
+    {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
         {
-            DB::beginTransaction();
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
 
-            while (($raw_string = fgets($handle)) !== false)
+        $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
+
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageWarehouse::find($request->get('Reference_Number_1'));
+        }
+
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
+        }
+
+        if($packageInbound)
+        {
+            try
             {
-                if($lineNumber > 1)
-                {
-                    $row = str_getcsv($raw_string);
+                DB::beginTransaction();
 
-                    $package = Package::find($row[0]);
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('status', 'On hold')
+                                                ->first();
 
-                    if($package)
-                    {
-                        if($package->status == 'On hold' || $package->status == 'Inbound')
-                        {
-                            $package->Inbound       = 1;
-                            $package->idUserInbound = Auth::user()->id;
-                            $package->Date_Inbound  = date('Y-m-d H:i:s');
-                            $package->status        = 'Inbound';
+                $company = Company::find($packageHistory->idCompany);
 
-                            $package->save();
+                $packageReturnCompany = new PackageReturnCompany();
 
-                            $packageHistory = new PackageHistory();
+                $packageReturnCompany->idCompany                    = $packageInbound->idCompany;
+                $packageReturnCompany->company                      = $packageInbound->company;
+                $packageReturnCompany->Reference_Number_1           = $packageInbound->Reference_Number_1;
+                $packageReturnCompany->Dropoff_Contact_Name         = $packageInbound->Dropoff_Contact_Name;
+                $packageReturnCompany->Dropoff_Company              = $packageInbound->Dropoff_Company;
+                $packageReturnCompany->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageReturnCompany->Dropoff_Contact_Email        = $packageInbound->Dropoff_Contact_Email;
+                $packageReturnCompany->Dropoff_Address_Line_1       = $packageInbound->Dropoff_Address_Line_1;
+                $packageReturnCompany->Dropoff_Address_Line_2       = $packageInbound->Dropoff_Address_Line_2;
+                $packageReturnCompany->Dropoff_City                 = $packageInbound->Dropoff_City;
+                $packageReturnCompany->Dropoff_Province             = $packageInbound->Dropoff_Province;
+                $packageReturnCompany->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
+                $packageReturnCompany->Notes                        = $packageInbound->Notes;
+                $packageReturnCompany->Weight                       = $request->get('Weight');
+                $packageReturnCompany->Width                        = $request->get('Width');
+                $packageReturnCompany->Length                       = $request->get('Length');
+                $packageReturnCompany->Height                       = $request->get('Height');
+                $packageReturnCompany->Route                        = $packageInbound->Route;
+                $packageReturnCompany->idUser                       = Auth::user()->id;
+                $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
+                $packageReturnCompany->Description_Return           = $request->get('Description_Return');
+                $packageReturnCompany->client                       = $request->get('client');
+                $packageReturnCompany->status                       = 'PreRts';
 
-                            $packageHistory->id          = uniqid();
-                            $packageHistory->idPackage   = $row[0];
-                            $packageHistory->description = 'Validación Inbound';
-                            $packageHistory->user        = Auth::user()->email;
-                            $packageHistory->status      = 'Inbound';
+                $packageReturnCompany->save();
 
-                            $packageHistory->save();
-                        }
-                    }
-                    else
-                    {
-                        $packageNotExists = new PackageNotExists();
+                //regsister history
 
-                        $packageNotExists->Reference_Number_1 = $row[0];
-                        $packageNotExists->idUser             = Auth::user()->id;
-                        $packageNotExists->Date_Inbound       = date('Y-m-d H:i:s');
+                $packageHistory = new PackageHistory();
 
-                        $packageNotExists->save();
-                    }
-                }
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageInbound->idCompany;
+                $packageHistory->company                      = $packageInbound->company;
+                $packageHistory->Dropoff_Contact_Name         = $packageInbound->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packageInbound->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageInbound->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageInbound->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packageInbound->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packageInbound->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageInbound->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $packageInbound->Notes;
+                $packageHistory->Weight                       = $packageInbound->Weight;
+                $packageHistory->Route                        = $packageInbound->Route;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->idUserInbound                = Auth::user()->id;
+                $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
+                $packageHistory->Description_Return           = $request->get('Description_Return');
+                $packageHistory->status                       = 'PreRts';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
-                $lineNumber++;
+                $packageHistory->save();
+
+                $packageInbound->delete();
+
+                DB::commit();
+
+                return ['stateAction' => true];
             }
+            catch(Exception $e)
+            {
+                DB::rollback();
 
-            fclose($handle);
-
-            DB::commit();
-
-            return ['stateAction' => true];
+                return ['stateAction' => false];
+            }
         }
-        catch(Exception $e)
+        else
         {
-            DB::rollback();
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-            return ['stateAction' => false];
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
         }
+
+        return ['stateAction' => 'notExists'];
     }
 
     public function UpdateCreatedAt()
