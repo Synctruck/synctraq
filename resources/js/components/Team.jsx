@@ -103,6 +103,7 @@ function Team() {
         .then((response) => {
 
             setListRoute(response.routeList);
+            listOptionRoute(response.routeList);
         });
     }
 
@@ -149,6 +150,32 @@ function Team() {
 
         e.preventDefault();
 
+        let dataPrices  = [];
+        let minWeight   = 0;
+        let maxWeight   = 0;
+        let priceWeight = 0;
+
+        listCompany.map( company => {
+
+            minWeight   = document.getElementById('minWeight'+ 1 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 1 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 1 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+
+            minWeight   = document.getElementById('minWeight'+ 2 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 2 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 2 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+
+            minWeight   = document.getElementById('minWeight'+ 3 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 3 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 3 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+        });
+
         const formData = new FormData();
 
         formData.append('idRole', idRole);
@@ -158,10 +185,12 @@ function Team() {
         formData.append('phone', phone);
         formData.append('email', email);
         formData.append('status', status);
-        formData.append('routesName', idsRoutes);
-        formData.append('permissionDispatch', permissionDispatch);
+        formData.append('route', RouteSearch);
+        formData.append('dataPrices', dataPrices);
 
         clearValidation();
+
+        
 
         if(id == 0)
         {
@@ -264,7 +293,8 @@ function Team() {
         .then(response => response.json())
         .then(response => {
 
-            let team = response.team;
+            let team       = response.team;
+            let listPrices = response.listPrices;
 
             setId(team.id);
             setIdRole(team.idRole);
@@ -279,6 +309,26 @@ function Team() {
 
             setTimeout( () => {
 
+                listPrices.map( data => {
+
+                    console.log(data);
+                    document.getElementById('minWeight'+ 1 + data.idCompany).value   = data.minWeight;
+                    document.getElementById('maxWeight'+ 1 + data.idCompany).value   = data.maxWeight;         
+                    document.getElementById('priceWeight'+ 1 + data.idCompany).value = data.price;
+
+                    document.getElementById('minWeight'+ 2 + data.idCompany).value   = data.minWeight;
+                    document.getElementById('maxWeight'+ 2 + data.idCompany).value   = data.maxWeight;
+                    document.getElementById('priceWeight'+ 2 + data.idCompany).value = data.price;
+
+                    document.getElementById('minWeight'+ 3 + data.idCompany).value   = data.minWeight;
+                    document.getElementById('maxWeight'+ 3 + data.idCompany).value   = data.maxWeight;
+                    document.getElementById('priceWeight'+ 3 + data.idCompany).value = data.price;
+                });
+
+            }, 100);
+            
+            /*setTimeout( () => {
+
                 team.routes_team.forEach( teamRoute => {
 
                     document.getElementById('idCheck'+ teamRoute.route.name).checked = true;
@@ -286,7 +336,7 @@ function Team() {
 
                 handleChange();
 
-            }, 100);
+            }, 100);*/
 
             handlerOpenModal(team.id);
 
@@ -575,9 +625,29 @@ function Team() {
         );
     });
 
-    const optionCompany = listCompany.map( (company, i) => {
+    const listInputPricesTeams = listCompany.map( (company, i) => {
 
-        return <option value={company.id}>{company.name}</option>
+        return (
+
+            <tr>
+                <td><b>{ company.name }</b></td>
+                <td>
+                    <input type="text" id={ 'minWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'minWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'minWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+                <td>
+                    <input type="text" id={ 'maxWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'maxWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'maxWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+                <td>
+                    <input type="text" id={ 'priceWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'priceWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'priceWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+            </tr>
+        );
     })
 
     const listRangeTable = listRange.map( (range, i) => {
@@ -610,6 +680,21 @@ function Team() {
         setPhone('');
         setEmail('');
         setStatus('Active');
+
+        listCompany.map( company => {
+
+            document.getElementById('minWeight'+ 1 + company.id).value = '';
+            document.getElementById('maxWeight'+ 1 + company.id).value = '';
+            document.getElementById('priceWeight'+ 1 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 2 + company.id).value = '';
+            document.getElementById('maxWeight'+ 2 + company.id).value = '';
+            document.getElementById('priceWeight'+ 2 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 3 + company.id).value = '';
+            document.getElementById('maxWeight'+ 3 + company.id).value = '';
+            document.getElementById('priceWeight'+ 3 + company.id).value = '';
+        });
     }
 
     const clearFormRange = () => {
@@ -722,21 +807,6 @@ function Team() {
         );
     });
 
-    const optionsCheckRoute = listRoute.map( (route, i) => {
-
-        return (
-
-            <div className="col-lg-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ route.name } value={ route.name } onChange={ () => handleChange() }/>
-                    <label class="form-check-label" for="gridCheck1">
-                        { route.name }
-                    </label>
-                </div>
-            </div>
-        );
-    });
-
     const handleChange = () => {
 
         let routesIds = '';
@@ -819,6 +889,28 @@ function Team() {
         );
     }
 
+    const [optionsRouteSearch, setOptionsRouteSearch] = useState([]);
+
+    const listOptionRoute = (listRoutes) => {
+
+        setOptionsRouteSearch([]);
+
+        console.log(listRoutes);
+        listRoutes.map( (route, i) => {
+
+            optionsRouteSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRouteSearch(optionsRouteSearch);
+        });
+    }
+
+    const [RouteSearch, setRouteSearch] = useState('');
+
+    const handlerChangeRoute = (routes) => {
+
+        setRouteSearch(routes.value);
+    };
+
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
@@ -828,7 +920,7 @@ function Team() {
 
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerSaveTeam }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
@@ -883,16 +975,7 @@ function Team() {
                                                         </div>
 
                                                         <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Permission Dispatch</label>
-                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
-                                                                        <option value="0">No</option>
-                                                                        <option value="1">Yes</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label>Id Onfleet</label>
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
@@ -911,18 +994,34 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Routes</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                </div>
-                                                                <div className="row form-group">
-                                                                    { optionsCheckRoute }
+                                                                    <label htmlFor="" className="form">Route :</label>
+                                                                    <Select onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <table className="table table-hover table-condensed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>COMPANY</th>
+                                                                                <th>MIN WEIGHT</th>
+                                                                                <th>MAX WEIGHT</th>
+                                                                                <th>PRICE</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            { listInputPricesTeams }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -950,7 +1049,6 @@ function Team() {
                                                                 <div id="idCompanyRange" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => changeCompany(e.target.value) }>
                                                                     <option value="">Select...</option>
-                                                                    { optionCompany }
                                                                 </select>
                                                             </div> 
                                                             <div className="col-lg-6 form-group">
