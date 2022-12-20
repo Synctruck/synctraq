@@ -121,6 +121,7 @@ function Team() {
 
     const handlerOpenModal = (id) => {
 
+        setRouteSearch(null);
         clearValidation();
 
         if(id)
@@ -189,8 +190,6 @@ function Team() {
         formData.append('dataPrices', dataPrices);
 
         clearValidation();
-
-        
 
         if(id == 0)
         {
@@ -284,8 +283,9 @@ function Team() {
 
     const getTeam = (id) => {
 
+        setRouteSearch(null);
         LoadingShow();
-
+        clearForm();
         listAllRole();
         listAllRoute();
 
@@ -306,24 +306,31 @@ function Team() {
             setPermissionDispatch(team.permissionDispatch);
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
+            
 
             setTimeout( () => {
 
-                listPrices.map( data => {
+                console.log(listPrices);
 
-                    console.log(data);
-                    document.getElementById('minWeight'+ 1 + data.idCompany).value   = data.minWeight;
-                    document.getElementById('maxWeight'+ 1 + data.idCompany).value   = data.maxWeight;         
-                    document.getElementById('priceWeight'+ 1 + data.idCompany).value = data.price;
+                for(var i = 0; i < listPrices.length; i++)
+                {
+                    setRouteSearch(listPrices[i].route);
 
-                    document.getElementById('minWeight'+ 2 + data.idCompany).value   = data.minWeight;
-                    document.getElementById('maxWeight'+ 2 + data.idCompany).value   = data.maxWeight;
-                    document.getElementById('priceWeight'+ 2 + data.idCompany).value = data.price;
+                    if((i % 3) == 0)
+                    {
+                        document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
+                        document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
+                        document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
 
-                    document.getElementById('minWeight'+ 3 + data.idCompany).value   = data.minWeight;
-                    document.getElementById('maxWeight'+ 3 + data.idCompany).value   = data.maxWeight;
-                    document.getElementById('priceWeight'+ 3 + data.idCompany).value = data.price;
-                });
+                        document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
+                        document.getElementById('maxWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].maxWeight;
+                        document.getElementById('priceWeight'+ 2 + listPrices[i].idCompany).value = listPrices[i + 1].price;
+
+                        document.getElementById('minWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].minWeight;
+                        document.getElementById('maxWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].maxWeight;
+                        document.getElementById('priceWeight'+ 3 + listPrices[i].idCompany).value = listPrices[i + 2].price;
+                    }
+                }
 
             }, 100);
             
@@ -784,7 +791,7 @@ function Team() {
                         )
                     }
                     &nbsp;
-                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
+                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) } style={ {display: 'none'} }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
                 </td>
@@ -904,7 +911,7 @@ function Team() {
         });
     }
 
-    const [RouteSearch, setRouteSearch] = useState('');
+    const [RouteSearch, setRouteSearch] = useState(null);
 
     const handlerChangeRoute = (routes) => {
 
@@ -998,7 +1005,7 @@ function Team() {
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label htmlFor="" className="form">Route :</label>
-                                                                    <Select onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
+                                                                    <Select onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } value={ {label: RouteSearch, value: RouteSearch} }/>
                                                                 </div>
                                                             </div>
                                                         </div>

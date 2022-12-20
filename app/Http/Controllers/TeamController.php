@@ -156,6 +156,7 @@ class TeamController extends Controller
                         $range->minWeight = $dataPrices[$i + 1];
                         $range->maxWeight = $dataPrices[$i + 2];
                         $range->price     = $dataPrices[$i + 3];
+                        $range->validate  = 1;
 
                         $range->save();
                     }
@@ -201,7 +202,8 @@ class TeamController extends Controller
     {
         $team       = User::with('routes_team.route')->find($id);
         $listPrices = RangePriceTeam::where('idTeam', $id)
-                                ->orderBy('minWeight', 'asc')
+                                ->where('validate', 1)
+                                ->orderBy('id', 'asc')
                                 ->get();
 
         return ['team' => $team, 'listPrices' => $listPrices];
@@ -244,16 +246,16 @@ class TeamController extends Controller
 
         $listTeamOnfleet = $this->GetListOnfleet();
 
-        $updated = false;
+        $updated = true;
 
-        foreach ($listTeamOnfleet as $team)
+        /*foreach ($listTeamOnfleet as $team)
         {
             if($team['name'] == $request->get('name'))
             {
                 $request['idOnfleet'] = $team['id'];
                 $updated = true;
             }
-        }
+        }*/
 
         if($updated)
         {
@@ -274,7 +276,37 @@ class TeamController extends Controller
 
                 $user->save();
 
-                $listTeamRoute = TeamRoute::where('idTeam', $id)->get();
+                //deletePrices
+                $listPricesTeams = RangePriceTeam::where('idTeam', $id)->get();
+
+                foreach($listPricesTeams as $priceTeam)
+                {
+                    $priceTeam = RangePriceTeam::find($priceTeam->id);
+                    $priceTeam->delete();
+                }
+
+                $dataPrices = explode(',', $request->get('dataPrices'));
+                $idCompany  = 0;
+
+                for($i = 0; $i < count($dataPrices); $i++)
+                {
+                    if(($i % 4) == 0)
+                    {
+                        $range = new RangePriceTeam();
+
+                        $range->idTeam    = $user->id;
+                        $range->idCompany = $dataPrices[$i];
+                        $range->route     = $request->get('route');
+                        $range->minWeight = $dataPrices[$i + 1];
+                        $range->maxWeight = $dataPrices[$i + 2];
+                        $range->price     = $dataPrices[$i + 3];
+                        $range->validate  = 1;
+
+                        $range->save();
+                    }
+                }
+
+                /*$listTeamRoute = TeamRoute::where('idTeam', $id)->get();
 
                 foreach($listTeamRoute as $teamRoute)
                 {
@@ -298,7 +330,7 @@ class TeamController extends Controller
 
                         $teamRoute->save();
                     }
-                }
+                }*/
 
                 DB::commit();
 
