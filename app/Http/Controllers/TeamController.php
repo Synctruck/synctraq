@@ -209,6 +209,37 @@ class TeamController extends Controller
 
     public function Update(Request $request, $id)
     {
+        if($request->get('routeOld') == 'null')
+        {
+            $routesList   = explode(',', $request->get('route'));
+        }
+        else
+        {
+            $routes     = explode(',' , $request->get('route'));
+            $routesOld  = explode(',' , $request->get('routeOld'));
+            $routes     = array_unique(array_merge($routes, $routesOld));
+            $routesList = array_diff($routes, $routesOld);
+        }
+
+        $routesExists = '';
+
+        foreach($routesList as $route)
+        {
+            $rangePrice = RangePriceTeam::where('idTeam', $id)
+                                    ->where('route', 'like', '%'. $route .'%')
+                                    ->first();
+
+            if($rangePrice)
+            {
+                $routesExists = $routesExists == '' ? $route : $routesExists .','. $route;
+            }
+        }
+
+        if($routesExists != '')
+        {
+            return ['stateAction' => 'routesExists', 'routesExists' => $routesExists];
+        }
+
         $validator = Validator::make($request->all(),
 
             [

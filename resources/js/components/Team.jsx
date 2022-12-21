@@ -277,10 +277,18 @@ function Team() {
                 if(response.stateAction == true)
                 {
                     listAllTeam(1);
-
+                    listConfigurarionPrice(idTeam);
+                    handlerChangeConfiguration(RouteSearch);
                     swal("Equipment was updated!", {
 
                         icon: "success",
+                    });
+                }
+                else if(response.stateAction == 'routesExists')
+                {
+                    swal("the following routes ["+ response.routesExists +"] are already in another configuration!", {
+
+                        icon: "warning",
                     });
                 }
                 else if(response.stateAction == 'notTeamOnfleet')
@@ -300,10 +308,6 @@ function Team() {
                 }
 
                 setDisabledButton(false);
-
-                listConfigurarionPrice(idTeam);
-                handlerChangeConfiguration(RouteSearch);
-
             });
         }
     }
@@ -1033,13 +1037,16 @@ function Team() {
 
         let routePricesTeams = [];
 
-        let auxlistPricesTeams = routePrice.split(',');
+        if(routePrice != null)
+        {
+            let auxlistPricesTeams = routePrice.split(',');
 
-        auxlistPricesTeams.forEach( route => {
+            auxlistPricesTeams.forEach( route => {
 
-            routePricesTeams.push({label: route, value: route});
-        });
-
+                routePricesTeams.push({label: route, value: route});
+            });
+        }
+        
         setRoutesSelect(routePricesTeams);
     }
 
