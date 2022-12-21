@@ -144,21 +144,24 @@ class TeamController extends Controller
 
                 $team = User::where('email', $request->get('email'))->first();
 
-                for($i = 0; $i < count($dataPrices); $i++)
+                if($request->get('route') != 'null' && $request->get('route') != null)
                 {
-                    if(($i % 4) == 0)
+                    for($i = 0; $i < count($dataPrices); $i++)
                     {
-                        $range = new RangePriceTeam();
+                        if(($i % 4) == 0)
+                        {
+                            $range = new RangePriceTeam();
 
-                        $range->idTeam    = $team->id;
-                        $range->idCompany = $dataPrices[$i];
-                        $range->route     = $request->get('route');
-                        $range->minWeight = $dataPrices[$i + 1];
-                        $range->maxWeight = $dataPrices[$i + 2];
-                        $range->price     = $dataPrices[$i + 3];
-                        $range->validate  = 1;
+                            $range->idTeam    = $team->id;
+                            $range->idCompany = $dataPrices[$i];
+                            $range->route     = $request->get('route');
+                            $range->minWeight = $dataPrices[$i + 1];
+                            $range->maxWeight = $dataPrices[$i + 2];
+                            $range->price     = $dataPrices[$i + 3];
+                            $range->validate  = 1;
 
-                        $range->save();
+                            $range->save();
+                        }
                     }
                 }
 
@@ -200,13 +203,9 @@ class TeamController extends Controller
 
     public function Get($id)
     {
-        $team       = User::with('routes_team.route')->find($id);
-        $listPrices = RangePriceTeam::where('idTeam', $id)
-                                ->where('validate', 1)
-                                ->orderBy('id', 'asc')
-                                ->get();
+        $team = User::with('routes_team.route')->find($id);
 
-        return ['team' => $team, 'listPrices' => $listPrices];
+        return ['team' => $team];
     }
 
     public function Update(Request $request, $id)
@@ -244,7 +243,8 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $listTeamOnfleet = $this->GetListOnfleet();
+        //$listTeamOnfleet = $this->GetListOnfleet();
+
 
         $updated = true;
 
@@ -276,35 +276,50 @@ class TeamController extends Controller
 
                 $user->save();
 
-                //deletePrices
-                $listPricesTeams = RangePriceTeam::where('idTeam', $id)->get();
-
-                foreach($listPricesTeams as $priceTeam)
-                {
-                    $priceTeam = RangePriceTeam::find($priceTeam->id);
-                    $priceTeam->delete();
-                }
-
                 $dataPrices = explode(',', $request->get('dataPrices'));
                 $idCompany  = 0;
 
-                for($i = 0; $i < count($dataPrices); $i++)
+                if($request->get('routeOld'))
                 {
-                    if(($i % 4) == 0)
+                    if($request->get('route') != $request->get('routeOld'))
                     {
-                        $range = new RangePriceTeam();
+                        $listPricesTeams = RangePriceTeam::where('idTeam', $id)
+                                                    ->where('route', $request->get('routeOld'))
+                                                    ->get();
 
-                        $range->idTeam    = $user->id;
-                        $range->idCompany = $dataPrices[$i];
-                        $range->route     = $request->get('route');
-                        $range->minWeight = $dataPrices[$i + 1];
-                        $range->maxWeight = $dataPrices[$i + 2];
-                        $range->price     = $dataPrices[$i + 3];
-                        $range->validate  = 1;
+                        foreach($listPricesTeams as $priceTeam)
+                        {
+                            $priceTeam = RangePriceTeam::find($priceTeam->id);
 
-                        $range->save();
+                            $priceTeam->delete();
+                        }
                     }
                 }
+
+                if($request->get('route') != 'null' && $request->get('route') != null)
+                {
+                    if($request->get('route') != $request->get('routeOld'))
+                    {
+                        for($i = 0; $i < count($dataPrices); $i++)
+                        {
+                            if(($i % 4) == 0)
+                            {
+                                $range = new RangePriceTeam();
+
+                                $range->idTeam    = $user->id;
+                                $range->idCompany = $dataPrices[$i];
+                                $range->route     = $request->get('route');
+                                $range->minWeight = $dataPrices[$i + 1];
+                                $range->maxWeight = $dataPrices[$i + 2];
+                                $range->price     = $dataPrices[$i + 3];
+                                $range->validate  = 1;
+
+                                $range->save();
+                            }
+                        }
+                    }
+                }
+                
 
                 /*$listTeamRoute = TeamRoute::where('idTeam', $id)->get();
 

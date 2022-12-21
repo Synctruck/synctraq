@@ -21,10 +21,11 @@ function Team() {
 
     const [disabledButton, setDisabledButton] = useState(false);
 
-    const [listUser, setListUser]   = useState([]);
-    const [listRole, setListRole]   = useState([]);
-    const [listRoute, setListRoute] = useState([]);
-    const [listTeamRoute, setListTeamRoute] = useState([]);
+    const [listUser, setListUser]                             = useState([]);
+    const [listRole, setListRole]                             = useState([]);
+    const [listRoute, setListRoute]                           = useState([]);
+    const [listConfigurationPrice, setListConfigurationPrice] = useState([]);
+    const [listTeamRoute, setListTeamRoute]                   = useState([]);
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -119,6 +120,22 @@ function Team() {
         });
     }
 
+    const [defaultOptionConfiguration, setDefaultOptionConfiguration] = useState(null);
+    const [valueOptionConfiguration, setValueOptionConfiguration]     = useState('');
+
+    const listConfigurarionPrice = (idTeam) => {
+
+        setValueOptionConfiguration('');
+        setDefaultOptionConfiguration(<option value="">Select configuration</option>);
+
+        fetch(url_general +'range-price-team-route-company/list-configuration-price-team/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListConfigurationPrice(response.listConfigurarionPrice);
+        });
+    }
+
     const handlerOpenModal = (id) => {
 
         setRouteSearch(null);
@@ -137,6 +154,9 @@ function Team() {
             clearForm();
             setTitleModal('Add Team');
             setTextButtonSave('Save');
+
+            listConfigurarionPrice(0);
+            handlerChangeRoute([]);
         }
 
         let myModal = new bootstrap.Modal(document.getElementById('modalCategoryInsert'), {
@@ -187,11 +207,13 @@ function Team() {
         formData.append('email', email);
         formData.append('status', status);
         formData.append('route', RouteSearch);
+        formData.append('routeOld', RouteOld);
         formData.append('dataPrices', dataPrices);
+        formData.append('valueOptionConfiguration', valueOptionConfiguration);
 
         clearValidation();
 
-        if(id == 0)
+        if(idTeam == 0)
         {
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -212,6 +234,7 @@ function Team() {
                             icon: "success",
                         });
 
+                        handlerChangeRoute([]);
                         listAllTeam(1);
                         clearForm();
                     }
@@ -241,7 +264,7 @@ function Team() {
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'team/update/'+ id, {
+            fetch(url_general +'team/update/'+ idTeam, {
                 headers: {
                     "X-CSRF-TOKEN": token
                 },
@@ -277,6 +300,10 @@ function Team() {
                 }
 
                 setDisabledButton(false);
+
+                listConfigurarionPrice(idTeam);
+                handlerChangeConfiguration(RouteSearch);
+
             });
         }
     }
@@ -288,6 +315,7 @@ function Team() {
         clearForm();
         listAllRole();
         listAllRoute();
+        handlerChangeRoute([]);
 
         fetch(url_general +'team/get/'+ id)
         .then(response => response.json())
@@ -296,7 +324,7 @@ function Team() {
             let team       = response.team;
             let listPrices = response.listPrices;
 
-            setId(team.id);
+            setIdTeam(team.id);
             setIdRole(team.idRole);
             setName(team.name);
             setNameOfOwner(team.nameOfOwner);
@@ -307,8 +335,8 @@ function Team() {
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
             
-
-            setTimeout( () => {
+            listConfigurarionPrice(id);
+            /*setTimeout( () => {
 
                 console.log(listPrices);
 
@@ -334,7 +362,7 @@ function Team() {
 
             }, 100);
             
-            /*setTimeout( () => {
+            setTimeout( () => {
 
                 team.routes_team.forEach( teamRoute => {
 
@@ -704,6 +732,24 @@ function Team() {
         });
     }
 
+    const clearPricesTeams = () => {
+
+        listCompany.map( company => {
+
+            document.getElementById('minWeight'+ 1 + company.id).value = '';
+            document.getElementById('maxWeight'+ 1 + company.id).value = '';
+            document.getElementById('priceWeight'+ 1 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 2 + company.id).value = '';
+            document.getElementById('maxWeight'+ 2 + company.id).value = '';
+            document.getElementById('priceWeight'+ 2 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 3 + company.id).value = '';
+            document.getElementById('maxWeight'+ 3 + company.id).value = '';
+            document.getElementById('priceWeight'+ 3 + company.id).value = '';
+        });
+    }
+
     const clearFormRange = () => {
 
         setIdRange(0);
@@ -800,7 +846,7 @@ function Team() {
     });
 
     const listRoleSelect = listRole.map( (role, i) => {
-        console.log('roleee: ',role);
+        //console.log('roleee: ',role);
         return (
 
             (
@@ -912,11 +958,90 @@ function Team() {
     }
 
     const [RouteSearch, setRouteSearch] = useState(null);
+    const [RouteOld, setRouteOld]       = useState(null);
+
+    const [RoutesSelect, setRoutesSelect] = useState([]);
 
     const handlerChangeRoute = (routes) => {
 
-        setRouteSearch(routes.value);
+        console.log(routes);
+
+        let routesList   = [];
+        let routesSearch = '';
+
+        if(routes.length != 0)
+        {
+            routes.map( (route) => {
+
+                routesList.push({label: route.value, value: route.value});
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+            //listAllPackageDispatch(1, StateSearch, routesSearch);
+        }
+
+        setRoutesSelect(routesList);
+        setRouteSearch(routesSearch);
     };
+
+    const handlerChangeConfiguration = (routePrice) => {
+
+        clearPricesTeams();
+        setRouteOld(routePrice);
+        setRouteSearch(routePrice);
+        setValueOptionConfiguration(routePrice);
+
+        if(routePrice != '' && routePrice != null)
+        {
+            fetch(url_general +'range-price-team-route-company/get-prices-team/'+ idTeam +'/'+ routePrice)
+            .then(response => response.json())
+            .then(response => {
+
+                let listPrices = response.listPrices;
+
+                setTimeout( () => {
+
+                    console.log(listPrices);
+
+                    for(var i = 0; i < listPrices.length; i++)
+                    {
+                        setRouteSearch(listPrices[i].route);
+
+                        if((i % 3) == 0)
+                        {
+                            document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
+                            document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
+                            document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
+
+                            document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
+                            document.getElementById('maxWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].maxWeight;
+                            document.getElementById('priceWeight'+ 2 + listPrices[i].idCompany).value = listPrices[i + 1].price;
+
+                            document.getElementById('minWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].minWeight;
+                            document.getElementById('maxWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].maxWeight;
+                            document.getElementById('priceWeight'+ 3 + listPrices[i].idCompany).value = listPrices[i + 2].price;
+                        }
+                    }
+
+                }, 100);
+            });
+        }
+
+        listPricesTeams(routePrice);
+    }
+
+    const listPricesTeams = (routePrice) => {
+
+        let routePricesTeams = [];
+
+        let auxlistPricesTeams = routePrice.split(',');
+
+        auxlistPricesTeams.forEach( route => {
+
+            routePricesTeams.push({label: route, value: route});
+        });
+
+        setRoutesSelect(routePricesTeams);
+    }
 
     const onBtnClickFile = () => {
 
@@ -924,6 +1049,14 @@ function Team() {
 
         inputFileRef.current.click();
     }
+
+    const listConfigurationOption = listConfigurationPrice.map( (configuration, i) => {
+
+        return (
+
+            <option value={ configuration.route }>{ configuration.route }</option>
+        );
+    });
 
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1004,8 +1137,19 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
+                                                                    <label htmlFor="" className="form">Configurations :</label>
+                                                                    <select name="" id="" className="form-control" value={ valueOptionConfiguration } onChange={ (e) => handlerChangeConfiguration(e.target.value) }>
+                                                                        { defaultOptionConfiguration }
+                                                                        { listConfigurationOption }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
                                                                     <label htmlFor="" className="form">Route :</label>
-                                                                    <Select onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } value={ {label: RouteSearch, value: RouteSearch} }/>
+                                                                    <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } value={ RoutesSelect }/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1028,7 +1172,6 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>

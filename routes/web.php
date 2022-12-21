@@ -268,6 +268,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('range-price-team-route-company/update/{id}', [RangePriceTeamRouteCompanyController::class, 'Update']);
 	Route::get('range-price-team-route-company/delete/{id}', [RangePriceTeamRouteCompanyController::class, 'Delete']);
 	Route::post('range-price-team-route-company/import', [RangePriceTeamRouteCompanyController::class, 'Import']);
+	Route::get('range-price-team-route-company/list-configuration-price-team/{idTeam}', [RangePriceTeamRouteCompanyController::class, 'ListConfigurationPrice']);
+	Route::get('range-price-team-route-company/get-prices-team/{idTeam}/{routes}', [RangePriceTeamRouteCompanyController::class, 'GetPricesByIdTeam']);
 
 	//============ Processof orders
 	Route::get('orders', [OrderController::class, 'Index'])->middleware('permission:orders.index');

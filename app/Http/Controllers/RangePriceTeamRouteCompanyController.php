@@ -143,6 +143,26 @@ class RangePriceTeamRouteCompanyController extends Controller
         return ['stateAction' => true];
     }
 
+    public function ListConfigurationPrice($idTeam)
+    {
+        $listConfigurarionPrice = RangePriceTeam::where('idTeam', $idTeam)
+                                                ->groupBy('route')
+                                                ->get();
+
+        return ['listConfigurarionPrice' => $listConfigurarionPrice];
+    }
+
+    public function GetPricesByIdTeam($idTeam, $routes)
+    {
+        $listPrices = RangePriceTeam::where('idTeam', $idTeam)
+                                ->where('validate', 1)
+                                ->where('route', $routes)
+                                ->orderBy('id', 'asc')
+                                ->get();
+
+        return ['listPrices' => $listPrices];
+    }
+
     public function GetPriceTeam($idTeam, $idCompany, $weight, $route)
     {
         $range = RangePriceTeam::where('idTeam', $idTeam)
