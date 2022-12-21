@@ -155,7 +155,6 @@ class RangePriceTeamRouteCompanyController extends Controller
     public function GetPricesByIdTeam($idTeam, $routes)
     {
         $listPrices = RangePriceTeam::where('idTeam', $idTeam)
-                                ->where('validate', 1)
                                 ->where('route', $routes)
                                 ->orderBy('id', 'asc')
                                 ->get();

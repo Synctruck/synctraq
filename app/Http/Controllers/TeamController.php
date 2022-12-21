@@ -158,7 +158,6 @@ class TeamController extends Controller
                             $range->minWeight = $dataPrices[$i + 1];
                             $range->maxWeight = $dataPrices[$i + 2];
                             $range->price     = $dataPrices[$i + 3];
-                            $range->validate  = 1;
 
                             $range->save();
                         }
@@ -312,7 +311,6 @@ class TeamController extends Controller
                                 $range->minWeight = $dataPrices[$i + 1];
                                 $range->maxWeight = $dataPrices[$i + 2];
                                 $range->price     = $dataPrices[$i + 3];
-                                $range->validate  = 1;
 
                                 $range->save();
                             }
