@@ -103,18 +103,18 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        //$listTeamOnfleet = $this->GetListOnfleet();
+        $listTeamOnfleet = $this->GetListOnfleet();
 
-        $register = true;
+        $register = false;
 
-        /*foreach ($listTeamOnfleet as $team)
+        foreach ($listTeamOnfleet as $team)
         {
             if($team['name'] == $request->get('name'))
             {
                 $request['idOnfleet'] = $team['id'];
                 $register = true;
             }
-        }*/
+        }
 
         if($register)
         {
@@ -273,19 +273,18 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        //$listTeamOnfleet = $this->GetListOnfleet();
+        $listTeamOnfleet = $this->GetListOnfleet();
 
+        $updated = false;
 
-        $updated = true;
-
-        /*foreach ($listTeamOnfleet as $team)
+        foreach ($listTeamOnfleet as $team)
         {
             if($team['name'] == $request->get('name'))
             {
                 $request['idOnfleet'] = $team['id'];
                 $updated = true;
             }
-        }*/
+        }
 
         if($updated)
         {
