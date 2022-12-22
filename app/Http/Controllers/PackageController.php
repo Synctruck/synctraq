@@ -1641,4 +1641,113 @@ class PackageController extends Controller
             return "error";
         }
     }
+
+    public function ChangePackageToDispatch()
+    {
+        $startDate = date('2022-06-01 00:00:00');
+        $endDate   = date('2022-10-31 23:59:59');
+
+        try
+        {
+            DB::beginTransaction();
+
+            //$listPackageInbound = PackageInbound::whereBetween('created_at', [$startDate, $endDate])->get();
+            //$listPackageInbound = PackageWarehouse::whereBetween('created_at', [$startDate, $endDate])->get();
+            //$listPackageInbound = PackageFailed::whereBetween('created_at', [$startDate, $endDate])->get();
+
+            /*foreach($listPackageInbound as $package)
+            {
+                $package = PackageFailed::find($package->Reference_Number_1);
+
+                $created_at = $package->created_at;
+
+                $packageDispatch = PackageDispatch::find($package->Reference_Number_1);
+
+                if($packageDispatch == null)
+                {
+                    $packageDispatch = new PackageDispatch();
+
+                    $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageDispatch->idCompany                    = $package->idCompany;
+                    $packageDispatch->company                      = $package->company;
+                    $packageDispatch->idStore                      = $package->idStore;
+                    $packageDispatch->store                        = $package->store;
+                    $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                    $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageDispatch->Notes                        = $package->Notes;
+                    $packageDispatch->Weight                       = $package->Weight;
+                    $packageDispatch->Route                        = $package->Route;
+                    $packageDispatch->Date_Dispatch                = $created_at;
+                    $packageDispatch->quantity                     = $package->quantity;
+                    $packageDispatch->pricePaymentCompany          = 0;
+                    $packageDispatch->pricePaymentTeam             = 0;
+                    $packageDispatch->idPaymentTeam                = '';
+                    $packageDispatch->status                       = 'Delivery';
+                    $packageDispatch->created_at                   = $created_at;
+                    $packageDispatch->updated_at                   = $created_at;
+
+                    $packageDispatch->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
+                    $packageHistory->idStore                      = $package->idStore;
+                    $packageHistory->store                        = $package->store;
+                    $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $package->Notes;
+                    $packageHistory->Weight                       = $package->Weight;
+                    $packageHistory->Route                        = $package->Route;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->Date_Dispatch                = $created_at;
+                    $packageHistory->dispatch                     = 1;
+                    $packageHistory->autorizationDispatch         = 1;
+                    $packageHistory->Description                  = 'Force delivery';
+                    $packageHistory->quantity                     = $package->quantity;
+                    $packageHistory->status                       = 'Delivery';
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
+
+                    $packageHistory->save();
+                }
+                else
+                {
+                    $packageDispatch->status     = 'Delivery';
+                    $packageDispatch->created_at = $created_at;
+                    $packageDispatch->updated_at = $created_at;
+
+                    $packageDispatch->save();
+                }
+
+                $package->delete();
+            }*/
+
+            DB::commit();
+
+            return "correct change package to dispatch";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
+    }
 }
