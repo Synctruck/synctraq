@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -67,7 +67,8 @@ class PackageReturnCompanyController extends Controller
         $routes   = explode(',', $route);
         $states   = explode(',', $state);
 
-        $packageReturnCompanyList = PackageReturnCompany::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $packageReturnCompanyList = PackageReturnCompany::whereBetween('created_at', [$dateInit, $dateEnd])
+                                                            ->where('status', 'ReturnCompany');
 
         if($route != 'all')
         {
@@ -77,11 +78,6 @@ class PackageReturnCompanyController extends Controller
         if($state != 'all')
         {
             $packageReturnCompanyList = $packageReturnCompanyList->whereIn('Dropoff_Province', $states);
-        }
-
-        if($status == 'PreRts')
-        {
-            $packageReturnCompanyList = $packageReturnCompanyList->where('status', 'PreRts');
         }
 
         if($type=='list')
@@ -254,19 +250,26 @@ class PackageReturnCompanyController extends Controller
         return view('package.prerts');
     }
 
-    public function ListPreRts($dateInit, $dateEnd, $route, $state)
-    {
-        $roleUser = Auth::user()->role->name;
+    public function ListPreRts($numberPallet)
+    { 
+        $palletRts = PalletRts::find($numberPallet);
 
-        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'PreRts');
+        if($palletRts->status == 'Closed')
+        {
+            $packagePreRtsList = PackageHistory::where('numberPallet', $numberPallet)
+                                                ->where('status', 'PreRts')
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
+        }
+        else
+        {
+            $packagePreRtsList = PackageReturnCompany::where('numberPallet', $numberPallet)
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
+        }
+        
 
-        $quantityReturn = $packageReturnCompanyList->total();
-
-        $listState = PackageReturnCompany::select('Dropoff_Province')
-                                    ->groupBy('Dropoff_Province')
-                                    ->get();
-
-        return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
+        return ['packagePreRtsList' => $packagePreRtsList, 'palletRts' => $palletRts];
     }
 
     public function InsertPreRts(Request $request)
@@ -290,6 +293,16 @@ class PackageReturnCompanyController extends Controller
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
         }
 
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageReturnCompany::find($request->get('Reference_Number_1'));
+
+            if($packageInbound)
+            {
+                return ['stateAction' => ($packageInbound->status == 'PreRts' ? 'packageInRts' : 'packageReturnCompany')];
+            }
+        }
+ 
         if($packageInbound)
         {
             try
@@ -304,6 +317,7 @@ class PackageReturnCompanyController extends Controller
 
                 $packageReturnCompany = new PackageReturnCompany();
 
+                $packageReturnCompany->numberPallet                 = $request->get('numberPallet');
                 $packageReturnCompany->idCompany                    = $packageInbound->idCompany;
                 $packageReturnCompany->company                      = $packageInbound->company;
                 $packageReturnCompany->Reference_Number_1           = $packageInbound->Reference_Number_1;
@@ -336,6 +350,7 @@ class PackageReturnCompanyController extends Controller
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
+                $packageHistory->numberPallet                 = $request->get('numberPallet');
                 $packageHistory->idCompany                    = $packageInbound->idCompany;
                 $packageHistory->company                      = $packageInbound->company;
                 $packageHistory->Dropoff_Contact_Name         = $packageInbound->Dropoff_Contact_Name;
@@ -385,6 +400,72 @@ class PackageReturnCompanyController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function ChangeToReturnCompany(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $palletRts = PalletRts::find($request->get('numberPallet'));
+
+            $palletRts->status = 'Closed';
+
+            $palletRts->save();
+
+            $packagePreRtsList = PackageReturnCompany::where('numberPallet', $request->get('numberPallet'))
+                                                ->where('status', 'PreRts')
+                                                ->get();
+
+            foreach($packagePreRtsList as $packagePreRts)
+            {
+                $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
+
+                $packagePreRts->status = 'ReturnCompany';
+
+                $packagePreRts->save();
+
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packagePreRts->Reference_Number_1;
+                $packageHistory->idCompany                    = $packagePreRts->idCompany;
+                $packageHistory->company                      = $packagePreRts->company;
+                $packageHistory->Dropoff_Contact_Name         = $packagePreRts->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packagePreRts->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packagePreRts->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packagePreRts->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packagePreRts->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packagePreRts->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packagePreRts->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packagePreRts->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packagePreRts->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $packagePreRts->Notes;
+                $packageHistory->Weight                       = $packagePreRts->Weight;
+                $packageHistory->Route                        = $packagePreRts->Route;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->idUserInbound                = Auth::user()->id;
+                $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
+                $packageHistory->Description_Return           = $packagePreRts->Description_Return;
+                $packageHistory->status                       = 'ReturnCompany';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                
+                $packageHistory->save();
+            }
+            
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch (Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }  
     }
 
     public function UpdateCreatedAt()

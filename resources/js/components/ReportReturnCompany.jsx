@@ -191,7 +191,9 @@ function ReportReturnCompany() {
                 <td>{ packageReturnCompany.Description_Return }</td>
                 <td>{ packageReturnCompany.client }</td>
                 <td>{ packageReturnCompany.Weight }</td>
-                <td>{ packageReturnCompany.measures }</td>
+                <td>{ packageReturnCompany.Width }</td>
+                <td>{ packageReturnCompany.Length }</td>
+                <td>{ packageReturnCompany.Height }</td>
 
             </tr>
         );
@@ -501,10 +503,12 @@ function ReportReturnCompany() {
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
                                                 <th>ROUTE</th>
-                                                <th>Description Return</th>
-                                                <th>Client</th>
-                                                <th>Weight</th>
-                                                <th>Measures</th>
+                                                <th>DESCRIPTION</th>
+                                                <th>CLIENT</th>
+                                                <th>WEIGHT</th>
+                                                <th>WIDTH</th>
+                                                <th>LENGTH</th>
+                                                <th>HEIGHT</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -42,11 +42,20 @@ function PackageRts() {
 
     // const [dataView, setDataView] = useState('today');
     const [statusPallet, setStatusPallet] = useState('');
+    const [routesPallet, setRoutesPallet] = useState('');
     const [filterDispatch, setFilterDispatch] = useState('');
     const [PalletNumberForm, setPalletNumberForm] = useState('');
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
+
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [Description_Return, setDescription_Return] = useState('');
+    const [client, setClient] = useState('');
+    const [Weight, setWeight] = useState('');
+    const [Width, setWidth] = useState('');
+    const [Length, setLength] = useState('');
+    const [Height, setHeight] = useState('');
+
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
@@ -280,15 +289,6 @@ function PackageRts() {
         });
     }
 
-    const [Reference_Number_1_Edit, setReference_Number_1] = useState('');
-    const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
-    const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
-    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
-    const [Dropoff_Address_Line_2, setDropoff_Address_Line_2] = useState('');
-    const [Dropoff_City, setDropoff_City] = useState('');
-    const [Dropoff_Province, setDropoff_Province] = useState('');
-    const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
-    const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
@@ -311,54 +311,8 @@ function PackageRts() {
 
     const handlerClosePallete = () => {
 
-        if(idTeam != 0 && idDriver != 0)
-        {
-            const formData = new FormData();
-
-            formData.append('numberPallet', PalletNumberForm);
-            formData.append('idTeam', idTeam);
-            formData.append('idDriver', idDriver);
-
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            let url = 'package-pre-dispatch/chage-to-dispatch';
-
-            fetch(url_general + url, {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
-
-                if(response.stateAction == true)
-                {
-                    swal("The palette was dispatched correctly!", {
-
-                        icon: "success",
-                    });
-
-                    listAllPalet(page);
-                    listPackagePreDispatch(PalletNumberForm);
-                }
-                else
-                {
-                    swal("There was a problem trying to close the palette, please try again!", {
-
-                        icon: "warning",
-                    });
-                }
-            });
-        }
-        else
-        {
-            swal("You must select a team and a driver!", {
-
-                icon: "warning",
-            });
-        }
-        /*swal({
-            title: "want to close the palette?",
+        swal({
+            title: "Want to close the palette?",
             text: "",
             icon: "warning",
             buttons: true,
@@ -368,16 +322,31 @@ function PackageRts() {
 
             if(willDelete)
             {
-                fetch(url_general +'package-pre-dispatch/chage-to-dispatch/'+ PalletNumberForm)
+                const formData = new FormData();
+
+                formData.append('numberPallet', PalletNumberForm);
+
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                let url = 'package-pre-rts/chage-to-return-company';
+
+                fetch(url_general + url, {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                })
                 .then(res => res.json())
                 .then((response) => {
 
                     if(response.stateAction == true)
                     {
-                        swal("The palette was closed correctly!", {
+                        swal("The palette was return company correctly!", {
 
                             icon: "success",
                         });
+
+                        listAllPalet(page);
+                        listPackagePreDispatch(PalletNumberForm);
                     }
                     else
                     {
@@ -388,7 +357,7 @@ function PackageRts() {
                     }
                 });
             }
-        });*/
+        });
     }
 
     const listPackageDispatchTable = listPackage.map( (packagePreDispatch, i) => {
@@ -402,15 +371,14 @@ function PackageRts() {
                 <td>
                     { packagePreDispatch.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ packagePreDispatch.numberPallet }</b></td>
+                <td><b>{ packagePreDispatch.company }</b></td>
                 <td><b>{ packagePreDispatch.Reference_Number_1 }</b></td>
-                <td>{ packagePreDispatch.Dropoff_Contact_Name }</td>
-                <td>{ packagePreDispatch.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packagePreDispatch.Dropoff_Address_Line_1 }</td>
-                <td>{ packagePreDispatch.Dropoff_City }</td>
-                <td>{ packagePreDispatch.Dropoff_Province }</td>
-                <td>{ packagePreDispatch.Dropoff_Postal_Code }</td>
+                <td>{ packagePreDispatch.Description_Return }</td>
+                <td>{ packagePreDispatch.client }</td>
                 <td>{ packagePreDispatch.Weight }</td>
+                <td>{ packagePreDispatch.Width }</td>
+                <td>{ packagePreDispatch.Length }</td>
+                <td>{ packagePreDispatch.Height }</td>
                 <td>{ packagePreDispatch.Route }</td>
             </tr>
         );
@@ -439,6 +407,7 @@ function PackageRts() {
                                                 <div className="modal-header">
                                                     <h5 className="modal-title text-primary" id="exampleModalLabel">
                                                         Package List Of The Pallet: <span className="text-success">{ PalletNumberForm }</span>
+                                                        <p>ROUTES: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ routesPallet }</span></p>
                                                         <p>STATUS: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ statusPallet }</span></p>
                                                     </h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
@@ -447,9 +416,55 @@ function PackageRts() {
                                                     <div className="row" style={ {display: (filterDispatch == 'Closed' ? 'none' : 'block')} }>
                                                         <div className="col-lg-12 mb-2">
                                                             <form onSubmit={ (e) => handlerValidation(e) } autoComplete="off">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="" className="form">PACKAGE ID</label>
-                                                                    <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                <div className="row">
+                                                                    <div className="col-lg-3">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">PACKAGE ID</label>
+                                                                            <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-9">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">COMMENT</label>
+                                                                            <input id="Description_Return" type="text" className="form-control" value={ Description_Return } onChange={ (e) => setDescription_Return(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-12">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">CLIENT</label>
+                                                                            <input id="client" type="text" className="form-control" value={ client } onChange={ (e) => setClient(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-3 mb-3">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">WEIGHT</label>
+                                                                            <input id="Weight" type="number" className="form-control" value={ Weight } step="0.01" min="0" max="150" onChange={ (e) => setWeight(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-3 mb-3">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">WIDTH</label>
+                                                                            <input id="Width" type="number" className="form-control" value={ Width } step="0.01" min="0" max="150" onChange={ (e) => setWidth(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-3 mb-3">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">LENGTH</label>
+                                                                            <input id="Length" type="number" className="form-control" value={ Length } step="0.01" min="0" max="150" onChange={ (e) => setLength(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-3 mb-3">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="" className="form">HEIGHT</label>
+                                                                            <input id="Height" type="number" className="form-control" value={ Height } step="0.01" min="0" max="150" onChange={ (e) => setHeight(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-9"></div>
+                                                                    <div className="col-lg-3">
+                                                                        <div className="form-group">
+                                                                            <button className="btn btn-primary form-control">Save</button>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -502,15 +517,14 @@ function PackageRts() {
                                                                     <tr>
                                                                         <th>DATE</th>
                                                                         <th>HOUR</th>
-                                                                        <th>PALLET</th>
+                                                                        <th>COMPANY</th>
                                                                         <th>PACKAGE ID</th>
+                                                                        <th>DESCRIPTION</th>
                                                                         <th>CLIENT</th>
-                                                                        <th>CONTACT</th>
-                                                                        <th>ADDREESS</th>
-                                                                        <th>CITY</th>
-                                                                        <th>STATE</th>
-                                                                        <th>ZIP CODE</th>
                                                                         <th>WEIGHT</th>
+                                                                        <th>WIDTH</th>
+                                                                        <th>LENGTH</th>
+                                                                        <th>HEIGHT</th>
                                                                         <th>ROUTE</th>
                                                                     </tr>
                                                                 </thead>
@@ -524,28 +538,14 @@ function PackageRts() {
                                                 <div className="modal-footer" style={ {display: (filterDispatch == 'Closed' ? 'none' : 'block')} }>
                                                     <div className="row" style={ {width: '100%'} }>
                                                         <div className="col-lg-4">
-                                                            <div className="form-group">
-                                                                <label className="form">TEAM</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                    <option value="">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
                                                         </div>
                                                         <div className="col-lg-4">
-                                                            <div className="form-group">
-                                                                <label className="form">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                    <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
                                                         </div>
                                                         <div className="col-lg-4">
                                                             <div className="form-group">
                                                                 <label className="text-white">---</label>
                                                                 <button type="button" className="btn btn-success form-control" onClick={ () => handlerClosePallete () }>
-                                                                    DISPATCH PALLET
+                                                                    RETURN COMPANY PALLET
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -594,235 +594,132 @@ function PackageRts() {
 
         e.preventDefault();
 
-        console.log(sendDispatch);
+        setTextMessage('');
 
-        if(sendDispatch)
-        {
-            setReadOnly(true);
-            setSendDispatch(0);
+        setReadOnly(true);
+        setSendDispatch(0);
 
-            const formData = new FormData();
+        const formData = new FormData();
 
-            formData.append('Reference_Number_1', Reference_Number_1);
-            formData.append('numberPallet', PalletNumberForm);
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('numberPallet', PalletNumberForm);
+        formData.append('Description_Return', Description_Return);
+        formData.append('client', client);
+        formData.append('Weight', Weight);
+        formData.append('Width', Width);
+        formData.append('Length', Length);
+        formData.append('Height', Height);
 
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'package-pre-dispatch/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json()).
-            then((response) => {
+        fetch(url_general +'package-pre-rts/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
 
-                    if(response.stateAction == 'packageInPreDispatch')
+                if(response.stateAction == 'packageInRts')
+                {
+                    setTextMessage('The package is in PRE RTS #'+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'packageReturnCompany')
+                {
+                    setTextMessage('The package is in RETURN COMPANY #'+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+                    let packageManifest = response.packageManifest;
+
+                    if(packageBlocked)
                     {
-                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                            text: packageBlocked.comment,
+                            showConfirmButton: false,
+                            timer: 2000,
+                        });
                     }
-                    else if(response.stateAction == 'packageInDispatch')
-                    {
-                        setTextMessage('The package is in DISPATCH #'+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
-                                showConfirmButton: false,
-                                timer: 2000,
-                            });
-                        }
-
-                        if(packageManifest)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                                showConfirmButton: false,
-                                timer: 2000,
-                            })
-                        }
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
 
-                        setTypeMessage('primary');
-                        setNumberPackage('');
+                    setTypeMessage('primary');
+                    setNumberPackage('');
 
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'notInbound')
-                    {
-                        setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'notRoute')
+                {
+                    setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notRoute')
-                    {
-                        setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH] #"+ Reference_Number_1);
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notDimensions')
-                    {
-                        setTextMessage("PACKAGE HAS NO RECORDED DIMENSIONS #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'notValidatedRoute')
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                    setTypeMessageDispatch('error');
+                    setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'repairPackage')
-                    {
-                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
-                        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'returCompany')
+                {
+                    setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notSelectTeamDriver')
-                    {
-                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
-                        setTextMessageDate("SELECT A TEAM AND A DRIVER");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == true)
+                {
+                    setTextMessage("SUCCESSFULLY PRE RTS #"+ Reference_Number_1);
+                    setTextMessageDate('');
+                    setTypeMessageDispatch('success');
+                    
+                    clearForm();
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notInland')
-                    {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
+                    listPackagePreDispatch(PalletNumberForm);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO EXISTS #"+ Reference_Number_1);
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+                }
+                else
+                {
+                    setTextMessage("A problem has occurred, please try again");
+                    setTypeMessageDispatch('error');
+                    
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'notValidatedRoute')
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        let packageDispatch = response.packageDispatch;
-
-                        let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
-                        let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
-
-                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
-                                        packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
-                                        team +' / '+ driver;
-
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
-                        setTextMessageDate(textDate);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'returCompany')
-                    {
-                        setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'packageExist')
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'delivery')
-                    {
-                        setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'assigned')
-                    {
-                        setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
-                        setTypeMessageDispatch('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == true)
-                    {
-                        setTextMessage("SUCCESSFULLY PRE DISPATCHED #"+ Reference_Number_1);
-                        setTextMessageDate('');
-                        setTypeMessageDispatch('success');
-                        setNumberPackage(''); 
-
-                        listPackagePreDispatch(PalletNumberForm);
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessageDispatch('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-
-                    setReadOnly(false);
-                    setSendDispatch(1);
-                },
-            );
-        }
-        /*if(autorizationDispatch == true)
-        {
-            
-        }
-        else
-        {
-            swal("You must mark the authorization to carry out the dispatch!", {
-
-                icon: "warning",
-            });
-        }*/
+                setReadOnly(false);
+                setSendDispatch(1);
+            },
+        );
     }
 
     const handlerImport = (e) => {
@@ -875,12 +772,12 @@ function PackageRts() {
 
     const listPackagePreDispatch = (palletNumber) => {
 
-        fetch(url_general +'package-pre-dispatch/list/'+ palletNumber)
+        fetch(url_general +'package-pre-rts/list/'+ palletNumber)
         .then(res => res.json())
         .then((response) => {
 
-            setListPackage(response.packagePreDispatchList);
-            setFilterDispatch(response.palletDispatch.status);
+            setListPackage(response.packagePreRtsList);
+            setFilterDispatch(response.palletRts.status);
         });
     }
 
@@ -892,8 +789,11 @@ function PackageRts() {
         handlerOpenModalPackage();
     }
 
-    const handlerViewPackage = (palletNumber, status) => {
+    const handlerViewPackage = (palletNumber, Routes, status) => {
 
+        setTextMessage('');
+        
+        setRoutesPallet(Routes);
         setStatusPallet(status);
         setPalletNumberForm(palletNumber);
         listPackagePreDispatch(palletNumber);
@@ -951,7 +851,7 @@ function PackageRts() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.status) }>View package</button><br/>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.Route, pallet.status) }>View package</button><br/>
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
                         <i className="bx bxs-printer"></i> View package
                     </button>
@@ -962,8 +862,13 @@ function PackageRts() {
 
     const clearForm = () => {
 
-        setReturnNumberPackage('');
-        setDescriptionReturn('');
+        setNumberPackage('');
+        setDescription_Return('');
+        setClient('');
+        setWeight('');
+        setWidth('');
+        setLength('');
+        setHeight('');
     }
 
     const clearValidation = () => {
@@ -1274,10 +1179,17 @@ function PackageRts() {
         }
     };
 
-    const handlerChangeRoutePallet = (route) => {
+    const handlerChangeRoutePallet = (routes) => {
 
-        setRoutePallet(route.value);
-    }
+        let routesSearch = '';
+
+        routes.map( (route) => {
+
+            routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+        });
+
+        setRoutePallet(routesSearch);
+    };
 
     const handlerChangeRouteList = (routes) => {
 
@@ -1374,7 +1286,7 @@ function PackageRts() {
                                     <div className="col-lg-3">
                                         <div className="form-group">
                                             <label htmlFor="">ROUTE:</label>
-                                            <Select onChange={ (e) => handlerChangeRoutePallet(e) } options={ optionsRoleSearch } />
+                                            <Select isMulti onChange={ (e) => handlerChangeRoutePallet(e) } options={ optionsRoleSearch } />
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
