@@ -29,6 +29,7 @@ Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'Se
 Route::post('/package-history/search-by-filters', [PackageController::class, 'SearchByFilters']);
 
 Route::get('/package/all-delete/clear-package', [PackageController::class, 'DeleteClearPackage']);
+Route::get('/package/all-change-to-delivery', [PackageController::class, 'ChangePackageToDispatch']);
 
 Route::group(['middleware' => 'auth'], function() {
 

@@ -42,6 +42,7 @@ function PackagePreDispatch() {
 
     // const [dataView, setDataView] = useState('today');
     const [statusPallet, setStatusPallet] = useState('');
+    const [routesPallet, setRoutesPallet] = useState('');
     const [filterDispatch, setFilterDispatch] = useState('');
     const [PalletNumberForm, setPalletNumberForm] = useState('');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -439,6 +440,7 @@ function PackagePreDispatch() {
                                                 <div className="modal-header">
                                                     <h5 className="modal-title text-primary" id="exampleModalLabel">
                                                         Package List Of The Pallet: <span className="text-success">{ PalletNumberForm }</span>
+                                                        <p>ROUTES: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ routesPallet }</span></p>
                                                         <p>STATUS: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ statusPallet }</span></p>
                                                     </h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
@@ -594,7 +596,7 @@ function PackagePreDispatch() {
 
         e.preventDefault();
 
-        console.log(sendDispatch);
+        setTextMessage('');
 
         if(sendDispatch)
         {
@@ -892,8 +894,11 @@ function PackagePreDispatch() {
         handlerOpenModalPackage();
     }
 
-    const handlerViewPackage = (palletNumber, status) => {
+    const handlerViewPackage = (palletNumber, Routes, status) => {
 
+        setTextMessage('');
+        
+        setRoutesPallet(Routes);
         setStatusPallet(status);
         setPalletNumberForm(palletNumber);
         listPackagePreDispatch(palletNumber);
@@ -951,7 +956,7 @@ function PackagePreDispatch() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.status) }>View package</button><br/>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.Route, pallet.status) }>View package</button><br/>
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
                         <i className="bx bxs-printer"></i> View package
                     </button>
@@ -1274,10 +1279,17 @@ function PackagePreDispatch() {
         }
     };
 
-    const handlerChangeRoutePallet = (route) => {
+    const handlerChangeRoutePallet = (routes) => {
 
-        setRoutePallet(route.value);
-    }
+        let routesSearch = '';
+
+        routes.map( (route) => {
+
+            routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+        });
+
+        setRoutePallet(routesSearch);
+    };
 
     const handlerChangeRouteList = (routes) => {
 
@@ -1374,7 +1386,7 @@ function PackagePreDispatch() {
                                     <div className="col-lg-3">
                                         <div className="form-group">
                                             <label htmlFor="">ROUTE:</label>
-                                            <Select onChange={ (e) => handlerChangeRoutePallet(e) } options={ optionsRoleSearch } />
+                                            <Select isMulti onChange={ (e) => handlerChangeRoutePallet(e) } options={ optionsRoleSearch } />
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
