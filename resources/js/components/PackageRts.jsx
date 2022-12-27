@@ -42,7 +42,7 @@ function PackageRts() {
 
     // const [dataView, setDataView] = useState('today');
     const [statusPallet, setStatusPallet] = useState('');
-    const [routesPallet, setRoutesPallet] = useState('');
+    const [companyViewPallet, setCompanyViewPallet] = useState('');
     const [filterDispatch, setFilterDispatch] = useState('');
     const [PalletNumberForm, setPalletNumberForm] = useState('');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -75,7 +75,7 @@ function PackageRts() {
     const [totalPage, setTotalPage]                   = useState(0);
     const [totalPackage, setTotalPackage]             = useState(0);
 
-    const [RoutePallet, setRoutePallet] = useState('');
+    const [CompanyPallet, setCompanyPallet] = useState('');
 
     const [RouteSearchList, setRouteSearchList] = useState('all');
     const [StateSearch, setStateSearch]         = useState('all');
@@ -90,7 +90,6 @@ function PackageRts() {
     useEffect(() => {
 
         listAllCompany();
-        listAllRoute();
         listAllTeam();
 
         document.getElementById('Reference_Number_1').focus();
@@ -210,11 +209,11 @@ function PackageRts() {
 
             if(willDelete)
             {
-                if(RoutePallet != '')
+                if(CompanyPallet != '')
                 {
                     const formData = new FormData();
 
-                    formData.append('Route', RoutePallet);
+                    formData.append('idCompany', CompanyPallet);
 
                     let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -272,7 +271,7 @@ function PackageRts() {
         .then(res => res.json())
         .then((response) => {
 
-            setListCompany([{id:0,name:"ALL"},...response.companyList]);
+            listOptionCompany(response.companyList);
         });
     }
 
@@ -407,7 +406,7 @@ function PackageRts() {
                                                 <div className="modal-header">
                                                     <h5 className="modal-title text-primary" id="exampleModalLabel">
                                                         Package List Of The Pallet: <span className="text-success">{ PalletNumberForm }</span>
-                                                        <p>ROUTES: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ routesPallet }</span></p>
+                                                        <p>COMPANY: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ companyViewPallet }</span></p>
                                                         <p>STATUS: <span className={ (statusPallet == 'Opened' ? 'text-success' : 'text-danger') }>{ statusPallet }</span></p>
                                                     </h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
@@ -661,9 +660,9 @@ function PackageRts() {
 
                     document.getElementById('soundPitidoBlocked').play();
                 }
-                else if(response.stateAction == 'notRoute')
+                else if(response.stateAction == 'notCompnay')
                 {
-                    setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                    setTextMessage("THE PACKAGE BELONGS TO ANOTHER COMPANY #"+ Reference_Number_1);
                     setTypeMessageDispatch('warning');
                     setNumberPackage('');
 
@@ -789,11 +788,11 @@ function PackageRts() {
         handlerOpenModalPackage();
     }
 
-    const handlerViewPackage = (palletNumber, Routes, status) => {
+    const handlerViewPackage = (palletNumber, company, status) => {
 
         setTextMessage('');
         
-        setRoutesPallet(Routes);
+        setCompanyViewPallet(company);
         setStatusPallet(status);
         setPalletNumberForm(palletNumber);
         listPackagePreDispatch(palletNumber);
@@ -837,7 +836,7 @@ function PackageRts() {
                     { pallet.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pallet.number }</b></td>
-                <td><b>{ pallet.Route }</b></td>
+                <td><b>{ pallet.company }</b></td>
                 <td><b>{ pallet.quantityPackage }</b></td>
                 <td>
                     {
@@ -851,7 +850,7 @@ function PackageRts() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.Route, pallet.status) }>View package</button><br/>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.company, pallet.status) }>View package</button><br/>
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
                         <i className="bx bxs-printer"></i> View package
                     </button>
@@ -967,7 +966,6 @@ function PackageRts() {
 
                     listAllTeam();
                     clearFormTeam();
-                    listAllRoute();
                 }
                 else(response.status == 422)
                 {
@@ -1140,17 +1138,17 @@ function PackageRts() {
         );
     });
 
-    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+    const [optionsCompanySearch, setOptionsCompanySearch] = useState([]);
 
-    const listOptionRoute = (listRoutes) => {
+    const listOptionCompany = (listCompanies) => {
 
-        setOptionsRoleSearch([]);
+        setOptionsCompanySearch([]);
 
-        listRoutes.map( (route, i) => {
+        listCompanies.map( (company, i) => {
 
-            optionsRoleSearch.push({ value: route.name, label: route.name });
+            optionsCompanySearch.push({ value: company.id, label: company.name });
 
-            setOptionsRoleSearch(optionsRoleSearch);
+            setOptionsCompanySearch(optionsCompanySearch);
         });
     }
 
@@ -1179,16 +1177,9 @@ function PackageRts() {
         }
     };
 
-    const handlerChangeRoutePallet = (routes) => {
+    const handlerChangeCompanyPallet = (routes) => {
 
-        let routesSearch = '';
-
-        routes.map( (route) => {
-
-            routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
-        });
-
-        setRoutePallet(routesSearch);
+        setCompanyPallet(routes.value);
     };
 
     const handlerChangeRouteList = (routes) => {
@@ -1285,8 +1276,8 @@ function PackageRts() {
                                     </div>
                                     <div className="col-lg-3">
                                         <div className="form-group">
-                                            <label htmlFor="">ROUTE:</label>
-                                            <Select isMulti onChange={ (e) => handlerChangeRoutePallet(e) } options={ optionsRoleSearch } />
+                                            <label htmlFor="">COMPANY:</label>
+                                            <Select onChange={ (e) => handlerChangeCompanyPallet(e) } options={ optionsCompanySearch } />
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -1356,18 +1347,6 @@ function PackageRts() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2 mb-2">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    Routes :
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeRouteList(e) } options={ optionsRoleSearch } />
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </h5>
                             <div className="row form-group table-responsive">
@@ -1378,7 +1357,7 @@ function PackageRts() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>PALET ID</th>
-                                                <th>ROUTE</th>
+                                                <th>COMPANY</th>
                                                 <th>QUANTITY</th>
                                                 <th>STATUS</th>
                                                 <th>ACTION</th>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ PalletRts };
+use App\Models\{ Company, PalletRts };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -27,10 +27,10 @@ class PalletRtsController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "Route" => ["required"],
+                "idCompany" => ["required"],
             ],
             [
-                "Route.required" => "You must select a route",
+                "idCompany.required" => "You must select a company",
             ]
         );
 
@@ -39,12 +39,15 @@ class PalletRtsController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $company = Company::find($request->get('idCompany'));
+
         $pallet = new PalletRts();
 
-        $pallet->number = date('YmdHis') .'-'. Auth::user()->id;
-        $pallet->idUser = Auth::user()->id;
-        $pallet->Route  = $request->get('Route');
-        $pallet->status = 'Opened';
+        $pallet->number    = date('YmdHis') .'-'. Auth::user()->id;
+        $pallet->idUser    = Auth::user()->id;
+        $pallet->idCompany = $company->id;
+        $pallet->company   = $company->name;
+        $pallet->status    = 'Opened';
 
         $pallet->save();
 

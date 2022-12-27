@@ -305,6 +305,14 @@ class PackageReturnCompanyController extends Controller
  
         if($packageInbound)
         {
+            $palletRts = PalletRts::find($request->get('numberPallet'));
+
+
+            if($palletRts->idCompany != $packageInbound->idCompany)
+            {
+                return ['stateAction' => 'notCompnay'];
+            }
+
             try
             {
                 DB::beginTransaction();
