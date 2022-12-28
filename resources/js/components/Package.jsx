@@ -598,7 +598,7 @@ function Package() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2 form-group">
+                                    <div className="col-lg-2 form-group" style={ { display: 'none'} }>
                                         <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
