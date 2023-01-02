@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -140,7 +140,7 @@ class PackageHighPriorityController extends Controller
                 $lateDays = $this->CalculateDaysLate($initDate, $endDate);
                 $status   = $this->GetStatus($packageHistory->Reference_Number_1);
                     
-                if($status['status'] != 'Delivery')
+                if($status['status'] != 'Delivery' && $status['status'] != 'ReturnCompany' && $status['status'] != 'PreRts')
                 {
                     $package = [
 
@@ -175,7 +175,12 @@ class PackageHighPriorityController extends Controller
 
     public function GetStatus($Reference_Number_1)
     {
-        $package = PackageInbound::find($Reference_Number_1);
+        $package = PackageManifest::find($Reference_Number_1);
+
+        if($package == null)
+        {
+            $package = PackageInbound::find($Reference_Number_1);
+        }
 
         if($package == null)
         {
@@ -187,6 +192,24 @@ class PackageHighPriorityController extends Controller
             $package = PackageDispatch::find($Reference_Number_1);
 
             if($package && $package->status == 'Delivery')
+            {
+                $packageHighPriority = PackageHighPriority::find($Reference_Number_1);
+
+                if($packageHighPriority)
+                    $packageHighPriority->delete();
+            }
+        }
+
+        if($package == null)
+        {
+            $package = PackageFailed::find($Reference_Number_1);
+        }
+
+        if($package == null)
+        {
+            $package = PackageReturnCompany::find($Reference_Number_1);
+
+            if($package)
             {
                 $packageHighPriority = PackageHighPriority::find($Reference_Number_1);
 
