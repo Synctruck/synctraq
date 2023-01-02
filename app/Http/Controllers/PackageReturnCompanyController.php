@@ -317,11 +317,15 @@ class PackageReturnCompanyController extends Controller
             {
                 DB::beginTransaction();
 
-                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
-                                                ->where('status', 'On hold')
-                                                ->first();
+                $palletRts->quantityPackage = $palletRts->quantityPackage + 1;
 
-                $company = Company::find($packageHistory->idCompany);
+                $palletRts->save();
+
+                /*$packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('status', 'On hold')
+                                                ->first();*/
+
+                $company = Company::find($packageInbound->idCompany);
 
                 $packageReturnCompany = new PackageReturnCompany();
 
