@@ -21,10 +21,11 @@ function Team() {
 
     const [disabledButton, setDisabledButton] = useState(false);
 
-    const [listUser, setListUser]   = useState([]);
-    const [listRole, setListRole]   = useState([]);
-    const [listRoute, setListRoute] = useState([]);
-    const [listTeamRoute, setListTeamRoute] = useState([]);
+    const [listUser, setListUser]                             = useState([]);
+    const [listRole, setListRole]                             = useState([]);
+    const [listRoute, setListRoute]                           = useState([]);
+    const [listConfigurationPrice, setListConfigurationPrice] = useState([]);
+    const [listTeamRoute, setListTeamRoute]                   = useState([]);
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -103,6 +104,7 @@ function Team() {
         .then((response) => {
 
             setListRoute(response.routeList);
+            listOptionRoute(response.routeList);
         });
     }
 
@@ -118,8 +120,25 @@ function Team() {
         });
     }
 
+    const [defaultOptionConfiguration, setDefaultOptionConfiguration] = useState(null);
+    const [valueOptionConfiguration, setValueOptionConfiguration]     = useState('');
+
+    const listConfigurarionPrice = (idTeam) => {
+
+        setValueOptionConfiguration('');
+        setDefaultOptionConfiguration(<option value="">Select configuration</option>);
+
+        fetch(url_general +'range-price-team-route-company/list-configuration-price-team/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListConfigurationPrice(response.listConfigurarionPrice);
+        });
+    }
+
     const handlerOpenModal = (id) => {
 
+        setRouteSearch(null);
         clearValidation();
 
         if(id)
@@ -135,6 +154,9 @@ function Team() {
             clearForm();
             setTitleModal('Add Team');
             setTextButtonSave('Save');
+
+            listConfigurarionPrice(0);
+            handlerChangeRoute([]);
         }
 
         let myModal = new bootstrap.Modal(document.getElementById('modalCategoryInsert'), {
@@ -149,6 +171,32 @@ function Team() {
 
         e.preventDefault();
 
+        let dataPrices  = [];
+        let minWeight   = 0;
+        let maxWeight   = 0;
+        let priceWeight = 0;
+
+        listCompany.map( company => {
+
+            minWeight   = document.getElementById('minWeight'+ 1 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 1 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 1 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+
+            minWeight   = document.getElementById('minWeight'+ 2 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 2 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 2 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+
+            minWeight   = document.getElementById('minWeight'+ 3 + company.id).value;
+            maxWeight   = document.getElementById('maxWeight'+ 3 + company.id).value;
+            priceWeight = document.getElementById('priceWeight'+ 3 + company.id).value;
+
+            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
+        });
+
         const formData = new FormData();
 
         formData.append('idRole', idRole);
@@ -158,12 +206,14 @@ function Team() {
         formData.append('phone', phone);
         formData.append('email', email);
         formData.append('status', status);
-        formData.append('routesName', idsRoutes);
-        formData.append('permissionDispatch', permissionDispatch);
+        formData.append('route', RouteSearch);
+        formData.append('routeOld', RouteOld);
+        formData.append('dataPrices', dataPrices);
+        formData.append('valueOptionConfiguration', valueOptionConfiguration);
 
         clearValidation();
 
-        if(id == 0)
+        if(idTeam == 0)
         {
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -184,6 +234,7 @@ function Team() {
                             icon: "success",
                         });
 
+                        handlerChangeRoute([]);
                         listAllTeam(1);
                         clearForm();
                     }
@@ -213,7 +264,7 @@ function Team() {
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'team/update/'+ id, {
+            fetch(url_general +'team/update/'+ idTeam, {
                 headers: {
                     "X-CSRF-TOKEN": token
                 },
@@ -226,10 +277,18 @@ function Team() {
                 if(response.stateAction == true)
                 {
                     listAllTeam(1);
-
+                    listConfigurarionPrice(idTeam);
+                    handlerChangeConfiguration(RouteSearch);
                     swal("Equipment was updated!", {
 
                         icon: "success",
+                    });
+                }
+                else if(response.stateAction == 'routesExists')
+                {
+                    swal("the following routes ["+ response.routesExists +"] are already in another configuration!", {
+
+                        icon: "warning",
                     });
                 }
                 else if(response.stateAction == 'notTeamOnfleet')
@@ -255,18 +314,21 @@ function Team() {
 
     const getTeam = (id) => {
 
+        setRouteSearch(null);
         LoadingShow();
-
+        clearForm();
         listAllRole();
         listAllRoute();
+        handlerChangeRoute([]);
 
         fetch(url_general +'team/get/'+ id)
         .then(response => response.json())
         .then(response => {
 
-            let team = response.team;
+            let team       = response.team;
+            let listPrices = response.listPrices;
 
-            setId(team.id);
+            setIdTeam(team.id);
             setIdRole(team.idRole);
             setName(team.name);
             setNameOfOwner(team.nameOfOwner);
@@ -276,7 +338,34 @@ function Team() {
             setPermissionDispatch(team.permissionDispatch);
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
+            
+            listConfigurarionPrice(id);
+            /*setTimeout( () => {
 
+                console.log(listPrices);
+
+                for(var i = 0; i < listPrices.length; i++)
+                {
+                    setRouteSearch(listPrices[i].route);
+
+                    if((i % 3) == 0)
+                    {
+                        document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
+                        document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
+                        document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
+
+                        document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
+                        document.getElementById('maxWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].maxWeight;
+                        document.getElementById('priceWeight'+ 2 + listPrices[i].idCompany).value = listPrices[i + 1].price;
+
+                        document.getElementById('minWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].minWeight;
+                        document.getElementById('maxWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].maxWeight;
+                        document.getElementById('priceWeight'+ 3 + listPrices[i].idCompany).value = listPrices[i + 2].price;
+                    }
+                }
+
+            }, 100);
+            
             setTimeout( () => {
 
                 team.routes_team.forEach( teamRoute => {
@@ -286,7 +375,7 @@ function Team() {
 
                 handleChange();
 
-            }, 100);
+            }, 100);*/
 
             handlerOpenModal(team.id);
 
@@ -575,9 +664,29 @@ function Team() {
         );
     });
 
-    const optionCompany = listCompany.map( (company, i) => {
+    const listInputPricesTeams = listCompany.map( (company, i) => {
 
-        return <option value={company.id}>{company.name}</option>
+        return (
+
+            <tr>
+                <td><b>{ company.name }</b></td>
+                <td>
+                    <input type="text" id={ 'minWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'minWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'minWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+                <td>
+                    <input type="text" id={ 'maxWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'maxWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'maxWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+                <td>
+                    <input type="text" id={ 'priceWeight'+ 1 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'priceWeight'+ 2 + company.id } className="form-control form-group"/>
+                    <input type="text" id={ 'priceWeight'+ 3 + company.id } className="form-control form-group"/>
+                </td>
+            </tr>
+        );
     })
 
     const listRangeTable = listRange.map( (range, i) => {
@@ -610,6 +719,39 @@ function Team() {
         setPhone('');
         setEmail('');
         setStatus('Active');
+
+        listCompany.map( company => {
+
+            document.getElementById('minWeight'+ 1 + company.id).value = '';
+            document.getElementById('maxWeight'+ 1 + company.id).value = '';
+            document.getElementById('priceWeight'+ 1 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 2 + company.id).value = '';
+            document.getElementById('maxWeight'+ 2 + company.id).value = '';
+            document.getElementById('priceWeight'+ 2 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 3 + company.id).value = '';
+            document.getElementById('maxWeight'+ 3 + company.id).value = '';
+            document.getElementById('priceWeight'+ 3 + company.id).value = '';
+        });
+    }
+
+    const clearPricesTeams = () => {
+
+        listCompany.map( company => {
+
+            document.getElementById('minWeight'+ 1 + company.id).value = '';
+            document.getElementById('maxWeight'+ 1 + company.id).value = '';
+            document.getElementById('priceWeight'+ 1 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 2 + company.id).value = '';
+            document.getElementById('maxWeight'+ 2 + company.id).value = '';
+            document.getElementById('priceWeight'+ 2 + company.id).value = '';
+
+            document.getElementById('minWeight'+ 3 + company.id).value = '';
+            document.getElementById('maxWeight'+ 3 + company.id).value = '';
+            document.getElementById('priceWeight'+ 3 + company.id).value = '';
+        });
     }
 
     const clearFormRange = () => {
@@ -699,7 +841,7 @@ function Team() {
                         )
                     }
                     &nbsp;
-                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
+                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) } style={ {display: 'none'} }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
                 </td>
@@ -708,7 +850,7 @@ function Team() {
     });
 
     const listRoleSelect = listRole.map( (role, i) => {
-        console.log('roleee: ',role);
+        //console.log('roleee: ',role);
         return (
 
             (
@@ -719,21 +861,6 @@ function Team() {
                 :
                     ''
             )
-        );
-    });
-
-    const optionsCheckRoute = listRoute.map( (route, i) => {
-
-        return (
-
-            <div className="col-lg-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ route.name } value={ route.name } onChange={ () => handleChange() }/>
-                    <label class="form-check-label" for="gridCheck1">
-                        { route.name }
-                    </label>
-                </div>
-            </div>
         );
     });
 
@@ -819,6 +946,110 @@ function Team() {
         );
     }
 
+    const [optionsRouteSearch, setOptionsRouteSearch] = useState([]);
+
+    const listOptionRoute = (listRoutes) => {
+
+        setOptionsRouteSearch([]);
+
+        console.log(listRoutes);
+        listRoutes.map( (route, i) => {
+
+            optionsRouteSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRouteSearch(optionsRouteSearch);
+        });
+    }
+
+    const [RouteSearch, setRouteSearch] = useState(null);
+    const [RouteOld, setRouteOld]       = useState(null);
+
+    const [RoutesSelect, setRoutesSelect] = useState([]);
+
+    const handlerChangeRoute = (routes) => {
+
+        console.log(routes);
+
+        let routesList   = [];
+        let routesSearch = '';
+
+        if(routes.length != 0)
+        {
+            routes.map( (route) => {
+
+                routesList.push({label: route.value, value: route.value});
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
+            //listAllPackageDispatch(1, StateSearch, routesSearch);
+        }
+
+        setRoutesSelect(routesList);
+        setRouteSearch(routesSearch);
+    };
+
+    const handlerChangeConfiguration = (routePrice) => {
+
+        clearPricesTeams();
+        setRouteOld(routePrice);
+        setRouteSearch(routePrice);
+        setValueOptionConfiguration(routePrice);
+
+        if(routePrice != '' && routePrice != null)
+        {
+            fetch(url_general +'range-price-team-route-company/get-prices-team/'+ idTeam +'/'+ routePrice)
+            .then(response => response.json())
+            .then(response => {
+
+                let listPrices = response.listPrices;
+
+                setTimeout( () => {
+
+                    console.log(listPrices);
+
+                    for(var i = 0; i < listPrices.length; i++)
+                    {
+                        setRouteSearch(listPrices[i].route);
+
+                        if((i % 3) == 0)
+                        {
+                            document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
+                            document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
+                            document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
+
+                            document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
+                            document.getElementById('maxWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].maxWeight;
+                            document.getElementById('priceWeight'+ 2 + listPrices[i].idCompany).value = listPrices[i + 1].price;
+
+                            document.getElementById('minWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].minWeight;
+                            document.getElementById('maxWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].maxWeight;
+                            document.getElementById('priceWeight'+ 3 + listPrices[i].idCompany).value = listPrices[i + 2].price;
+                        }
+                    }
+
+                }, 100);
+            });
+        }
+
+        listPricesTeams(routePrice);
+    }
+
+    const listPricesTeams = (routePrice) => {
+
+        let routePricesTeams = [];
+
+        if(routePrice != null)
+        {
+            let auxlistPricesTeams = routePrice.split(',');
+
+            auxlistPricesTeams.forEach( route => {
+
+                routePricesTeams.push({label: route, value: route});
+            });
+        }
+        
+        setRoutesSelect(routePricesTeams);
+    }
+
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
@@ -826,9 +1057,17 @@ function Team() {
         inputFileRef.current.click();
     }
 
+    const listConfigurationOption = listConfigurationPrice.map( (configuration, i) => {
+
+        return (
+
+            <option value={ configuration.route }>{ configuration.route }</option>
+        );
+    });
+
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerSaveTeam }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
@@ -883,16 +1122,7 @@ function Team() {
                                                         </div>
 
                                                         <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Permission Dispatch</label>
-                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
-                                                                        <option value="0">No</option>
-                                                                        <option value="1">Yes</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label>Id Onfleet</label>
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
@@ -911,15 +1141,41 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Routes</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <label htmlFor="" className="form">Configurations :</label>
+                                                                    <select name="" id="" className="form-control" value={ valueOptionConfiguration } onChange={ (e) => handlerChangeConfiguration(e.target.value) }>
+                                                                        { defaultOptionConfiguration }
+                                                                        { listConfigurationOption }
+                                                                    </select>
                                                                 </div>
-                                                                <div className="row form-group">
-                                                                    { optionsCheckRoute }
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="" className="form">Route :</label>
+                                                                    <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } value={ RoutesSelect }/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <table className="table table-hover table-condensed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>COMPANY</th>
+                                                                                <th>MIN WEIGHT</th>
+                                                                                <th>MAX WEIGHT</th>
+                                                                                <th>PRICE</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            { listInputPricesTeams }
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -950,7 +1206,6 @@ function Team() {
                                                                 <div id="idCompanyRange" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => changeCompany(e.target.value) }>
                                                                     <option value="">Select...</option>
-                                                                    { optionCompany }
                                                                 </select>
                                                             </div> 
                                                             <div className="col-lg-6 form-group">
