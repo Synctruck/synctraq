@@ -1284,7 +1284,7 @@ function Team() {
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
-                                    <div className="col-lg-3 mb-3">
+                                    <div className="col-lg-3 mb-3" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>

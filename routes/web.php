@@ -83,6 +83,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-manifest', [PackageManifestController::class, 'Index'])->middleware('permission:manifest.index');
 	Route::get('/package-manifest/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
 	Route::get('/package-manifest/list/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
+	Route::get('/package-manifest/export/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'Export']);
 	Route::post('/package-manifest/insert', [PackageManifestController::class, 'Insert']);
 	Route::get('/package-manifest/get/{PACKAGE_ID}', [PackageManifestController::class, 'Get']);
 	Route::post('/package-manifest/update', [PackageManifestController::class, 'Update']);
@@ -126,7 +127,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
 
 	//============ PALET DISPACTH 
-	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/', [PalletDispatchController::class, 'List']);
+	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
+	Route::get('/pallet-dispatch/export/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'Export']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
 	Route::get('/pallet-dispatch/print/{numberPallet}', [PalletDispatchController::class, 'Print']);
 

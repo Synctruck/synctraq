@@ -803,7 +803,9 @@ function PackageInbound() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
-                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

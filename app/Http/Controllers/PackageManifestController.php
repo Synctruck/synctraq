@@ -28,40 +28,9 @@ class PackageManifestController extends Controller
 
     public function List(Request $request, $idCompany, $route, $state)
     {
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        $packageList = PackageManifest::where('idStore', 0);
-
-        if($idCompany != 0)
-        {
-            $packageList = $packageList->where('idCompany', $idCompany);
-        }
-
-        if($route != 'all')
-        {
-            $packageList = $packageList->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $packageList = $packageList->whereIn('Dropoff_Province', $states);
-        }
-
-        if($request->get('textSearch'))
-        {
-            $packageList = $packageList->where('Reference_Number_1', 'like', '%'. $request->get('textSearch') .'%')
-                                        ->orderBy('created_at', 'desc');
-        }
-        else
-        {
-            $packageList = $packageList->orderBy('created_at', 'desc');
-        }
-
-        $packageList = $packageList->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
-                                    ->paginate(50);
-
-        $quantityPackage = $packageList->total();
+        $data            = $this->GetData($idCompany, $route, $state, 'list');
+        $packageList     = $data['packageList'];
+        $quantityPackage = $data['quantityPackage'];
 
         $listState  = PackageManifest::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
@@ -184,6 +153,90 @@ class PackageManifestController extends Controller
         }
 
         return ['stateAction' => 'exists'];
+    } 
+
+    public function Export($idCompany, $route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $data        = $this->GetData($idCompany, $route, $state, 'export');
+        $packageList = $data['packageList'];
+
+        foreach($packageList as $packageManifest)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageManifest->created_at)),
+                                date('H:i:s', strtotime($packageManifest->created_at)),
+                                $packageManifest->company,
+                                $packageManifest->Reference_Number_1,
+                                $packageManifest->Dropoff_Contact_Name,
+                                $packageManifest->Dropoff_Contact_Phone_Number,
+                                $packageManifest->Dropoff_Address_Line_1,
+                                $packageManifest->Dropoff_City,
+                                $packageManifest->Dropoff_Province,
+                                $packageManifest->Dropoff_Postal_Code,
+                                $packageManifest->Weight,
+                                $packageManifest->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
+    public function GetData($idCompany, $route, $state, $type)
+    {
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $packageList = PackageManifest::where('idStore', 0);
+
+        if($idCompany != 0)
+        {
+            $packageList = $packageList->where('idCompany', $idCompany);
+        }
+
+        if($route != 'all')
+        {
+            $packageList = $packageList->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageList = $packageList->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageList = $packageList->orderBy('created_at', 'desc');
+
+        if($type == 'list')
+        {
+            $packageList = $packageList->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                    ->paginate(50);
+
+            $quantityPackage = $packageList->total();
+        }
+        else
+        {
+            $packageList     = $packageList->get();
+            $quantityPackage = 0;
+        }
+        
+        return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
     }
 
     public function Get($Reference_Number_1)

@@ -581,6 +581,27 @@ function Package() {
         );
     });
 
+    const exportAllPackageInbound = (route, state) => {
+
+        location.href = url_general +'package-manifest/export/'+ idCompany +'/'+ route +'/'+ state
+    }
+
+    const handlerExport = () => {
+
+        // let date1= moment(dateStart);
+        // let date2 = moment(dateEnd);
+        // let difference = date2.diff(date1,'days');
+
+        // if(difference> limitToExport){
+        //     swal(`Maximum limit to export is ${limitToExport} days`, {
+        //         icon: "warning",
+        //     });
+        // }else{
+
+        // }
+        exportAllPackageInbound(RouteSearch, StateSearch);
+    }
+
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
@@ -606,8 +627,8 @@ function Package() {
                                     <div className="col-lg-2 form-group">
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
+                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> IMPORT
                                                 </button>
                                                 <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
                                             </div>
@@ -617,6 +638,15 @@ function Package() {
                                                 </button>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div className="col-2 mb-2">
+                                        <div className="row">
+                                            <div className="col-12">
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="col-lg-6">
                                         
