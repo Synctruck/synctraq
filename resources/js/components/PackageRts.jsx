@@ -174,9 +174,9 @@ function PackageRts() {
         });
     }
 
-    const exportAllPackageDispatch = ( StateSearch, RouteSearchList) => {
-
-        location.href = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList;
+    const exportAllPackageDispatch = () => {
+ 
+        location.href = url_general +'pallet-rts/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd;
     }
 
     const handlerExport = () => {
@@ -192,8 +192,7 @@ function PackageRts() {
 
         // }
 
-        exportAllPackageDispatch(StateSearch, RouteSearchList);
-
+        exportAllPackageDispatch();
     }
 
     const handlerCreatePallet = () => {
@@ -1254,11 +1253,13 @@ function PackageRts() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-12 form-group">
+                                    <div className="col-lg-12">
                                         <div className="row form-group">
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-primary form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                        <i className="ri-file-excel-fill"></i> EXPORT
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -1283,7 +1284,7 @@ function PackageRts() {
                                     <div className="col-lg-2">
                                         <div className="form-group">
                                             <label htmlFor="" className="text-white">ROUTE:</label>
-                                            <button className="btn btn-success form-control" onClick={  () => handlerCreatePallet() }>CREATE PALLET</button>
+                                            <button className="btn btn-primary form-control" onClick={  () => handlerCreatePallet() }>CREATE PALLET</button>
                                         </div>
                                     </div>
                                 </div>

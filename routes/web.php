@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ PALET RTS 
 	Route::get('/pallet-rts/list/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'List']);
+	Route::get('/pallet-rts/export/{idCompany}/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'Export']);
 	Route::post('/pallet-rts/insert', [PalletRtsController::class, 'Insert']);
 	Route::get('/pallet-rts/print/{numberPallet}', [PalletRtsController::class, 'Print']);
 

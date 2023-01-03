@@ -1664,12 +1664,12 @@ function PackageDispatch() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-1">
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
                                                 </div>
                                             </div>
-                                            <div className="col-lg-1">
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
                                                 </div>
@@ -1705,7 +1705,9 @@ function PackageDispatch() {
 
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                        <i className="ri-file-excel-fill"></i> EXPORT
+                                                    </button>
                                                 </div>
                                             </div>
 

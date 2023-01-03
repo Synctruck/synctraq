@@ -210,7 +210,7 @@ function PackageHighPriority() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-2 form-group">
-                                        <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> EXPORT</button>
                                     </div>
                                 </div>
 
