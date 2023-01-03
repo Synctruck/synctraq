@@ -693,15 +693,22 @@
 
                 packageHistoryList.forEach( package =>  {
 
+
                     let Description        = '';
                     let Description_Return = '';
+                    let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
 
                     if(package.Description_Return != '')
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
-
-                    if(package.status == 'Failed')
+ 
+                    if(package.status == 'Delivery')
+                    {
+                        Description = package.Description;
+                        user        = (package.driver ? package.driver.name +' '+ package.driver.nameOfOwner : '');
+                    }
+                    else if(package.status == 'Failed')
                     {
                         Description = package.Description_Onfleet;
                     }
@@ -712,7 +719,7 @@
 
                     tr =    '<tr>'+
                                 '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
-                                '<td>'+ (package.user ? package.user.name +' '+ package.user.nameOfOwner : '') +'</td>'+
+                                '<td>'+ user +'</td>'+
                                 '<td>'+ package.status +'</td>'+
                                 '<td>'+ Description + Description_Return +'</td>'+
                             '</tr>';
@@ -732,7 +739,7 @@
                             let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
 
                             tr =    '<tr>'+
-                                        '<td colspan="3"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                        '<td colspan="4"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                     '</tr>';
 
                             tableHistoryPackage.insertRow(-1).innerHTML = tr;
@@ -747,7 +754,7 @@
                             if(url)
                             {
                                 tr =    '<tr>'+
-                                            '<td colspan="3"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                            '<td colspan="4"><img src="'+ url +'" class="img-fluid"/></td>'+
                                         '</tr>';
 
                                 tableHistoryPackage.insertRow(-1).innerHTML = tr;

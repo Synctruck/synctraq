@@ -225,6 +225,7 @@ class PackageController extends Controller
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
         $packageHistoryList = PackageHistory::with([
+                                                'driver',
                                                 'user' => function($query){
                                                     $query->select('id', 'name', 'nameOfOwner');
                                                 }
