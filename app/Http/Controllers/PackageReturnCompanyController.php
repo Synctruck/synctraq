@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\Api\{ PackageController };
+
 use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
@@ -149,7 +151,7 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->measures                     = $request->get('measures');
                 $packageReturnCompany->status                       = 'ReturnCompany';
 
-                $packageReturnCompany->save();
+                $packageReturnCompany->save(); 
 
                 //regsister history
 
@@ -466,6 +468,9 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 
                 $packageHistory->save();
+
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null);
             }
             
             DB::commit();

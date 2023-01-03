@@ -249,7 +249,7 @@ function PackageRts() {
                 }
                 else
                 {
-                    swal('You must select  a route!', {
+                    swal('You must select a COMPANY!', {
 
                         icon: "warning",
                     });

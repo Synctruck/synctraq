@@ -434,9 +434,14 @@ class PackageController extends Controller
             $url_webhook       = $companyStatus->company->url_webhook;
             $typeServices      = $companyStatus->company->typeServices;
         }
-        
+
         if($typeServices == 'API')
         {
+            if($status == 'ReturnCompany')
+            {
+                $statusCodeCompany = 'scan_out_for_return';
+            }
+
             if($status == 'Delivery')
             {
                 $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
