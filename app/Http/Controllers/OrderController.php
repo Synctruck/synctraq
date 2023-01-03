@@ -53,6 +53,7 @@ class OrderController extends Controller
         $packageList = $packageList->select(
                                     'created_at',
                                     'company',
+                                    'store',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',

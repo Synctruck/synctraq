@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
+import ReactLoading from 'react-loading';
 
 function PackageInbound() {
 
@@ -36,7 +37,7 @@ function PackageInbound() {
     const [disabledInput, setDisabledInput] = useState(false);
 
     const [readInput, setReadInput] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
 

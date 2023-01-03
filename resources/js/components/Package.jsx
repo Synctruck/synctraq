@@ -4,6 +4,8 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import Pace from 'react-pace-progress'
+import ReactLoading from 'react-loading';
 
 function Package() {
 
@@ -38,6 +40,7 @@ function Package() {
     const inputFileRef  = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [isLoading, setIsLoading]           = useState(false);
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#cff4fc';
 
@@ -70,6 +73,7 @@ function Package() {
     const listAllPackage = (pageNumber, route, state) => {
 
         LoadingShow();
+        setIsLoading(true);
 
         fetch(url_general +'package-manifest/list/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
@@ -81,6 +85,7 @@ function Package() {
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setListState(response.listState);
+            setIsLoading(false);
 
             if(listState.length == 0)
             {
@@ -123,6 +128,7 @@ function Package() {
 
         setTextButtonImport('Saving...');
         setDisabledButton(true);
+        setIsLoading(true);
 
         fetch(url_general +'package-manifest/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -134,6 +140,7 @@ function Package() {
 
                 setTextButtonImport('Save');
                 setDisabledButton(false);
+                setIsLoading(false);
 
                 if(response.status == 504)
                 {
@@ -591,7 +598,7 @@ function Package() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2 form-group">
+                                    <div className="col-lg-2 form-group" style={ { display: 'none'} }>
                                         <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
@@ -611,10 +618,28 @@ function Package() {
                                             </div>
                                         </form>
                                     </div>
+                                    <div className="col-lg-6">
+                                        
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row mb-3" style={ {display: (isLoading ? 'block' : 'none')} }>
+                                            <div className="col-lg-12">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b>
+                                            )
+                                        }
                                     </div>
                                     <dvi className="col-lg-2">
                                         <div className="row">
