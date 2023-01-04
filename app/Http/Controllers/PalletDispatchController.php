@@ -95,6 +95,9 @@ class PalletDispatchController extends Controller
 
     public function GetData($dateStart, $dateEnd, $routes, $type)
     {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd   = $dateEnd .' 23:59:59';
+        
         $palletList = PalletDispatch::whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($routes != 'all')

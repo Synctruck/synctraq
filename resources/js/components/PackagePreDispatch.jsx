@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
+import ReactLoading from 'react-loading';
 
 let count = 1;
 
@@ -73,7 +74,8 @@ function PackagePreDispatch() {
     const [StateSearch, setStateSearch]         = useState('all');
     const [idCompany, setCompany]               = useState(0);
 
-    const inputFileRef  = React.useRef();
+    const [isLoading, setIsLoading] = useState(false);
+    const inputFileRef              = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
@@ -113,10 +115,13 @@ function PackagePreDispatch() {
 
     const listAllPalet = (pageNumber, RouteSearchList) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'pallet-dispatch/list/'+ dateStart +'/'+ dateEnd +'/'+  RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setPalletList(response.palletList.data);
             setTotalPackagePallet(response.palletList.total);
             setTotalPagePallet(response.palletList.per_page);
@@ -204,6 +209,8 @@ function PackagePreDispatch() {
             {
                 if(RoutePallet != '')
                 {
+                    setIsLoading(true);
+
                     const formData = new FormData();
 
                     formData.append('Route', RoutePallet);
@@ -220,6 +227,8 @@ function PackagePreDispatch() {
                     .then(res => res.json()).
                     then((response) => {
 
+                            setIsLoading(false);
+
                             if(response.stateAction)
                             {
                                 swal('Palette created successfully!', {
@@ -227,7 +236,7 @@ function PackagePreDispatch() {
                                     icon: "success",
                                 });
 
-                                listAllPalet(1);
+                                listAllPalet(1, RouteSearchList);
                             }
                             else(response.status == 422)
                             {
@@ -1400,10 +1409,16 @@ function PackagePreDispatch() {
                                 </div>
 
                                 <div className="row">
-                                    <div className="col-lg-4 mb-3">
-                                        <div className="form-group">
-                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>PALLETS: { totalPackagePallet }</b>
-                                        </div>
+                                    <div className="col-lg-4 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>PALLETS: { totalPackagePallet }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row">

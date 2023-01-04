@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
+import ReactLoading from 'react-loading';
 
 function ReportDelivery() {
 
@@ -32,6 +33,7 @@ function ReportDelivery() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     const [file, setFile]             = useState('');
     const [btnDisplay, setbtnDisplay] = useState('none');
@@ -75,12 +77,14 @@ function ReportDelivery() {
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
         setListReport([]);
 
         fetch(url_general +'report/list/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.reportList.data);
             setListDeliveries(response.listDeliveries);
             setTotalPackage(response.reportList.total);
@@ -608,8 +612,16 @@ function ReportDelivery() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row form-group">

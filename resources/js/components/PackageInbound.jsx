@@ -84,12 +84,14 @@ function PackageInbound() {
 
     const listAllPackageInbound = (pageNumber, route, state) => {
 
+        setIsLoading(true);
         setListPackageInbound([]);
 
         fetch(url_general +'package-inbound/list/'+ idCompany +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageInbound(response.packageList.data);
             setTotalPackage(response.packageList.total);
             setTotalPage(response.packageList.per_page);
@@ -887,11 +889,18 @@ function PackageInbound() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
-                                        </div>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
+                                            )
+                                        }
                                     </div>
+
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">

@@ -5,11 +5,11 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
-
+import ReactLoading from 'react-loading';
 
 function PackageAge() {
 
-    const [listReport, setListReport]                   = useState([]);
+    const [listReport, setListReport] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
@@ -28,6 +28,7 @@ function PackageAge() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
 
@@ -45,10 +46,13 @@ function PackageAge() {
 
     const listReportInbound = (pageNumber, stateSearch, routeSearch) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package-age/list/'+  idCompany +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.listAll);
             setTotalPackage(response.packageHistoryList.total);
             setTotalPage(response.packageHistoryList.per_page);
@@ -211,8 +215,16 @@ function PackageAge() {
                                 </div>
 
                                 <div className="row form-group">
-                                    <div className="col-lg-2 form-group">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Packages: { quantityInbound }</b>
+                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Packages: { quantityInbound }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">

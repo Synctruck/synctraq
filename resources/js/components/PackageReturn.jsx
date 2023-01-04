@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment/moment'
+import ReactLoading from 'react-loading';
 
 function PackageReturn() {
 
@@ -46,6 +47,7 @@ function PackageReturn() {
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
     const [idCompany, setCompany]       = useState(0);
+    const [isLoading, setIsLoading]     = useState(false);
 
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
@@ -77,10 +79,13 @@ function PackageReturn() {
 
     const listAllPackageReturn = (pageNumber, route, state) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package/list/return/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageReturn(response.packageReturnList.data);
             setQuantityReturn(response.quantityReturn);
             setTotalPackage(response.packageReturnList.total);
@@ -409,6 +414,7 @@ function PackageReturn() {
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         setReadOnly(true);
+        setIsLoading(true);
 
         fetch(url_general +'package/return/dispatch', {
             headers: { "X-CSRF-TOKEN": token },
@@ -419,6 +425,7 @@ function PackageReturn() {
         then((response) => {
 
                 clearForm();
+                setIsLoading(false);
 
                 if(response.stateAction == 'validatedFilterPackage')
                 {
@@ -684,10 +691,16 @@ function PackageReturn() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
-                                        </div>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">

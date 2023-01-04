@@ -142,16 +142,18 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Dropoff_Province             = $packageInbound->Dropoff_Province;
                 $packageReturnCompany->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageReturnCompany->Notes                        = $packageInbound->Notes;
-                $packageReturnCompany->Weight                       = $request->get('Description_Return');
+                $packageReturnCompany->Weight                       = $request->get('Weight');
+                $packageReturnCompany->Width                        = $request->get('Width');
+                $packageReturnCompany->Length                       = $request->get('Length');
+                $packageReturnCompany->Height                       = $request->get('Height');
                 $packageReturnCompany->Route                        = $packageInbound->Route;
                 $packageReturnCompany->idUser                       = Auth::user()->id;
                 $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
-                $packageReturnCompany->measures                     = $request->get('measures');
                 $packageReturnCompany->status                       = 'ReturnCompany';
 
-                $packageReturnCompany->save(); 
+                $packageReturnCompany->save();
 
                 //regsister history
 
@@ -183,6 +185,9 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 
                 $packageHistory->save();
+
+                //$packageController = new PackageController();
+                //$packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null);
 
                 $packageInbound->delete();
 

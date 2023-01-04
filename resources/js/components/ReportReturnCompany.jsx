@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
+import ReactLoading from 'react-loading';
 
 function ReportReturnCompany() {
 
@@ -27,12 +28,15 @@ function ReportReturnCompany() {
     const [Reference_Number_1, setReference_Number_1] = useState('');
     const [Description_Return, setDescriptionReturn]  = useState('');
     const [Weight, setWeight]                         = useState('');
+    const [Width, setWidth]                           = useState('');
+    const [Length, setLength]                         = useState('');
+    const [Height, setHeight]                         = useState('');
     const [client, setClient]                         = useState('');
-    const [measures, setMeasures]                     = useState('');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     const [file, setFile]             = useState('');
     const [btnDisplay, setbtnDisplay] = useState('none');
@@ -69,12 +73,14 @@ function ReportReturnCompany() {
 
     const listReturnCompany = (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
         setListReport([]);
 
         fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.packageReturnCompanyList.data);
             setTotalPackage(response.packageReturnCompanyList.total);
             setTotalPage(response.packageReturnCompanyList.per_page);
@@ -283,7 +289,9 @@ function ReportReturnCompany() {
         formData.append('client', client);
         formData.append('Description_Return', Description_Return);
         formData.append('Weight', Weight);
-        formData.append('measures', measures);
+        formData.append('Width', Width);
+        formData.append('Length', Length);
+        formData.append('Height', Height);
 
         //clearValidation();
 
@@ -370,7 +378,7 @@ function ReportReturnCompany() {
 
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerInsert }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
@@ -381,7 +389,7 @@ function ReportReturnCompany() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>PACKAGE ID</label>
+                                                                    <label className="form">PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
                                                                 </div>
@@ -390,32 +398,46 @@ function ReportReturnCompany() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>COMMENT</label>
+                                                                    <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Description_Return } className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>CLIENT</label>
+                                                                    <label className="form">CLIENT</label>
                                                                     <div id="client" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-12">
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>WEIGHT</label>
+                                                                    <label className="form">WEIGHT</label>
                                                                     <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
+                                                                    <input type="number" value={ Weight } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWeight(e.target.value) } required/>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-12">
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>MEASURES</label>
-                                                                    <div id="measures" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ measures } className="form-control" onChange={ (e) => setMeasures(e.target.value) } required/>
+                                                                    <label className="form">WIDTH</label>
+                                                                    <div id="Width" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Width } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWidth(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">LENGTH</label>
+                                                                    <div id="Length" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Length } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setLength(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">HEIGHT</label>
+                                                                    <div id="Height" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Height } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setHeight(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -475,8 +497,16 @@ function ReportReturnCompany() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
+                                    <div className="col-lg-3 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>

@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment/moment'
+import ReactLoading from 'react-loading';
 
 function PackageWarehouse() {
 
@@ -40,8 +41,8 @@ function PackageWarehouse() {
     const [displayButton, setDisplayButton] = useState('none');
 
     const [disabledInput, setDisabledInput] = useState(false);
-
-    const [readInput, setReadInput] = useState(false);
+    const [isLoading, setIsLoading]         = useState(false);
+    const [readInput, setReadInput]         = useState(false);
 
     var dateNow = new Date();
     const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate() 
@@ -95,12 +96,14 @@ function PackageWarehouse() {
 
     const listAllPackageWarehouse = (pageNumber, route, state) => {
 
+        setIsLoading(true);
         setOptionsStateValidate([]);
 
         fetch(url_general +'package-warehouse/list/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageInbound(response.packageList.data);
             setTotalPackage(response.packageList.total);
             setTotalPage(response.packageList.per_page);
@@ -441,6 +444,7 @@ function PackageWarehouse() {
 
             setReadInput(true);
             setSendWarehouse(0);
+            setIsLoading(true);
 
             fetch(url_general +'package-warehouse/insert', {
                 headers: { "X-CSRF-TOKEN": token },
@@ -450,6 +454,7 @@ function PackageWarehouse() {
             .then(res => res.json())
             .then((response) => {
 
+                    setIsLoading(false);
                     setTextMessageDate('');
                     setTextMessage2('');
 
@@ -901,10 +906,16 @@ function PackageWarehouse() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Total: { totalPackage }</b>
-                                        </div>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Warehouse: { totalPackage }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row">

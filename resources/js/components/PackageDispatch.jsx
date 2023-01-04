@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
+import ReactLoading from 'react-loading';
 
 let count = 1;
 
@@ -63,7 +64,9 @@ function PackageDispatch() {
     const [StateSearch, setStateSearch]         = useState('all');
     const [idCompany, setCompany]               = useState(0);
 
-    const inputFileRef  = React.useRef();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const inputFileRef = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
@@ -105,10 +108,13 @@ function PackageDispatch() {
 
     const listAllPackageDispatch = (pageNumber, StateSearch, RouteSearchList) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package-dispatch/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageDispatch(response.packageDispatchList.data);
             setTotalPackage(response.packageDispatchList.total);
             setTotalPage(response.packageDispatchList.per_page);
@@ -492,6 +498,7 @@ function PackageDispatch() {
 
         if(sendDispatch)
         {
+            setIsLoading(true);
             setReadOnly(true);
             setSendDispatch(0);
 
@@ -512,6 +519,8 @@ function PackageDispatch() {
             })
             .then(res => res.json()).
             then((response) => {
+
+                    setIsLoading(false);
 
                     if(response.stateAction == 'notAutorization')
                     {
@@ -1861,10 +1870,16 @@ function PackageDispatch() {
                                 <hr/><br/>
 
                                 <div className="row">
-                                    <div className="col-lg-3 mb-2">
-                                        <div className="form-group">
-                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
-                                        </div>
+                                    <div className="col-lg-3 mb-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-3 mb-2">
                                         <div className="form-group">

@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
-
+import ReactLoading from 'react-loading';
 
 function ReportInbound() {
 
@@ -30,6 +30,7 @@ function ReportInbound() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
 
@@ -47,10 +48,13 @@ function ReportInbound() {
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'report/list/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.listAll.data);
             setTotalPackage(response.listAll.total);
             setTotalPage(response.listAll.per_page);
@@ -285,9 +289,18 @@ function ReportInbound() {
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                 </div>
+
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row form-group">

@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment/moment'
+import ReactLoading from 'react-loading';
 
 function ReportManifest() {
 
@@ -26,6 +27,7 @@ function ReportManifest() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
 
@@ -43,10 +45,13 @@ function ReportManifest() {
 
     const listReportManifest = (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'report/list/manifest/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.listAll.data);
             setTotalPackage(response.listAll.total);
             setTotalPage(response.listAll.per_page);
@@ -236,8 +241,16 @@ function ReportManifest() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2 form-group">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Manifest: { quantityManifest }</b>
+                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Manifest: { quantityManifest }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-2">
                                         <label htmlFor="">Start date:</label>
