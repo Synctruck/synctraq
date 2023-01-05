@@ -186,8 +186,8 @@ class PackageReturnCompanyController extends Controller
                 
                 $packageHistory->save();
 
-                //$packageController = new PackageController();
-                //$packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null);
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null);
 
                 $packageInbound->delete();
 

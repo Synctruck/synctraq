@@ -519,7 +519,6 @@ class ReportController extends Controller
 
         $listPackageDelivery = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='export');
 
-
         foreach($listPackageDelivery as $packageDelivery)
         {
             $team   = isset($packageDelivery->team) ? $packageDelivery->team->name : '';

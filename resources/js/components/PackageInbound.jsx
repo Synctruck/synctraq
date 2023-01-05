@@ -542,6 +542,14 @@ function PackageInbound() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'validated')
+                    {
+                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction)
                     {
                         setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);

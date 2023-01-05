@@ -364,7 +364,7 @@ class PackageDispatchController extends Controller
                         {
                             $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
 
-                            $packagePriceCompanyTeam->id = date('YmdHis');
+                            $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $package->Reference_Number_1;
                         }
                         
                         //update PACKAGE prices team
@@ -380,7 +380,7 @@ class PackageDispatchController extends Controller
                         $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
                         $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
                         
-                        $packagePriceCompanyTeam->save();
+                        $packagePriceCompanyTeam->save(); 
 
                         if($package->status == 'On hold')
                         {
@@ -1188,6 +1188,13 @@ class PackageDispatchController extends Controller
                     }
 
                     $statusReturn = 'ReInbound';
+
+                    $packageWarehouse = PackageWarehouse::find($packageDispatch->Reference_Number_1);
+
+                    if($packageWarehouse)
+                    {
+                        $packageWarehouse->delete();
+                    }
 
                     $packageWarehouse = new PackageWarehouse();
 

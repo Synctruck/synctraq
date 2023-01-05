@@ -698,8 +698,8 @@ function Companies() {
         document.getElementById('length_field').style.display = 'none';
         document.getElementById('length_field').innerHTML     = '';
 
-        document.getElementById('status').style.display = 'none';
-        document.getElementById('status').innerHTML     = '';
+        //document.getElementById('status').style.display = 'none';
+        //document.getElementById('status').innerHTML     = '';
     }
 
     const clearFormStore = () => {

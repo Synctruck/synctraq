@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, States };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -202,7 +202,7 @@ class PackageInboundController extends Controller
                 $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                 //end data for inland
                 
-                /*
+                
                 ////////// COMPANY ///////////////////////////////////////////////////
                 //calculando dimensiones y precios para company
                 $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
@@ -233,7 +233,7 @@ class PackageInboundController extends Controller
 
                 $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
 
-                $packagePriceCompanyTeam->id                         = date('YmdHis');
+                $packagePriceCompanyTeam->id                         = date('YmdHis') .'-'. $packageManifest->Reference_Number_1;
                 $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
                 $packagePriceCompanyTeam->weight                     = $weightCompany;
                 $packagePriceCompanyTeam->length                     = 0;
@@ -251,7 +251,7 @@ class PackageInboundController extends Controller
                 $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
                 $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
 
-                $packagePriceCompanyTeam->save();*/
+                $packagePriceCompanyTeam->save();
 
                 $packageInbound = new PackageInbound();
 
