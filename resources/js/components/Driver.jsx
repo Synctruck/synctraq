@@ -447,7 +447,7 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Role</label>
+                                                                    <label className="form">Role</label>
                                                                     <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
                                                                         { listRoleSelect }
@@ -477,14 +477,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>First Name</label>
+                                                                    <label className="form">First Name</label>
                                                                     <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Last Name</label>
+                                                                    <label className="form">Last Name</label>
                                                                     <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
                                                                 </div>
@@ -494,14 +494,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Phone</label>
+                                                                    <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Email</label>
+                                                                    <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
                                                                 </div>
@@ -510,14 +510,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Id Onfleet</label>
+                                                                    <label className="form">Id Onfleet</label>
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
                                                                 </div>
                                                             </div>
 
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Status</label>
+                                                                    <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
                                                                         <option value="Active" >Active</option>
@@ -548,12 +548,9 @@ function Driver() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10">
-                                        Driver List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>

@@ -271,17 +271,17 @@ function Comments() {
                                                     <div className="modal-body">
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label>DESCRIPTION</label>
+                                                                <label className="form">DESCRIPTION</label>
                                                                 <div id="description" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ description } maxLength="100" onChange={ (e) => setDescription(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-12 form-group">
-                                                                <label>STATUS CODE</label>
+                                                                <label className="form">STATUS CODE</label>
                                                                 <div id="statusCode" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ statusCode } maxLength="50" onChange={ (e) => setStatusCode(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-12 form-group">
-                                                                <label>FINAL STATUS</label>
+                                                                <label className="form">FINAL STATUS</label>
                                                                 <div id="finalStatus" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select value={ finalStatus } className="form-control" onChange={ (e) => setFinalStatus(e.target.value) } required>
                                                                     <option value="" style={ {display: 'none'} } selected>Select</option>
@@ -312,8 +312,8 @@ function Comments() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 form-group">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>

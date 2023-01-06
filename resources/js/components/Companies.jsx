@@ -993,22 +993,22 @@ function Companies() {
                                                     <div className="modal-body">
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label>Company Name</label>
+                                                                <label className="form">Company Name</label>
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
                                                             </div>
                                                             <div className={ (id == 0 ? 'col-lg-6 form-group' : 'col-lg-12 form-group') }>
-                                                                <label>Email</label>
+                                                                <label className="form">Email</label>
                                                                 <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="email" className="form-control" value={ email } maxLength="100" onChange={ (e) => setEmail(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'block' : 'none')} }>
-                                                                <label>Password</label>
+                                                                <label className="form">Password</label>
                                                                 <div id="password" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="password" className="form-control" value={ password } minLength="5" maxLength="100" onChange={ (e) => setPassword(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Type Of Service</label>
+                                                                <label className="form">Type Of Service</label>
                                                                 <div id="typeServices" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => setTypeServices(e.target.value) }  required>
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
@@ -1018,7 +1018,7 @@ function Companies() {
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Age 21</label>
+                                                                <label className="form">Age 21</label>
                                                                 <div id="age21" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => setAge21(e.target.value) }  required>
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
@@ -1027,12 +1027,12 @@ function Companies() {
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Scan Length</label>
+                                                                <label className="form">Scan Length</label>
                                                                 <div id="length_field" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="number" className="form-control" value={ lengthField } max="50" onChange={ (e) => setLengthField(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Status</label>
+                                                                <label className="form">Status</label>
                                                                 <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => setStatus(e.target.value) }  required>
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
@@ -1043,35 +1043,35 @@ function Companies() {
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
-                                                                <label>KEY WEBHOOK</label>
+                                                                <label className="form">KEY WEBHOOK</label>
                                                                 <input type="text" className="form-control" value={ keyWebhook } maxLength="100" onChange={ (e) => setKeyWebhook(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
-                                                                <label>URL WEBHOOK</label>
+                                                                <label className="form">URL WEBHOOK</label>
                                                                 <input type="text" className="form-control" value={ urlWebhook } maxLength="100" onChange={ (e) => setUrlWebhook(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>On Hold</label>
+                                                                <label className="form">On Hold</label>
                                                                 <input type="text" className="form-control" value={ onHold } maxLength="100" onChange={ (e) => setOnHold(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>Inbound</label>
+                                                                <label className="form">Inbound</label>
                                                                 <input type="text" className="form-control" value={ inbound } maxLength="100" onChange={ (e) => setInbound(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>Dispatch</label>
+                                                                <label className="form">Dispatch</label>
                                                                 <input type="text" className="form-control" value={ dispatch } maxLength="100" onChange={ (e) => setDispatch(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>Delivery</label>
+                                                                <label className="form">Delivery</label>
                                                                 <input type="text" className="form-control" value={ delivery } maxLength="100" onChange={ (e) => setDelivery(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>Re-Inbound</label>
+                                                                <label className="form">Re-Inbound</label>
                                                                 <input type="text" className="form-control" value={ reInbound } maxLength="100" onChange={ (e) => setReInbound(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
-                                                                <label>Retur-Company</label>
+                                                                <label className="form">Retur-Company</label>
                                                                 <input type="text" className="form-control" value={ returnCompany } maxLength="100" onChange={ (e) => setReturnCompany(e.target.value) }/>
                                                             </div>
                                                         </div>
@@ -1266,12 +1266,9 @@ function Companies() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10"> 
-                                        Companies List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>

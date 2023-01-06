@@ -742,9 +742,6 @@ function Routes() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-9"> 
-                                        Route List
-                                    </div>
                                     <div className="col-lg-2">
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">

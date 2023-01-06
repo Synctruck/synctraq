@@ -369,7 +369,7 @@ function User() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Role</label>
+                                                                    <label className="form">Role</label>
                                                                     <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
                                                                         <option value="" style={ {display: 'none'} }>Seleccione un rol</option>
@@ -382,14 +382,14 @@ function User() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>First Name</label>
+                                                                    <label className="form">First Name</label>
                                                                     <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Last Name</label>
+                                                                    <label className="form">Last Name</label>
                                                                     <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
                                                                 </div>
@@ -399,14 +399,14 @@ function User() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Phone</label>
+                                                                    <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Email</label>
+                                                                    <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
                                                                 </div>
@@ -416,7 +416,7 @@ function User() {
                                                         <div className="row" style={ { display: (viewInputPassword ? 'block' : 'none' )}  }>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Password</label>
+                                                                    <label className="form">Password</label>
                                                                     <div id="password" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="password" value={ password } className="form-control" onChange={ (e) => setPassword(e.target.value) } required={ viewInputPassword ? true : false }/>
                                                                 </div>
@@ -425,7 +425,7 @@ function User() {
                                                         <div className="row" >
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Status</label>
+                                                                    <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
                                                                         <option value="Active" >Active</option>
@@ -455,30 +455,27 @@ function User() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10">
-                                        Users List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>
                             </h5>
                             <div className="row form-group mb-5">
                                 <div className="col-lg-4">
-                                    <label htmlFor="">Name</label>
+                                    <label htmlFor="" className="form">Name</label>
                                     <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Search..."/>
                                 </div>
                                 <div className="col-lg-4">
-                                    <label htmlFor="">Role</label>
+                                    <label htmlFor="" className="form">Role</label>
                                     <select value={ idRoleFilter } className="form-control" onChange={ (e) => setIdRoleFilter(e.target.value) } required>
                                         <option value="">All</option>
                                         { listRoleFilter }
                                     </select>
                                 </div>
                                 <div className="col-lg-4">
-                                    <label htmlFor="">Status</label>
+                                    <label htmlFor="" className="form">Status</label>
                                     <select value={ statusFilter } className="form-control" onChange={ (e) => setStatusFilter(e.target.value) } required>
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>

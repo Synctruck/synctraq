@@ -305,14 +305,14 @@ function Roles() {
                                                     <div className="modal-body">
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label>Role name</label>
+                                                                <label className="form">Role name</label>
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-12 form-group">
-                                                                <label> Login Status</label>
+                                                                <label className="form"> Login Status</label>
                                                                 <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className='form-control' value={status} onChange={(e) => setStatus(e.target.value)}>
                                                                     <option value="1">Enabled</option>
@@ -321,7 +321,7 @@ function Roles() {
                                                             </div>
                                                         </div>
                                                         <div class="row">
-                                                            <span>Permissions</span><hr />
+                                                            <label className="form">Permissions</label><hr />
                                                             <div class="col-md-12" >
                                                                 <div class="checkbox checkbox-primary mb-1">
                                                                     <label htmlFor="chkAll">
@@ -357,12 +357,9 @@ function Roles() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10">
-                                        Roles List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i> Add role
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>
