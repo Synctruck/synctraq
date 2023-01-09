@@ -115,7 +115,7 @@ class WHookController extends Controller
 
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl)[0]);
+                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl));
                     //end data for inland
                 }
             }

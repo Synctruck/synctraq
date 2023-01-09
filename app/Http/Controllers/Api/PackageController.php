@@ -227,7 +227,7 @@ class PackageController extends Controller
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
                     $package->created_at                    = date('Y-m-d H:i:s');
-                    $package->updated_at                    = date('Y-m-d H:i:s');
+                    $package->updated_at                    = date('Y-m-d H:i:s'); 
                     
                     $package->save();
 
@@ -444,7 +444,17 @@ class PackageController extends Controller
 
             if($status == 'Delivery')
             {
-                $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
+                if(count($idPhoto) == 1)
+                {
+                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                }
+                else
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+
+                    $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
+                }
             }
 
             Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
@@ -470,7 +480,7 @@ class PackageController extends Controller
                             "value": ""
                         }
                     ]
-                }',
+                }', 
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'

@@ -205,7 +205,7 @@ class PackageInboundController extends Controller
                 
                 ////////// COMPANY ///////////////////////////////////////////////////
                 //calculando dimensiones y precios para company
-                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+                /*$dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
                 $dimFactorCompany = $dimFactorCompany->factor;
 
                 $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
@@ -252,7 +252,7 @@ class PackageInboundController extends Controller
                 $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
 
                 $packagePriceCompanyTeam->save();
-
+*/
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
