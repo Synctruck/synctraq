@@ -31,7 +31,7 @@ class PackageInboundController extends Controller
         {
             if($packageManifest->filter || count($packageManifest->blockeds) > 0)
             {
-                Log::info("============== BLOCKED ========"); 
+                Log::info("============== BLOCKED ========");
                 Log::info("===================================");
             }
             else
