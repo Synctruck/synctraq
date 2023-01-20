@@ -993,7 +993,7 @@
     </script>
 
     <?php
-        $dateFileApp = date("Y-m-d-H-i-s", filemtime("./js/app.js"));
+        $dateFileApp = date("Y-m-d-H-i-s", stat("./js/app.js"));
     ?>
 
     <script src="{{ asset('js/app.js') }}?{{$dateFileApp}}"></script>
