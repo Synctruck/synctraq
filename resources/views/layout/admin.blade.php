@@ -997,6 +997,6 @@
         //$dateFileApp = date("Y-m-d-H-i-s", stat("./js/app.js"));
     ?>
 
-    <script src="{{ asset('js/app.js') }}?{{$dateFileApp}}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
