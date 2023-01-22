@@ -17,6 +17,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
 use Session;
+use Log;
 
 class PackageCheckController extends Controller
 {
@@ -45,6 +46,8 @@ class PackageCheckController extends Controller
             {
                 $row = str_getcsv($raw_string);
 
+                Log::info($row);
+                
                 $data = [
 
                     'package' => $row[20],
