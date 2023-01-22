@@ -47,12 +47,12 @@ class PackageCheckController extends Controller
                 $row = str_getcsv($raw_string);
 
                 Log::info($row);
-                
+
                 $data = [
 
-                    'package' => $row[20],
-                    'driver' => $row[6],
-                    'stop' => $row[1],
+                    'package' => $row[0],
+                    'driver' => $row[1],
+                    'stop' => $row[2],
                 ];
 
                 array_push($packageList, $data);
