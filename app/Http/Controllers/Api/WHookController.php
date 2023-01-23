@@ -147,7 +147,6 @@ class WHookController extends Controller
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
         Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
-        Log::info($request['data']['task']);
         
         if($completionDetailsStatus == false)
         {
