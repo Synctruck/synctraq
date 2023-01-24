@@ -126,7 +126,7 @@
           </a>
         </li><!-- End Search Icon-->
 
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" style="display: none;">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <span class="badge bg-primary badge-number" style="font-size: 16px;">{{date('d/m/Y')}}</span>
@@ -209,7 +209,7 @@
 
         </li><!-- End Notification Nav -->
 
-        <li class="nav-item dropdown" style="display: block;">
+        <li class="nav-item dropdown" style="display: none;">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
