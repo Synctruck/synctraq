@@ -248,7 +248,7 @@ function Dashboard() {
                 delivery: totalDeliveryRoute
             };
             
-            console.log(sortHelper(listReportPerRoute, 'total_warehouse').reverse());
+            console.log(sortHelper(listReportPerRoute, 'total_pending').reverse());
 
             setListPackageRouteTotal(totalPackagesRoute);
             setListDataPerRoute(listReportPerRoute);

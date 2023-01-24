@@ -361,14 +361,14 @@ class ReportController extends Controller
                                     'Weight',
                                     'Route',
                                     'taskOnfleet',
-                                    'created_at'
+                                    'Date_Delivery'
                                 )
-                                ->orderBy('created_at', 'desc')
+                                ->orderBy('Date_Delivery', 'desc')
                                 ->paginate(50);
         }
         else
         {
-            $listAll = $listAll->with(['team', 'driver'])->orderBy('created_at', 'desc')->get();
+            $listAll = $listAll->with(['team', 'driver'])->orderBy('Date_Delivery', 'desc')->get();
         }
 
         return $listAll;

@@ -311,10 +311,10 @@ function ReportDelivery() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDelivery.created_at.substring(5, 7) }-{ packageDelivery.created_at.substring(8, 10) }-{ packageDelivery.created_at.substring(0, 4) }
+                    { packageDelivery.Date_Delivery.substring(5, 7) }-{ packageDelivery.Date_Delivery.substring(8, 10) }-{ packageDelivery.Date_Delivery.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDelivery.created_at.substring(11, 19) }
+                    { packageDelivery.Date_Delivery.substring(11, 19) }
                 </td>
                 <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
