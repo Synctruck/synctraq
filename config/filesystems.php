@@ -42,7 +42,7 @@ return [
             'visibility' => 'public',
         ],
 
-        's3' => [
+        's3' => [ 
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -54,21 +54,11 @@ return [
         ],
 
         'sftp' => [
-            'driver' => 'sftp',
-            'host' => 'sftp.airterra.com',
-            'username' => 'synctruck_test',
-            'password' => '}yJQPr%$K06ZbPj',
-
-            // Settings for SSH key based authentication...
-            // 'privateKey' => '/path/to/privateKey',
-            // 'password' => 'encryption-password',
-
-            // Optional SFTP Settings...
-            // 'port' => 22,
-            // 'root' => '',
-            // 'timeout' => 30,
+            'driver' => env('SFTP_DRIVER'),
+            'host' => env('SFTP_HOST'),
+            'username' => env('SFTP_USERNAME'),
+            'password' => env('SFTP_PASSWORD'),
         ],
-
     ],
 
     /*
