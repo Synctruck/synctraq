@@ -286,17 +286,8 @@ class PackageReturnCompanyController extends Controller
 
     public function ListPreRts($numberPallet)
     { 
-        $palletRts = PalletRts::find($numberPallet);
-
-        if($palletRts->status == 'Closed')
-        {
-            $packagePreRtsList = PackageHistory::where('numberPallet', $numberPallet)
-                                                ->where('status', 'PreRts');
-        }
-        else
-        {
-            $packagePreRtsList = PackageReturnCompany::where('numberPallet', $numberPallet);
-        }
+        $palletRts         = PalletRts::find($numberPallet);
+        $packagePreRtsList = PackageReturnCompany::where('numberPallet', $numberPallet);
 
         $packagePreRtsList = $packagePreRtsList->select(
                                                     'created_at',
