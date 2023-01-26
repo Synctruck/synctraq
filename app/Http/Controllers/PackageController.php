@@ -185,6 +185,7 @@ class PackageController extends Controller
             }
             else if($request->get('highPriority') != 'Normal')
             {
+                dd('high');
                 if($packageHighPriority == null)
                 {
                     $packageHighPriority = new PackageHighPriority();
