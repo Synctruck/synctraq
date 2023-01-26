@@ -173,7 +173,6 @@ class PackageController extends Controller
                 $package->save();
             }
 
-            dd($request->all());
             $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
             $packageHighPriority = PackageHighPriority::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
@@ -181,7 +180,7 @@ class PackageController extends Controller
             {
                 $packageHighPriority->delete();
             }
-            elseif($packageHighPriority == null)
+            elseif($packageHighPriority)
             {
                 $packageHighPriority = new PackageHighPriority();
 
