@@ -176,17 +176,23 @@ class PackageController extends Controller
             $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
             $packageHighPriority = PackageHighPriority::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-            if($request->get('highPriority') == 'Normal' && $packageHighPriority)
+            if($request->get('highPriority') == 'Normal')
             {
-                $packageHighPriority->delete();
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
             }
-            elseif($packageHighPriority)
+            else if($request->get('highPriority') != 'Normal')
             {
-                $packageHighPriority = new PackageHighPriority();
+                if($packageHighPriority == null)
+                {
+                    $packageHighPriority = new PackageHighPriority();
 
-                $packageHighPriority->Reference_Number_1 = $request->get('Reference_Number_1');
+                    $packageHighPriority->Reference_Number_1 = $request->get('Reference_Number_1');
 
-                $packageHighPriority->save();
+                    $packageHighPriority->save();
+                }
             }
 
             foreach($packageHistoryList as $packageHistory)
