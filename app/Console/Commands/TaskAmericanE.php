@@ -75,7 +75,7 @@ class TaskAmericanE extends Command
         fputcsv($file, $fields, $delimiter);
         
         $packageListHisotry = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
-                                                ->where('idCompany', 10)}
+                                                ->where('idCompany', 10)
                                                 ->where('status', '!=', 'Manifest')
                                                 ->get();
 
