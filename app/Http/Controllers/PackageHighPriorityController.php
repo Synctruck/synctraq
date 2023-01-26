@@ -82,6 +82,7 @@ class PackageHighPriorityController extends Controller
     {
         $idsAll = PackageHighPriority::get('Reference_Number_1');
 
+        dd(PackageHighPriority::get('Reference_Number_1'));
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
 
