@@ -82,7 +82,6 @@ class PackageHighPriorityController extends Controller
     {
         $idsAll = PackageHighPriority::get('Reference_Number_1');
 
-        dd(PackageHighPriority::get('Reference_Number_1'));
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
 
@@ -104,6 +103,7 @@ class PackageHighPriorityController extends Controller
                                             ->whereIn('Reference_Number_1', $idsAll)
                                             ->where('status', 'Inbound');
         
+        dd($packageHistoryList->get());
         if($idCompany != 0)
         {
             $packageHistoryList = $packageHistoryList->where('idCompany', $idCompany);
