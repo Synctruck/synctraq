@@ -185,9 +185,9 @@ class PackageController extends Controller
             }
             else if($request->get('highPriority') != 'Normal')
             {
-                dd('high');
                 if($packageHighPriority == null)
                 {
+                    dd('high');
                     $packageHighPriority = new PackageHighPriority();
 
                     $packageHighPriority->Reference_Number_1 = $request->get('Reference_Number_1');
