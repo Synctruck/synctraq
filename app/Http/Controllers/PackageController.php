@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackagePreDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -222,6 +222,7 @@ class PackageController extends Controller
 
     public function Search($Reference_Number_1)
     {
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
         $packageHistoryList = PackageHistory::with([
@@ -248,12 +249,15 @@ class PackageController extends Controller
             $latitudeLongitude = $responseOnfleet['stateAction'] == false ? $latitudeLongitude : $responseOnfleet['onfleet']['completionDetails']['lastLocation'];
         }
 
+        $actualStatus = $this->GetStatus($Reference_Number_1);
+
         return [
 
             'packageBlocked' => $packageBlocked,
             'packageHistoryList' => $packageHistoryList,
             'packageDelivery' => $packageDelivery,
             'packageDispatch' => $packageDispatch,
+            'actualStatus' => $actualStatus['status'],
             'notesOnfleet' => $noteOnfleet,
             'latitudeLongitude' => $latitudeLongitude,
         ];
@@ -411,9 +415,15 @@ class PackageController extends Controller
 
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
 
+        $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+
         if($package)
         {
-            return ['status' => $package->status]; 
+            return ['status' => $package->status];
         }
 
         return ['status' => ''];

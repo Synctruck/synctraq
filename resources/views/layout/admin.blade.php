@@ -407,6 +407,12 @@
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label for="" class="form">Actual Status</label>
+                                    <input type="text" id="actualStatus" class="form-control">
+                                </div>
+                            </div>
                             <hr>
                             <div class="row">
                                 <div class="col-lg-12">
@@ -657,11 +663,13 @@
                 let packageDispatch    = response.packageDispatch;
                 let notesOnfleet       = response.notesOnfleet;
                 let latitudeLongitude  = response.latitudeLongitude;
+                let actualStatus       = response.actualStatus;
 
                 document.getElementById('taskOnfleetHistory').value           = '';
                 document.getElementById('notesOnfleetHistory').value          = notesOnfleet;
                 document.getElementById('latitudeLongitude').value            = latitudeLongitude[1] +', '+ latitudeLongitude[0];
                 document.getElementById('tableHistoryPackageTbody').innerHTML = '';
+                document.getElementById('actualStatus').value                 = actualStatus;
 
                 if(packageDispatch)
                 {
