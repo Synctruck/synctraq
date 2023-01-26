@@ -159,6 +159,16 @@ class PackageController extends Controller
                 $package = PackageInbound::find($request->get('Reference_Number_1'));
             }
 
+            if($package == null)
+            {
+                $package = PackagePreDispatch::find($request->get('Reference_Number_1'));
+            }
+
+            if($package == null)
+            {
+                $package = PackageWarehouse::find($request->get('Reference_Number_1'));
+            }
+
             if($package)
             {
                 $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
