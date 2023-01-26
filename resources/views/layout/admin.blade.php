@@ -698,7 +698,7 @@
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
 
-                    if(package.Description_Return != '')
+                    if(package.Description_Return != '' && package.Description_Return != null)
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
