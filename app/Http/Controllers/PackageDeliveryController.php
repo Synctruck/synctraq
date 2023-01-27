@@ -492,31 +492,40 @@ class PackageDeliveryController extends Controller
                 if(isset($row[0]))
                 {
                     $contador        = 0;
-                    $packageDispatch = PackageManifest::find($row[0]);
-                    
-                    if($packageDispatch)
+                    $packageManifest = PackageManifest::find($row[0]);
+                    $packageAux      = null;
+
+                    if($packageManifest)
                     {
+                        $packageAux = $packageManifest;
+
                         $contador++;
                     }
 
-                    $packageDispatch = PackageInbound::find($row[0]);
+                    $packageInbound = PackageInbound::find($row[0]);
                     
-                    if($packageDispatch)
+                    if($packageInbound)
                     {
+                        $packageAux = $packageInbound;
+
                         $contador++;
                     }
 
-                    $packageDispatch = PackageWarehouse::find($row[0]);
+                    $packageWarehouse = PackageWarehouse::find($row[0]);
                     
-                    if($packageDispatch)
+                    if($packageWarehouse)
                     {
+                        $packageAux = $packageWarehouse;
+
                         $contador++;
                     }
 
-                    $packageDispatch = PackageFailed::find($row[0]);
+                    $packageFailed = PackageFailed::find($row[0]);
                     
-                    if($packageDispatch)
+                    if($packageFailed)
                     {
+                        $packageAux = $packageFailed;
+
                         $contador++;
                     }
 
@@ -524,10 +533,13 @@ class PackageDeliveryController extends Controller
                     
                     if($packageDispatch)
                     {
+                        $packageAux = $packageDispatch;
+
                         $contador++;
                     }
 
-                    //dd("import photo: ". $row[0] .' => contador: '. $contador);
+                    $packageDispatch = $packageAux;
+                    
                     dd($packageDispatch);
 
                     if($contador == 1 && $packageDispatch)
