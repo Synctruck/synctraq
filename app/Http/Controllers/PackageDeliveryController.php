@@ -528,7 +528,8 @@ class PackageDeliveryController extends Controller
                     }
 
                     dd("import photo: ". $row[0] .' => contador: '. $contador);
-
+                    dd($packageDispatch);
+                    
                     if($contador == 1 && $packageDispatch)
                     {
                         $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
