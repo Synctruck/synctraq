@@ -711,24 +711,27 @@ class PackageDeliveryController extends Controller
                         }
                     }
 
-                    $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
-
-                    if(count($photoUrls) == 2)
+                    if($packageDispatch)
                     {
-                        $photoUrl = explode('/', $photoUrls[1])[1];
-                    }
-                    else if(count($photoUrls) > 2)
-                    {
-                        $photoUrl1 = explode('/', $photoUrls[1])[1];
-                        $photoUrl2 = explode('/', $photoUrls[2])[1];
+                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
 
-                        $photoUrl = $photoUrl1 .','. $photoUrl2;
-                    }
+                        if(count($photoUrls) == 2)
+                        {
+                            $photoUrl = explode('/', $photoUrls[1])[1];
+                        }
+                        else if(count($photoUrls) > 2)
+                        {
+                            $photoUrl1 = explode('/', $photoUrls[1])[1];
+                            $photoUrl2 = explode('/', $photoUrls[2])[1];
 
-                    //data for INLAND 
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl));
-                    //end data for inland
+                            $photoUrl = $photoUrl1 .','. $photoUrl2;
+                        }
+
+                        //data for INLAND 
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl));
+                        //end data for inland
+                    }
                 }
             }
 
