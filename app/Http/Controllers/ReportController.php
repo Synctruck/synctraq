@@ -361,6 +361,7 @@ class ReportController extends Controller
                                     'Weight',
                                     'Route',
                                     'taskOnfleet',
+                                    'arrivalLonLat',
                                     'Date_Delivery'
                                 )
                                 ->orderBy('Date_Delivery', 'desc')

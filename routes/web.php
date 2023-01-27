@@ -158,6 +158,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index'])->middleware('permission:delivery.index');
 	Route::get('/package-delivery/list', [PackageDeliveryController::class, 'List']);
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
+	Route::post('/package-delivery/import-photo', [PackageDeliveryController::class, 'ImportPhoto']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);
 	Route::get('/package-delivery/updatedDeliverFields', [PackageDeliveryController::class, 'UpdatedDeliverFields']);
 	Route::get('/package-delivery/updatedCreatedDate', [PackageDeliveryController::class, 'UpdatedCreatedDate']);

@@ -35,12 +35,16 @@ function ReportDelivery() {
     const [totalPackage, setTotalPackage] = useState(0);
     const [isLoading, setIsLoading]       = useState(false);
 
-    const [file, setFile]             = useState('');
-    const [btnDisplay, setbtnDisplay] = useState('none');
+    const [file, setFile]                       = useState('');
+    const [filePhoto, setFilePhoto]             = useState('');
+    const [btnDisplay, setbtnDisplay]           = useState('none');
+    const [btnDisplayPhoto, setbtnDisplayPhoto] = useState('none');
 
-    const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [viewButtonSave, setViewButtonSave]           = useState('none');
+    const [viewButtonSavePhoto, setViewButtonSavePHoto] = useState('none');
 
-    const inputFileRef  = React.useRef();
+    const inputFileRef       = React.useRef();
+    const inputFileRefPhotos = React.useRef();
 
     useEffect(() => {
 
@@ -54,6 +58,19 @@ function ReportDelivery() {
         }
 
     }, [file]);
+
+    useEffect(() => {
+
+        if(String(filePhoto) == 'undefined' || filePhoto == '')
+        {
+            setViewButtonSavePHoto('none');
+        }
+        else
+        {
+            setViewButtonSavePHoto('block');
+        }
+
+    }, [filePhoto]);
 
     useEffect( () => {
 
@@ -194,32 +211,44 @@ function ReportDelivery() {
         }
     }
 
-    const handlerViewMap = (taskOnfleet) => {
+    const handlerViewMap = (taskOnfleet, arrivalLonLat) => {
 
         LoadingShowMap();
 
-        fetch(url_general +'package-dispatch/getCoordinates/'+ taskOnfleet)
-        .then(res => res.json())
-        .then((response) => {
+        if(taskOnfleet != '')
+        {
+            fetch(url_general +'package-dispatch/getCoordinates/'+ taskOnfleet)
+            .then(res => res.json())
+            .then((response) => {
 
-            if(response)
-            {
-                console.log(response['completionDetails']['lastLocation']);
+                if(response)
+                {
+                    console.log(response['completionDetails']['lastLocation']);
 
-                let lastLocation = response['completionDetails']['lastLocation'];
-                let latitude     = lastLocation[1];
-                let longitude    = lastLocation[0];
-                
-                window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
-            }
-            else
-            {
-                swal('Attention!', 'The TASK ONFLEET does not exists', 'warning');
-            }
+                    let lastLocation = response['completionDetails']['lastLocation'];
+                    let latitude     = lastLocation[1];
+                    let longitude    = lastLocation[0];
+                    
+                    window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
+                }
+                else
+                {
+                    swal('Attention!', 'The TASK ONFLEET does not exists', 'warning');
+                }
+
+                LoadingHideMap();
+            });
+        }
+        else
+        {
+            let longitudeLat = arrivalLonLat.split(',');
+            let latitude     = longitudeLat[1];
+            let longitude    = longitudeLat[0].split('`')[1];
+                    
+            window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
 
             LoadingHideMap();
-        });
-        //https://maps.google.com/?q=23.135249,-82.359685
+        }
     }
 
     const listReportTable = listReport.map( (packageDelivery, i) => {
@@ -229,13 +258,16 @@ function ReportDelivery() {
 
         let photoHttp = false;
 
-        if(!packageDelivery.idOnfleet)
+        if(packageDelivery.photoUrl == '')
         {
-            photoHttp = true;
-        }
-        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
-        {
-            photoHttp = true;
+            if(!packageDelivery.idOnfleet)
+            {
+                photoHttp = true;
+            }
+            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+            {
+                photoHttp = true;
+            }
         }
 
         if(photoHttp)
@@ -303,9 +335,31 @@ function ReportDelivery() {
                 urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
             }
         }
+        else if(packageDelivery.photoUrl != '')
+        {
+            let idsImages = packageDelivery.photoUrl.split(',');
+
+            if(idsImages.length == 1)
+            {
+                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+            }
+            else if(idsImages.length >= 2)
+            {
+                imgs =  <>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                        </>
+
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+            }
+        }
 
         let team   = (packageDelivery.team ? packageDelivery.team.name : '');
         let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
+
+        console.log(packageDelivery.Reference_Number_1 +': '+ urlImage);
 
         return (
 
@@ -331,7 +385,7 @@ function ReportDelivery() {
                 <td>
                     { packageDelivery.taskOnfleet }
                     <br/><br/>
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet) }>View Map</button>
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
                 </td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
@@ -503,8 +557,46 @@ function ReportDelivery() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackage();
-                    setbtnDisplay('none');
+                    listReportDispatch(1, RouteSearch, StateSearch);
+                    setViewButtonSave('none');
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const handlerImportPhotos = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', filePhoto);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'package-delivery/import-photo', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("Se importó el archivo!", {
+
+                        icon: "success",
+                    });
+
+                    document.getElementById('fileImportPhoto').value = '';
+
+                    listReportDispatch(1, RouteSearch, StateSearch);
+                    setViewButtonSavePHoto('none');
                 }
 
                 LoadingHide();
@@ -517,6 +609,13 @@ function ReportDelivery() {
         setViewButtonSave('none');
 
         inputFileRef.current.click();
+    }
+
+    const onBtnClickFilePhotos = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRefPhotos.current.click();
     }
 
     const [messageUpdateOnfleet, setMessageUpdateOnfleet] = useState('');
@@ -605,7 +704,19 @@ function ReportDelivery() {
                                         </form>
                                     </div>
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerUpdateState() }>Updated Onfleet</button>
+                                        <form onSubmit={ handlerImportPhotos }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFilePhotos() }>
+                                                    <i className="bx bxs-file"></i> Import with photos
+                                                </button>
+                                                <input type="file" id="fileImportPhoto" className="form-control" ref={ inputFileRefPhotos } style={ {display: 'none'} } onChange={ (e) => setFilePhoto(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSavePhoto} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImportPhotos() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                     <div className="col-lg-2 mb-3 text-warning">
                                         { messageUpdateOnfleet }
