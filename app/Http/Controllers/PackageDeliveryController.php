@@ -648,6 +648,7 @@ class PackageDeliveryController extends Controller
                                 $packageDis->idTeam                       = 0;
                                 $packageDis->idUserDispatch               = 0;
                                 $packageDis->Date_Dispatch                = $created_at;
+                                $packageDis->Date_Delivery                = $created_at;
                                 $packageDis->quantity                     = 0;
                                 $packageDis->pricePaymentCompany          = 0;
                                 $packageDis->pricePaymentTeam             = 0;
@@ -827,6 +828,7 @@ class PackageDeliveryController extends Controller
                 $packageDis->idTeam                       = 0;
                 $packageDis->idUserDispatch               = 0;
                 $packageDis->Date_Dispatch                = $created_at;
+                $packageDis->Date_Delivery                = $created_at;
                 $packageDis->quantity                     = 0;
                 $packageDis->pricePaymentCompany          = 0;
                 $packageDis->pricePaymentTeam             = 0;
