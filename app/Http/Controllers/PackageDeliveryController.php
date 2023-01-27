@@ -491,6 +491,8 @@ class PackageDeliveryController extends Controller
 
                 if(isset($row[0]))
                 {
+                    dd("import photo: ". $row[0]);
+                    
                     $contador        = 0;
                     $packageDispatch = PackageManifest::find($row[0]);
                     
