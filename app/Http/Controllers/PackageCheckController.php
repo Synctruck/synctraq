@@ -50,9 +50,9 @@ class PackageCheckController extends Controller
 
                 $data = [
 
-                    'package' => $row[0],
-                    'driver' => $row[1],
-                    'stop' => $row[2],
+                    'package' => $row[20],
+                    'driver' => $row[6],
+                    'stop' => $row[1],
                 ];
 
                 array_push($packageList, $data);
