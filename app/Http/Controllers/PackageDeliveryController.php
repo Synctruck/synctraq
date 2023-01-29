@@ -551,13 +551,13 @@ class PackageDeliveryController extends Controller
 
                     if($contador == 1 && $packageDispatch)
                     {
-                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
+                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : explode('https://', 'https://');
 
-                        if(count($photoUrls) == 2)
+                        if(count($photoUrls) == 2 && $row[1] != '')
                         {
                             $photoUrl = explode('/', $photoUrls[1])[1];
                         }
-                        else if(count($photoUrls) > 2)
+                        else if(count($photoUrls) > 2 && $row[1] != '')
                         {
                             $photoUrl1 = explode('/', $photoUrls[1])[1];
                             $photoUrl2 = explode('/', $photoUrls[2])[1];
@@ -713,18 +713,22 @@ class PackageDeliveryController extends Controller
 
                     if($packageDispatch)
                     {
-                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
+                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : explode('https://', 'https://');
 
-                        if(count($photoUrls) == 2)
+                        if(count($photoUrls) == 2 && $row[1] != '')
                         {
                             $photoUrl = explode('/', $photoUrls[1])[1];
                         }
-                        else if(count($photoUrls) > 2)
+                        else if(count($photoUrls) > 2 && $row[1] != '')
                         {
                             $photoUrl1 = explode('/', $photoUrls[1])[1];
                             $photoUrl2 = explode('/', $photoUrls[2])[1];
 
                             $photoUrl = $photoUrl1 .','. $photoUrl2;
+                        }
+                        else
+                        {
+                            $photoUrl = '';
                         }
 
                         //data for INLAND 
