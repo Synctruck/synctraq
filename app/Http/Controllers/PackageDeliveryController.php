@@ -898,7 +898,7 @@ class PackageDeliveryController extends Controller
         {
             if($packageDispatch->photoUrl == '')
             {
-                $packageHistory = new PackageHistory(); 
+                $packageHistory = new PackageHistory();
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageDispatchAux->Reference_Number_1;
