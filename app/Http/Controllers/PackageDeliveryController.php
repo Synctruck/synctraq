@@ -662,16 +662,19 @@ class PackageDeliveryController extends Controller
                         }
                         else if($packageDispatch->status == 'Delivery')
                         {
-                            $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                            $packageDispatch->workerName         = '';
-                            $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                            $packageDispatch->recipientNotes     = '';
-                            $packageDispatch->photoUrl           = $photoUrl;
-                            $packageDispatch->Date_Delivery      = $created_at;
-                            $packageDispatch->arrivalLonLat      = $arrivalLonLat;
-                            $packageDispatch->status             = 'Delivery';
+                            if($packageDispatch->photoUrl == '')
+                            {
+                                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
+                                $packageDispatch->workerName         = '';
+                                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
+                                $packageDispatch->recipientNotes     = '';
+                                $packageDispatch->photoUrl           = $photoUrl;
+                                $packageDispatch->Date_Delivery      = $created_at;
+                                $packageDispatch->arrivalLonLat      = $arrivalLonLat;
+                                $packageDispatch->status             = 'Delivery';
 
-                            $packageDispatch->save();
+                                $packageDispatch->save();
+                            }
                         }
                     }
                     elseif($contador > 1)
@@ -862,48 +865,21 @@ class PackageDeliveryController extends Controller
                 $packageDis->save();
             }
         }
-        else if($packageDispatchAux)
+        else if($packageDispatchAux && $packageDispatchAux->status == 'Delivery')
         {
-            $packageHistory = new PackageHistory(); 
+            if($packageDispatchAux->photoUrl == '')
+            {
+                $packageDispatchAux->taskDetails        = $packageDispatchAux->Reference_Number_1;
+                $packageDispatchAux->workerName         = '';
+                $packageDispatchAux->destinationAddress = $packageDispatchAux->Dropoff_Address_Line_1;
+                $packageDispatchAux->recipientNotes     = '';
+                $packageDispatchAux->photoUrl           = $photoUrl;
+                $packageDispatchAux->Date_Delivery      = $created_at;
+                $packageDispatchAux->arrivalLonLat      = $arrivalLonLat;
+                $packageDispatchAux->status             = 'Delivery';
 
-            $packageHistory->id                           = uniqid();
-            $packageHistory->Reference_Number_1           = $packageDispatchAux->Reference_Number_1;
-            $packageHistory->idCompany                    = $packageDispatchAux->idCompany;
-            $packageHistory->company                      = $packageDispatchAux->company;
-            $packageHistory->Dropoff_Contact_Name         = $packageDispatchAux->Dropoff_Contact_Name;
-            $packageHistory->Dropoff_Company              = $packageDispatchAux->Dropoff_Company;
-            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatchAux->Dropoff_Contact_Phone_Number;
-            $packageHistory->Dropoff_Contact_Email        = $packageDispatchAux->Dropoff_Contact_Email;
-            $packageHistory->Dropoff_Address_Line_1       = $packageDispatchAux->Dropoff_Address_Line_1;
-            $packageHistory->Dropoff_Address_Line_2       = $packageDispatchAux->Dropoff_Address_Line_2;
-            $packageHistory->Dropoff_City                 = $packageDispatchAux->Dropoff_City;
-            $packageHistory->Dropoff_Province             = $packageDispatchAux->Dropoff_Province;
-            $packageHistory->Dropoff_Postal_Code          = $packageDispatchAux->Dropoff_Postal_Code;
-            $packageHistory->Notes                        = $packageDispatchAux->Notes;
-            $packageHistory->Weight                       = $packageDispatchAux->Weight;
-            $packageHistory->Route                        = $packageDispatchAux->Route;
-            $packageHistory->idTeam                       = $packageDispatchAux->idTeam;
-            $packageHistory->idUserDispatch               = $packageDispatchAux->idUserDispatch;
-            $packageHistory->idUser                       = $packageDispatchAux->idUser;
-            $packageHistory->idUserDelivery               = $packageDispatchAux->idUserDispatch;
-            $packageHistory->Date_Delivery                = $created_at;
-            $packageHistory->Description                  = $description;
-            $packageHistory->status                       = 'Delivery';
-            $packageHistory->created_at                   = $created_at;
-            $packageHistory->updated_at                   = $created_at;
-
-            $packageHistory->save();
-
-            $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-            $packageDispatch->workerName         = '';
-            $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-            $packageDispatch->recipientNotes     = '';
-            $packageDispatch->photoUrl           = $photoUrl;
-            $packageDispatch->Date_Delivery      = $created_at;
-            $packageDispatch->arrivalLonLat      = $arrivalLonLat;
-            $packageDispatch->status             = 'Delivery';
-
-            $packageDispatch->save();
+                $packageDispatchAux->save();
+            }
         }
     }
 
