@@ -214,7 +214,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null);
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
                 $packageInbound->delete();
 
@@ -511,7 +511,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null);
+                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
             }
             
             DB::commit();

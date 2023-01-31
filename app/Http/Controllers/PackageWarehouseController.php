@@ -359,7 +359,7 @@ class PackageWarehouseController extends Controller
 
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
+                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
                     //end data for inland
                 }
 

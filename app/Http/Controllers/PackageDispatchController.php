@@ -535,7 +535,7 @@ class PackageDispatchController extends Controller
 
                                 //data for INLAND
                                 $packageController = new PackageController();
-                                $packageController->SendStatusToInland($package, 'Dispatch', null);
+                                $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
                                 Log::info('============ CREATED TASK COMPLETED ================');
@@ -648,7 +648,7 @@ class PackageDispatchController extends Controller
 
                             //data for INLAND
                             $packageController = new PackageController();
-                            $packageController->SendStatusToInland($package, 'Dispatch', null);
+                            $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                             //end data for inland
 
                             Log::info('============ CREATED TASK COMPLETED ================');
@@ -1334,7 +1334,7 @@ class PackageDispatchController extends Controller
 
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode);
+                    $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
                     //end data for inland
 
                     /*if($comment->finalStatus == 0)

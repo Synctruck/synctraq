@@ -239,7 +239,7 @@ class PackageLostController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'Lost', null);
+                $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
 
@@ -428,7 +428,7 @@ class PackageLostController extends Controller
                         $packageHistory->save();
 
                         $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageInbound, 'Lost', null);
+                        $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                         $package = $packageInbound;
 

@@ -395,7 +395,7 @@ class PackagePreDispatchController extends Controller
 
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packagePreDispatch, 'Dispatch', null);
+                    $packageController->SendStatusToInland($packagePreDispatch, 'Dispatch', null, $created_at);
                     //end data for inland
 
                     $packageDispatch->idOnfleet   = $idOnfleet;

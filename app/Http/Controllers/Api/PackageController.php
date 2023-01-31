@@ -406,7 +406,7 @@ class PackageController extends Controller
         }
     }
 
-    public function SendStatusToInland($package, $status, $idPhoto = null)
+    public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
         $statusCodeCompany = '';
         $key_webhook       = '';
@@ -485,7 +485,8 @@ class PackageController extends Controller
                             "label": "",
                             "value": ""
                         }
-                    ]
+                    ],
+                    "datetime" : "'. $created_at .'"
                 }', 
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: '. $key_webhook,

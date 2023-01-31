@@ -763,9 +763,11 @@ class PackageDeliveryController extends Controller
                             $photoUrl = '';
                         }
 
+                        $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
+
                         //data for INLAND 
                         $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl));
+                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
                         //end data for inland
                     }
                 }
