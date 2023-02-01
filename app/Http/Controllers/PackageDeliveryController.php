@@ -605,7 +605,7 @@ class PackageDeliveryController extends Controller
 
                             $packageHistory->save();
 
-                            if($packageDispatch->status == 'Dispatch')
+                            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete')
                             {
                                 $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
                                 $packageDispatch->workerName         = '';
@@ -846,7 +846,7 @@ class PackageDeliveryController extends Controller
 
             $packageHistory->save();
             
-            if($packageDispatch->status == 'Dispatch')
+            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete')
             {
                 $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
                 $packageDispatch->workerName         = '';
