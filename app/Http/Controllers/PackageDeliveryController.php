@@ -616,6 +616,11 @@ class PackageDeliveryController extends Controller
                                 $packageDispatch->arrivalLonLat      = $arrivalLonLat;
                                 $packageDispatch->status             = 'Delivery';
 
+                                if(isset($row[4]) && $row[4] != '')
+                                {
+                                    $packageDispatch->idTeam = $row[4];
+                                }
+
                                 $packageDispatch->save();
                             }
                             else
@@ -701,6 +706,11 @@ class PackageDeliveryController extends Controller
                                 $packageDispatch->Date_Delivery      = $created_at;
                                 $packageDispatch->arrivalLonLat      = $arrivalLonLat;
                                 $packageDispatch->status             = 'Delivery';
+
+                                if(isset($row[4]) && $row[4] != '')
+                                {
+                                    $packageDispatch->idTeam = $row[4];
+                                }
 
                                 $packageDispatch->save();
                             }
@@ -857,6 +867,11 @@ class PackageDeliveryController extends Controller
                 $packageDispatch->arrivalLonLat      = $arrivalLonLat;
                 $packageDispatch->status             = 'Delivery';
 
+                if(isset($row[4]) && $row[4] != '')
+                {
+                    $packageDispatch->idTeam = $row[4];
+                }
+
                 $packageDispatch->save();
             }
             else
@@ -938,6 +953,11 @@ class PackageDeliveryController extends Controller
                 $packageDispatch->Date_Delivery      = $created_at;
                 $packageDispatch->arrivalLonLat      = $arrivalLonLat;
                 $packageDispatch->status             = 'Delivery';
+
+                if(isset($row[4]) && $row[4] != '')
+                {
+                    $packageDispatch->idTeam = $row[4];
+                }
 
                 $packageDispatch->save();
             }
