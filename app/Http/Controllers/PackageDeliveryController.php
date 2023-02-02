@@ -571,7 +571,15 @@ class PackageDeliveryController extends Controller
                         
                         $arrivalLonLat = $row[3]; 
                         $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
-                        $description   = 'For: Import Report Delivery (Photo)';
+
+                        if(isset($row[4]) && $row[4] != '')
+                        {
+                            $description = 'For: Brooks Courier (Import Report Delivery)';
+                        }
+                        else
+                        {
+                            $description = 'For: Import Report Delivery (Photo)';
+                        }
 
                         if($packageDispatch->status != 'Delivery')
                         {
@@ -801,7 +809,14 @@ class PackageDeliveryController extends Controller
     {
         $packageDispatchAux = PackageDispatch::find($packageDispatch->Reference_Number_1);
 
-        $description = 'For: Import Report Delivery';
+        if(isset($row[4]) && $row[4] != '')
+        {
+            $description = 'For: Brooks Courier (Import Report Delivery)';
+        }
+        else
+        {
+            $description = 'For: Import Report Delivery (Photo)';
+        }
 
         $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
 
