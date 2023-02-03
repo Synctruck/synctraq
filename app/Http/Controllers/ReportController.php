@@ -102,7 +102,9 @@ class ReportController extends Controller
 
     public function ListInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck)
     {
-        $listAll = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck);
+        $data                  = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Inbound')
@@ -114,7 +116,12 @@ class ReportController extends Controller
                                     ->groupBy('TRUCK')
                                     ->get();
 
-        return ['listAll' => $listAll, 'listState' => $listState,'listTruck'=>$listTruck];
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'listAll' => $packageHistoryListNew,
+            'listState' => $listState,
+            'listTruck'=>$listTruck
+        ];
     }
 
     private function getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'list')
@@ -131,7 +138,7 @@ class ReportController extends Controller
                                     'validator' => function($query){ $query->select('id', 'name', 'nameOfOwner'); },
 
                                 ])
-                                ->whereBetween('Date_Inbound', [$dateInit, $dateEnd])
+                                ->whereBetween('created_at', [$dateInit, $dateEnd])
                                 ->where('status', 'Inbound');
 
         if($route != 'all')
@@ -157,7 +164,7 @@ class ReportController extends Controller
         if($type =='list')
         {
             $listAll = $listAll->select(
-                                    'Date_Inbound',
+                                    'created_at',
                                     'company',
                                     'idUserInbound',
                                     'TRUCK',
@@ -171,15 +178,61 @@ class ReportController extends Controller
                                     'Weight',
                                     'Route'
                                 )
-                                ->orderBy('Date_Inbound', 'desc')
+                                ->orderBy('created_at', 'desc')
                                 ->paginate(50);
         }
         else
         {
-            $listAll = $listAll->orderBy('Date_Inbound', 'desc')->get();
+            $listAll = $listAll->orderBy('created_at', 'desc')->get();
         }
 
-        return $listAll;
+        $idsExists             = [];
+        $packageHistoryListNew = [];
+
+        foreach($listAll as $packageHistory)
+        {
+            if(in_array($packageHistory->Reference_Number_1, $idsExists) === false)
+            {
+                $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                                ->where('status', 'Dispatch')
+                                                ->first();
+
+                $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->last();
+                
+                $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
+
+                $package = [
+
+                    "created_at" => $packageHistory->created_at,
+                    "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
+                    "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
+                    "company" => $packageHistory->company,
+                    "validator" => $validator,
+                    "TRUCK" => $packageHistory->TRUCK, 
+                    "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                    "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                    "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                    "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                    "Dropoff_City" => $packageHistory->Dropoff_City,
+                    "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                    "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                    "Route" => $packageHistory->weight,
+                    "Weight" => $packageHistory->Route,
+                ];
+
+                array_push($packageHistoryListNew, $package);
+                array_push($idsExists, $packageHistory->Reference_Number_1);
+            }
+        }
+
+        return [
+
+            'packageHistoryList' => $listAll,
+            'listAll' => $packageHistoryListNew,
+        ];
     }
 
     public function IndexDispatch()
@@ -490,41 +543,33 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'DELIVERY DATE', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
 
         $listPackageInbound = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
+        $listPackageInbound = $listPackageInbound['listAll'];
 
         foreach($listPackageInbound as $packageInbound)
         {
-            $inbound = [];
-
-            if($packageInbound->validator)
-            {
-                $validator = $packageInbound->validator->name .' '. $packageInbound->validator->nameOfOwner;
-            }
-            else
-            {
-                $validator = '';
-            }
-
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound->created_at)),
-                                date('H:i:s', strtotime($packageInbound->created_at)),
-                                $packageInbound->company,
-                                $validator,
-                                $packageInbound->TRUCK,
-                                $packageInbound->Reference_Number_1,
-                                $packageInbound->Dropoff_Contact_Name,
-                                $packageInbound->Dropoff_Contact_Phone_Number,
-                                $packageInbound->Dropoff_Address_Line_1,
-                                $packageInbound->Dropoff_City,
-                                $packageInbound->Dropoff_Province,
-                                $packageInbound->Dropoff_Postal_Code,
-                                $packageInbound->Weight,
-                                $packageInbound->Route
+                                date('m-d-Y', strtotime($packageInbound['created_at'])),
+                                date('H:i:s', strtotime($packageInbound['created_at'])),
+                                $packageInbound['dispatchDate'],
+                                $packageInbound['deliveryDate'],
+                                $packageInbound['company'],
+                                $packageInbound['validator'],
+                                $packageInbound['TRUCK'],
+                                $packageInbound['Reference_Number_1'],
+                                $packageInbound['Dropoff_Contact_Name'],
+                                $packageInbound['Dropoff_Contact_Phone_Number'],
+                                $packageInbound['Dropoff_Address_Line_1'],
+                                $packageInbound['Dropoff_City'],
+                                $packageInbound['Dropoff_Province'],
+                                $packageInbound['Dropoff_Postal_Code'],
+                                $packageInbound['Weight'],
+                                $packageInbound['Route']
                             );
 
             fputcsv($file, $lineData, $delimiter);
