@@ -161,7 +161,6 @@ function ReportInbound() {
                 <td>{ pack.Dropoff_City }</td>
                 <td>{ pack.Dropoff_Province }</td>
                 <td>{ pack.Dropoff_Postal_Code }</td>
-                <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
             </tr>
         );
@@ -382,7 +381,6 @@ function ReportInbound() {
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
-                                                <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                             </tr>
                                         </thead>

@@ -219,8 +219,7 @@ class ReportController extends Controller
                     "Dropoff_City" => $packageHistory->Dropoff_City,
                     "Dropoff_Province" => $packageHistory->Dropoff_Province,
                     "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
-                    "Route" => $packageHistory->weight,
-                    "Weight" => $packageHistory->Route,
+                    "Route" => $packageHistory->Route,
                 ];
 
                 array_push($packageHistoryListNew, $package);
@@ -543,7 +542,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'DELIVERY DATE', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'DELIVERY DATE', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -568,7 +567,6 @@ class ReportController extends Controller
                                 $packageInbound['Dropoff_City'],
                                 $packageInbound['Dropoff_Province'],
                                 $packageInbound['Dropoff_Postal_Code'],
-                                $packageInbound['Weight'],
                                 $packageInbound['Route']
                             );
 
