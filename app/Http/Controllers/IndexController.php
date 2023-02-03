@@ -67,10 +67,16 @@ class IndexController extends Controller
         $initDate = $startDate.' 00:00:00';
         $endDate  = $endDate.' 23:59:59';
 
-        $quantityManifest = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+        $quantityManifest = PackageHistory::toBase()
+                                        ->select(['Reference_Number_1', 'created_at'])
+                                        ->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+                                        ->where('status', 'Manifest')
+                                        ->cursor();
+
+        /*$quantityManifest = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                                 ->where('status', 'Manifest')
                                                 ->get()
-                                                ->count();
+                                                ->count();*/
 
         // $quantityManifestByRoutes =  PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
         //                                             ->select('Route', DB::raw('COUNT(id) AS total'))
@@ -78,16 +84,39 @@ class IndexController extends Controller
         //                                             ->groupBy('Route')
         //                                             ->get();
 
-        $quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+        $quantityInbound = PackageHistory::toBase()
+                                        ->select(['Reference_Number_1', 'created_at'])
+                                        ->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
+                                        ->where('status', 'Inbound')
+                                        ->cursor();
+
+        /*$quantityInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
                                             ->where('status', 'Inbound')
                                             ->get()
-                                            ->count();
+                                            ->count();*/
 
 
-        $quantityReInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
+        $quantityReInbound = PackageHistory::toBase()
+                                        ->select(['Reference_Number_1', 'created_at'])
+                                        ->whereBetween('created_at', [$initDate, $endDate])
+                                        ->where('status', 'ReInbound')
+                                        ->cursor();
+
+        /*$quantityReInbound = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
                                                 ->where('status', 'ReInbound')
                                                 ->get()
-                                                ->count();
+                                                ->count();*/
+
+        $quantityFailed = PackageHistory::toBase()
+                                        ->select(['Reference_Number_1', 'created_at'])
+                                        ->whereBetween('created_at', [$initDate, $endDate])
+                                        ->where('status', 'Failed')
+                                        ->cursor();
+
+        /*$quantityFailed = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('status', 'Failed')
+                                                ->get()
+                                                ->count();*/
 
         $quantityDispatch = PackageDispatch::whereBetween('created_at', [$initDate, $endDate])
                                             ->get()
@@ -98,30 +127,25 @@ class IndexController extends Controller
                                             ->get()
                                             ->count();
 
-        $quantityFailed = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$initDate, $endDate])
-                                                ->where('status', 'Failed')
-                                                ->get()
-                                                ->count();
-
-
         $quantityWarehouse = PackageWarehouse::select(DB::raw('DISTINCT Reference_Number_1'))->where('status', 'Warehouse')
                                                 ->get()
                                                 ->count();
 
 
         return [
-            'quantityManifest' => $quantityManifest,
-            'quantityInbound' => $quantityInbound,
-            'quantityReInbound' => $quantityReInbound,
+            'quantityManifest' => count($quantityManifest),
+            'quantityInbound' => count($quantityInbound),
+            'quantityReInbound' => count($quantityReInbound),
             'quantityDispatch' => $quantityDispatch,
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
-            'quantityFailed' => $quantityFailed,
+            'quantityFailed' => count($quantityFailed),
         ];
     }
 
     public function GetDataPerDate(Request $request, $startDate, $endDate)
     {
+        dd(2);
         $leastOneDayStartDate = date("Y-m-d",strtotime($startDate ."- 1 days")) .' 00:00:00';
         $leastOneDayEndDate   = date("Y-m-d",strtotime($endDate ."- 1 days")) .' 23:59:59';
         $startDate            = date("Y-m-d",strtotime($startDate)) .' 00:00:00';
