@@ -176,7 +176,8 @@ class ReportController extends Controller
                                     'Dropoff_Province',
                                     'Dropoff_Postal_Code',
                                     'Weight',
-                                    'Route'
+                                    'Route',
+                                    'Weight'
                                 )
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(50);
@@ -220,6 +221,7 @@ class ReportController extends Controller
                     "Dropoff_Province" => $packageHistory->Dropoff_Province,
                     "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
                     "Route" => $packageHistory->Route,
+                    "Weight" => $packageHistory->Weight
                 ];
 
                 array_push($packageHistoryListNew, $package);
@@ -567,7 +569,8 @@ class ReportController extends Controller
                                 $packageInbound['Dropoff_City'],
                                 $packageInbound['Dropoff_Province'],
                                 $packageInbound['Dropoff_Postal_Code'],
-                                $packageInbound['Route']
+                                $packageInbound['Route'],
+                                $packageInbound['Weight']
                             );
 
             fputcsv($file, $lineData, $delimiter);
