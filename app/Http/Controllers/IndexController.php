@@ -127,13 +127,13 @@ class IndexController extends Controller
 
 
         return [
-            'quantityManifest' => count($quantityManifest),
-            'quantityInbound' => count($quantityInbound),
-            'quantityReInbound' => count($quantityReInbound),
+            'quantityManifest' => $quantityManifest,
+            'quantityInbound' => $quantityInbound,
+            'quantityReInbound' => $quantityReInbound,
             'quantityDispatch' => $quantityDispatch,
             'quantityDelivery' => $quantityDelivery,
             'quantityWarehouse' => $quantityWarehouse,
-            'quantityFailed' => count($quantityFailed),
+            'quantityFailed' => $quantityFailed,
         ];
     }
 
