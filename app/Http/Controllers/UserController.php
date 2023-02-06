@@ -161,11 +161,6 @@ class UserController extends Controller
 
     public function Login()
     {
-        /*$fecha_tmp = DateTime::createFromFormat('Y-m-d H:i:s', '2023-02-03 16:09:10');
-        $fecha_str = $fecha_tmp->format(DateTime::ATOM);
-        echo $fecha_str;
-
-        dd(3);*/
         return view('user.login');
     }
 
