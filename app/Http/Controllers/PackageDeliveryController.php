@@ -783,10 +783,14 @@ class PackageDeliveryController extends Controller
 
                         $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
 
-                        //data for INLAND 
-                        $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
-                        //end data for inland
+                        if(isset($row[5]) && $row[5] == 'YES')
+                        {
+                            //data for INLAND 
+                            $packageController = new PackageController();
+                            $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+                            //end data for inland
+                        }
+                        
                     }
                 }
             }
