@@ -790,7 +790,6 @@ class PackageDeliveryController extends Controller
                             $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
                             //end data for inland
                         }
-                        
                     }
                 }
             }
