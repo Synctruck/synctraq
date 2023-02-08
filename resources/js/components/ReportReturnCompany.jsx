@@ -416,10 +416,12 @@ function ReportReturnCompany() {
 
                         icon: "success",
                     });
+
+                    listReturnCompany(1, RouteSearch, StateSearch);
                 }
 
                 setViewButtonSave('none');
-                
+
                 LoadingHide();
             },
         );
