@@ -296,9 +296,9 @@ class PackageReturnCompanyController extends Controller
                         {
                             if($packageInbound->status == 'PreRts')
                             {
-                                $packageReturnCompany->status = 'ReturnCompany';
+                                $packageInbound->status = 'ReturnCompany';
 
-                                $packageReturnCompany->save();
+                                $packageInbound->save();
                             }
                             else
                             {
