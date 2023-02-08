@@ -53,12 +53,12 @@ function ReportReturnCompany() {
     useEffect(() => {
 
         if(String(file) == 'undefined' || file == '')
-        {               
+        {
             setViewButtonSave('none');
         }
         else
-        {               
-            setViewButtonSave('none');;
+        {
+            setViewButtonSave('block');
         }
 
     }, [file]);
@@ -71,12 +71,11 @@ function ReportReturnCompany() {
     }, [dateInit, dateEnd]);
 
     const onBtnClickFile = () => {
-                
-                setViewButtonSave('none')
+
+        setViewButtonSave('none');
 
         inputFileRef.current.click();
     }
-
     const listReturnCompany = (pageNumber, routeSearch, stateSearch) => {
 
         setIsLoading(true);
@@ -418,9 +417,9 @@ function ReportReturnCompany() {
                         icon: "success",
                     });
                 }
-                
-                setViewButtonSave('none');
 
+                setViewButtonSave('none');
+                
                 LoadingHide();
             },
         );
