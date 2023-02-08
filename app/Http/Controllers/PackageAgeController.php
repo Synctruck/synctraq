@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Log;
 use Session;
 use DateTime;
-
+ 
 class PackageAgeController extends Controller
 {
     public function Index()
@@ -160,6 +160,8 @@ class PackageAgeController extends Controller
                     "company" => $packageHistory->company,
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
                     "status" => $status['status'],
+                    "statusDate" => $status['statusDate'],
+                    "statusDescription" => $status['statusDescription'],
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
                     "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
@@ -186,16 +188,25 @@ class PackageAgeController extends Controller
         $package = PackageInbound::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+
+        $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
         if($package)
         {
-            return ['status' => $package->status];
+            return [
+                'status' => $package->status,
+                'statusDate' => $packageLast->created_at,
+                'statusDescription' => $packageLast->Description
+            ];
         }
         else
         {
-            return ['status' => ''];
+            return [
+                'status' => '',
+                'statusDate' => $packageLast->created_at,
+                'statusDescription' => $packageLast->Description
+            ];
         }
     }
 

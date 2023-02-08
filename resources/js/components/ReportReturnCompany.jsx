@@ -53,12 +53,12 @@ function ReportReturnCompany() {
     useEffect(() => {
 
         if(String(file) == 'undefined' || file == '')
-        {
+        {               
             setViewButtonSave('none');
         }
         else
-        {
-            setViewButtonSave('block');
+        {               
+            setViewButtonSave('none');;
         }
 
     }, [file]);
@@ -70,6 +70,12 @@ function ReportReturnCompany() {
 
     }, [dateInit, dateEnd]);
 
+    const onBtnClickFile = () => {
+                
+                setViewButtonSave('none')
+
+        inputFileRef.current.click();
+    }
 
     const listReturnCompany = (pageNumber, routeSearch, stateSearch) => {
 
@@ -385,6 +391,41 @@ function ReportReturnCompany() {
         myModal.show();
     }
 
+    const handlerImport = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', file);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'report/return-company/import', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("The file was imported!", {
+
+                        icon: "success",
+                    });
+                }
+                
+                setViewButtonSave('none');
+
+                LoadingHide();
+            },
+        );
+    }
+
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -522,6 +563,21 @@ function ReportReturnCompany() {
                                     </div>
                                     <div className="col-lg-3">
                                         <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                                 <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>

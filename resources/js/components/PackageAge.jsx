@@ -109,6 +109,10 @@ function PackageAge() {
                 <td><b>{ packageInbound.company }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
                 <td>{ packageInbound.status }</td>
+                <td>
+                    { packageInbound.statusDate.substring(5, 7) }-{ packageInbound.statusDate.substring(8, 10) }-{ packageInbound.statusDate.substring(0, 4) }
+                </td>
+                <td>{ packageInbound.statusDescription }</td>
                 <td>{ packageInbound.Dropoff_Contact_Name }</td>
                 <td>{ packageInbound.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageInbound.Dropoff_Address_Line_1 }</td>
@@ -273,6 +277,8 @@ function PackageAge() {
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
+                                                <th>STATUS DATE</th>
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>

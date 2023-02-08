@@ -370,6 +370,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/return-company', [PackageReturnCompanyController::class, 'Index'])->middleware('permission:reportReturncompany.index');
 	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
+	Route::post('/report/return-company/import', [PackageReturnCompanyController::class, 'Import']);
 	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
 	Route::get('/report/return-company/update-created-at', [PackageReturnCompanyController::class, 'UpdateCreatedAt']);
 
