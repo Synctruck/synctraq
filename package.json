@@ -34,6 +34,7 @@
         "dayjs": "^1.11.5",
         "google-map-react": "^2.2.0",
         "moment": "^2.29.4",
+        "react-export-table-to-excel": "^1.0.6",
         "react-js-pagination": "^3.0.2",
         "react-loading": "^2.0.3",
         "react-pace-progress": "^2.0.0",
