@@ -63,11 +63,11 @@ function ReportFailed() {
         .then((response) => {
 
             setIsLoading(false);
-            setListReport(response.reportList.data);
-            setTotalPackage(response.reportList.total);
-            setTotalPage(response.reportList.per_page);
-            setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
+            setListReport(response.reportList);
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityDispatch(response.packageHistoryList.total);
 
             setRoleUser(response.roleUser);
             setListState(response.listState);
@@ -203,6 +203,11 @@ function ReportFailed() {
                         ''
                 }
                 <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.status }</td>
+                <td>
+                    { packageDispatch.statusDate.substring(5, 7) }-{ packageDispatch.statusDate.substring(8, 10) }-{ packageDispatch.statusDate.substring(0, 4) }
+                </td>
+                <td>{ packageDispatch.statusDescription }</td>
                 <td>{ packageDispatch.Dropoff_Contact_Name }</td>
                 <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
@@ -482,6 +487,9 @@ function ReportFailed() {
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
+                                                <th>STATUS DATE</th>}
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>

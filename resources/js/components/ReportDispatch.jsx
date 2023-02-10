@@ -61,11 +61,11 @@ function ReportDispatch() {
         .then((response) => {
 
             setIsLoading(false);
-            setListReport(response.reportList.data);
-            setTotalPackage(response.reportList.total);
-            setTotalPage(response.reportList.per_page);
-            setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
+            setListReport(response.reportList);
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityDispatch(response.packageHistoryList.total);
 
             setRoleUser(response.roleUser);
             setListState(response.listState);
@@ -185,10 +185,14 @@ function ReportDispatch() {
 
             <tr key={i}>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                    { packageDispatch.created_at.substring(11, 19) }
+                </td>
+                <td>
+                    { packageDispatch.inboundDate.substring(5, 7) }-{ packageDispatch.inboundDate.substring(8, 10) }-{ packageDispatch.inboundDate.substring(0, 4) }<br/>
+                    { packageDispatch.inboundDate.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
@@ -486,6 +490,7 @@ function ReportDispatch() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>INBOUND DATE</th>
                                                 <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'

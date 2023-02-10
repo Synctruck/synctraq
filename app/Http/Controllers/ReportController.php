@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Package, PackageDelivery, PackageHistory, PackageInbound, PackageManifest, PackageDispatch, PackageNotExists, User};
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -243,7 +243,9 @@ class ReportController extends Controller
 
     public function ListDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
-        $listPackageDispatch = $this->getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $data                  = $this->getDataDispatch($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
 
         $roleUser = Auth::user()->role->name;
         $idUser   = Auth::user()->id;
@@ -253,7 +255,13 @@ class ReportController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listPackageDispatch, 'listState' => $listState, 'roleUser' => $roleUser,'idUser'=>$idUser];
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'reportList' => $packageHistoryListNew,
+            'listState' => $listState,
+            'roleUser' => $roleUser,
+            'idUser'=> $idUser
+        ];
     }
 
     private function getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
@@ -325,7 +333,40 @@ class ReportController extends Controller
                                                         ->get();
         }
 
-        return $listPackageDispatch;
+        $packageHistoryListNew = [];
+
+        foreach($listPackageDispatch as $packageDispatch)
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('status', 'Inbound')
+                                                ->first();
+                
+            $package = [
+                "taskOnfleet" => $packageDispatch->taskOnfleet,
+                "created_at" => $packageDispatch->created_at,
+                "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
+                "company" => $packageDispatch->company,
+                "team" => $packageDispatch->team,
+                "driver" => $packageDispatch->driver,
+                "Reference_Number_1" => $packageDispatch->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageDispatch->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageDispatch->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageDispatch->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageDispatch->Dropoff_City,
+                "Dropoff_Province" => $packageDispatch->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageDispatch->Dropoff_Postal_Code,
+                "Weight" => $packageDispatch->Weight,
+                "Route" => $packageDispatch->Route
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return [
+
+            'packageHistoryList' => $listPackageDispatch,
+            'listAll' => $packageHistoryListNew,
+        ];
     }
 
     public function IndexDelivery()
@@ -471,8 +512,6 @@ class ReportController extends Controller
             'packageHistoryList' => $listAll,
             'listAll' => $packageHistoryListNew,
         ];
-
-        return $listAll;
     }
 
     public function IndexFailed()
@@ -482,7 +521,9 @@ class ReportController extends Controller
 
     public function ListFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
-        $listPackageFailed = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $data                  = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
 
         $roleUser = Auth::user()->role->name;
         $idUser   = Auth::user()->id;
@@ -492,7 +533,13 @@ class ReportController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listPackageFailed, 'listState' => $listState, 'roleUser' => $roleUser, 'idUser' => $idUser];
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'reportList' => $packageHistoryListNew,
+            'listState' => $listState,
+            'roleUser' => $roleUser,
+            'idUser' => $idUser
+        ];
     }
 
     private function getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
@@ -560,8 +607,40 @@ class ReportController extends Controller
                                                         ->orderBy('created_at', 'desc')
                                                         ->get();
         }
+        
+        $packageHistoryListNew = []; 
 
-        return $listPackageFailed;
+        foreach($listPackageFailed as $packageFailed)
+        {
+            $status = $this->GetStatus($packageFailed->Reference_Number_1);
+                
+            $package = [ 
+                "created_at" => $packageFailed->created_at,
+                "status" => $status['status'],
+                "statusDate" => $status['statusDate'],
+                "statusDescription" => $status['statusDescription'],
+                "company" => $packageFailed->company,
+                "team" => $packageFailed->team,
+                "driver" => $packageFailed->driver,
+                "Reference_Number_1" => $packageFailed->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageFailed->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageFailed->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageFailed->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageFailed->Dropoff_City,
+                "Dropoff_Province" => $packageFailed->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageFailed->Dropoff_Postal_Code,
+                "Weight" => $packageFailed->Weight,
+                "Route" => $packageFailed->Route
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return [
+
+            'packageHistoryList' => $listPackageFailed,
+            'listAll' => $packageHistoryListNew,
+        ];
     }
 
     public function IndexNotExists()
@@ -644,28 +723,29 @@ class ReportController extends Controller
         fputcsv($file, $fields, $delimiter);
 
         $listPackageDispatch = $this->getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
+        $listPackageDispatch = $listPackageDispatch['listAll'];
 
         foreach($listPackageDispatch as $packageDispatch)
         {
-            $team   = isset($packageDispatch->team) ? $packageDispatch->team->name : '';
-            $driver = isset($packageDispatch->driver) ? $packageDispatch->driver->name .' '. $packageDispatch->driver->nameOfOwner : '';
+            $team   = isset($packageDispatch['team']) ? $packageDispatch['team']['name'] : '';
+            $driver = isset($packageDispatch['driver']) ? $packageDispatch['driver']['name'] .' '. $packageDispatch['driver']['nameOfOwner'] : '';
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDispatch->created_at)),
-                                date('H:i:s', strtotime($packageDispatch->created_at)),
-                                $packageDispatch->company,
+                                date('m-d-Y', strtotime($packageDispatch['created_at'])),
+                                date('H:i:s', strtotime($packageDispatch['created_at'])),
+                                $packageDispatch['company'],
                                 $team,
                                 $driver,
-                                $packageDispatch->Reference_Number_1,
-                                $packageDispatch->Dropoff_Contact_Name,
-                                $packageDispatch->Dropoff_Contact_Phone_Number,
-                                $packageDispatch->Dropoff_Address_Line_1,
-                                $packageDispatch->Dropoff_City,
-                                $packageDispatch->Dropoff_Province,
-                                $packageDispatch->Dropoff_Postal_Code,
-                                $packageDispatch->Weight,
-                                $packageDispatch->Route,
-                                $packageDispatch->taskOnfleet,
+                                $packageDispatch['Reference_Number_1'],
+                                $packageDispatch['Dropoff_Contact_Name'],
+                                $packageDispatch['Dropoff_Contact_Phone_Number'],
+                                $packageDispatch['Dropoff_Address_Line_1'],
+                                $packageDispatch['Dropoff_City'],
+                                $packageDispatch['Dropoff_Province'],
+                                $packageDispatch['Dropoff_Postal_Code'],
+                                $packageDispatch['Weight'],
+                                $packageDispatch['Route'],
+                                $packageDispatch['taskOnfleet'],
                             );
 
             fputcsv($file, $lineData, $delimiter);
@@ -874,5 +954,33 @@ class ReportController extends Controller
     public function IndexAssigns()
     {
         return view('report.indexassigns');
+    }
+
+    public function GetStatus($Reference_Number_1)
+    {
+        $package = PackageManifest::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+
+        $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1);
+
+        if($package)
+        {
+            $packageLast = $packageLast->where('status', $package->status);
+        }
+
+        $packageLast = $packageLast->get()->last();
+
+        return [
+            'status' => ($package ? $package->status : ''),
+            'statusDate' => $packageLast->created_at,
+            'statusDescription' => ($packageLast->Description != null || $packageLast->Description != '' ? $packageLast->Description : $packageLast->Description_Onfleet)
+        ];
     }
 }
