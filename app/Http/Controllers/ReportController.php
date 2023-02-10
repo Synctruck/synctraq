@@ -448,7 +448,7 @@ class ReportController extends Controller
                 "idOnfleet" => $packageDelivery->idOnfleet,
                 "photoUrl" => $packageDelivery->photoUrl,
                 "Date_Delivery" => $packageDelivery->Date_Delivery,
-                "inboundDate" => $packageInbound->created_at,
+                "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
                 "company" => $packageDelivery->company,
                 "team" => $packageDelivery->team,
                 "driver" => $packageDelivery->driver,
