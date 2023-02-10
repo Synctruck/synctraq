@@ -501,7 +501,9 @@ class ReportController extends Controller
                 "Dropoff_Province" => $packageDelivery->Dropoff_Province,
                 "Dropoff_Postal_Code" => $packageDelivery->Dropoff_Postal_Code,
                 "Weight" => $packageDelivery->Weight,
-                "Route" => $packageDelivery->Route
+                "Route" => $packageDelivery->Route,
+                "pricePaymentTeam" => $packageDelivery->pricePaymentTeam,
+                "pieces" => $packageDelivery->pieces,
             ];
 
             array_push($packageHistoryListNew, $package);
@@ -768,45 +770,47 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
+        $fields = array('DATE', 'HOUR', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
 
         fputcsv($file, $fields, $delimiter);
 
         $listPackageDelivery = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='export');
+        $listPackageDelivery = $listPackageDelivery['listAll'];
 
         foreach($listPackageDelivery as $packageDelivery)
         {
-            $team   = isset($packageDelivery->team) ? $packageDelivery->team->name : '';
-            $driver = isset($packageDelivery->driver) ? $packageDelivery->driver->name .' '. $packageDelivery->driver->nameOfOwner : '';
+            $team   = isset($packageDelivery['team']) ? $packageDelivery['team']['name'] : '';
+            $driver = isset($packageDelivery['driver']) ? $packageDelivery['driver']['name'] .' '. $packageDelivery['driver']['nameOfOwner'] : '';
 
             $urlImage1 = '';
             $urlImage2 = '';
 
-            if($packageDelivery->photoUrl != '')
+            if($packageDelivery['photoUrl'] != '')
             {
-                $imagesIds = explode(',', $packageDelivery->photoUrl);
+                $imagesIds = explode(',', $packageDelivery['photoUrl']);
 
                 $urlImage1 = count($imagesIds) > 0 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[0] .'/800x.png' : '';
                 $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
             }
             
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
-                                date('H:i:s', strtotime($packageDelivery->Date_Delivery)),
-                                $packageDelivery->company,
+                                date('m-d-Y', strtotime($packageDelivery['Date_Delivery'])),
+                                date('H:i:s', strtotime($packageDelivery['Date_Delivery'])),
+                                $packageDelivery['inboundDate'],
+                                $packageDelivery['company'],
                                 $team,
                                 $driver,
-                                $packageDelivery->Reference_Number_1,
-                                $packageDelivery->Dropoff_Contact_Name,
-                                $packageDelivery->Dropoff_Contact_Phone_Number,
-                                $packageDelivery->Dropoff_Address_Line_1,
-                                $packageDelivery->Dropoff_City,
-                                $packageDelivery->Dropoff_Province,
-                                $packageDelivery->Dropoff_Postal_Code,
-                                $packageDelivery->Weight,
-                                $packageDelivery->Route,
-                                $packageDelivery->pricePaymentTeam,
-                                $packageDelivery->pieces,
+                                $packageDelivery['Reference_Number_1'],
+                                $packageDelivery['Dropoff_Contact_Name'],
+                                $packageDelivery['Dropoff_Contact_Phone_Number'],
+                                $packageDelivery['Dropoff_Address_Line_1'],
+                                $packageDelivery['Dropoff_City'],
+                                $packageDelivery['Dropoff_Province'],
+                                $packageDelivery['Dropoff_Postal_Code'],
+                                $packageDelivery['Weight'],
+                                $packageDelivery['Route'],
+                                $packageDelivery['pricePaymentTeam'],
+                                $packageDelivery['pieces'],
                                 $urlImage1,
                                 $urlImage2,
                             );
@@ -831,32 +835,36 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
-
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+ 
         fputcsv($file, $fields, $delimiter);
 
         $listPackageFailed = $this->getDataFailed($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
+        $listPackageFailed = $listPackageFailed['listAll'];
 
         foreach($listPackageFailed as $packageFailed)
         {
-            $team   = isset($packageFailed->team) ? $packageFailed->team->name : '';
-            $driver = isset($packageFailed->driver) ? $packageFailed->driver->name .' '. $packageFailed->driver->nameOfOwner : '';
+            $team   = isset($packageFailed['team']) ? $packageFailed['team']->name : '';
+            $driver = isset($packageFailed['driver']) ? $packageFailed['driver']->name .' '. $packageFailed['driver']->nameOfOwner : '';
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageFailed->created_at)),
-                                date('H:i:s', strtotime($packageFailed->created_at)),
-                                $packageFailed->company,
+                                date('m-d-Y', strtotime($packageFailed['created_at'])),
+                                date('H:i:s', strtotime($packageFailed['created_at'])),
+                                $packageFailed['company'],
                                 $team,
                                 $driver,
-                                $packageFailed->Reference_Number_1,
-                                $packageFailed->Dropoff_Contact_Name,
-                                $packageFailed->Dropoff_Contact_Phone_Number,
-                                $packageFailed->Dropoff_Address_Line_1,
-                                $packageFailed->Dropoff_City,
-                                $packageFailed->Dropoff_Province,
-                                $packageFailed->Dropoff_Postal_Code,
-                                $packageFailed->Weight,
-                                $packageFailed->Route
+                                $packageFailed['Reference_Number_1'],
+                                $packageFailed['status'],
+                                $packageFailed['statusDate'],
+                                $packageFailed['statusDescription'],
+                                $packageFailed['Dropoff_Contact_Name'],
+                                $packageFailed['Dropoff_Contact_Phone_Number'],
+                                $packageFailed['Dropoff_Address_Line_1'],
+                                $packageFailed['Dropoff_City'],
+                                $packageFailed['Dropoff_Province'],
+                                $packageFailed['Dropoff_Postal_Code'],
+                                $packageFailed['Weight'],
+                                $packageFailed['Route']
                             );
 
             fputcsv($file, $lineData, $delimiter);
