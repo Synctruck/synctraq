@@ -102,13 +102,13 @@ function ReportDelivery() {
         .then((response) => {
 
             setIsLoading(false);
-            setListReport(response.reportList.data);
+            setListReport(response.reportList);
             setListDeliveries(response.listDeliveries);
-            setTotalPackage(response.reportList.total);
-            setTotalPage(response.reportList.per_page);
-            setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
-
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityDispatch(response.packageHistoryList.total);
+ 
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -369,6 +369,10 @@ function ReportDelivery() {
                 </td>
                 <td>
                     { packageDelivery.Date_Delivery.substring(11, 19) }
+                </td>
+                <td>
+                    { packageDelivery.inboundDate.substring(5, 7) }-{ packageDelivery.inboundDate.substring(8, 10) }-{ packageDelivery.inboundDate.substring(0, 4) }<br/>
+                    { packageDelivery.inboundDate.substring(11, 19) }
                 </td>
                 <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
@@ -836,6 +840,7 @@ function ReportDelivery() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>INBOUND DATE</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>

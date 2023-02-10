@@ -337,11 +337,13 @@ class ReportController extends Controller
     {
         $Reference_Number_1s = [];
 
-        $listAll = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $data                  = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
 
-        foreach($listAll as $delivery)
+        foreach($packageHistoryListNew as $delivery)
         {
-            array_push($Reference_Number_1s, $delivery->Reference_Number_1);
+            array_push($Reference_Number_1s, $delivery['Reference_Number_1']);
         }
 
         $listDeliveries = PackageDelivery::whereIn('taskDetails', $Reference_Number_1s)
@@ -355,7 +357,13 @@ class ReportController extends Controller
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'reportList' => $packageHistoryListNew,
+            'listState' => $listState,
+            'listDeliveries'=> $listDeliveries,
+            'roleUser' => $roleUser
+        ];
     }
 
     private function getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state,$type='list'){
@@ -425,6 +433,44 @@ class ReportController extends Controller
         {
             $listAll = $listAll->with(['team', 'driver'])->orderBy('Date_Delivery', 'desc')->get();
         }
+
+        $packageHistoryListNew = [];
+
+        foreach($listAll as $packageDelivery)
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                ->where('status', 'Inbound')
+                                                ->first();
+                
+            $validator = $packageDelivery->validator ? $packageDelivery->validator->name .' '. $packageDelivery->validator->nameOfOwner : '';
+
+            $package = [
+                "idOnfleet" => $packageDelivery->idOnfleet,
+                "photoUrl" => $packageDelivery->photoUrl,
+                "Date_Delivery" => $packageDelivery->Date_Delivery,
+                "inboundDate" => $packageInbound->created_at,
+                "company" => $packageDelivery->company,
+                "team" => $packageDelivery->team,
+                "driver" => $packageDelivery->driver,
+                "Reference_Number_1" => $packageDelivery->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageDelivery->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageDelivery->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageDelivery->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageDelivery->Dropoff_City,
+                "Dropoff_Province" => $packageDelivery->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageDelivery->Dropoff_Postal_Code,
+                "Weight" => $packageDelivery->Weight,
+                "Route" => $packageDelivery->Route
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return [
+
+            'packageHistoryList' => $listAll,
+            'listAll' => $packageHistoryListNew,
+        ];
 
         return $listAll;
     }
