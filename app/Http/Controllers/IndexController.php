@@ -193,16 +193,12 @@ class IndexController extends Controller
                                             ->orderBy('Route', 'asc')
                                             ->get();
         
-        $dataPerTeams = DB::select("SELECT
+        /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
                                 (SELECT count(DISTINCT Reference_Number_1)
                                 FROM packagedispatch p2
                                 where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status = 'Dispatch' AND p2.idTeam  = p.idTeam
                                 ) as total_dispatch,
-                                (SELECT count(DISTINCT Reference_Number_1)
-                                FROM packagereturn p3
-                                where (p3.created_at  BETWEEN '$startDate' AND '$endDate')  AND p3.idTeam  = p.idTeam
-                                ) as total_reinbound,
                                 (SELECT count(DISTINCT Reference_Number_1)
                                 FROM packagehistory p4
                                 where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
@@ -216,7 +212,7 @@ class IndexController extends Controller
                                 WHERE (p.created_at BETWEEN '$startDate' AND '$endDate' )
                                 GROUP  BY p.idTeam
                                 ORDER BY total_dispatch DESC"
-                                );
+                                );*/
 
         return [
 
@@ -226,7 +222,7 @@ class IndexController extends Controller
             'packageDeliveryList' => $packageDeliveryList,
             'packageHistoryListProcess' => $packageHistoryListProcess,
             'packageRouteList'   => $packageRouteList,
-            'dataPerTeams' => $dataPerTeams,
+            'dataPerTeams' => [],
        ];
        
         /*$dataPerRoutes = DB::select("SELECT

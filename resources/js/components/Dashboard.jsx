@@ -13,6 +13,7 @@ import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import moment from 'moment';
 import { Grid } from '@mui/material'
 import { CalendarPicker } from '@mui/x-date-pickers'
+import ReactLoading from 'react-loading';
 
 // moment().format();
 
@@ -44,6 +45,9 @@ function Dashboard() {
     const [dateStartReport, setDateStartReport] = useState(auxDateStart);
     const [listDataPerRoute, setListDataPerRoute] = useState([]);
     const [listDataPerTeam, setListDataPerTeam] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(false);
+
     const [listPackageRouteTotal, setListPackageRouteTotal]     = useState({
         inbound: 0,
         warehouse: 0,
@@ -135,8 +139,10 @@ function Dashboard() {
     }
 
     const getDataPerDate = async () => {
+        
         setLoading('block');
         setCart('none');
+        setIsLoading(true);
 
         await  fetch(`${url_general}dashboard/getDataPerDate/${dateStartTable}/${dateEndTable}`)
         .then(res => res.json())
@@ -248,8 +254,7 @@ function Dashboard() {
                 delivery: totalDeliveryRoute
             };
             
-            console.log(sortHelper(listReportPerRoute, 'total_pending').reverse());
-
+            sortHelper(listReportPerRoute, 'total_pending').reverse()
             setListPackageRouteTotal(totalPackagesRoute);
             setListDataPerRoute(listReportPerRoute);
 
@@ -264,21 +269,18 @@ function Dashboard() {
 
             setListDataPie(dataPie);
 
-            let totalReinboundTeam = 0;
             let totalDispatchTeam = 0;
             let totalFailedTeam = 0;
             let totalDeliveryTeam = 0;
 
             response.dataPerTeams.forEach(element => {
 
-                totalReinboundTeam += element.total_reinbound;
                 totalDispatchTeam += element.total_dispatch;
                 totalFailedTeam += element.total_failed;
                 totalDeliveryTeam += element.total_delivery;
             });
 
             let totalPackagesTeam = {
-                                reinbound: totalReinboundTeam,
                                 dispatch: totalDispatchTeam,
                                 failed: totalFailedTeam,
                                 delivery: totalDeliveryTeam
@@ -286,7 +288,7 @@ function Dashboard() {
 
             setListPackageTeamTotal(totalPackagesTeam);
             setListDataPerTeam(response.dataPerTeams);
-            
+            setIsLoading(false);
             /*response.dataPerRoutes.forEach(element => {
 
                 totalInboundRoute += element.total_inbound;
@@ -603,6 +605,17 @@ function Dashboard() {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                            {
+                                                (
+                                                    isLoading
+                                                    ? 
+                                                        <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                    :
+                                                        ''
+                                                )
+                                            }
+                                        </div>
                                         <div className="col-lg-12" style={ {display: 'none'} }>
 
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -619,7 +632,7 @@ function Dashboard() {
                                         </div>
                                    </div>
                                 </div>
-                                <div className='col-lg-6 mt-2'>
+                                <div className='col-lg-6 mt-2' style={ {display: 'none'} }>
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY - TEAM</span></h6>
                                     <div className="row form-group table-responsive">
                                         <div className="col-lg-12">
@@ -649,7 +662,7 @@ function Dashboard() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='col-lg-6 col-sm-12 mt-2'>
+                                <div className='col-lg-12 col-sm-12 mt-2'>
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY - ROUTE</span></h6>
                                     <div className="row form-group table-responsive">
                                         <div className="col-lg-12">
