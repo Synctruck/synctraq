@@ -909,7 +909,7 @@ function PackageDispatch() {
 
         return (
 
-            <option value={ team.id }>{ team.name }</option>
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
         );
     });
 
