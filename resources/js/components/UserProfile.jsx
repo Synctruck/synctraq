@@ -26,6 +26,7 @@ function UserProfile() {
     const [address , setAddress] = useState('');
     const [teamName , setTeamName] = useState('');
     const [urlImage , setUrlImage] = useState('');
+    const [changePasswordMandatory , setChangePasswordMandatory] = useState('');
     const [selectedFile, setSelectedFile] = useState('');
 
     const [permissionsList, setPermissionsList] = useState([]);
@@ -112,6 +113,14 @@ function UserProfile() {
            setAddress(dataUser.address);
            setTeamName(dataUser.nameTeam);
            setUrlImage(dataUser.url_image);
+           setChangePasswordMandatory(dataUser.changePasswordMandatory);
+        
+            if(dataUser.changePasswordMandatory == 0)
+            {
+                swal('Attetion!', 'Has to changed your password of mandatery form', 'warning');
+
+                document.getElementById('buttonChangePassword').click();
+            }
 
            setPermissionsList(response.data.allPermissions);
            let permissions = []
@@ -170,6 +179,12 @@ function UserProfile() {
                     setMessageNewPassword('These fields have to be the same');
                     setMessageConfirmationPassword('These fields have to be the same');
                 }
+                else if(response.stateAction == 'error-passwordEmail')
+                {
+                    setMessageOldPassword('');
+                    setMessageNewPassword('The password must be different to your email');
+                    setMessageConfirmationPassword('');
+                }
                 else if(response.stateAction == true)
                 {
                     setMessageOldPassword('');
@@ -177,6 +192,11 @@ function UserProfile() {
                     setMessageConfirmationPassword('');
 
                     swal('Correct!', 'Updated password', 'success');
+
+                    setTimeout( () => {
+
+                        location.reload();
+                    }, 1500);
                 }
                 else if(response.status == 422)
                 {
@@ -263,7 +283,7 @@ function UserProfile() {
                     </li>
 
                     <li className="nav-item">
-                        <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                        <button id="buttonChangePassword" className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
                     </li>
 
                     </ul>

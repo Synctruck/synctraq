@@ -35,11 +35,21 @@ function Login() {
                         icon: "success",
                     });
                     setTimeout( () => {
-                        if(response.user.idRole == 3 || response.user.idRole == 4){
-                            location.href = '/profile'
 
-                        }else{
-                            location.href = './home'
+                        if(response.user.changePasswordMandatory == 0)
+                        {
+                            location.href = '/profile';
+                        }
+                        else
+                        {
+                            if(response.user.idRole == 3 || response.user.idRole == 4)
+                            {
+                                location.href = '/profile';
+                            }
+                            else
+                            {
+                                location.href = './home';
+                            }
                         }
 
                     }, 1500);
