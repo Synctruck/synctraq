@@ -173,7 +173,8 @@ class UserController extends Controller
             if(Hash::check($request->get('password'), $user->password))
             {
                 Auth::login($user);
-                return ['stateAction' => true,'user'=>$user];
+
+                return ['stateAction' => true, 'user' => $user];
             }
         }
 
@@ -222,15 +223,23 @@ class UserController extends Controller
             return ['stateAction' => 'error-passwordOld'];
         }
 
+        if($user->email ==  $request->get('newPassword'))
+        {
+            return ['stateAction' => 'error-passwordEmail'];
+        }
+
         if($request->get('newPassword') != $request->get('confirmationPassword'))
         {
             return ['stateAction' => 'error-passwordConfirm'];
         }
 
-        $user->password = Hash::make($request->get('newPassword'));
+        $user->password                = Hash::make($request->get('newPassword'));
+        $user->changePasswordMandatory = 1;
 
         $user->save();
 
+        Auth::login($user);
+        
         return ['stateAction' => true];
     }
     //perfil
