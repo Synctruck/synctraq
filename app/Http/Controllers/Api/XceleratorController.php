@@ -90,7 +90,7 @@ class XceleratorController extends Controller
                     "DriverFirstName": "'. $driver->name .'",
                     "DriverLastName": "'. $driver->nameOfOwner .'",
                     "AccountNo": "SYNCT01",
-                    "Service": "CDL Rush",
+                    "Service": "Distribution",
                     "Vehicle": "Van",
                     "ClientRefNo": "'. $package->Reference_Number_1 .'",
                     "ClientRefNo2": "'. $package->Route .'",
