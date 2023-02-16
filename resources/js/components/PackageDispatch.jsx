@@ -692,6 +692,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'errorXcelerator')
+                    {
+                        setTextMessage(response.response.Message +" #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
                     else if(response.stateAction == 'assigned')
                     {
                         setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
