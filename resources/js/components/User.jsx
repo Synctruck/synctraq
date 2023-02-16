@@ -356,6 +356,42 @@ function User() {
         );
     });
 
+    const handlerResetPassword = (emailUser) => {
+
+        swal({
+            title: "You want to reset password?",
+            text: "Password will be reset!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'user/resetPassword/'+ emailUser)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("Password reset successfully!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else if(response.stateAction == false)
+                    {
+                        swal(response.message, {
+
+                            icon: "warning",
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -366,6 +402,13 @@ function User() {
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <a href="#" className="text-danger" onClick={ () => handlerResetPassword(email)  }><b><u>Reset Password</u></b></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">

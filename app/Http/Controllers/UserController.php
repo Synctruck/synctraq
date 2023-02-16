@@ -242,6 +242,28 @@ class UserController extends Controller
         
         return ['stateAction' => true];
     }
+
+    public function ResetPassword($email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if($user)
+        {
+            $user->password = Hash::make($email);
+
+            $user->save();
+
+            return ['stateAction' => true];
+        }
+        else
+        {
+            return [
+                'stateAction' => true,
+                'message' => 'The email does not exists!'
+            ];
+        }
+    }
+
     //perfil
     public function Profile()
     {
