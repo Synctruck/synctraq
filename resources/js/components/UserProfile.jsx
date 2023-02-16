@@ -377,7 +377,7 @@ function UserProfile() {
                                 <label htmlFor="currentPassword" className="col-md-4 col-lg-3 col-form-label">Current Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="oldPassword" className="text-danger">{ messageOldPassword }</div>
-                                <input type="text" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="30" required/>
+                                <input type="text" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 
@@ -385,7 +385,7 @@ function UserProfile() {
                                 <label htmlFor="newPassword" className="col-md-4 col-lg-3 col-form-label">New Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="newPassword" className="text-danger">{ messageNewPassword }</div>
-                                <input type="password" className="form-control" value={ newPassword } onChange={ (e) => setNewPassword(e.target.value) } maxLength="30" required/>
+                                <input type="password" className="form-control" value={ newPassword } onChange={ (e) => setNewPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 
@@ -393,7 +393,7 @@ function UserProfile() {
                                 <label htmlFor="renewPassword" className="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="idRole" className="text-danger">{ messageConfirmationPassword }</div>
-                                <input type="password" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="30" required/>
+                                <input type="password" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 

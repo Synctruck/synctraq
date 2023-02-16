@@ -328,6 +328,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('user/delete/{id}', [UserController::class, 'Delete']);
 	Route::get('user/changePassword', [UserController::class, 'ChangePassword']);
 	Route::post('user/changePassword/save', [UserController::class, 'SaveChangePassword']);
+	Route::get('user/resetPassword/{userEmail}', [UserController::class, 'ResetPassword']);
 	Route::get('profile', [UserController::class, 'Profile']);
 	Route::post('profile', [UserController::class, 'UpdateProfile']);
 	Route::get('getProfile', [UserController::class, 'getProfile']);
