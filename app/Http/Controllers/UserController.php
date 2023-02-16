@@ -249,8 +249,9 @@ class UserController extends Controller
 
         if($user)
         {
-            $user->password = Hash::make($email);
-
+            $user->password                = Hash::make($email);
+            $user->changePasswordMandatory = 1;
+            
             $user->save();
 
             return ['stateAction' => true];
