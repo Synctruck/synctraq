@@ -278,7 +278,7 @@ function UserProfile() {
                         <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
                     </li>
 
-                    <li className="nav-item">
+                    <li className="nav-item" style={ {display: 'none'} }>
                         <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Permissions</button>
                     </li>
 
