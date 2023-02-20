@@ -205,11 +205,28 @@ class ReportController extends Controller
                 
                 $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
 
+                $timeDispatchDate = 0;
+                $timeDeliveryDate = 0;
+
+                if($packageDispatch)
+                {
+                    $timeDispatchDate = (strtotime($packageDispatch->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                    $timeDispatchDate = number_format($timeDispatchDate, 2);
+                }
+
+                if($packageDelivery)
+                {
+                    $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                    $timeDeliveryDate = number_format($timeDeliveryDate, 2);
+                }
+
                 $package = [
 
                     "created_at" => $packageHistory->created_at,
                     "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
+                    "timeDispatch" => ($timeDispatchDate > 0 ? $timeDispatchDate : ''),
                     "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
+                    "timeDelivery" => ($timeDeliveryDate > 0 ? $timeDeliveryDate : ''),
                     "company" => $packageHistory->company,
                     "validator" => $validator,
                     "TRUCK" => $packageHistory->TRUCK, 
@@ -671,7 +688,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'DELIVERY DATE', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'TIME DISPATCH - DAYS', 'DELIVERY DATE', 'TIME DELIVERY - DAYS', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -685,7 +702,9 @@ class ReportController extends Controller
                                 date('m-d-Y', strtotime($packageInbound['created_at'])),
                                 date('H:i:s', strtotime($packageInbound['created_at'])),
                                 $packageInbound['dispatchDate'],
+                                $packageInbound['timeDispatch'],
                                 $packageInbound['deliveryDate'],
+                                $packageInbound['timeDelivery'],
                                 $packageInbound['company'],
                                 $packageInbound['validator'],
                                 $packageInbound['TRUCK'],

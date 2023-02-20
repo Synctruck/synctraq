@@ -144,13 +144,13 @@ function ReportInbound() {
 
             <tr key={i} className="alert-success">
                 <td>
-                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }<br/>
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td>{ pack.dispatchDate }</td>
+                <td><b>Days: { pack.timeDispatch}</b></td>
                 <td>{ pack.deliveryDate }</td>
+                <td><b>Days: { pack.timeDelivery}</b></td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.validator }</b></td>
                 <td>{ pack.TRUCK }</td>
@@ -369,9 +369,10 @@ function ReportInbound() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>DISPATCH DATE</th>
+                                                <th>TIME DISPATCH</th>
                                                 <th>DELIVERY DATE</th>
+                                                <th>TIME DELIVERY</th>
                                                 <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
                                                 <th>TRUCK #</th>
