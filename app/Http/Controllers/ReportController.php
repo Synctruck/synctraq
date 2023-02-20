@@ -813,7 +813,7 @@ class ReportController extends Controller
             }
             
             $lineData = array(
-                                date('m-d-Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
+                                date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
                                 $packageDelivery['inboundDate'],
                                 $packageDelivery['company'],
                                 $team,
