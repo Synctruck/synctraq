@@ -148,9 +148,9 @@ function ReportInbound() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td>{ pack.dispatchDate }</td>
-                <td><b>Days: { pack.timeDispatch}</b></td>
+                <td><b>{ pack.timeDispatch}</b></td>
                 <td>{ pack.deliveryDate }</td>
-                <td><b>Days: { pack.timeDelivery}</b></td>
+                <td><b>{ pack.timeDelivery}</b></td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.validator }</b></td>
                 <td>{ pack.TRUCK }</td>
