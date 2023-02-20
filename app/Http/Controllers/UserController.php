@@ -12,7 +12,7 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Audits, Company, Configuration, PackageDispatch, PackageManifest, PackageHistory, Permission, Role, Routes };
+use App\Models\{ Audits, Company, Configuration, HistoryDiesel, PackageDispatch, PackageManifest, PackageHistory, Permission, Role, Routes };
 
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Str;
