@@ -365,9 +365,7 @@ function ReportDelivery() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDelivery.Date_Delivery.substring(5, 7) }-{ packageDelivery.Date_Delivery.substring(8, 10) }-{ packageDelivery.Date_Delivery.substring(0, 4) }
-                </td>
-                <td>
+                    { packageDelivery.Date_Delivery.substring(5, 7) }-{ packageDelivery.Date_Delivery.substring(8, 10) }-{ packageDelivery.Date_Delivery.substring(0, 4) }<br/>
                     { packageDelivery.Date_Delivery.substring(11, 19) }
                 </td>
                 <td>
@@ -839,7 +837,6 @@ function ReportDelivery() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>INBOUND DATE</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
