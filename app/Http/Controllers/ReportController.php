@@ -211,13 +211,13 @@ class ReportController extends Controller
                 if($packageDispatch)
                 {
                     $timeDispatchDate = (strtotime($packageDispatch->created_at) - strtotime($packageHistory->created_at)) / 86400;
-                    $timeDispatchDate = number_format($timeDispatchDate, 1);
+                    $timeDispatchDate = number_format($timeDispatchDate, 3);
                 }
 
                 if($packageDelivery)
                 {
                     $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageHistory->created_at)) / 86400;
-                    $timeDeliveryDate = number_format($timeDeliveryDate, 1);
+                    $timeDeliveryDate = number_format($timeDeliveryDate, 3);
                 }
 
                 $package = [
