@@ -224,9 +224,9 @@ class ReportController extends Controller
 
                     "created_at" => $packageHistory->created_at,
                     "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
-                    "timeDispatch" => ($timeDispatchDate > 0 ? $timeDispatchDate : ''),
+                    "timeDispatch" => ($timeDispatchDate >= 0 ? $timeDispatchDate : ''),
                     "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
-                    "timeDelivery" => ($timeDeliveryDate > 0 ? $timeDeliveryDate : ''),
+                    "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
                     "company" => $packageHistory->company,
                     "validator" => $validator,
                     "TRUCK" => $packageHistory->TRUCK, 
