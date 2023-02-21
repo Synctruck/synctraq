@@ -17,6 +17,7 @@ class PackagePriceCompanyTeamController extends Controller
 {
     public function Insert($packageDispatch)
     {
+        Log::info("==== REGISTER - PRICE COMPANY TEAM");
         $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDispatch->Reference_Number_1)->first();
 
         if($packagePriceCompanyTeam == null)
@@ -77,5 +78,7 @@ class PackagePriceCompanyTeamController extends Controller
         $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
 
         $packagePriceCompanyTeam->save();
+
+        Log::info("==== CORRECT - PRICE COMPANY TEAM");
     }
 }
