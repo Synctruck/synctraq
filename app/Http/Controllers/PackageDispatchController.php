@@ -328,13 +328,51 @@ class PackageDispatchController extends Controller
 
                 if($package->status != 'Delete')
                 {
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $package->Reference_Number_1)->first();
+
+                    /*if($packagePriceCompanyTeam == null)
+                    {
+                        return ['stateAction' => 'notDimensions'];
+                    }*/
+
+                    ////////// TEAM ///////////////////////////////////////////////////7
+                    //calculando dimensiones y precios para team
+                    $weight = 0;//$packagePriceCompanyTeam->weight;
+                    $cuIn   = 0;//$packagePriceCompanyTeam->cuIn;
+
+                    $dimFactorTeam = DimFactorTeam::first();
+                    $dimFactorTeam = $dimFactorTeam->factor;
+
+                    $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
+                    $dimWeightTeamRound = ceil($dimWeightTeam);
+
+                    $weightTeam = $package->Weight;
+                    //$weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
+
+                    $priceTeam = new RangePriceTeamRouteCompanyController();
+                    $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $package->idCompany, $weightTeam, $package->Route);
+
+                    //precio peakeseason
+                    $teamController       = new TeamController(); 
+                    $peakeSeasonPriceTeam = $teamController->GetPeakeSeason($request->get('idTeam'), $weightTeam);
+                    
+                    //precio base
+                    $priceBaseTeam = number_format($priceTeam + $peakeSeasonPriceTeam, 2);
+
+                    $dieselPrice = Configuration::first()->diesel_price;
+
+                    $surchargePercentageTeam = $teamController->GetPercentage($request->get('idTeam'), $dieselPrice);
+                    $surchargePriceTeam      = number_format(($priceBaseTeam * $surchargePercentageTeam) / 100, 4);
+                    //$totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
+                    $totalPriceTeam          = number_format($priceTeam, 4);
+                    ///////// END TEAM
+
                     try
                     {
                         DB::beginTransaction();
 
                         $nowDate    = date('Y-m-d H:i:s');
                         $created_at = date('Y-m-d H:i:s');
-
                         /*if(date('H:i:s') > date('20:00:00'))
                         {
                             $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
