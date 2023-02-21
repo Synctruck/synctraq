@@ -413,9 +413,6 @@ class PackageDispatchController extends Controller
                         
                         //$packagePriceCompanyTeam->save();
 
-                        Log::info('Manifest:'. $package->status);
-                        Log::info($package);
-
                         if($package->status == 'Manifest')
                         {
                             $packageHistory = new PackageHistory();
