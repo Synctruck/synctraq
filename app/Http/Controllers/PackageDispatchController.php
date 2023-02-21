@@ -411,7 +411,7 @@ class PackageDispatchController extends Controller
                         $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
                         $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
                         
-                        $packagePriceCompanyTeam->save();
+                        //$packagePriceCompanyTeam->save();
 
                         if($package->status == 'Manifest')
                         {
