@@ -328,15 +328,13 @@ class PackageDispatchController extends Controller
 
                 if($package->status != 'Delete')
                 {
-                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $package->Reference_Number_1)->first();
-
                     try
                     {
                         DB::beginTransaction();
 
                         $nowDate    = date('Y-m-d H:i:s');
                         $created_at = date('Y-m-d H:i:s');
-                        
+
                         /*if(date('H:i:s') > date('20:00:00'))
                         {
                             $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
