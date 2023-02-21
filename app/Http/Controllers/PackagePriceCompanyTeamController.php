@@ -36,12 +36,11 @@ class PackagePriceCompanyTeamController extends Controller
         $priceWeightCompany = new RangePriceCompanyController();
         $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $weight);
 
-        $peakeSeasonPriceCompany = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)
-                                                    ->first();
+        $peakeSeasonPriceCompany = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)->first();
 
         $date = strtotime(date('Y-m-d'));
 
-        if($date >= strtotime($peakeSeasonPriceCompany->start_date)  && strtotime($peakeSeasonPriceCompany->end_date) <= $date)
+        if($date >= strtotime($peakeSeasonPriceCompany->start_date)  && $date <= strtotime($peakeSeasonPriceCompany->end_date))
         {
             if($weight <= $peakeSeasonPriceCompany->lb1_weight)
             {
