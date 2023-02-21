@@ -385,6 +385,27 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
                         }*/
+                        
+                        if($packagePriceCompanyTeam == null)
+                        {
+                            $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+
+                            $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $package->Reference_Number_1;
+                        }
+                        
+                        $packagePriceCompanyTeam->Reference_Number_1      = $package->Reference_Number_1;
+                        $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
+                        $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
+                        $packagePriceCompanyTeam->dimWeightTeam           = $dimWeightTeam;
+                        $packagePriceCompanyTeam->dimWeightTeamRound      = $dimWeightTeamRound;
+                        $packagePriceCompanyTeam->priceWeightTeam         = $priceTeam;
+                        $packagePriceCompanyTeam->peakeSeasonPriceTeam    = $peakeSeasonPriceTeam;
+                        $packagePriceCompanyTeam->priceBaseTeam           = $priceBaseTeam;
+                        $packagePriceCompanyTeam->surchargePercentageTeam = $surchargePercentageTeam;
+                        $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
+                        $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
+                        
+                        $packagePriceCompanyTeam->save();
 
                         if($package->status == 'Manifest')
                         {
@@ -445,6 +466,8 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idUserDispatch               = $idUserDispatch;
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
+                        $packageDispatch->pricePaymentCompany          = $packagePriceCompanyTeam->totalPriceCompany;
+                        $packageDispatch->pricePaymentTeam             = $packagePriceCompanyTeam->totalPriceTeam;
                         $packageDispatch->idPaymentTeam                = '';
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
