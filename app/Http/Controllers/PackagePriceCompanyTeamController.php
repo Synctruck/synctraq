@@ -11,6 +11,7 @@ use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use Illuminate\Support\Facades\Validator;
 
 use DB;
+use Log;
 use Session;
 
 class PackagePriceCompanyTeamController extends Controller
