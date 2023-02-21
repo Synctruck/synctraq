@@ -399,7 +399,6 @@ class PackageDispatchController extends Controller
                             $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $package->Reference_Number_1;
                         }
                         
-                        //update PACKAGE prices team
                         $packagePriceCompanyTeam->Reference_Number_1      = $package->Reference_Number_1;
                         $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
                         $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
@@ -412,7 +411,7 @@ class PackageDispatchController extends Controller
                         $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
                         $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
                         
-                        $packagePriceCompanyTeam->save(); 
+                        $packagePriceCompanyTeam->save();
 
                         if($package->status == 'Manifest')
                         {

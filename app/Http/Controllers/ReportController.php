@@ -789,7 +789,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
+        $fields = array('DATE', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -813,8 +813,7 @@ class ReportController extends Controller
             }
             
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDelivery['Date_Delivery'])),
-                                date('H:i:s', strtotime($packageDelivery['Date_Delivery'])),
+                                date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
                                 $packageDelivery['inboundDate'],
                                 $packageDelivery['company'],
                                 $team,
