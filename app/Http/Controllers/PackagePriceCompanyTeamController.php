@@ -41,7 +41,7 @@ class PackagePriceCompanyTeamController extends Controller
 
         $date = strtotime(date('Y-m-d'));
 
-        if($date >= strtotime($peakeSeasonPriceCompany->startDate)  && strtotime($peakeSeasonPriceCompany->end_date) <= $date)
+        if($date >= strtotime($peakeSeasonPriceCompany->start_date)  && strtotime($peakeSeasonPriceCompany->end_date) <= $date)
         {
             if($weight <= $peakeSeasonPriceCompany->lb1_weight)
             {
