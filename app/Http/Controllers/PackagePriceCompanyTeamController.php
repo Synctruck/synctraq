@@ -27,7 +27,7 @@ class PackagePriceCompanyTeamController extends Controller
             $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
         }
 
-        $Reference_Number_1    = $packageDispatch->Reference_Number_1
+        $Reference_Number_1    = $packageDispatch->Reference_Number_1;
         $weight                = $packageDispatch->Weight;
         $dieselPriceCompany    = Configuration::first()->diesel_price;
         $dimWeightCompanyRound = ceil($packageDispatch->Weight);
