@@ -90,7 +90,7 @@ class XceleratorController extends Controller
                     "DriverFirstName": "'. $driver->name .'",
                     "DriverLastName": "'. $driver->nameOfOwner .'",
                     "AccountNo": "SYNCT01",
-                    "Service": "CDL Rush",
+                    "Service": "Distribution",
                     "Vehicle": "Van",
                     "ClientRefNo": "'. $package->Reference_Number_1 .'",
                     "ClientRefNo2": "'. $package->Route .'",
@@ -112,7 +112,7 @@ class XceleratorController extends Controller
                         "State": "'. $package->Dropoff_Province .'",
                         "Zip": "'. $package->Dropoff_Postal_Code .'",
                         "RefNo": null,
-                        "Phone": "+'. $package->Dropoff_Contact_Phone_Number .'"
+                        "Phone": "'. $package->Dropoff_Contact_Phone_Number .'"
                     },
                     "DLI": null,
                     "ShipmentWeight": 11.7,
@@ -155,6 +155,10 @@ class XceleratorController extends Controller
         else if($http_status == 401)
         {
             return ['status' => $http_status, 'Message' => $response->Message];
+        }
+        else if($http_status == 400)
+        {
+            return ['status' => $http_status, 'Message' => $response->ErrorDetails];
         }
     }
 }

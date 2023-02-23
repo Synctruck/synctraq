@@ -520,6 +520,10 @@ class PackageDispatchController extends Controller
                             {
                                 return ['stateAction' => 'errorXcelerator', 'response' => $registerTask];
                             }
+                            else if($registerTask['status'] == 400)
+                            {
+                                return ['stateAction' => 'errorXcelerator', 'response' => $registerTask];
+                            }
                         }
                         else
                         {

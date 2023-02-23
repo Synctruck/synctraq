@@ -692,6 +692,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'errorXcelerator')
+                    {
+                        setTextMessage(response.response.Message +" #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
                     else if(response.stateAction == 'assigned')
                     {
                         setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
@@ -1996,7 +2004,7 @@ function PackageDispatch() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
