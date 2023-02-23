@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageMassQueryController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes 
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
@@ -378,11 +378,13 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/mass-query', [PackageMassQueryController::class, 'Index'])->middleware('permission:reportMassquery.index');
 	Route::post('/report/mass-query/import', [PackageMassQueryController::class, 'Import']);
 
+	Route::get('/report/all-pending', [ReportController::class, 'IndexAllPending'])->middleware('permission:reportAllPending.index');
+	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}', [ReportController::class, 'ListAllPending']);
+	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}', [ReportController::class, 'ExportAllPending']);
+
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 
     Route::get('/validator/warehouse/getAll', [ValidatorController::class, 'GetAllWarehouse']);
-
-
 });
 
 //============ Check Stop package

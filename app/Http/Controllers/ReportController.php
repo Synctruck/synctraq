@@ -662,6 +662,92 @@ class ReportController extends Controller
         ];
     }
 
+    public function IndexAllPending()
+    {
+        return view('report.indexallpending');
+    }
+
+    public function ListAllPending($idCompany, $dateInit, $dateEnd, $state)
+    {
+        $data          = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state);
+        $packageList   = $data['packageList'];
+        $listAll       = $data['listAll'];
+        $totalQuantity = $data['totalQuantity'];
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('status', 'Manifest')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['packageList' => $packageList, 'listAll' => $listAll, 'listState' => $listState, 'totalQuantity' => $totalQuantity];
+    }
+
+    private function getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $type = 'list')
+    {
+        $dateInit    = $dateInit .' 00:00:00';
+        $dateEnd     = $dateEnd .' 23:59:59';
+        $states      = explode(',', $state);
+        $packageList = [];
+
+        $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $packageInboundList   = PackageInbound::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $packageWarehouseList = PackageWarehouse::whereBetween('created_at', [$dateInit, $dateEnd]);
+
+        if($idCompany != 0)
+        {
+            $packageManifestList  = $packageManifestList->where('idCompany', $idCompany);
+            $packageInboundList   = $packageInboundList->where('idCompany', $idCompany);
+            $packageWarehouseList = $packageWarehouseList->where('idCompany', $idCompany);
+        }
+
+        if($state != 'all')
+        {
+            $packageManifestList  = $packageManifestList->whereIn('Dropoff_Province', $states);
+            $packageInboundList   = $packageInboundList->whereIn('Dropoff_Province', $states);
+            $packageWarehouseList = $packageWarehouseList->whereIn('Dropoff_Province', $states);
+        }
+
+        $listAll       = [];
+        $totalQuantity = 0;
+
+        if($type == 'list')
+        {
+            $packageManifestList  = $packageManifestList->paginate(50);
+            $packageInboundList   = $packageInboundList->paginate(50);
+            $packageWarehouseList = $packageWarehouseList->paginate(50);
+
+            $maxTotal      = max($packageManifestList->total(), $packageInboundList->total(), $packageWarehouseList->total());
+            $totalQuantity = $packageManifestList->total() + $packageInboundList->total() + $packageWarehouseList->total();
+
+            if($maxTotal == $packageManifestList->total())
+            {
+                $listAll = $packageManifestList;
+            }
+            else if($maxTotal == $packageInboundList->total())
+            {
+                $listAll = $packageInboundList;
+            }
+            else if($maxTotal == $packageWarehouseList->total())
+            {
+                $listAll = $packageWarehouseList;
+            }
+
+            $packageList = array_merge($packageManifestList->items(), $packageInboundList->items());
+            $packageList = array_merge($packageList, $packageWarehouseList->items());
+        }
+        else
+        {
+            $packageManifestList  = $packageManifestList->get();
+            $packageInboundList   = $packageInboundList->get();
+            $packageWarehouseList = $packageWarehouseList->get();
+
+            $packageList = $packageManifestList->merge($packageInboundList);
+            $packageList = $packageList->merge($packageWarehouseList);
+        }
+
+        return ['packageList' => $packageList, 'listAll' => $listAll , 'totalQuantity' => $totalQuantity];
+    }
+
     public function IndexNotExists()
     {
         return view('report.indexnotexists');
@@ -927,6 +1013,49 @@ class ReportController extends Controller
                                 $packageManifest->Dropoff_Postal_Code,
                                 $packageManifest->Weight,
                                 $packageManifest->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
+    public function ExportAllPending($idCompany, $dateInit, $dateEnd, $state)
+    {
+        $delimiter = ",";
+        $filename = "Report All Pending " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'STATUS');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $data                  = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $type = 'export');
+        $packageListAllPending = $data['packageList'];
+
+        foreach($packageListAllPending as $packagePending)
+        {
+            $lineData = array(
+                                date('m/d/Y', strtotime($packagePending->created_at)),
+                                date('H:i:s', strtotime($packagePending->created_at)),
+                                $packagePending->Reference_Number_1,
+                                $packagePending->Dropoff_Contact_Name,
+                                $packagePending->Dropoff_Contact_Phone_Number,
+                                $packagePending->Dropoff_Address_Line_1,
+                                $packagePending->Dropoff_City,
+                                $packagePending->Dropoff_Province,
+                                $packagePending->Dropoff_Postal_Code,
+                                $packagePending->Weight,
+                                $packagePending->status,
                             );
 
             fputcsv($file, $lineData, $delimiter);
