@@ -454,4 +454,17 @@ class WHookController extends Controller
             }
         }
     }
+
+    public function EndPointTaskXcelerator(Request $request)
+    {
+        return response($request->check, 200)
+            ->header('Content-Type', 'text/plain');
+    }
+
+    public function TaskXcelerator(Request $request)
+    {
+        Log::info('=========== START - TASK Acelerator ===========');
+        Log::info($request);
+        Log::info('=========== END - TASK Acelerator ===========');
+    }
 }
