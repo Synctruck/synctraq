@@ -8,7 +8,7 @@ use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\Api\{ PackageController, XceleratorController };
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
 use DB;
@@ -367,6 +367,12 @@ class PackageDispatchController extends Controller
                     $totalPriceTeam          = number_format($priceTeam, 4);
                     ///////// END TEAM
 
+                    if($team->useXcelerator == 1)
+                    {
+                        $xceleratorController = new XceleratorController();
+                        $xceleratorController->GetAccessToken();
+                    }
+
                     try
                     {
                         DB::beginTransaction();
@@ -506,12 +512,37 @@ class PackageDispatchController extends Controller
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
 
-                        $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+                        if($team->useXcelerator == 1)
+                        {
+                            $xceleratorController = new XceleratorController();
+                            $registerTask         = $xceleratorController->Insert($package, $driver);
+
+                            if($registerTask['status'] == 401)
+                            {
+                                return ['stateAction' => 'errorXcelerator', 'response' => $registerTask];
+                            }
+                            else if($registerTask['status'] == 400)
+                            {
+                                return ['stateAction' => 'errorXcelerator', 'response' => $registerTask];
+                            }
+                        }
+                        else
+                        {
+                            $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+                        }
 
                         if($registerTask['status'] == 200)
                         {
-                            $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                            $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            if($team->useXcelerator == 1)
+                            {
+                                $idOnfleet   = $registerTask['response'][0]->OrderTrackingID;
+                                $taskOnfleet = $registerTask['response'][0]->TrackingKey;
+                            }
+                            else
+                            {
+                                $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                                $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            }
 
                             $packageDispatch->idOnfleet   = $idOnfleet;
                             $packageDispatch->taskOnfleet = $taskOnfleet;
@@ -520,40 +551,21 @@ class PackageDispatchController extends Controller
                             $packageHistory->save();
                             $package->delete();
 
-                            $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
-
-                            $warnings = $dataTaskOnfleet['destination']['warnings'];
-
                             Log::info('============ START TASK CREATED ================');
                             Log::info("Reference_Number_1 :". $package->Reference_Number_1);
-                            Log::info("Warnings: ". count($warnings));
-                            Log::info($warnings);
 
-                            if(count($warnings) >= 0)
-                            {
-                                DB::commit();
+                            DB::commit();
 
-                                //data for INLAND
-                                $packageController = new PackageController();
-                                $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
-                                //end data for inland
+                            //data for INLAND
+                            $packageController = new PackageController();
+                            $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
+                            //end data for inland
 
-                                Log::info('============ CREATED TASK COMPLETED ================');
-                                Log::info('====================================================');
-                                Log::info('====================================================');
+                            Log::info('============ CREATED TASK COMPLETED ================');
+                            Log::info('====================================================');
+                            Log::info('====================================================');
 
-                                return ['stateAction' => true];
-                            }
-                            else
-                            {
-                                Log::info('============ DELETE TASK - SYNC ================');
-
-                                $deleteTask = $this->DeleteOnfleet($idOnfleet);
-
-                                Log::info('============ DELETE TASK COMPLETED - SYNC ================');
-
-                                return ['stateAction' => 'repairPackage'];
-                            }
+                            return ['stateAction' => true];
                         }
                         else
                         {
@@ -616,57 +628,56 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     
-                    $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+                    if($team->useXcelerator == 1)
+                    {
+                        $xceleratorController = new XceleratorController();
+                        $registerTask         = $xceleratorController->Insert($package);
+
+                        if($registerTask['status'] == 401)
+                        {
+                            return ['stateAction' => 'errorXcelerator'];
+                        }
+                    }
+                    else
+                    {
+                        $registerTask = $this->RegisterOnfleet($package, $team, $driver);
+                    }
 
                     if($registerTask['status'] == 200)
                     {
-                        $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                        $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
-
-                        $package->Date_Dispatch = date('Y-m-d H:i:s');
-                        $package->status        = 'Dispatch';
-                        $package->idOnfleet     = $idOnfleet;
-                        $package->taskOnfleet   = $taskOnfleet;
-                        $package->created_at    = $created_at;
-                        $package->updated_at    = $created_at;
-
-                        $package->save();
-                        $packageHistory->save();
-
-                        $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
-
-                        $warnings = $dataTaskOnfleet['destination']['warnings'];
-
-                        Log::info('============ START TASK CREATED ================');
-                        Log::info("Reference_Number_1 :". $package->Reference_Number_1);
-                        Log::info("Warnings: ". count($warnings));
-                        Log::info($warnings);
-
-                        if(count($warnings) == 0)
+                        if($team->useXcelerator == 1)
                         {
-                            DB::commit();
-
-                            //data for INLAND
-                            $packageController = new PackageController();
-                            $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
-                            //end data for inland
-
-                            Log::info('============ CREATED TASK COMPLETED ================');
-                            Log::info('====================================================');
-                            Log::info('====================================================');
-
-                            return ['stateAction' => true];
+                            $idOnfleet   = $registerTask['response']->OrderTrackingID;
+                            $taskOnfleet = $registerTask['response']->TrackingKey;
                         }
                         else
                         {
-                            Log::info('============ DELETE TASK - SYNC ================');
-
-                            $deleteTask = $this->DeleteOnfleet($idOnfleet);
-
-                            Log::info('============ DELETE TASK COMPLETED - SYNC ================');
-
-                            return ['stateAction' => 'repairPackage'];
+                            $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                            $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
                         }
+
+                        $packageDispatch->idOnfleet   = $idOnfleet;
+                        $packageDispatch->taskOnfleet = $taskOnfleet;
+
+                        $packageDispatch->save();
+                        $packageHistory->save();
+                        $package->delete();
+
+                        Log::info('============ START TASK CREATED ================');
+                        Log::info("Reference_Number_1 :". $package->Reference_Number_1);
+
+                        DB::commit();
+
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
+                        //end data for inland
+
+                        Log::info('============ CREATED TASK COMPLETED ================');
+                        Log::info('====================================================');
+                        Log::info('====================================================');
+
+                        return ['stateAction' => true];
                     }
                     else
                     {

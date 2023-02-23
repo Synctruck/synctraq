@@ -55,7 +55,7 @@ class IndexController extends Controller
         return view('home.indexpublic', compact('listQuantityRoute'));
     }
 
-    public function Dashboard()
+    public function Dashboard(Request $request)
     {
         return view('home.dashboard');
     }

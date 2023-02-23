@@ -653,7 +653,16 @@ class PackageDeliveryController extends Controller
                                 $packageDis->Weight                       = $packageDispatch->Weight;
                                 $packageDis->Route                        = $packageDispatch->Route;
                                 $packageDis->idUser                       = Auth::user()->id;
-                                $packageDis->idTeam                       = 0;
+
+                                if(isset($row[4]) && $row[4] != '')
+                                {
+                                    $packageDis->idTeam = $row[4];
+                                }
+                                else
+                                {
+                                    $packageDis->idTeam = 0;
+                                }
+                                
                                 $packageDis->idUserDispatch               = 0;
                                 $packageDis->Date_Dispatch                = $created_at;
                                 $packageDis->Date_Delivery                = $created_at;
