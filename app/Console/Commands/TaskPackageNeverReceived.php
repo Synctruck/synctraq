@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ PackageManifest };
+use App\Models\{ PackageHistory, PackageManifest };
 
 use Log;
 
@@ -62,10 +62,32 @@ class TaskPackageNeverReceived extends Command
                 {
                     $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
 
-                    $packageManifest->status     = 'Never Received';
+                    $packageManifest->status     = 'NeverReceived';
                     $packageManifest->updated_at = $nowDate;
 
                     $packageManifest->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageManifest->idCompany;
+                    $packageHistory->company                      = $packageManifest->company;
+                    $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                    $packageHistory->Weight                       = $packageManifest->Weight;
+                    $packageHistory->status                       = 'NeverReceived';
+                    $packageHistory->Description                  = 'For: Schedule Taks';
+                    $packageHistory->Route                        = $packageManifest->route;
+                    $packageHistory->created_at                   = $nowDate;
+                    $packageHistory->updated_at                   = $nowDate;
+
+                    $packageHistory->save();
                 }
             }
 
