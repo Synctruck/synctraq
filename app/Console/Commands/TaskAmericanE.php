@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ Company, CompanyStatus, FileSend, PackageDispatch, PackageHistory };
 
+use Log;
+
 class TaskAmericanE extends Command
 {
     /**
@@ -65,7 +67,10 @@ class TaskAmericanE extends Command
     }
 
     public function ReportStatusHistory($dateInit, $dateEnd, $contents)
-    { 
+    {
+        Log::info('================');
+        Log::info('SEND STATUS - AE');
+
         $filename  = "Report-" . date('m-d-H-i-s', strtotime($dateInit)) .'-'. date('m-d-H-i-s', strtotime($dateEnd)) . ".csv";
         $delimiter = ",";
 
@@ -148,6 +153,8 @@ class TaskAmericanE extends Command
         $fileSend->end_date        = $dateEnd;
 
         $fileSend->save();
+
+        Log::info('SEND STATUS - AE - END');
 
         rewind($file);
         fclose($file);
