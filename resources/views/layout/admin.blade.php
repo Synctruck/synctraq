@@ -718,7 +718,7 @@
                     }
 
                     tr =    '<tr>'+
-                                '<td><b>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</b><br>' + package.created_at.substring(11, 19)
+                                '<td><b>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</b><br>'+ package.created_at.substring(11, 19) +
                                 '</td>'+
                                 '<td>'+ user +'</td>'+
                                 '<td>'+ package.status +'</td>'+
