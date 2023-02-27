@@ -122,7 +122,6 @@ class TaskAmericanE extends Command
                 if($packageDelivery)
                 {
                     Log::info('Reference_Number_1:'. $packageHistory->Reference_Number_1);
-                    Log::info($packageDelivery);
                     Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
 
                     if($packageDelivery->photoUrl != '')
