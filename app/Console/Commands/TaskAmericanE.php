@@ -118,6 +118,8 @@ class TaskAmericanE extends Command
                 $state        = $packageHistory->Dropoff_Province;
 
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
+                
+                Log::info($packageDelivery->photoUrl);
 
                 $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
             }
