@@ -118,10 +118,17 @@ class TaskAmericanE extends Command
                 $state        = $packageHistory->Dropoff_Province;
 
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
-                
-                Log::info($packageDelivery->photoUrl);
 
-                $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                Log::info('Reference_Number_1:'. $packageDelivery->Reference_Number_1);
+                Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
+
+                if($packageDelivery->photoUrl != '')
+                {
+                    if(count(explode(',', $packageDelivery->photoUrl)) > 1)
+                    {
+                        $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                    }
+                }
             }
 
             if($packageHistory->status == 'Inbound' || $packageHistory->status == 'Dispatch' || $packageHistory->status == 'ReInbound' || $packageHistory->status == 'Delivery')
@@ -157,7 +164,8 @@ class TaskAmericanE extends Command
         $fileSend->save();
 
         Log::info('SEND STATUS - AE - END');
-
+        Log::info('================');
+        
         rewind($file);
         fclose($file);
     }
