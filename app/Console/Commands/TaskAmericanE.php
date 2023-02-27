@@ -119,7 +119,8 @@ class TaskAmericanE extends Command
 
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
 
-                Log::info('Reference_Number_1:'. $packageDelivery->Reference_Number_1);
+                Log::info('Reference_Number_1:'. $packageHistory->Reference_Number_1);
+                Log::info($packageDelivery);
                 Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
 
                 if($packageDelivery->photoUrl != '')
@@ -165,7 +166,7 @@ class TaskAmericanE extends Command
 
         Log::info('SEND STATUS - AE - END');
         Log::info('================');
-        
+
         rewind($file);
         fclose($file);
     }
