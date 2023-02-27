@@ -26,9 +26,9 @@ class PackageManifestController extends Controller
         return view('package.index');
     }
 
-    public function List(Request $request, $idCompany, $route, $state)
+    public function List(Request $request, $status, $idCompany, $route, $state)
     {
-        $data            = $this->GetData($idCompany, $route, $state, 'list');
+        $data            = $this->GetData($status, $idCompany, $route, $state, 'list');
         $packageList     = $data['packageList'];
         $quantityPackage = $data['quantityPackage'];
 
@@ -155,7 +155,7 @@ class PackageManifestController extends Controller
         return ['stateAction' => 'exists'];
     } 
 
-    public function Export($idCompany, $route, $state)
+    public function Export($status, $idCompany, $route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv";
@@ -168,7 +168,7 @@ class PackageManifestController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $data        = $this->GetData($idCompany, $route, $state, 'export');
+        $data        = $this->GetData($status, $idCompany, $route, $state, 'export');
         $packageList = $data['packageList'];
 
         foreach($packageList as $packageManifest)
@@ -199,13 +199,13 @@ class PackageManifestController extends Controller
         fpassthru($file);
     }
 
-    public function GetData($idCompany, $route, $state, $type)
+    public function GetData($status, $idCompany, $route, $state, $type)
     {
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
         $packageList = PackageManifest::where('idStore', 0)
-                                    ->where('status', 'Manifest');
+                                    ->where('status', $status);
 
         if($idCompany != 0)
         {
