@@ -204,7 +204,8 @@ class PackageManifestController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $packageList = PackageManifest::where('idStore', 0);
+        $packageList = PackageManifest::where('idStore', 0)
+                                    ->where('status', 'Manifest');
 
         if($idCompany != 0)
         {
