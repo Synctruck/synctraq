@@ -119,15 +119,18 @@ class TaskAmericanE extends Command
 
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
 
-                Log::info('Reference_Number_1:'. $packageHistory->Reference_Number_1);
-                Log::info($packageDelivery);
-                Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
-
-                if($packageDelivery->photoUrl != '')
+                if($packageDelivery)
                 {
-                    if(count(explode(',', $packageDelivery->photoUrl)) > 1)
+                    Log::info('Reference_Number_1:'. $packageHistory->Reference_Number_1);
+                    Log::info($packageDelivery);
+                    Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
+
+                    if($packageDelivery->photoUrl != '')
                     {
-                        $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                        if(count(explode(',', $packageDelivery->photoUrl)) > 1)
+                        {
+                            $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                        }
                     }
                 }
             }
