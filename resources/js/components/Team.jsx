@@ -808,6 +808,9 @@ function Team() {
 
             <tr key={i}>
                 <td>
+                    <b className="text-primary">{ user.id }</b><br/>
+                </td>
+                <td>
                     <b>{ user.name }</b><br/>
                     { user.nameOfOwner }
                 </td>
@@ -1354,6 +1357,7 @@ function Team() {
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
+                                                <th>ID TEAM</th>
                                                 <th>NAME</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
