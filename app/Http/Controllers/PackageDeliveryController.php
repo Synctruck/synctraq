@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, TeamRoute, User};
 
+use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
+
 use App\Http\Controllers\Api\PackageController;
 
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use Log;
 use Session;
 
 class PackageDeliveryController extends Controller
@@ -487,11 +490,14 @@ class PackageDeliveryController extends Controller
         $handle = fopen(public_path('file-import/delivery-photo.csv'), "r");
 
         $lineNumber = 1;
-
-        $countSave = 0;
+        $countSave  = 0;
 
         try
         {
+            Log::info("================================");
+            Log::info("================================");
+            Log::info("===== START - FILE IMPORT DELIVERY - PHOTO");
+
             DB::beginTransaction();
 
             while (($raw_string = fgets($handle)) !== false)
@@ -499,7 +505,7 @@ class PackageDeliveryController extends Controller
                 $row = str_getcsv($raw_string);
 
                 if(isset($row[0]))
-                {
+                { 
                     $contador        = 0;
                     $packageManifest = PackageManifest::find($row[0]);
                     $packageAux      = null;
@@ -549,7 +555,7 @@ class PackageDeliveryController extends Controller
 
                     $packageDispatch = $packageAux;
 
-                    if($contador == 1 && $packageDispatch)
+                    if($contador == 1)
                     {
                         $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : explode('https://', 'https://');
 
@@ -569,19 +575,25 @@ class PackageDeliveryController extends Controller
                             $photoUrl = '';
                         }
                         
+                        $description   = '';
+                        $idTeam        = 0;
                         $arrivalLonLat = $row[3]; 
                         $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
 
                         if(isset($row[4]) && $row[4] != '')
                         {
-                            $description = 'For: Brooks Courier (Import Report Delivery)';
-                        }
-                        else
-                        {
-                            $description = 'For: Import Report Delivery (Photo)';
+                            $user   = User::find($row[4]);
+                            $idTeam = $row[4];
+
+                            if($user)
+                            {
+                                $description = 'For: '. $user->name .' (Import Report Delivery)';
+                            }
                         }
 
-                        if($packageDispatch->status != 'Delivery')
+                        $description = $description ? $description : 'For: Import Report Delivery (Photo)';
+
+                        if($packageDispatch)
                         {
                             $packageHistory = new PackageHistory();
 
@@ -601,10 +613,10 @@ class PackageDeliveryController extends Controller
                             $packageHistory->Notes                        = $packageDispatch->Notes;
                             $packageHistory->Weight                       = $packageDispatch->Weight;
                             $packageHistory->Route                        = $packageDispatch->Route;
-                            $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                            $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                            $packageHistory->idUser                       = $packageDispatch->idUser;
-                            $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
+                            $packageHistory->idTeam                       = $idTeam;
+                            $packageHistory->idUserDispatch               = $packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : 0;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->idUserDelivery               = $packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : 0;
                             $packageHistory->Date_Delivery                = $created_at;
                             $packageHistory->Description                  = $description;
                             $packageHistory->status                       = 'Delivery';
@@ -613,25 +625,22 @@ class PackageDeliveryController extends Controller
 
                             $packageHistory->save();
 
-                            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete')
+                            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete' || $packageDispatch->status == 'Delivery')
                             {
-                                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                                $packageDispatch->workerName         = '';
-                                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                                $packageDispatch->recipientNotes     = '';
                                 $packageDispatch->photoUrl           = $photoUrl;
                                 $packageDispatch->Date_Delivery      = $created_at;
                                 $packageDispatch->arrivalLonLat      = $arrivalLonLat;
                                 $packageDispatch->status             = 'Delivery';
+                                $packageDispatch->updated_at         = $created_at;
 
-                                if(isset($row[4]) && $row[4] != '')
+                                if($idTeam)
                                 {
-                                    $packageDispatch->idTeam = $row[4];
+                                    $packageDispatch->idTeam = $idTeam;
                                 }
 
                                 $packageDispatch->save();
                             }
-                            else
+                            else if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delete' && $packageDispatch->status != 'Delivery')
                             {
                                 $packageDis = new PackageDispatch();
 
@@ -653,7 +662,12 @@ class PackageDeliveryController extends Controller
                                 $packageDis->Weight                       = $packageDispatch->Weight;
                                 $packageDis->Route                        = $packageDispatch->Route;
                                 $packageDis->idUser                       = Auth::user()->id;
-                                $packageDis->idTeam                       = 0;
+
+                                if($idTeam)
+                                {
+                                    $packageDis->idTeam = $idTeam;
+                                }
+
                                 $packageDis->idUserDispatch               = 0;
                                 $packageDis->Date_Dispatch                = $created_at;
                                 $packageDis->Date_Delivery                = $created_at;
@@ -671,125 +685,24 @@ class PackageDeliveryController extends Controller
 
                                 $packageDispatch->delete();
                             }
-                        }
-                        else if($packageDispatch->status == 'Delivery')
-                        {
-                            if($packageDispatch->photoUrl == '')
+
+                            if(isset($row[5]) && $row[5] == 'YES')
                             {
-                                $packageHistory = new PackageHistory(); 
-
-                                $packageHistory->id                           = uniqid();
-                                $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                                $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                                $packageHistory->company                      = $packageDispatch->company;
-                                $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                                $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                                $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                                $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                                $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                                $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                                $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                                $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                                $packageHistory->Notes                        = $packageDispatch->Notes;
-                                $packageHistory->Weight                       = $packageDispatch->Weight;
-                                $packageHistory->Route                        = $packageDispatch->Route;
-                                $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                                $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                                $packageHistory->idUser                       = $packageDispatch->idUser;
-                                $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
-                                $packageHistory->Date_Delivery                = $created_at;
-                                $packageHistory->Description                  = $description;
-                                $packageHistory->status                       = 'Delivery';
-                                $packageHistory->created_at                   = $created_at;
-                                $packageHistory->updated_at                   = $created_at;
-
-                                $packageHistory->save();
-
-                                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                                $packageDispatch->workerName         = '';
-                                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                                $packageDispatch->recipientNotes     = '';
-                                $packageDispatch->photoUrl           = $photoUrl;
-                                $packageDispatch->Date_Delivery      = $created_at;
-                                $packageDispatch->arrivalLonLat      = $arrivalLonLat;
-                                $packageDispatch->status             = 'Delivery';
-
-                                if(isset($row[4]) && $row[4] != '')
-                                {
-                                    $packageDispatch->idTeam = $row[4];
-                                }
-
-                                $packageDispatch->save();
+                                //data for INLAND 
+                                $packageController = new PackageController();
+                                $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+                                //end data for inland
                             }
+
+                            //create or update price company team
+                            $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                            $packagePriceCompanyTeamController->Insert($packageDispatch);
                         }
                     }
-                    elseif($contador > 1)
+                    elseif($contador > 1) 
                     {
-                        $packageDispatch = PackageInbound::find($row[0]);
-
-                        if($packageDispatch)
-                        {
-                            $this->CreateDeliveryForImport($packageDispatch, $row);
-
-                            $packageDispatch->delete();
-                        }
-
-                        $packageDispatch = PackageWarehouse::find($row[0]);
-
-                        if($packageDispatch)
-                        {
-                            $this->CreateDeliveryForImport($packageDispatch, $row);
-
-                            $packageDispatch->delete();
-                        }
-
-                        $packageDispatch = PackageFailed::find($row[0]);
-                        
-                        if($packageDispatch)
-                        {
-                            $this->CreateDeliveryForImport($packageDispatch, $row);
-
-                            $packageDispatch->delete();
-                        }
-
-                        $packageDispatch = PackageDispatch::find($row[0]);
-                        
-                        if($packageDispatch)
-                        {
-                            $this->CreateDeliveryForImport($packageDispatch, $row);
-                        }
-                    }
-
-                    if($packageDispatch)
-                    {
-                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : explode('https://', 'https://');
-
-                        if(count($photoUrls) == 2 && $row[1] != '')
-                        {
-                            $photoUrl = explode('/', $photoUrls[1])[1];
-                        }
-                        else if(count($photoUrls) > 2 && $row[1] != '')
-                        {
-                            $photoUrl1 = explode('/', $photoUrls[1])[1];
-                            $photoUrl2 = explode('/', $photoUrls[2])[1];
-
-                            $photoUrl = $photoUrl1 .','. $photoUrl2;
-                        }
-                        else
-                        {
-                            $photoUrl = '';
-                        }
-
-                        $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
-
-                        if(isset($row[5]) && $row[5] == 'YES')
-                        {
-                            //data for INLAND 
-                            $packageController = new PackageController();
-                            $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
-                            //end data for inland
-                        }
+                        Log::info("================================");
+                        Log::info("===== PACKAGE TWO STATUS - Reference_Number_1:". $row[0]);
                     }
                 }
             }
@@ -797,6 +710,10 @@ class PackageDeliveryController extends Controller
             fclose($handle);
 
             DB::commit();
+
+            Log::info("===== END - FILE IMPORT DELIVERY - PHOTO");
+            Log::info("================================");
+            Log::info("================================");
 
             return ['stateAction' => true];
         }
