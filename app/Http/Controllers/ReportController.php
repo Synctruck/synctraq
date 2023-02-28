@@ -1136,7 +1136,6 @@ class ReportController extends Controller
         }
 
         $packageLast = $packageLast->get()->last();
-        
 
         return [
             'status' => ($package ? $package->status : ''),
