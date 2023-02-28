@@ -1128,9 +1128,15 @@ class ReportController extends Controller
         if($package)
         {
             $packageLast = $packageLast->where('status', $package->status);
+
+            if(count($packageLast->get()) == 0)
+            {
+                $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1);
+            }
         }
 
         $packageLast = $packageLast->get()->last();
+        
 
         return [
             'status' => ($package ? $package->status : ''),
