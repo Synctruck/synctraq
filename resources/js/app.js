@@ -31,6 +31,7 @@ require('./components/ReportNotExists');
 require('./components/ReportAssigns');
 require('./components/ReportFailed');
 require('./components/ReportReturnCompany');
+require('./components/ReportAllPending');
 require('./components/Routes');
 require('./components/States');
 require('./components/Team');

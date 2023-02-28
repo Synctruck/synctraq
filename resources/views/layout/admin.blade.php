@@ -718,12 +718,12 @@
                     }
 
                     tr =    '<tr>'+
-                                '<td>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</td>'+
+                                '<td><b>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</b><br>'+ package.created_at.substring(11, 19) +
+                                '</td>'+
                                 '<td>'+ user +'</td>'+
                                 '<td>'+ package.status +'</td>'+
                                 '<td>'+ Description + Description_Return +'</td>'+
                             '</tr>';
-
 
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 });

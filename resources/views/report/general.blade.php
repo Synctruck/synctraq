@@ -193,6 +193,29 @@
             </div><!-- End Customers Card -->
         @endif
 
+        @if(hasPermission('reportAllPending.index'))
+            <!-- Customers Card -->
+            <div class="col-xxl-3 col-xl-12">
+                <a href="{{url('/report/all-pending')}}">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #BEBB00; background: rgb(255, 243, 205);">
+                                <i class="bx bxs-report"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>All pending</h6>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{{url('/report/all-pending')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                </a>
+            </div><!-- End Customers Card -->
+        @endif
+
     </div>
 
 
