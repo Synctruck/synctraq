@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
+
 use App\Http\Controllers\Api\{ PackageController };
 
 use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
@@ -302,12 +304,12 @@ class PackageReturnCompanyController extends Controller
                             }
                             else
                             {
-                                $description = $row[2];
-                                $Weight      = $row[7];
-                                $Width       = $row[5];
-                                $Length      = $row[4];
-                                $Height      = $row[6];
-                                $created_at  = date('Y-m-d H:i:s', strtotime($row[3]));
+                                $description = $row[1];
+                                $Weight      = 0;
+                                $Width       = 0;
+                                $Length      = 0;
+                                $Height      = 0;
+                                $created_at  = date('Y-m-d H:i:s', strtotime($row[2]));
 
                                 $company = Company::find($packageInbound->idCompany);
 
@@ -369,6 +371,13 @@ class PackageReturnCompanyController extends Controller
                                 $packageHistory->updated_at                   = $created_at;
                                 
                                 $packageHistory->save();
+
+                                //create or update price company
+                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                $packagePriceCompanyTeamController->Insert($packageInbound);
+
+                                $packageController = new PackageController();
+                                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
                                 $packageInbound->delete();
                             }
