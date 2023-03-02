@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, TeamRoute, User};
+use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageReturnCompany, TeamRoute, User};
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -549,6 +549,15 @@ class PackageDeliveryController extends Controller
                     if($packageDispatch)
                     {
                         $packageAux = $packageDispatch;
+
+                        $contador++;
+                    }
+
+                    $packageReturnCompany = PackageDispatch::find($row[0]);
+                    
+                    if($packageReturnCompany)
+                    {
+                        $packageAux = $packageReturnCompany;
 
                         $contador++;
                     }
