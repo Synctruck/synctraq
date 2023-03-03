@@ -338,7 +338,7 @@ class PackageReturnCompanyController extends Controller
                                 $packageReturnCompany->idUser                       = Auth::user()->id;
                                 $packageReturnCompany->Date_Return                  = $created_at;
                                 $packageReturnCompany->Description_Return           = $description;
-                                $packageReturnCompany->client                       = $request->get('client');
+                                $packageReturnCompany->surcharge                    = $row[3] == 'YES' ? 1 : 0;
                                 $packageReturnCompany->status                       = 'ReturnCompany';
                                 $packageReturnCompany->created_at                   = $created_at;
                                 $packageReturnCompany->updated_at                   = $created_at;
@@ -374,10 +374,13 @@ class PackageReturnCompanyController extends Controller
                                 
                                 $packageHistory->save();
 
-                                //create or update price company
-                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                $packagePriceCompanyTeamController->Insert($packageInbound);
-
+                                if($row[2] == 'YES')
+                                {
+                                    //create or update price company
+                                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                    $packagePriceCompanyTeamController->Insert($packageInbound);
+                                }
+                                
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
