@@ -174,6 +174,8 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
                 $packageReturnCompany->status                       = 'ReturnCompany';
+                $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
+                $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageReturnCompany->save();
 
