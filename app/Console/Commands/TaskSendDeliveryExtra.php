@@ -48,9 +48,15 @@ class TaskSendDeliveryExtra extends Command
         $filename = "Report-Extra-" . date('m-d-H-i-s', strtotime($date)) .".csv";
         $contents = public_path($filename);
 
-        $this->ReportStatusHistory($contents);
+        $data     = $this->ReportStatusHistory($contents);
+        $quantity = $data['quantity'];
 
-        Storage::disk('sftp')->putFileAs('tracking_in', $contents, $filename);
+        Log::info("Quantity:". $quantity);
+        
+        if($quantity > 0)
+        {
+            Storage::disk('sftp')->putFileAs('tracking_in', $contents, $filename);
+        }
     }
 
     public function ReportStatusHistory($contents)
@@ -126,6 +132,8 @@ class TaskSendDeliveryExtra extends Command
             Log::info('END - SEND DELIVERY EXTRA - AE');
             Log::info('================');
             Log::info('================');
+
+            return ['quantity' => count($packageListDelivery)];
         }
         catch(Exception $e)
         {
