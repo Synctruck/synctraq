@@ -43,24 +43,21 @@ class TaskSendDeliveryExtra extends Command
      */
     public function handle()
     {
-        $startDate = date('Y-m-d 00:00:00', strtotime('-1 day'));
-        $endDate   = date('Y-m-d 23:59:59', strtotime('-1 day'));
+        $date = date('Y-m-d H:i:s');
 
-        $filename = "Report-" . date('m-d-H-i-s', strtotime($startDate)) .'-'. date('m-d-H-i-s', strtotime($endDate)) . ".csv";
+        $filename = "Report-Extra-" . date('m-d-H-i-s', strtotime($date)) .".csv";
         $contents = public_path($filename);
 
-        $this->ReportStatusHistory($startDate, $endDate, $contents);
+        $this->ReportStatusHistory($contents);
 
         Storage::disk('sftp')->putFileAs('tracking_in', $contents, $filename);
     }
 
-    public function ReportStatusHistory($dateInit, $dateEnd, $contents)
+    public function ReportStatusHistory($contents)
     {
-        $filename  = "Report-" . date('m-d-H-i-s', strtotime($dateInit)) .'-'. date('m-d-H-i-s', strtotime($dateEnd)) . ".csv";
         $delimiter = ",";
-
-        $file   = fopen($contents, 'w');
-        $fields = array('shipment_id', 'status', 'date', 'hour', 'timezone', 'city_locality', 'state', 'lat', 'lon', 'pod_url');
+        $file      = fopen($contents, 'w');
+        $fields    = array('shipment_id', 'status', 'date', 'hour', 'timezone', 'city_locality', 'state', 'lat', 'lon', 'pod_url');
 
         fputcsv($file, $fields, $delimiter);
         
@@ -69,7 +66,6 @@ class TaskSendDeliveryExtra extends Command
                                                 ->where('status', 'Delivery')
                                                 ->get();
 
-        Log::info($packageListDelivery);
         try
         {
             Log::info('================');
