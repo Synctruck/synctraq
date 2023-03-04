@@ -690,7 +690,7 @@ function ReportDelivery() {
                                     <div className="col-lg-2 mb-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
-                                    <div className="col-lg-2 mb-3">
+                                    <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
@@ -709,7 +709,7 @@ function ReportDelivery() {
                                         <form onSubmit={ handlerImportPhotos }>
                                             <div className="form-group">
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFilePhotos() }>
-                                                    <i className="bx bxs-file"></i> Import with photos
+                                                    <i className="bx bxs-file"></i> Import
                                                 </button>
                                                 <input type="file" id="fileImportPhoto" className="form-control" ref={ inputFileRefPhotos } style={ {display: 'none'} } onChange={ (e) => setFilePhoto(e.target.files[0]) } accept=".csv" required/>
                                             </div>
