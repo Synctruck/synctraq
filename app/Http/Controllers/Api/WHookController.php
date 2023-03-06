@@ -209,6 +209,11 @@ class WHookController extends Controller
 
                 if(!$package)
                 {
+                   $package = PackageFailed::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+
+                if(!$package)
+                {
                     $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->where('status', 'Delete')->first();
                 }
 
