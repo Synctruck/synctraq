@@ -538,9 +538,9 @@ class ReportController extends Controller
         return view('report.indexfailed');
     }
 
-    public function ListFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ListFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription)
     {
-        $data                  = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
+        $data                  = $this->getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription);
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
 
@@ -561,7 +561,7 @@ class ReportController extends Controller
         ];
     }
 
-    private function getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'list')
+    private function getDataFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -599,6 +599,11 @@ class ReportController extends Controller
             $listPackageFailed = $listPackageFailed->where('idCompany', $idCompany);
         }
 
+        if($statusDescription != 'all')
+        {
+            $listPackageFailed = $listPackageFailed->where('Description_Onfleet', 'like', '%'. $statusDescription .'%');
+        }
+
         if($type == 'list')
         {
             $listPackageFailed = $listPackageFailed->with(['team', 'driver'])
@@ -614,6 +619,7 @@ class ReportController extends Controller
                                                         'Dropoff_City',
                                                         'Dropoff_Province',
                                                         'Dropoff_Postal_Code',
+                                                        'Description_Onfleet',
                                                         'Weight',
                                                         'Route'
                                                     )
@@ -635,6 +641,7 @@ class ReportController extends Controller
                 
             $package = [ 
                 "created_at" => $packageFailed->created_at,
+                "description" => $status['description'],
                 "status" => $status['status'],
                 "statusDate" => $status['statusDate'],
                 "statusDescription" => $status['statusDescription'],
@@ -930,7 +937,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
+    public function ExportFailed($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription)
     {
         $delimiter = ",";
         $filename = "Report Failed " . date('Y-m-d H:i:s') . ".csv";
@@ -939,11 +946,11 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION ONFLEET', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
  
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageFailed = $this->getDataFailed($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
+        $listPackageFailed = $this->getDataFailed($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'export');
         $listPackageFailed = $listPackageFailed['listAll'];
 
         foreach($listPackageFailed as $packageFailed)
@@ -958,6 +965,7 @@ class ReportController extends Controller
                                 $team,
                                 $driver,
                                 $packageFailed['Reference_Number_1'],
+                                $packageFailed['description'],
                                 $packageFailed['status'],
                                 $packageFailed['statusDate'],
                                 $packageFailed['statusDescription'],
@@ -1133,11 +1141,18 @@ class ReportController extends Controller
             {
                 $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1);
             }
+
         }
+
+        $packageFailed = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                    ->where('status', 'Failed')
+                                    ->get()
+                                    ->last();
 
         $packageLast = $packageLast->get()->last();
 
         return [
+            'description' => ($packageFailed ? $packageFailed->Description_Onfleet : ''),
             'status' => ($package ? $package->status : ''),
             'statusDate' => $packageLast->created_at,
             'statusDescription' => ($packageLast->Description != null || $packageLast->Description != '' ? $packageLast->Description : $packageLast->Description_Onfleet)
