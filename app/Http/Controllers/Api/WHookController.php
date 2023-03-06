@@ -113,10 +113,13 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    //create or update price company team
-                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                    $packagePriceCompanyTeamController->Insert($packageDispatch);
-
+                    if($packageDispatch->idCompany == 10)
+                    {
+                        //create or update price company team
+                        $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                        $packagePriceCompanyTeamController->Insert($packageDispatch);
+                    }
+                    
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
@@ -202,6 +205,11 @@ class WHookController extends Controller
                 if(!$package)
                 {
                    $package = PackageWarehouse::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+
+                if(!$package)
+                {
+                   $package = PackageFailed::where('Reference_Number_1', $Reference_Number_1)->first();
                 }
 
                 if(!$package)

@@ -63,9 +63,6 @@ class PackagePriceCompanyTeamController extends Controller
         $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
         $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
 
-        $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
-        $packagePriceCompanyTeam->id                         = date('YmdHis');
         $packagePriceCompanyTeam->Reference_Number_1         = $packageDispatch->Reference_Number_1;
         $packagePriceCompanyTeam->weight                     = $weight;
         $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPriceCompany;

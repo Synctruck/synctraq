@@ -187,7 +187,7 @@ class PackageDispatchController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE' ,'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+        $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -211,6 +211,7 @@ class PackageDispatchController extends Controller
             $lineData = array(
                 date('m-d-Y', strtotime($packageDispatch->Date_Dispatch)),
                 date('H:i:s', strtotime($packageDispatch->Date_Dispatch)),
+                $packageDispatch->company,
                 $team,
                 $driver,
                 $packageDispatch->Reference_Number_1,
