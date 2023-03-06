@@ -1,0 +1,4 @@
+shipment_id,status,date,hour,timezone,city_locality,state,lat,lon,pod_url
+AT000040003100009093,DELIVERY,03-03-2023,10:32:00,America/New_York,Oxford,PA,,,
+AT000040003100009458,DELIVERY,03-03-2023,10:33:00,America/New_York,WestChester,PA,,,
+AT000040003100009758,DELIVERY,03-03-2023,10:34:00,America/New_York,ChesterSprings,PA,,,

@@ -35,6 +35,7 @@ function Package() {
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [status, setStatus]           = useState('Manifest');
     const [idCompany, setCompany]       = useState(0);
 
     const inputFileRef  = React.useRef();
@@ -66,16 +67,16 @@ function Package() {
 
     useEffect(() => {
 
-        listAllPackage(page, RouteSearch, StateSearch);
+        listAllPackage(page, status, RouteSearch, StateSearch);
 
-    }, [idCompany]);
+    }, [status, idCompany]);
 
-    const listAllPackage = (pageNumber, route, state) => {
+    const listAllPackage = (pageNumber, status, route, state) => {
 
         LoadingShow();
         setIsLoading(true);
 
-        fetch(url_general +'package-manifest/list/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'package-manifest/list/'+ status +'/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -98,7 +99,7 @@ function Package() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackage(pageNumber, RouteSearch, StateSearch);
+        listAllPackage(pageNumber, status, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -158,7 +159,7 @@ function Package() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackage(page, RouteSearch, StateSearch);
+                    listAllPackage(page, status, RouteSearch, StateSearch);
                     setViewButtonSave('none');
                 }
 
@@ -299,7 +300,7 @@ function Package() {
                         clearForm();
                     }
 
-                    listAllPackage(page, RouteSearch, StateSearch);
+                    listAllPackage(page, status, RouteSearch, StateSearch);
                 }
                 else if(response.status == 422)
                 {
@@ -375,13 +376,13 @@ function Package() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackage(1, routesSearch, StateSearch);
+            listAllPackage(1, status, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackage(1, 'all', StateSearch);
+            listAllPackage(1, status, 'all', StateSearch);
         }
     };
 
@@ -416,13 +417,13 @@ function Package() {
 
             setStateSearch(statesSearch);
 
-            listAllPackage(1, RouteSearch, statesSearch);
+            listAllPackage(1, status, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackage(1, RouteSearch, 'all');
+            listAllPackage(1, status, RouteSearch, 'all');
         }
     };
 
@@ -583,7 +584,7 @@ function Package() {
 
     const exportAllPackageInbound = (route, state) => {
 
-        location.href = url_general +'package-manifest/export/'+ idCompany +'/'+ route +'/'+ state
+        location.href = url_general +'package-manifest/export/'+ status +'/'+ idCompany +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
@@ -675,7 +676,22 @@ function Package() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Company:
+                                                    STATUS:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatus(e.target.value) }>
+                                                    <option value="Manifest">Manifest</option>
+                                                    <option value="NeverReceived">Never Received</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
+                                    <dvi className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    COMPANY:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
@@ -690,7 +706,7 @@ function Package() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    State :
+                                                    STATE :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
@@ -702,7 +718,7 @@ function Package() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Route :
+                                                    ROUTE :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">

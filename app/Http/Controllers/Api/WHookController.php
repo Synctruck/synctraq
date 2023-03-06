@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
 
-use App\Http\Controllers\PackageDispatchController;
+use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -97,7 +97,7 @@ class WHookController extends Controller
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
                     $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                    $photoUrl = '';
+                    $photoUrl = ''; 
 
                     foreach($photoUploadIds as $idPhoto)
                     {
@@ -113,6 +113,13 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
+                    if($packageDispatch->idCompany == 10)
+                    {
+                        //create or update price company team
+                        $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                        $packagePriceCompanyTeamController->Insert($packageDispatch);
+                    }
+                    
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
@@ -198,6 +205,11 @@ class WHookController extends Controller
                 if(!$package)
                 {
                    $package = PackageWarehouse::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+
+                if(!$package)
+                {
+                   $package = PackageFailed::where('Reference_Number_1', $Reference_Number_1)->first();
                 }
 
                 if(!$package)

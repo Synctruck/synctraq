@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ Company, CompanyStatus, FileSend, PackageDispatch, PackageHistory };
 
+use Log;
+
 class TaskAmericanE extends Command
 {
     /**
@@ -65,7 +67,10 @@ class TaskAmericanE extends Command
     }
 
     public function ReportStatusHistory($dateInit, $dateEnd, $contents)
-    { 
+    {
+        Log::info('================');
+        Log::info('SEND STATUS - AE');
+
         $filename  = "Report-" . date('m-d-H-i-s', strtotime($dateInit)) .'-'. date('m-d-H-i-s', strtotime($dateEnd)) . ".csv";
         $delimiter = ",";
 
@@ -114,7 +119,19 @@ class TaskAmericanE extends Command
 
                 $packageDelivery = PackageDispatch::where('Reference_Number_1', $packageHistory->Reference_Number_1)->first();
 
-                $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                if($packageDelivery)
+                {
+                    Log::info('Reference_Number_1:'. $packageHistory->Reference_Number_1);
+                    Log::info('PHOTO URL: '. $packageDelivery->photoUrl);
+
+                    if($packageDelivery->photoUrl != '')
+                    {
+                        if(count(explode(',', $packageDelivery->photoUrl)) > 1)
+                        {
+                            $podUrl = 'https://d15p8tr8p0vffz.cloudfront.net/'. explode(',', $packageDelivery->photoUrl)[0] .'/800x.png';
+                        }
+                    }
+                }
             }
 
             if($packageHistory->status == 'Inbound' || $packageHistory->status == 'Dispatch' || $packageHistory->status == 'ReInbound' || $packageHistory->status == 'Delivery')
@@ -148,6 +165,9 @@ class TaskAmericanE extends Command
         $fileSend->end_date        = $dateEnd;
 
         $fileSend->save();
+
+        Log::info('SEND STATUS - AE - END');
+        Log::info('================');
 
         rewind($file);
         fclose($file);

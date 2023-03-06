@@ -82,8 +82,8 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Maintenance package manifest
 	Route::get('/package-manifest', [PackageManifestController::class, 'Index'])->middleware('permission:manifest.index');
 	Route::get('/package-manifest/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
-	Route::get('/package-manifest/list/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
-	Route::get('/package-manifest/export/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'Export']);
+	Route::get('/package-manifest/list/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
+	Route::get('/package-manifest/export/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'Export']);
 	Route::post('/package-manifest/insert', [PackageManifestController::class, 'Insert']);
 	Route::get('/package-manifest/get/{PACKAGE_ID}', [PackageManifestController::class, 'Get']);
 	Route::post('/package-manifest/update', [PackageManifestController::class, 'Update']);

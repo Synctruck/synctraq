@@ -689,7 +689,7 @@ class ReportController extends Controller
         $states      = explode(',', $state);
         $packageList = [];
 
-        $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Manifest');
         $packageInboundList   = PackageInbound::whereBetween('created_at', [$dateInit, $dateEnd]);
         $packageWarehouseList = PackageWarehouse::whereBetween('created_at', [$dateInit, $dateEnd]);
 
@@ -1128,6 +1128,11 @@ class ReportController extends Controller
         if($package)
         {
             $packageLast = $packageLast->where('status', $package->status);
+
+            if(count($packageLast->get()) == 0)
+            {
+                $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1);
+            }
         }
 
         $packageLast = $packageLast->get()->last();
