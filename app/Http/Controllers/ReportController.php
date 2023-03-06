@@ -601,7 +601,7 @@ class ReportController extends Controller
 
         if($statusDescription != 'all')
         {
-            $listPackageFailed = $listPackageFailed->where('Description_Onfleet', 'like', '%'. $statusDescription .'%');
+            $listPackageFailed = $listPackageFailed->where('Description_Onfleet', 'like', '%'. $statusDescription .':%');
         }
 
         if($type == 'list')
