@@ -159,6 +159,8 @@ class WHookController extends Controller
         {
             try
             {
+                DB::beginTransaction();
+                
                 $packageDispatch  = PackageDispatch::find($Reference_Number_1);
 
                 Log::info('Reference_Number_1: '. $Reference_Number_1);
@@ -236,11 +238,13 @@ class WHookController extends Controller
 
                 DB::commit();
 
-                Log::info("==================== CORRECT TASK - PRE FAILED");
+                Log::info("==================== CORRECT TASK - FAILED");
             }
             catch(Exception $e)
             {
-                Log::info("==================== ROLLBACK TASK - PRE FAILED");
+                DB::rollback();
+
+                Log::info("==================== ROLLBACK TASK - FAILED");
             }
         }
     }
