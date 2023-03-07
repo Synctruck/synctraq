@@ -157,15 +157,91 @@ class WHookController extends Controller
         
         if($completionDetailsStatus == false)
         {
-            $packagePreFailed = new PackagePreFailed();
+            try
+            {
+                $packageDispatch  = PackageDispatch::find($Reference_Number_1);
 
-            $packagePreFailed->taskOnfleet         = $taskOnfleet;
-            $packagePreFailed->Description_Onfleet = $Description_Onfleet;
-            $packagePreFailed->Reference_Number_1  = $Reference_Number_1;
+                Log::info('Reference_Number_1: '. $Reference_Number_1);
 
-            $packagePreFailed->save();
+                if($packageDispatch)
+                {
+                    $created_at          = date('Y-m-d H:i:s');
+                    $Description_Onfleet = $Description_Onfleet;
 
-            Log::info("==================== CORRECT TASK - PRE FAILED");
+                    $packageFailed = new PackageFailed();
+
+                    $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageFailed->idCompany                    = $packageDispatch->idCompany;
+                    $packageFailed->company                      = $packageDispatch->company;
+                    $packageFailed->idStore                      = $packageDispatch->idStore;
+                    $packageFailed->store                        = $packageDispatch->store;
+                    $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageFailed->Notes                        = $packageDispatch->Notes;
+                    $packageFailed->Weight                       = $packageDispatch->Weight;
+                    $packageFailed->Route                        = $packageDispatch->Route;
+                    $packageFailed->idTeam                       = $packageDispatch->idTeam;
+                    $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
+                    $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
+                    $packageFailed->Description_Onfleet          = $Description_Onfleet;
+                    $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
+                    $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
+                    $packageFailed->quantity                     = $packageDispatch->quantity;
+                    $packageFailed->status                       = 'Failed';
+                    $packageFailed->created_at                   = $created_at;
+                    $packageFailed->updated_at                   = $created_at;
+
+                    $packageFailed->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
+                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packageDispatch->Notes;
+                    $packageHistory->Weight                       = $packageDispatch->Weight;
+                    $packageHistory->Route                        = $packageDispatch->Route;
+                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+                    $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
+                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->status                       = 'Failed';
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
+
+                    $packageHistory->save();
+                    
+                    $packageDispatch->delete(); 
+                }
+
+                DB::commit();
+
+                Log::info("==================== CORRECT TASK - PRE FAILED");
+            }
+            catch(Exception $e)
+            {
+                Log::info("==================== ROLLBACK TASK - PRE FAILED");
+            }
         }
     }
 
