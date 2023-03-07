@@ -233,7 +233,7 @@ class WHookController extends Controller
 
                     $packageHistory->save();
                     
-                    $packageDispatch->delete(); 
+                    $packageDispatch->delete();
                 }
 
                 DB::commit();
