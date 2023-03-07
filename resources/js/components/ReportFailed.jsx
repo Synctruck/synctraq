@@ -84,7 +84,6 @@ function ReportFailed() {
         console.log(responseData);
     }
 
-
     const listAllCompany = () => {
 
         setListCompany([]);
@@ -141,6 +140,7 @@ function ReportFailed() {
 
         setDateInit(date);
     }
+
     const optionCompany = listCompany.map( (company, i) => {
 
         return <option value={company.id}>{company.name}</option>
@@ -390,7 +390,7 @@ function ReportFailed() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <dvi className="col-lg-2">
+                                            <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
                                                         Company:
@@ -402,7 +402,7 @@ function ReportFailed() {
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </dvi>
+                                            </div>
 
                                             {
                                                 roleUser == 'Administrador'

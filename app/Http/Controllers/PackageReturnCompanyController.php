@@ -41,12 +41,12 @@ class PackageReturnCompanyController extends Controller
         return view('report.indexreturncompany');
     }
 
-    public function List($dateInit, $dateEnd, $route, $state)
+    public function List($dateInit, $dateEnd, $idCompany, $route, $state)
     {
         $roleUser = Auth::user()->role->name;
 
 
-        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'ReturnCompany');
+        $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $idCompany, $route, $state, 'ReturnCompany');
 
         $quantityReturn = $packageReturnCompanyList->total();
 
@@ -57,7 +57,7 @@ class PackageReturnCompanyController extends Controller
         return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
     }
 
-    private function getDataReturn($dateInit, $dateEnd, $route, $state, $status, $type = 'list')
+    private function getDataReturn($dateInit, $dateEnd, $idCompany, $route, $state, $status, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -75,6 +75,11 @@ class PackageReturnCompanyController extends Controller
         if($state != 'all')
         {
             $packageReturnCompanyList = $packageReturnCompanyList->whereIn('Dropoff_Province', $states);
+        }
+
+        if($idCompany)
+        {
+            $packageReturnCompanyList = $packageReturnCompanyList->where('idCompany', $idCompany);
         }
 
         if($type=='list')
@@ -401,7 +406,7 @@ class PackageReturnCompanyController extends Controller
         }
     }
 
-    public function Export($dateInit, $dateEnd, $route, $state)
+    public function Export($dateInit, $dateEnd, $idCompany, $route, $state)
     {
         $delimiter = ",";
         $filename = "Report Return Company " . date('Y-m-d H:i:s') . ".csv";
@@ -414,7 +419,7 @@ class PackageReturnCompanyController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageReturnCompany = $this->getDataReturn($dateInit, $dateEnd, $route, $state, 'ReturnCompany', $type = 'export');
+        $listPackageReturnCompany = $this->getDataReturn($dateInit, $dateEnd, $idCompany, $route, $state, 'ReturnCompany', $type = 'export');
 
         foreach($listPackageReturnCompany as $packageReturnCompany)
         {

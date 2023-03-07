@@ -14,6 +14,7 @@ function ReportReturnCompany() {
     const [listTeam, setListTeam]             = useState([]);
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
+    const [listCompany , setListCompany]      = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -24,6 +25,7 @@ function ReportReturnCompany() {
     const [dateEnd, setDateEnd]         = useState(auxDateInit);
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [idCompany, setCompany]       = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
     const [Description_Return, setDescriptionReturn]  = useState('');
@@ -50,6 +52,12 @@ function ReportReturnCompany() {
 
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
+    useEffect( () => {
+
+        listAllCompany();
+        listAllRoute();
+    }, []);
+
     useEffect(() => {
 
         if(String(file) == 'undefined' || file == '')
@@ -66,9 +74,8 @@ function ReportReturnCompany() {
     useEffect(() => {
 
         listReturnCompany(1, RouteSearch, StateSearch);
-        listAllRoute();
 
-    }, [dateInit, dateEnd]);
+    }, [dateInit, dateEnd, idCompany]);
 
     const onBtnClickFile = () => {
 
@@ -76,12 +83,13 @@ function ReportReturnCompany() {
 
         inputFileRef.current.click();
     }
+
     const listReturnCompany = (pageNumber, routeSearch, stateSearch) => {
 
         setIsLoading(true);
         setListReport([]);
 
-        fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -136,6 +144,21 @@ function ReportReturnCompany() {
         });
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
+        });
+    }
+
     const listAllRoute = () => {
 
         setListRoute([]);
@@ -175,7 +198,7 @@ function ReportReturnCompany() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch;
         }
     }
 
@@ -427,6 +450,11 @@ function ReportReturnCompany() {
         );
     }
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -527,7 +555,21 @@ function ReportReturnCompany() {
                                             <div className="col-lg-3">
                                                 <div className="row">
                                                     <div className="col-lg-12">
-                                                        State :
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-3">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        State : 
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
