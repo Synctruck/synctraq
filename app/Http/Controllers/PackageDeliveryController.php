@@ -482,9 +482,12 @@ class PackageDeliveryController extends Controller
                                 //end data for inland
                             }
 
-                            //create or update price company
-                            $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                            $packagePriceCompanyTeamController->Insert($packageDispatch);
+                            if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
+                            {
+                                //create or update price company team
+                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                $packagePriceCompanyTeamController->Insert($packageDispatch);
+                            }
                         }
                     }
                     elseif($contador > 1) 
