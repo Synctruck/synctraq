@@ -33,6 +33,9 @@ function ReportFailed() {
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
     const [isLoading, setIsLoading]       = useState(false);
+    const [listStatus, setStatusFailed]   = useState(['OTHER', 'DESTINATION_INCORRECT', 'UNABLE_TO_LOCATE', 'UNAVAILABLE', 'NONE', 'ITEM_INCORRECT', 'DELIVERY_INCIDENT']);
+
+    const [statusDescription, setStatusDescription] = useState('all');
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
@@ -50,7 +53,7 @@ function ReportFailed() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam, idDriver,idCompany]);
+    }, [dateInit, dateEnd, idTeam, idDriver,idCompany, statusDescription]);
 
 
     const listReportDispatch = async (pageNumber, routeSearch, stateSearch) => {
@@ -58,7 +61,7 @@ function ReportFailed() {
         setIsLoading(true);
         setListReport([]);
 
-        const responseData = await fetch(url_general +'report/list/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        const responseData = await fetch(url_general +'report/list/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'/'+ statusDescription +'?page='+ pageNumber)
         .then(res =>  res.json())
         .then((response) => {
 
@@ -80,7 +83,6 @@ function ReportFailed() {
 
         console.log(responseData);
     }
-
 
     const listAllCompany = () => {
 
@@ -138,6 +140,7 @@ function ReportFailed() {
 
         setDateInit(date);
     }
+
     const optionCompany = listCompany.map( (company, i) => {
 
         return <option value={company.id}>{company.name}</option>
@@ -164,7 +167,7 @@ function ReportFailed() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/export/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/export/failed/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ statusDescription;
         }
     }
 
@@ -203,6 +206,7 @@ function ReportFailed() {
                         ''
                 }
                 <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.description }</td>
                 <td>{ packageDispatch.status }</td>
                 <td>
                     { packageDispatch.statusDate.substring(5, 7) }-{ packageDispatch.statusDate.substring(8, 10) }-{ packageDispatch.statusDate.substring(0, 4) }
@@ -343,6 +347,12 @@ function ReportFailed() {
         location.href = url_general +'package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/day/'+ dateInit +'/'+ dateEnd;
     }
 
+    const listStatusOnfleet = listStatus.map( (status, i) => {
+
+        return(
+            <option value={ status }>{ status }</option>
+        );
+    });
     return (
 
         <section className="section">
@@ -380,7 +390,7 @@ function ReportFailed() {
                                                 <label htmlFor="">End date:</label>
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
-                                            <dvi className="col-lg-2">
+                                            <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
                                                         Company:
@@ -392,7 +402,7 @@ function ReportFailed() {
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </dvi>
+                                            </div>
 
                                             {
                                                 roleUser == 'Administrador'
@@ -429,7 +439,7 @@ function ReportFailed() {
                                                             <div className="form-group">
                                                                 <label htmlFor="">Driver</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
+                                                                    <option value="0">All</option>
                                                                     { listDriverSelect }
                                                                 </select>
                                                             </div>
@@ -456,6 +466,20 @@ function ReportFailed() {
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-4">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        DESCRIPTION ONFLEET:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setStatusDescription(e.target.value) }>
+                                                            <option value="all">All</option>
+                                                            { listStatusOnfleet }
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -487,9 +511,10 @@ function ReportFailed() {
                                                         roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
                                                 }
                                                 <th>PACKAGE ID</th>
+                                                <th>DESCRIPTION ONFLEET</th>
                                                 <th>ACTUAL STATUS</th>
-                                                <th>STATUS DATE</th>}
-                                                <th>STATUS DESCRIPTION</th>
+                                                <th>STATUS DATE</th>
+                                                <th>ACTUAL STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDRESS</th>

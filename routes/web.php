@@ -357,8 +357,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDispatch']);
 
 	Route::get('/report/failed', [ReportController::class, 'IndexFailed'])->middleware('permission:reportFailed.index');
-	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListFailed']);
-	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportFailed']);
+	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ListFailed']);
+	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ExportFailed']);
 
 	Route::get('/report/notExists', [ReportController::class, 'IndexNotExists'])->middleware('permission:reportNotexists.index');
 	Route::get('/report/list/notexists/{dateInit}/{dateEnd}', [ReportController::class, 'ListNotExists']);
@@ -369,10 +369,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/export/assigns/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportAssigns']);
 
 	Route::get('/report/return-company', [PackageReturnCompanyController::class, 'Index'])->middleware('permission:reportReturncompany.index');
-	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
+	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
 	Route::post('/report/return-company/import', [PackageReturnCompanyController::class, 'Import']);
-	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
 	Route::get('/report/return-company/update-created-at', [PackageReturnCompanyController::class, 'UpdateCreatedAt']);
 
 	Route::get('/report/mass-query', [PackageMassQueryController::class, 'Index'])->middleware('permission:reportMassquery.index');
