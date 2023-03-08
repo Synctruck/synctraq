@@ -296,9 +296,7 @@ class PackageReturnCompanyController extends Controller
 
                         if($packageInbound == null)
                         {
-                            $packageInbound = PackageReturnCompany::where('status', 'PreRts')
-                                                                ->where('Reference_Number_1', $Reference_Number_1)
-                                                                ->first();
+                            $packageInbound = PackageReturnCompany::where('Reference_Number_1', $Reference_Number_1)->first();
                         }
                         
                         if($packageInbound)
@@ -309,7 +307,7 @@ class PackageReturnCompanyController extends Controller
 
                                 $packageInbound->save();
                             }
-                            else
+                            else if($packageInbound->status != 'ReturnCompany')
                             {
                                 $description = $row[1];
                                 $Weight      = 0;
