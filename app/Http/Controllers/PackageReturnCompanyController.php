@@ -379,17 +379,17 @@ class PackageReturnCompanyController extends Controller
                                 
                                 $packageHistory->save();
 
-                                if($row[2] == 'YES')
-                                {
-                                    //create or update price company
-                                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                    $packagePriceCompanyTeamController->Insert($packageInbound);
-                                }
-                                
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
                                 $packageInbound->delete();
+                            }
+
+                            if($row[3] == 'YES')
+                            {
+                                //create or update price company
+                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                $packagePriceCompanyTeamController->Insert($packageInbound);
                             }
                         }
                     }
