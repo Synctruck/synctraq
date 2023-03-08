@@ -6,9 +6,10 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ PackageFailed, PackagePreFailed, PackageDispatch, PackageHistory };
+use App\Models\{ PackageDispatch, PackagePriceCompanyTeam };
 
 use Log;
+use Mail;
 
 class TaskPackageFailed extends Command
 {
@@ -17,14 +18,14 @@ class TaskPackageFailed extends Command
      *
      * @var string
      */
-    protected $signature = 'test:task-insert-package-failed';
+    protected $signature = 'task:send-pre-factura';
 
     /**
      * The console command description.
      *
      * @var string
-     */
-    protected $description = 'Mover paquetes de pre failed a failed';
+     */ 
+    protected $description = 'Enviar correo con paquetes para facturar(Pre factura)';
 
     /**
      * Create a new command instance.
@@ -41,109 +42,98 @@ class TaskPackageFailed extends Command
      *
      * @return int
      */
+
     public function handle()
     {
-        Log::info("============================================================");
-        Log::info("==========SCHEDULE TASK MOVE PRE-FAILED TO FAILED ==========");
+        $filename  = 'PRE-FACTURA-'. date('m-d-H-i-s') .'.csv';
+        $contents  = public_path($filename);
+        $startDate = '2023-02-26 00:00:00';
+        $endDate   = '2023-03-04 23:59:59';
 
-        try
+        $this->GetReportCharge($startDate, $endDate, $filename, $contents);
+    }
+
+    public function GetReportCharge($dateInit, $dateEnd, $filename, $contents)
+    {
+        Log::info('================');
+        Log::info('SEND PRE FACTURA - EMAIL');
+
+        $delimiter = ",";
+        $file      = fopen($contents, 'w');
+        $fields    = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'WEIGHT', 'LENGTH', 'HEIGHT', 'WIDTH', 'CUIN', 'DIESEL PRICE C', 'DIESEL PRICE T', 'DIM FACTOR C', 'DIM WEIGHT C', 'DIM WEIGHT ROUND C', 'PRICE WEIGHT C', 'PEAKE SEASON PRICE C', 'PRICE BASE C', 'SURCHARGE PERCENTAGE C', 'SURCHAGE PRICE C', 'TOTAL PRICE C', 'DIM FACTOR T', 'DIM WEIGHT T', 'DIM WEIGHT ROUND T', 'PRICE WEIGHT T', 'PEAKE SEASON PRICE C', 'PRICE BASE T', 'SURCHARGE PERCENTAGE T', 'SURCHAGE PRICE T', 'TOTAL PRICE T');
+
+        fputcsv($file, $fields, $delimiter);
+        
+        $listPackageDelivery = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd])
+                                                ->where('status', 'Delivery')
+                                                ->get();
+
+        foreach($listPackageDelivery as $packageDelivery)
         {
-            DB::beginTransaction();
+            $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                                ->first();
 
-            $listPackagePreFailed = PackagePreFailed::all();
-
-            foreach($listPackagePreFailed as $packagePreFailed)
+            if($packagePriceCompanyTeam)
             {
-                $packagePreFailed = PackagePreFailed::find($packagePreFailed->taskOnfleet);
-                $packageDispatch  = PackageDispatch::where('taskOnfleet', $packagePreFailed->taskOnfleet)->first();
-                
-                if($packageDispatch)
-                {
-                    $Description_Onfleet = $packagePreFailed->Description_Onfleet;
-                    //$user = User::find($packageDispatch->idUserDispatch);
+                $team = $packageDelivery->team  ? $packageDelivery->team->name : '';
 
-                    //$description = $user ? 'For: Driver '. $user->name .' '. $user->nameOfOwner : 'Driver not exists';
+                $lineData = array(
+                                date('m-d-Y', strtotime($packageDelivery->updated_at)),
+                                date('H:i:s', strtotime($packageDelivery->updated_at)),
+                                $packageDelivery->company,
+                                $team,
+                                $packageDelivery->Reference_Number_1,
+                                $packagePriceCompanyTeam->weight,
+                                $packagePriceCompanyTeam->length,
+                                $packagePriceCompanyTeam->height,
+                                $packagePriceCompanyTeam->width,
+                                $packagePriceCompanyTeam->cuIn,
+                                $packagePriceCompanyTeam->dieselPriceCompany,
+                                $packagePriceCompanyTeam->dieselPriceTeam,
+                                $packagePriceCompanyTeam->dimFactorCompany,
+                                $packagePriceCompanyTeam->dimWeightCompany,
+                                $packagePriceCompanyTeam->dimWeightCompanyRound,
+                                $packagePriceCompanyTeam->priceWeightCompany,
+                                $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                                $packagePriceCompanyTeam->priceBaseCompany,
+                                $packagePriceCompanyTeam->surchargePercentageCompany,
+                                $packagePriceCompanyTeam->surchargePriceCompany,
+                                $packagePriceCompanyTeam->totalPriceCompany,
+                                $packagePriceCompanyTeam->dimFactorTeam,
+                                $packagePriceCompanyTeam->dimWeightTeam,
+                                $packagePriceCompanyTeam->dimWeightTeamRound,
+                                $packagePriceCompanyTeam->priceWeightTeam,
+                                $packagePriceCompanyTeam->peakeSeasonPriceTeam,
+                                $packagePriceCompanyTeam->priceBaseTeam,
+                                $packagePriceCompanyTeam->surchargePercentageTeam,
+                                $packagePriceCompanyTeam->surchargePriceTeam,
+                                $packagePriceCompanyTeam->totalPriceTeam,
+                            );
 
-                    $packageFailed = new PackageFailed();
-
-                    $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageFailed->idCompany                    = $packageDispatch->idCompany;
-                    $packageFailed->company                      = $packageDispatch->company;
-                    $packageFailed->idStore                      = $packageDispatch->idStore;
-                    $packageFailed->store                        = $packageDispatch->store;
-                    $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageFailed->Notes                        = $packageDispatch->Notes;
-                    $packageFailed->Weight                       = $packageDispatch->Weight;
-                    $packageFailed->Route                        = $packageDispatch->Route;
-                    $packageFailed->idTeam                       = $packageDispatch->idTeam;
-                    $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
-                    $packageFailed->Description_Onfleet          = $Description_Onfleet;
-                    $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
-                    $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
-                    $packageFailed->quantity                     = $packageDispatch->quantity;
-                    $packageFailed->status                       = 'Failed';
-                    $packageFailed->created_at                   = $packagePreFailed->created_at;
-                    $packageFailed->updated_at                   = $packagePreFailed->created_at;
-
-                    $packageFailed->save();
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                    $packageHistory->company                      = $packageDispatch->company;
-                    $packageHistory->idStore                      = $packageDispatch->idStore;
-                    $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                    $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
-                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
-                    $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->status                       = 'Failed';
-                    $packageHistory->created_at                   = $packagePreFailed->created_at;
-                    $packageHistory->updated_at                   = $packagePreFailed->created_at;
-
-                    $packageHistory->save();
-                    
-                    $packageDispatch->delete();
-                }
-
-                $packagePreFailed->delete();
+                fputcsv($file, $lineData, $delimiter);
             }
-
-            Log::info("==================== CORRECT SCHEDULE TASK MOVE PRE-FAILED TO FAILED");
-            Log::info("============================================================");
-
-            DB::commit();
         }
-        catch(Exception $e)
-        {
-            DB::rollback();
 
-            Log::info("==================== ROLLBACK SCHEDULE TASK MOVE PRE-FAILED TO FAILED");
-            Log::info("============================================================");
-        }
+        Log::info('SEND PRE FACTURA - EMAIL');
+        Log::info('================');
+
+        rewind($file);
+        fclose($file);
+
+        $this->SendPreFactura($filename);
+    }
+
+    public function SendPreFactura($filename)
+    {
+        $file = public_path($filename);
+        $data = [];
+
+        Mail::send('mail.prefactura', $data, function($message) use($file) {
+
+            $message->to('wilcm123@gmail.com', 'WILBER CM')
+            ->subject('pre-factura');
+
+            $message->attach($file);
+        });
     }
 }

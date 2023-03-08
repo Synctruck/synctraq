@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
 use Auth;
 use DateTime;
 use Session;
+use Mail;
 use DB;
 use Log;
 
