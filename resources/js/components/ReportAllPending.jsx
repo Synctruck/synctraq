@@ -20,9 +20,10 @@ function ReportAllPending() {
     const [listState , setListState]     = useState([]);
     const [listCompany , setListCompany] = useState([]);
 
-    const [idCompany, setCompany]       = useState(0);
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [idCompany, setCompany]         = useState(0);
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -40,14 +41,14 @@ function ReportAllPending() {
 
         listReportManifest(page, RouteSearch, StateSearch);
 
-    }, [ idCompany, dateInit, dateEnd ]);
+    }, [ idCompany, dateInit, dateEnd, StatusSearch ]);
 
 
     const listReportManifest = (pageNumber, routeSearch, stateSearch) => {
 
         setIsLoading(true);
 
-        fetch(url_general +'report/all-pending/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/all-pending/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ stateSearch +'/'+ StatusSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -271,17 +272,17 @@ function ReportAllPending() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2">
-                                        <label htmlFor="">Start date:</label>
+                                        <label htmlFor="">START DATE:</label>
                                         <input type="date" value={ dateInit } onChange={ (e) => handlerChangeDateInit(e.target.value) } className="form-control"/>
                                     </div>
                                     <div className="col-lg-2">
-                                        <label htmlFor="">End date:</label>
+                                        <label htmlFor="">END DATE:</label>
                                         <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                     </div>
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                Company:
+                                                COMPANY:
                                             </div>
                                             <div className="col-lg-12">
                                                 <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
@@ -294,10 +295,25 @@ function ReportAllPending() {
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                State :
+                                                STATE:
                                             </div>
                                             <div className="col-lg-12">
                                                 <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="Manifest">Manifest</option>
+                                                    <option value="Inbound">Inbound</option>
+                                                    <option value="Warehouse">Warehouse</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
