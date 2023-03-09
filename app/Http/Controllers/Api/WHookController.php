@@ -113,7 +113,7 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->idCompany == 10)
+                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
@@ -233,7 +233,7 @@ class WHookController extends Controller
 
                     $packageHistory->save();
                     
-                    $packageDispatch->delete(); 
+                    $packageDispatch->delete();
                 }
 
                 DB::commit();

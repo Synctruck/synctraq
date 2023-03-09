@@ -260,7 +260,7 @@ class PackageReturnCompanyController extends Controller
                                                                 ->where('Reference_Number_1', $Reference_Number_1)
                                                                 ->first();
 
-                    if(!$packageReturnCompany)
+                    if(1)
                     {
                         $packageInbound = PackageManifest::find($Reference_Number_1);
 
@@ -296,9 +296,7 @@ class PackageReturnCompanyController extends Controller
 
                         if($packageInbound == null)
                         {
-                            $packageInbound = PackageReturnCompany::where('status', 'PreRts')
-                                                                ->where('Reference_Number_1', $Reference_Number_1)
-                                                                ->first();
+                            $packageInbound = PackageReturnCompany::where('Reference_Number_1', $Reference_Number_1)->first();
                         }
                         
                         if($packageInbound)
@@ -309,7 +307,7 @@ class PackageReturnCompanyController extends Controller
 
                                 $packageInbound->save();
                             }
-                            else
+                            else if($packageInbound->status != 'ReturnCompany')
                             {
                                 $description = $row[1];
                                 $Weight      = 0;
@@ -379,17 +377,17 @@ class PackageReturnCompanyController extends Controller
                                 
                                 $packageHistory->save();
 
-                                if($row[2] == 'YES')
-                                {
-                                    //create or update price company
-                                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                    $packagePriceCompanyTeamController->Insert($packageInbound);
-                                }
-                                
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
                                 $packageInbound->delete();
+                            }
+
+                            if($row[3] == 'YES')
+                            {
+                                //create or update price company
+                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                $packagePriceCompanyTeamController->Insert($packageInbound);
                             }
                         }
                     }
