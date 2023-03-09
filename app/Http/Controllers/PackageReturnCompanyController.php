@@ -260,7 +260,7 @@ class PackageReturnCompanyController extends Controller
                                                                 ->where('Reference_Number_1', $Reference_Number_1)
                                                                 ->first();
 
-                    if(!$packageReturnCompany)
+                    if(1)
                     {
                         $packageInbound = PackageManifest::find($Reference_Number_1);
 
