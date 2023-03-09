@@ -6,6 +6,9 @@
 	<title>PRE FACTURA | SYNCTRUCK</title>
 </head>
 <body>
-	<h1>adjuntando archivo</h1>
+	<h1>PRE INVOICES ATTACHED</h1>
+	<h3>START DATE: {{$data['startDate']}}</h3>
+	<h3>END DATE: {{$data['endDate']}}</h3>
+	<p>To confirm the invoice go to the <a href="{{url('charge-company/pre-confirm')}}/{{$data['startDate']}}/{{$data['endDate']}}">following link</a></p>
 </body>
 </html>
