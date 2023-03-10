@@ -162,11 +162,6 @@ class UserController extends Controller
 
     public function Login()
     {
-        dd($day = date("l")); //Sunday
-        /*$nowDate      = date('Y-m-12');
-        $saturdayDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
-        $sundayDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));*/
-
         return view('user.login');
     }
 

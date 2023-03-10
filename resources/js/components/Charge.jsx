@@ -156,6 +156,44 @@ function Charge() {
         location.href = url_general +'charge-company/export/'+ id;
     }
 
+    const handlerConfirmInvoiced = (id, status) => {
+
+        if(status == 'DRAFT INVOICE')
+        {
+            swal({
+                title: "You want to change the status of the Driver?",
+                text: "Change state!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+
+                if(willDelete)
+                {
+                    LoadingShow();
+
+                    fetch(url_general +'driver/changeStatus/'+ id)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction)
+                        {
+                            swal("Driver status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listAllUser(page);
+                        }
+
+                        LoadingHide();
+                    });
+                }
+            });
+        }
+    }
+
     const listReportTable = listReport.map( (charge, i) => {
 
         return (
@@ -171,9 +209,9 @@ function Charge() {
                 <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
                 <td className="text-success text-right"><b>{ charge.total +' $' }</b></td>
                 <td>
-                    <div className={ (charge.status == 'PreFactura' ? 'alert alert-danger font-weight-bold text-center' : 'alert alert-success font-weight-bold')}>
+                    <button className={ (charge.status == 'DRAFT INVOICE' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(charge.id, charge.status) }>
                         { charge.status }
-                    </div>
+                    </button>
                 </td>
                 <td>
                     <button className="btn btn-primary form-control" onClick={ () => handlerExportCharge(charge.id) }>
@@ -399,6 +437,7 @@ function Charge() {
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">

@@ -45,33 +45,41 @@ class TaskPackageSendPreFactura extends Command
 
     public function handle()
     {
-        try
+        $dayName = date("l");
+
+        Log::info('Hoy es: '. $dayName);
+
+        if($dayName == 'Friday')
         {
-            DB::beginTransaction();
-
-            $files     = [];
-            $startDate = '2023-02-26';
-            $endDate   = '2023-03-04';
-
-            $companyList = Company::all();
-
-            foreach($companyList as $company)
+            try
             {
-                $filename  = 'PRE-FACTURA-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                $contents  = public_path($filename);
+                DB::beginTransaction();
 
-                array_push($files, $contents);
+                $files     = [];
+                $nowDate   = date('Y-m-d');
+                $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
-                $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                $companyList = Company::all();
+
+                foreach($companyList as $company)
+                {
+                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                    $contents  = public_path($filename);
+
+                    array_push($files, $contents);
+
+                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                }
+
+                $this->SendPreFactura($startDate, $endDate, $files);
+
+                DB::commit(); 
             }
-
-            $this->SendPreFactura($startDate, $endDate, $files);
-
-            DB::commit(); 
-        }
-        catch(Exception $e)
-        {
-            DB::rollback();
+            catch(Exception $e)
+            {
+                DB::rollback();
+            }
         }
     }
 
@@ -114,13 +122,14 @@ class TaskPackageSendPreFactura extends Command
 
                 if($packagePriceCompanyTeam)
                 {
-                    $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
                     $team        = $packageDelivery->team  ? $packageDelivery->team->name : '';
 
                     $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                     if($chargeCompanyDetail == null)
                     {
+                        $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
+                        
                         $chargeCompanyDetail = new ChargeCompanyDetail();
 
                         $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
@@ -170,7 +179,7 @@ class TaskPackageSendPreFactura extends Command
         Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
 
             $message->to('wilcm123@gmail.com', 'WILBER CM')
-            ->subject('PRE-FACTURA ('. $startDate .' - '. $endDate .')');
+            ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
 
             foreach ($files as $file)
             {
