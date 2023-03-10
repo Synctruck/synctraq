@@ -28,8 +28,9 @@ function Charge() {
     const [idDriver, setIdDriver]             = useState(0);
     const [idCompany, setCompany]             = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -47,14 +48,14 @@ function Charge() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [idCompany, dateInit, dateEnd, idTeam, idDriver]);
+    }, [idCompany, dateInit, dateEnd, idTeam, idDriver, StatusSearch]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany  +'?page='+ pageNumber)
+        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch  +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -156,24 +157,64 @@ function Charge() {
         location.href = url_general +'charge-company/export/'+ id;
     }
 
+    const handlerConfirmInvoiced = (id, status) => {
+
+        if(status == 'DRAFT INVOICE')
+        {
+            swal({
+                title: "You want change the status DRAFT INVOICE to INVOICE?",
+                text: "Change status!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+
+                if(willDelete)
+                {
+                    LoadingShow();
+
+                    fetch(url_general +'charge-company/confirm/'+ id)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction)
+                        {
+                            swal("DRAFT INVOICE status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     const listReportTable = listReport.map( (charge, i) => {
 
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { charge.created_at.substring(5, 7) }-{ charge.created_at.substring(8, 10) }-{ charge.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ charge.created_at.substring(5, 7) }-{ charge.created_at.substring(8, 10) }-{ charge.created_at.substring(0, 4) }</b><br/>
                     { charge.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ charge.id }</b></td>
                 <td><b>{ charge.company.name }</b></td>
-                <td>{ charge.startDate }</td>
-                <td>{ charge.endDate }</td>
+                <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
+                <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
                 <td className="text-success text-right"><b>{ charge.total +' $' }</b></td>
                 <td>
+                    <button className={ (charge.status == 'DRAFT INVOICE' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(charge.id, charge.status) }>
+                        { charge.status }
+                    </button>
+                </td>
+                <td>
                     <button className="btn btn-primary form-control" onClick={ () => handlerExportCharge(charge.id) }>
-                        <i className="ri-file-excel-fill"></i> Export
+                        <i className="ri-file-excel-fill"></i> EXPORT DETAIL
                     </button>
                 </td>
             </tr>
@@ -395,6 +436,20 @@ function Charge() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="DRAFT INVOICE">DRAFT INVOICE</option>
+                                                    <option value="INVOICE">INVOICE</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
@@ -411,11 +466,12 @@ function Charge() {
                                         <thead>
                                             <tr>
                                                 <th><b>DATE</b></th>
-                                                <th><b>HOUR</b></th>
+                                                <th><b>N° INVOICE</b></th>
                                                 <th><b>COMPANY</b></th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
                                                 <th><b>TOTAL</b></th>
+                                                <th><b>STATUS</b></th>
                                                 <th><b>ACTION</b></th>
                                             </tr>
                                         </thead>
