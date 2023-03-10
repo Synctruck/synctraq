@@ -163,7 +163,7 @@ class TaskPackageSendPreFactura extends Command
         }
 
         $chargeCompany->total  = $totalCharge;
-        $chargeCompany->status = 'PreFactura';
+        $chargeCompany->status = 'DRAFT INVOICE';
 
         $chargeCompany->save();
 
