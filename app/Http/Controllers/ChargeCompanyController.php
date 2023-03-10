@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, PackageDispatch, PackageHistory, PeakeSeasonCompany, RangeDieselCompany };
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, PackageDispatch, PackageHistory, PackagePriceCompanyTeam, PeakeSeasonCompany, RangeDieselCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -289,7 +289,7 @@ class ChargeCompanyController extends Controller
         fputcsv($file, $fields, $delimiter);
 
         //set column headers
-        $fields = array('', 'RANGE DATE', date('m-d-Y', strtotime($charge->startDate)), date('m-d-Y', strtotime($charge->endDate)));
+        $fields = array('', 'RANGE DATE', date('m-d-Y', strtotime($charge->startDate)) .' - '. date('m-d-Y', strtotime($charge->endDate)));
         fputcsv($file, $fields, $delimiter);
 
         $fields = array('');
@@ -298,50 +298,43 @@ class ChargeCompanyController extends Controller
         $fields = array('PACKAGE DELIVERIES');
         fputcsv($file, $fields, $delimiter);
 
-        //set column headers
-        $fields = array('DATE', 'HOUR', 'TEAM', 'PACKAGE ID', 'WEIGHT', 'LENGTH', 'HEIGHT', 'WIDTH', 'CUIN', 'DIESEL PRICE C', 'DIESEL PRICE T', 'DIM FACTOR C', 'DIM WEIGHT C', 'DIM WEIGHT ROUND C', 'PRICE WEIGHT C', 'PEAKE SEASON PRICE C', 'PRICE BASE C', 'SURCHARGE PERCENTAGE C', 'SURCHAGE PRICE C', 'TOTAL PRICE C', 'DIM FACTOR T', 'DIM WEIGHT T', 'DIM WEIGHT ROUND T', 'PRICE WEIGHT T', 'PEAKE SEASON PRICE C', 'PRICE BASE T', 'SURCHARGE PERCENTAGE T', 'SURCHAGE PRICE T', 'TOTAL PRICE T');
+        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'WEIGHT', 'WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'TOTAL PRICE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $Reference_Number_1s = ChargeCompanyDetail::where('idChargeCompany', $idCharge)->get('Reference_Number_1');
-        $listPackageDelivery = PackageDispatch::with(['team', 'driver', 'package_price_company_team'])
-                                            ->whereIn('Reference_Number_1', $Reference_Number_1s)
-                                            ->get();
-        
-        foreach($listPackageDelivery as $packageDelivery)
+        $chargeCompanyDetailList = ChargeCompanyDetail::where('idChargeCompany', $idCharge)->get();
+
+        foreach($chargeCompanyDetailList as $chargeDetail)
         {
+            $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
+            $packageDelivery         = PackageDispatch::find($chargeDetail->Reference_Number_1);
+            
+            if($packageDelivery)
+            {
+                $team = $packageDelivery->team ? $packageDelivery->team->name : '';
+                $date = date('m-d-Y', strtotime($packageDelivery->updated_at)) .' '. date('H:i:s', strtotime($packageDelivery->updated_at));
+            }
+            else
+            {
+                $team = '';
+            }
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDelivery->updated_at)),
-                                date('H:i:s', strtotime($packageDelivery->updated_at)),
-                                $packageDelivery->team->name,
-                                $packageDelivery->Reference_Number_1,
-                                $packageDelivery->package_price_company_team[0]->weight,
-                                $packageDelivery->package_price_company_team[0]->length,
-                                $packageDelivery->package_price_company_team[0]->height,
-                                $packageDelivery->package_price_company_team[0]->width,
-                                $packageDelivery->package_price_company_team[0]->cuIn,
-                                $packageDelivery->package_price_company_team[0]->dieselPriceCompany,
-                                $packageDelivery->package_price_company_team[0]->dieselPriceTeam,
-                                $packageDelivery->package_price_company_team[0]->dimFactorCompany,
-                                $packageDelivery->package_price_company_team[0]->dimWeightCompany,
-                                $packageDelivery->package_price_company_team[0]->dimWeightCompanyRound,
-                                $packageDelivery->package_price_company_team[0]->priceWeightCompany,
-                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceCompany,
-                                $packageDelivery->package_price_company_team[0]->priceBaseCompany,
-                                $packageDelivery->package_price_company_team[0]->surchargePercentageCompany,
-                                $packageDelivery->package_price_company_team[0]->surchargePriceCompany,
-                                $packageDelivery->package_price_company_team[0]->totalPriceCompany,
-                                $packageDelivery->package_price_company_team[0]->dimFactorTeam,
-                                $packageDelivery->package_price_company_team[0]->dimWeightTeam,
-                                $packageDelivery->package_price_company_team[0]->dimWeightTeamRound,
-                                $packageDelivery->package_price_company_team[0]->priceWeightTeam,
-                                $packageDelivery->package_price_company_team[0]->peakeSeasonPriceTeam,
-                                $packageDelivery->package_price_company_team[0]->priceBaseTeam,
-                                $packageDelivery->package_price_company_team[0]->surchargePercentageTeam,
-                                $packageDelivery->package_price_company_team[0]->surchargePriceTeam,
-                                $packageDelivery->package_price_company_team[0]->totalPriceTeam,
-                            );
+
+                $date,
+                $packageDelivery->company,
+                $team,
+                $chargeDetail->Reference_Number_1,
+                $packagePriceCompanyTeam->dieselPriceCompany,
+                $packagePriceCompanyTeam->weight,
+                $packagePriceCompanyTeam->dimWeightCompanyRound,
+                $packagePriceCompanyTeam->priceWeightCompany,
+                $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                $packagePriceCompanyTeam->priceBaseCompany,
+                $packagePriceCompanyTeam->surchargePercentageCompany,
+                $packagePriceCompanyTeam->surchargePriceCompany,
+                $packagePriceCompanyTeam->totalPriceCompany
+            );
 
             fputcsv($file, $lineData, $delimiter);
         }

@@ -162,18 +162,22 @@ function Charge() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { charge.created_at.substring(5, 7) }-{ charge.created_at.substring(8, 10) }-{ charge.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ charge.created_at.substring(5, 7) }-{ charge.created_at.substring(8, 10) }-{ charge.created_at.substring(0, 4) }</b><br/>
                     { charge.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ charge.id }</b></td>
                 <td><b>{ charge.company.name }</b></td>
-                <td>{ charge.startDate }</td>
-                <td>{ charge.endDate }</td>
+                <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
+                <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
                 <td className="text-success text-right"><b>{ charge.total +' $' }</b></td>
                 <td>
+                    <div className={ (charge.status == 'PreFactura' ? 'alert alert-danger font-weight-bold text-center' : 'alert alert-success font-weight-bold')}>
+                        { charge.status }
+                    </div>
+                </td>
+                <td>
                     <button className="btn btn-primary form-control" onClick={ () => handlerExportCharge(charge.id) }>
-                        <i className="ri-file-excel-fill"></i> Export
+                        <i className="ri-file-excel-fill"></i> EXPORT DETAIL
                     </button>
                 </td>
             </tr>
@@ -411,11 +415,12 @@ function Charge() {
                                         <thead>
                                             <tr>
                                                 <th><b>DATE</b></th>
-                                                <th><b>HOUR</b></th>
+                                                <th><b>N° INVOICE</b></th>
                                                 <th><b>COMPANY</b></th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
                                                 <th><b>TOTAL</b></th>
+                                                <th><b>STATUS</b></th>
                                                 <th><b>ACTION</b></th>
                                             </tr>
                                         </thead>
