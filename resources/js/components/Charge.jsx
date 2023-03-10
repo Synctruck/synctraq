@@ -28,8 +28,9 @@ function Charge() {
     const [idDriver, setIdDriver]             = useState(0);
     const [idCompany, setCompany]             = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -47,14 +48,14 @@ function Charge() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [idCompany, dateInit, dateEnd, idTeam, idDriver]);
+    }, [idCompany, dateInit, dateEnd, idTeam, idDriver, StatusSearch]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany  +'?page='+ pageNumber)
+        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch  +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -161,8 +162,8 @@ function Charge() {
         if(status == 'DRAFT INVOICE')
         {
             swal({
-                title: "You want to change the status of the Driver?",
-                text: "Change state!",
+                title: "You want change the status DRAFT INVOICE to INVOICE?",
+                text: "Change status!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -173,21 +174,19 @@ function Charge() {
                 {
                     LoadingShow();
 
-                    fetch(url_general +'driver/changeStatus/'+ id)
+                    fetch(url_general +'charge-company/confirm/'+ id)
                     .then(response => response.json())
                     .then(response => {
 
                         if(response.stateAction)
                         {
-                            swal("Driver status changed!", {
+                            swal("DRAFT INVOICE status changed!", {
 
                                 icon: "success",
                             });
 
-                            listAllUser(page);
+                            listReportDispatch(1, RouteSearch, StateSearch);
                         }
-
-                        LoadingHide();
                     });
                 }
             });
@@ -437,7 +436,20 @@ function Charge() {
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="DRAFT INVOICE">DRAFT INVOICE</option>
+                                                    <option value="INVOICE">INVOICE</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">

@@ -20,7 +20,7 @@ class ChargeCompanyController extends Controller
         return view('charge.company');
     }
  
-    public function List($dateStart, $dateEnd, $idCompany)
+    public function List($dateStart, $dateEnd, $idCompany, $status)
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -32,12 +32,28 @@ class ChargeCompanyController extends Controller
             $chargeList = $chargeList->where('idCompany', $idCompany);
         }
 
+        if($status != 'all')
+        {
+            $chargeList = $chargeList->where('status', $status);
+        }
+
         $totalCharge = $chargeList->get()->sum('total');
         $chargeList  = $chargeList->with('company')
                                     ->orderBy('created_at', 'desc')
                                     ->paginate(50);
 
         return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
+    }
+
+    public function Confirm($idCharge)
+    {
+        $charge = ChargeCompany::find($idCharge);
+
+        $charge->status = 'INVOICE';
+
+        $charge->save();
+
+        return ['stateAction' => true];
     }
 
     public function Export($idCharge)
