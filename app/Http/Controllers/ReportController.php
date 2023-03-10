@@ -674,9 +674,9 @@ class ReportController extends Controller
         return view('report.indexallpending');
     }
 
-    public function ListAllPending($idCompany, $dateInit, $dateEnd, $state)
+    public function ListAllPending($idCompany, $dateInit, $dateEnd, $state, $status)
     {
-        $data          = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state);
+        $data          = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status);
         $packageList   = $data['packageList'];
         $listAll       = $data['listAll'];
         $totalQuantity = $data['totalQuantity'];
@@ -689,12 +689,15 @@ class ReportController extends Controller
         return ['packageList' => $packageList, 'listAll' => $listAll, 'listState' => $listState, 'totalQuantity' => $totalQuantity];
     }
 
-    private function getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $type = 'list')
+    private function getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status, $type = 'list')
     {
-        $dateInit    = $dateInit .' 00:00:00';
-        $dateEnd     = $dateEnd .' 23:59:59';
-        $states      = explode(',', $state);
-        $packageList = [];
+        $dateInit             = $dateInit .' 00:00:00';
+        $dateEnd              = $dateEnd .' 23:59:59';
+        $states               = explode(',', $state);
+        $packageList          = [];
+        $packageManifestList  = [];
+        $packageInboundList   = [];
+        $packageWarehouseList = [];
 
         $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Manifest');
         $packageInboundList   = PackageInbound::whereBetween('created_at', [$dateInit, $dateEnd]);
@@ -712,6 +715,13 @@ class ReportController extends Controller
             $packageManifestList  = $packageManifestList->whereIn('Dropoff_Province', $states);
             $packageInboundList   = $packageInboundList->whereIn('Dropoff_Province', $states);
             $packageWarehouseList = $packageWarehouseList->whereIn('Dropoff_Province', $states);
+        }
+
+        if($status != 'all')
+        {
+            $packageManifestList  = $packageManifestList->where('status', $status);
+            $packageInboundList   = $packageInboundList->where('status', $status);
+            $packageWarehouseList = $packageWarehouseList->where('status', $status);
         }
 
         $listAll       = [];

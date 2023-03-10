@@ -375,7 +375,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/report/mass-query/import', [PackageMassQueryController::class, 'Import']);
 
 	Route::get('/report/all-pending', [ReportController::class, 'IndexAllPending'])->middleware('permission:reportAllPending.index');
-	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}', [ReportController::class, 'ListAllPending']);
+	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ListAllPending']);
 	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}', [ReportController::class, 'ExportAllPending']);
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
