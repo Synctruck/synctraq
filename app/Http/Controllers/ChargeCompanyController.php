@@ -49,6 +49,7 @@ class ChargeCompanyController extends Controller
     {
         $charge = ChargeCompany::find($idCharge);
 
+        $charge->idUser = Auth::user()->id;
         $charge->status = 'INVOICE';
 
         $charge->save();
