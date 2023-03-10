@@ -50,7 +50,7 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Friday' && (int)$nowHour < 13)
+        if($dayName == 'Friday' && (int)$nowHour == 12)
         {
             try
             {
