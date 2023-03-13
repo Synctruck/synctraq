@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States};
+use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States,LiveRoute};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -36,6 +36,34 @@ class PackageInboundController extends Controller
     public function Index()
     {
         return view('package.inbound');
+    }
+
+    public function findRoute($barCode)
+    {  
+        $packageInbound = PackageInbound::select('Dropoff_Postal_Code as packageZipCode','Route as packageRouteName')->where('Reference_Number_1', $barCode)->where('status', 'Inbound')->get();
+    
+        $packageZipCode     = $packageInbound[0]->packageZipCode;
+        $packageRouteName   = $packageInbound[0]->packageRouteName;
+
+        $liveRoute = LiveRoute::select('route_name as routeName')->where('zip_code',$packageZipCode)->get();
+        
+        if($liveRoute->count())
+        {   
+            $packageRouteName =  $liveRoute->pluck('routeName')->implode(', ');     
+        } 
+
+        $html = '<table>
+                   <tr height="20px">
+                     <td></td>
+                     <td></td>
+                   </tr>
+                   <tr>
+                     <td width="1px"></td>
+                     <td><h1>Route: '.$packageRouteName.'</h1></td>
+                   </tr>
+                </table>';
+           
+                echo $html;
     }
 
     public function List($idCompany, $dateStart,$dateEnd, $route, $state)
