@@ -105,7 +105,7 @@ class TaskPackageSendPreFactura extends Command
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageDelivery = PackageDispatch::whereBetween('created_at', [$startDate, $endDate])
+        $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('idCompany', $idCompany)
                                                 ->where('status', 'Delivery')
                                                 ->get();
