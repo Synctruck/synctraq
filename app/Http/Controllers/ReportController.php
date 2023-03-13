@@ -691,13 +691,9 @@ class ReportController extends Controller
 
     private function getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status, $type = 'list')
     {
-        $dateInit             = $dateInit .' 00:00:00';
-        $dateEnd              = $dateEnd .' 23:59:59';
-        $states               = explode(',', $state);
-        $packageList          = [];
-        $packageManifestList  = [];
-        $packageInboundList   = [];
-        $packageWarehouseList = [];
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+        $states   = explode(',', $state);
 
         $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Manifest');
         $packageInboundList   = PackageInbound::whereBetween('created_at', [$dateInit, $dateEnd]);
