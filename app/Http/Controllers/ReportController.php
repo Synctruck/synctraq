@@ -1040,7 +1040,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportAllPending($idCompany, $dateInit, $dateEnd, $state)
+    public function ExportAllPending($idCompany, $dateInit, $dateEnd, $state, $status)
     {
         $delimiter = ",";
         $filename = "Report All Pending " . date('Y-m-d H:i:s') . ".csv";
@@ -1053,7 +1053,7 @@ class ReportController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $data                  = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $type = 'export');
+        $data                  = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status, $type = 'export');
         $packageListAllPending = $data['packageList'];
 
         foreach($packageListAllPending as $packagePending)
