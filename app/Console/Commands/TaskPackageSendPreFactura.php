@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam };
 
+use App\Http\Controllers\{ PackagePriceCompanyTeamController };
+
 use Log;
 use Mail;
 
@@ -121,10 +123,19 @@ class TaskPackageSendPreFactura extends Command
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
 
-                if($packagePriceCompanyTeam)
+                if($packagePriceCompanyTeam == null)
                 {
-                    $team        = $packageDelivery->team  ? $packageDelivery->team->name : '';
+                    //create or update price company team
+                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                    $packagePriceCompanyTeamController->Insert($packageDelivery);
 
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                                    ->first();
+                }
+
+                if($packagePriceCompanyTeam) 
+                {
+                    $team                = $packageDelivery->team  ? $packageDelivery->team->name : '';
                     $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                     if($chargeCompanyDetail == null)
