@@ -123,6 +123,16 @@ class TaskPackageSendPreFactura extends Command
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
 
+                if($packagePriceCompanyTeam)
+                {
+                    if($packagePriceCompanyTeam->weight == 0.00)
+                    {
+                        $packagePriceCompanyTeam->delete();
+
+                        $packagePriceCompanyTeam = null;
+                    }
+                }
+
                 if($packagePriceCompanyTeam == null)
                 {
                     //create or update price company team
