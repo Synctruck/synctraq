@@ -2,7 +2,7 @@
 @section('title', 'CHARGE - COMPANIES')
 @section('content')
 <div class="pagetitle">
-  	<h1><b>CHARGE - COMPANIES</b></h1>
+  	<h1><b>CHARGE (INVOICES) - COMPANIES</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>
