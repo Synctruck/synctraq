@@ -167,7 +167,6 @@ class ReportController extends Controller
                                     'created_at',
                                     'company',
                                     'idUserInbound',
-                                    'TRUCK',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
@@ -220,6 +219,8 @@ class ReportController extends Controller
                     $timeDeliveryDate = number_format($timeDeliveryDate, 2);
                 }
 
+                $status = $this->GetStatus($packageHistory->Reference_Number_1);
+
                 $package = [
 
                     "created_at" => $packageHistory->created_at,
@@ -229,7 +230,7 @@ class ReportController extends Controller
                     "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
                     "company" => $packageHistory->company,
                     "validator" => $validator,
-                    "TRUCK" => $packageHistory->TRUCK, 
+                    "status" => $status['status'],
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
@@ -791,7 +792,6 @@ class ReportController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-
         $listPackageInbound = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
         $listPackageInbound = $listPackageInbound['listAll'];
 
@@ -806,7 +806,6 @@ class ReportController extends Controller
                                 $packageInbound['timeDelivery'],
                                 $packageInbound['company'],
                                 $packageInbound['validator'],
-                                $packageInbound['TRUCK'],
                                 $packageInbound['Reference_Number_1'],
                                 $packageInbound['Dropoff_Contact_Name'],
                                 $packageInbound['Dropoff_Contact_Phone_Number'],
@@ -1049,7 +1048,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'STATUS');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'STATUS');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1061,6 +1060,7 @@ class ReportController extends Controller
             $lineData = array(
                                 date('m/d/Y', strtotime($packagePending->created_at)),
                                 date('H:i:s', strtotime($packagePending->created_at)),
+                                $packagePending->company,
                                 $packagePending->Reference_Number_1,
                                 $packagePending->Dropoff_Contact_Name,
                                 $packagePending->Dropoff_Contact_Phone_Number,
