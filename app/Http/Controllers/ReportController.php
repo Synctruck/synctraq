@@ -231,6 +231,7 @@ class ReportController extends Controller
                     "company" => $packageHistory->company,
                     "validator" => $validator,
                     "status" => $status['status'],
+                    "statusDate" => $status['statusDate'],
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
@@ -788,7 +789,7 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'TIME DISPATCH - DAYS', 'DELIVERY DATE', 'TIME DELIVERY - DAYS', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'TIME DISPATCH - DAYS', 'DELIVERY DATE', 'TIME DELIVERY - DAYS', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -807,6 +808,9 @@ class ReportController extends Controller
                                 $packageInbound['company'],
                                 $packageInbound['validator'],
                                 $packageInbound['Reference_Number_1'],
+                                $packageInbound['status'],
+                                $packageInbound['statusDate'],
+                                $packageInbound['statusDate'],
                                 $packageInbound['Dropoff_Contact_Name'],
                                 $packageInbound['Dropoff_Contact_Phone_Number'],
                                 $packageInbound['Dropoff_Address_Line_1'],
