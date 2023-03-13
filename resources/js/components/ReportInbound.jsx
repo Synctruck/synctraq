@@ -155,6 +155,7 @@ function ReportInbound() {
                 <td><b>{ pack.validator }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.status }</td>
+                <td>{ pack.statusDescription }</td>
                 <td>
                     { pack.statusDate.substring(5, 7) }-{ pack.statusDate.substring(8, 10) }-{ pack.statusDate.substring(0, 4) }<br/>
                     { pack.statusDate.substring(11, 19) }
@@ -382,6 +383,7 @@ function ReportInbound() {
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
                                                 <th>STATUS DATE</th>
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>
