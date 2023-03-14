@@ -388,4 +388,8 @@ Route::group(['middleware' => 'auth'], function() {
 Route::get('/package-check', [PackageCheckController::class, 'Index']);
 Route::post('/package-check/import', [PackageCheckController::class, 'Import']);
 
+
 Route::get('/package-delivery/updatedOnfleet', [PackageDeliveryController::class, 'UpdatedOnfleet']);
+Route::get('find-route/{barcCode}', [PackageInboundController::class,'findRoute']);
+Route::post('upload-live-routes',[RoutesController::class,'UploadLiveRoutes']);
+

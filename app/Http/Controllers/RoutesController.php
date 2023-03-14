@@ -5,7 +5,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User};
+
+
+use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User, LiveRoute};
+
 
 use Illuminate\Support\Facades\Validator;
 
@@ -222,6 +225,56 @@ class RoutesController extends Controller
             DB::commit();
 
             return ['stateAction' => true, 'lineNumber' => $lineNumber];    
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
+    }
+
+    public function UploadLiveRoutes(Request $request){
+
+        $file = $request->file('file');
+
+        $file->move(public_path() .'/file-import', 'live_routes.csv');
+
+        $handle = fopen(public_path('file-import/live_routes.csv'), "r");
+
+        $lineNumber = 1;
+
+        $countSave = 0;
+
+        try
+        {
+            DB::beginTransaction();
+            
+            LiveRoute::whereNotNull('id')->delete();
+
+            while (($raw_string = fgets($handle)) !== false)
+            {
+                if($lineNumber > 1)
+                {
+                    $route = new LiveRoute();
+                   
+                    $row = str_getcsv($raw_string);
+                  
+                    $route->zip_code    = $row[0];
+                    $route->route_name  = $row[1];
+                    $route->sequence_no = $row[2];
+                    $route->save();
+                   
+                }
+                
+                $lineNumber++;
+            }
+
+            fclose($handle);
+
+            DB::commit();
+
+           return redirect('routes');
         }
         catch(Exception $e)
         {
