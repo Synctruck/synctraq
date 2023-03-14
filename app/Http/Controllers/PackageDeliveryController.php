@@ -484,6 +484,8 @@ class PackageDeliveryController extends Controller
 
                             if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
                             {
+                                $packageDispatch['Date_Delivery'] = $created_at;
+
                                 //create or update price company team
                                 $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
                                 $packagePriceCompanyTeamController->Insert($packageDispatch);

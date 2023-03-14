@@ -101,7 +101,7 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -143,9 +143,8 @@ class TaskPackageSendPreFactura extends Command
                                                                     ->first();
                 }
 
-                if($packagePriceCompanyTeam) 
+                if($packagePriceCompanyTeam)
                 {
-                    $team                = $packageDelivery->team  ? $packageDelivery->team->name : '';
                     $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                     if($chargeCompanyDetail == null)
@@ -160,19 +159,18 @@ class TaskPackageSendPreFactura extends Command
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
-                                        date('m-d-Y', strtotime($packageDelivery->updated_at)) .' '. date('H:i:s', strtotime($packageDelivery->updated_at)),
+                                        date('m-d-Y', strtotime($packageDelivery->updated_at)),
                                         $packageDelivery->company,
-                                        $team,
                                         $packageDelivery->Reference_Number_1,
-                                        $packagePriceCompanyTeam->dieselPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
-                                        $packagePriceCompanyTeam->priceWeightCompany,
-                                        $packagePriceCompanyTeam->peakeSeasonPriceCompany,
-                                        $packagePriceCompanyTeam->priceBaseCompany,
-                                        $packagePriceCompanyTeam->surchargePercentageCompany,
-                                        $packagePriceCompanyTeam->surchargePriceCompany,
-                                        $packagePriceCompanyTeam->totalPriceCompany
+                                        '$'. $packagePriceCompanyTeam->priceWeightCompany,
+                                        '$'. $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->priceBaseCompany,
+                                        $packagePriceCompanyTeam->surchargePercentageCompany .'%',
+                                        '$'. $packagePriceCompanyTeam->surchargePriceCompany,
+                                        '$'. $packagePriceCompanyTeam->totalPriceCompany
                                     );
 
                         fputcsv($file, $lineData, $delimiter);

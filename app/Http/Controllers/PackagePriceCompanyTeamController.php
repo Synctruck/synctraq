@@ -75,6 +75,7 @@ class PackagePriceCompanyTeamController extends Controller
         $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
         $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
         $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
+        $packagePriceCompanyTeam->Date_Delivery              = $packageDispatch->Date_Delivery;
 
         $packagePriceCompanyTeam->save();
 
