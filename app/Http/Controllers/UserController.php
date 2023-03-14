@@ -12,13 +12,15 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Company, PackageManifest, PackageHistory, Permission, Role, Routes };
+use App\Models\{ Audits, Company, Configuration, HistoryDiesel, PackageDispatch, PackageManifest, PackageHistory, Permission, Role, Routes };
 
 use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Str;
 
 use Auth;
+use DateTime;
 use Session;
+use Mail;
 use DB;
 use Log;
 
@@ -28,6 +30,8 @@ class UserController extends Controller
 
     public function Index()
     {
+        $this->UpdateDeleteUser();
+        
         return view('user.index');
     }
 
@@ -42,22 +46,6 @@ class UserController extends Controller
                                 ->role($request->idRole)
                                 ->status($request->status)
                                 ->paginate($this->paginate);
-
-
-        foreach ($userList as $key => $user) {
-
-            $history = PackageHistory::where('idUser',$user->id)
-                                        ->orWhere('idUserManifest',$user->id)
-                                        ->orWhere('idUserInbound',$user->id)
-                                        ->orWhere('idUserReInbound',$user->id)
-                                        ->orWhere('idUserDispatch',$user->id)
-                                        ->orWhere('idUserReturn',$user->id)
-                                        ->orWhere('idUserDelivery',$user->id)
-                                        ->orWhere('idUserFailed',$user->id)
-                                        ->select('id')
-                                        ->first();
-            $user->history = ($history)?true:false;
-        }
 
         return ['userList' => $userList];
     }
@@ -186,7 +174,8 @@ class UserController extends Controller
             if(Hash::check($request->get('password'), $user->password))
             {
                 Auth::login($user);
-                return ['stateAction' => true,'user'=>$user];
+
+                return ['stateAction' => true, 'user' => $user];
             }
         }
 
@@ -235,17 +224,48 @@ class UserController extends Controller
             return ['stateAction' => 'error-passwordOld'];
         }
 
+        if($user->email ==  $request->get('newPassword'))
+        {
+            return ['stateAction' => 'error-passwordEmail'];
+        }
+
         if($request->get('newPassword') != $request->get('confirmationPassword'))
         {
             return ['stateAction' => 'error-passwordConfirm'];
         }
 
-        $user->password = Hash::make($request->get('newPassword'));
+        $user->password                = Hash::make($request->get('newPassword'));
+        $user->changePasswordMandatory = 1;
 
         $user->save();
 
+        Auth::login($user);
+        
         return ['stateAction' => true];
     }
+
+    public function ResetPassword($email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if($user)
+        {
+            $user->password                = Hash::make($email);
+            $user->changePasswordMandatory = 0;
+
+            $user->save();
+
+            return ['stateAction' => true];
+        }
+        else
+        {
+            return [
+                'stateAction' => true,
+                'message' => 'The email does not exists!'
+            ];
+        }
+    }
+
     //perfil
     public function Profile()
     {
@@ -285,5 +305,46 @@ class UserController extends Controller
         $user = User::with(['role','role.permissions', 'routes_team.route'])->where('id',Auth::user()->id)->first();
 
        return ['user'=> $user,'allPermissions'=> $permissions];
+    }
+
+    public function UpdateDeleteUser()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $userList = User::where('verificationForDelete', 0)
+                                ->get()
+                                ->take(2);
+
+            foreach($userList as $user)
+            {
+                $user = User::find($user->id);
+
+                $delete = Audits::where('user_id', $user->id)->first();
+
+                if($delete == null)
+                {
+                    $delete = PackageHistory::where('idUser', $user->id)
+                                            ->orWhere('idUserDispatch', $user->id)
+                                            ->first();
+                }
+
+                if($delete)
+                {
+                    $user->deleteUser = 1;
+                }
+
+                $user->verificationForDelete = 1;
+
+                $user->save();
+            }
+
+            DB::commit();
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 }

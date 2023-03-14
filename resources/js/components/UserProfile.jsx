@@ -26,6 +26,7 @@ function UserProfile() {
     const [address , setAddress] = useState('');
     const [teamName , setTeamName] = useState('');
     const [urlImage , setUrlImage] = useState('');
+    const [changePasswordMandatory , setChangePasswordMandatory] = useState('');
     const [selectedFile, setSelectedFile] = useState('');
 
     const [permissionsList, setPermissionsList] = useState([]);
@@ -112,6 +113,14 @@ function UserProfile() {
            setAddress(dataUser.address);
            setTeamName(dataUser.nameTeam);
            setUrlImage(dataUser.url_image);
+           setChangePasswordMandatory(dataUser.changePasswordMandatory);
+        
+            if(dataUser.changePasswordMandatory == 0)
+            {
+                swal('Attetion!', 'Has to changed your password of mandatery form', 'warning');
+
+                document.getElementById('buttonChangePassword').click();
+            }
 
            setPermissionsList(response.data.allPermissions);
            let permissions = []
@@ -170,6 +179,12 @@ function UserProfile() {
                     setMessageNewPassword('These fields have to be the same');
                     setMessageConfirmationPassword('These fields have to be the same');
                 }
+                else if(response.stateAction == 'error-passwordEmail')
+                {
+                    setMessageOldPassword('');
+                    setMessageNewPassword('The password must be different to your email');
+                    setMessageConfirmationPassword('');
+                }
                 else if(response.stateAction == true)
                 {
                     setMessageOldPassword('');
@@ -177,6 +192,11 @@ function UserProfile() {
                     setMessageConfirmationPassword('');
 
                     swal('Correct!', 'Updated password', 'success');
+
+                    setTimeout( () => {
+
+                        location.reload();
+                    }, 1500);
                 }
                 else if(response.status == 422)
                 {
@@ -258,12 +278,12 @@ function UserProfile() {
                         <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
                     </li>
 
-                    <li className="nav-item">
+                    <li className="nav-item" style={ {display: 'none'} }>
                         <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Permissions</button>
                     </li>
 
                     <li className="nav-item">
-                        <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                        <button id="buttonChangePassword" className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
                     </li>
 
                     </ul>
@@ -357,7 +377,7 @@ function UserProfile() {
                                 <label htmlFor="currentPassword" className="col-md-4 col-lg-3 col-form-label">Current Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="oldPassword" className="text-danger">{ messageOldPassword }</div>
-                                <input type="text" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="30" required/>
+                                <input type="text" className="form-control" value={ oldPassword } onChange={ (e) => setOldPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 
@@ -365,7 +385,7 @@ function UserProfile() {
                                 <label htmlFor="newPassword" className="col-md-4 col-lg-3 col-form-label">New Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="newPassword" className="text-danger">{ messageNewPassword }</div>
-                                <input type="password" className="form-control" value={ newPassword } onChange={ (e) => setNewPassword(e.target.value) } maxLength="30" required/>
+                                <input type="password" className="form-control" value={ newPassword } onChange={ (e) => setNewPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 
@@ -373,7 +393,7 @@ function UserProfile() {
                                 <label htmlFor="renewPassword" className="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
                                 <div className="col-md-8 col-lg-9">
                                 <div id="idRole" className="text-danger">{ messageConfirmationPassword }</div>
-                                <input type="password" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="30" required/>
+                                <input type="password" className="form-control" value={ confirmationPassword } onChange={ (e) => setConfirmationPassword(e.target.value) } maxLength="50" required/>
                                 </div>
                             </div>
 

@@ -77,6 +77,8 @@ class TaskAmericanManifest extends Command
                             {
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
+                                    $created_at = date('Y-m-d H:i:s');
+
                                     $package = new PackageManifest();
 
                                     $package->Reference_Number_1           = $row[0];
@@ -90,12 +92,13 @@ class TaskAmericanManifest extends Command
                                     $package->Dropoff_City                 = $row[18];
                                     $package->Dropoff_Province             = $row[19];
                                     $package->Dropoff_Postal_Code          = $row[20];
-                                    $package->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                    $package->Number_Of_Pieces             = $row[25];
+                                    $package->Notes                        = '';
                                     $package->weight_unit                  = $row[26];
                                     $package->Weight                       = $row[27];
                                     $package->height                       = $row[30];
-                                    $package->status                       = 'On hold';
+                                    $package->status                       = 'Manifest';
+                                    $package->created_at                   = $created_at;
+                                    $package->updated_at                   = $created_at;
 
                                     $route = Routes::where('zipCode', $row[20])->first();
                                     
@@ -117,17 +120,16 @@ class TaskAmericanManifest extends Command
                                     $packageHistory->Dropoff_City                 = $row[18];
                                     $packageHistory->Dropoff_Province             = $row[19];
                                     $packageHistory->Dropoff_Postal_Code          = $row[20];
-                                    $packageHistory->Notes                        = 'Testing package. DO NOT USE IN PRODUCTION.';
-                                    $packageHistory->Number_Of_Pieces             = $row[25];
+                                    $packageHistory->Notes                        = '';
                                     $packageHistory->weight_unit                  = $row[26];
                                     $packageHistory->Weight                       = $row[27];
                                     $packageHistory->height                       = $row[30];
-                                    $packageHistory->status                       = 'On hold';
-                                    $packageHistory->Date_manifest                = date('Y-m-d H:i:s');
+                                    $packageHistory->status                       = 'Manifest';
+                                    $packageHistory->Date_manifest                = $created_at;
                                     $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
                                     $packageHistory->Route                        = $route ? $route->name : '';
-                                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                                    $packageHistory->created_at                   = $created_at;
+                                    $packageHistory->updated_at                   = $created_at;
 
                                     $packageHistory->save();
                                 }

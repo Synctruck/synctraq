@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
 
-use App\Http\Controllers\PackageDispatchController;
+use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -28,6 +28,7 @@ class WHookController extends Controller
         {
             DB::beginTransaction();
 
+            $taskOnfleet             = $request['data']['task']['shortId'];
             $Reference_Number_1      = $request['data']['task']['notes'];
             $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
             $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
@@ -67,21 +68,6 @@ class WHookController extends Controller
                     $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->idStore                      = $packageDispatch->idStore;
                     $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
                     $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
                     $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
                     $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
@@ -91,14 +77,9 @@ class WHookController extends Controller
                     $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
                     $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
                     $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                    $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
                     $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->Name                         = $packageDispatch->Name;
                     $packageHistory->idTeam                       = $packageDispatch->idTeam;
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUser;
@@ -116,7 +97,7 @@ class WHookController extends Controller
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
                     $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                    $photoUrl = '';
+                    $photoUrl = ''; 
 
                     foreach($photoUploadIds as $idPhoto)
                     {
@@ -132,9 +113,16 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
+                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
+                    {
+                        //create or update price company team
+                        $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                        $packagePriceCompanyTeamController->Insert($packageDispatch);
+                    }
+                    
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl)[0]);
+                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
                     //end data for inland
                 }
             }
@@ -165,132 +153,98 @@ class WHookController extends Controller
 
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
-        Log::info($Reference_Number_1);
-
+        Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
+        
         if($completionDetailsStatus == false)
         {
-            $packageDispatch = PackageDispatch::find($Reference_Number_1);
-
-            $user = User::find($packageDispatch->idUserDispatch);
-
             try
             {
                 DB::beginTransaction();
-
-                $description = $user ? 'For: Driver '. $user->name .' '. $user->nameOfOwner : 'Driver not exists';
-
-                $packageFailed = new PackageFailed();
-
-                $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                $packageFailed->idCompany                    = $packageDispatch->idCompany;
-                $packageFailed->company                      = $packageDispatch->company;
-                $packageFailed->idStore                      = $packageDispatch->idStore;
-                $packageFailed->store                        = $packageDispatch->store;
-                $packageFailed->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                $packageFailed->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                $packageFailed->Ready_At                     = $packageDispatch->Ready_At;
-                $packageFailed->Del_Date                     = $packageDispatch->Del_Date;
-                $packageFailed->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                $packageFailed->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                $packageFailed->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                $packageFailed->Pickup_Company               = $packageDispatch->Pickup_Company;
-                $packageFailed->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                $packageFailed->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                $packageFailed->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                $packageFailed->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                $packageFailed->Pickup_City                  = $packageDispatch->Pickup_City;
-                $packageFailed->Pickup_Province              = $packageDispatch->Pickup_Province;
-                $packageFailed->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                $packageFailed->Service_Level                = $packageDispatch->Service_Level;
-                $packageFailed->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                $packageFailed->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                $packageFailed->Notes                        = $packageDispatch->Notes;
-                $packageFailed->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                $packageFailed->Weight                       = $packageDispatch->Weight;
-                $packageFailed->Route                        = $packageDispatch->Route;
-                $packageFailed->Name                         = $packageDispatch->Name;
-                $packageFailed->idTeam                       = $packageDispatch->idTeam;
-                $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
-                $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
-                $packageFailed->Description_Onfleet          = $Description_Onfleet;
-                $packageFailed->idOnfleet                    = $idOnfleet;
-                $packageFailed->taskOnfleet                  = $taskOnfleet;
-                $packageFailed->quantity                     = $packageDispatch->quantity;
-                $packageFailed->status                       = 'Failed';
-                $packageFailed->created_at                   = date('Y-m-d H:i:s');
-                $packageFailed->updated_at                   = date('Y-m-d H:i:s');
-
-                $packageFailed->save();
-
-                $packageHistory = new PackageHistory();
-
-                $packageHistory->id                           = uniqid();
-                $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                $packageHistory->company                      = $packageDispatch->company;
-                $packageHistory->idStore                      = $packageDispatch->idStore;
-                $packageHistory->store                        = $packageDispatch->store;
-                $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                $packageHistory->Notes                        = $packageDispatch->Notes;
-                $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                $packageHistory->Weight                       = $packageDispatch->Weight;
-                $packageHistory->Route                        = $packageDispatch->Route;
-                $packageHistory->Name                         = $packageDispatch->Name;
-                $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
-                $packageHistory->Description_Onfleet          = $Description_Onfleet;
-                $packageHistory->quantity                     = $packageDispatch->quantity;
-                $packageHistory->status                       = 'Failed';
-                $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-
-                $packageHistory->save();
                 
-                $packageDispatch->delete();
+                $packageDispatch  = PackageDispatch::find($Reference_Number_1);
 
-                Log::info("==================== CORRECT TASK FAILED");
+                Log::info('Reference_Number_1: '. $Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $created_at          = date('Y-m-d H:i:s');
+                    $Description_Onfleet = $Description_Onfleet;
+
+                    $packageFailed = new PackageFailed();
+
+                    $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageFailed->idCompany                    = $packageDispatch->idCompany;
+                    $packageFailed->company                      = $packageDispatch->company;
+                    $packageFailed->idStore                      = $packageDispatch->idStore;
+                    $packageFailed->store                        = $packageDispatch->store;
+                    $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageFailed->Notes                        = $packageDispatch->Notes;
+                    $packageFailed->Weight                       = $packageDispatch->Weight;
+                    $packageFailed->Route                        = $packageDispatch->Route;
+                    $packageFailed->idTeam                       = $packageDispatch->idTeam;
+                    $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
+                    $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
+                    $packageFailed->Description_Onfleet          = $Description_Onfleet;
+                    $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
+                    $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
+                    $packageFailed->quantity                     = $packageDispatch->quantity;
+                    $packageFailed->status                       = 'Failed';
+                    $packageFailed->created_at                   = $created_at;
+                    $packageFailed->updated_at                   = $created_at;
+
+                    $packageFailed->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
+                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packageDispatch->Notes;
+                    $packageHistory->Weight                       = $packageDispatch->Weight;
+                    $packageHistory->Route                        = $packageDispatch->Route;
+                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+                    $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
+                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->status                       = 'Failed';
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
+
+                    $packageHistory->save();
+                    
+                    $packageDispatch->delete();
+                }
 
                 DB::commit();
+
+                Log::info("==================== CORRECT TASK - FAILED");
             }
             catch(Exception $e)
             {
                 DB::rollback();
+
+                Log::info("==================== ROLLBACK TASK - FAILED");
             }
         }
     }
@@ -335,6 +289,11 @@ class WHookController extends Controller
 
                 if(!$package)
                 {
+                   $package = PackageFailed::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+
+                if(!$package)
+                {
                     $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->where('status', 'Delete')->first();
                 }
 
@@ -346,7 +305,7 @@ class WHookController extends Controller
                     {
                         DB::beginTransaction();
 
-                        if($package->status == 'On hold')
+                        if($package->status == 'Manifest')
                         {
                             $packageHistory = new PackageHistory();
 
@@ -356,21 +315,6 @@ class WHookController extends Controller
                             $packageHistory->company                      = $package->company;
                             $packageHistory->idStore                      = $package->idStore;
                             $packageHistory->store                        = $package->store;
-                            $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                            $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
-                            $packageHistory->Ready_At                     = $package->Ready_At;
-                            $packageHistory->Del_Date                     = $package->Del_Date;
-                            $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                            $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                            $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                            $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                            $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                            $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                            $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                            $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                            $packageHistory->Pickup_City                  = $package->Pickup_City;
-                            $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                            $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                             $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                             $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                             $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -380,14 +324,9 @@ class WHookController extends Controller
                             $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                             $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                             $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                            $packageHistory->Service_Level                = $package->Service_Level;
-                            $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                            $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                             $packageHistory->Notes                        = $package->Notes;
-                            $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
                             $packageHistory->Weight                       = $package->Weight;
                             $packageHistory->Route                        = $package->Route;
-                            $packageHistory->Name                         = $package->Name;
                             $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] ';
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
@@ -406,21 +345,6 @@ class WHookController extends Controller
                             $packageDispatch->company                      = $package->company;
                             $packageDispatch->idStore                      = $package->idStore;
                             $packageDispatch->store                        = $package->store;
-                            $packageDispatch->Reference_Number_2           = $package->Reference_Number_2;
-                            $packageDispatch->Reference_Number_3           = $package->Reference_Number_3;
-                            $packageDispatch->Ready_At                     = $package->Ready_At;
-                            $packageDispatch->Del_Date                     = $package->Del_Date;
-                            $packageDispatch->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                            $packageDispatch->Del_no_later_than            = $package->Del_no_later_than;
-                            $packageDispatch->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                            $packageDispatch->Pickup_Company               = $package->Pickup_Company;
-                            $packageDispatch->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                            $packageDispatch->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                            $packageDispatch->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                            $packageDispatch->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                            $packageDispatch->Pickup_City                  = $package->Pickup_City;
-                            $packageDispatch->Pickup_Province              = $package->Pickup_Province;
-                            $packageDispatch->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                             $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                             $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
                             $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -430,14 +354,9 @@ class WHookController extends Controller
                             $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
                             $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
                             $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                            $packageDispatch->Service_Level                = $package->Service_Level;
-                            $packageDispatch->Carrier_Name                 = $package->Carrier_Name;
-                            $packageDispatch->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                             $packageDispatch->Notes                        = $package->Notes;
-                            $packageDispatch->Number_Of_Pieces             = $package->Number_Of_Pieces;
                             $packageDispatch->Weight                       = $package->Weight;
                             $packageDispatch->Route                        = $package->Route;
-                            $packageDispatch->Name                         = $package->Name;
                             $packageDispatch->idTeam                       = $team->id;
                             $packageDispatch->idUserDispatch               = $driver->id;
                             $packageDispatch->idOnfleet                    = $idOnfleet;
@@ -458,21 +377,6 @@ class WHookController extends Controller
                         $packageHistory->company                      = $package->company;
                         $packageHistory->idStore                      = $package->idStore;
                         $packageHistory->store                        = $package->store;
-                        $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                        $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
-                        $packageHistory->Ready_At                     = $package->Ready_At;
-                        $packageHistory->Del_Date                     = $package->Del_Date;
-                        $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                        $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                        $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                        $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                        $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                        $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                        $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                        $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                        $packageHistory->Pickup_City                  = $package->Pickup_City;
-                        $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                        $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                         $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                         $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                         $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -482,14 +386,9 @@ class WHookController extends Controller
                         $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                         $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                         $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                        $packageHistory->Service_Level                = $package->Service_Level;
-                        $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                        $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                         $packageHistory->Notes                        = $package->Notes;
-                        $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
                         $packageHistory->Weight                       = $package->Weight;
                         $packageHistory->Route                        = $package->Route;
-                        $packageHistory->Name                         = $package->Name;
                         $packageHistory->idTeam                       = $team->id;
                         $packageHistory->idUserDispatch               = $driver->id;
                         $packageHistory->Date_Dispatch                = date('Y-m-d H:s:i');
@@ -579,15 +478,20 @@ class WHookController extends Controller
                 $descriptionHistory = 'For: Onfleet[ '. $userCreatorOnfleet .' ]';
 
                 $nowDate    = date('Y-m-d H:i:s');
+                $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
 
-                if(date('H:i:s') > date('20:00:00'))
+                /*if(date('H:i:s') > date('20:00:00'))
                 {
                     $created_at = date('Y-m-d 04:00:15', strtotime($nowDate .'+1 day'));
+                }
+                elseif(date('H:i:s') < date('04:00:00'))
+                {
+                    $created_at = date('Y-m-d 04:00:15');
                 }
                 else
                 {
                     $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
-                }
+                }*/
 
                 $packageHistory = new PackageHistory();
 
@@ -597,21 +501,6 @@ class WHookController extends Controller
                 $packageHistory->company                      = $package->company;
                 $packageHistory->idStore                      = $package->idStore;
                 $packageHistory->store                        = $package->store;
-                $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
-                $packageHistory->Ready_At                     = $package->Ready_At;
-                $packageHistory->Del_Date                     = $package->Del_Date;
-                $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                $packageHistory->Pickup_City                  = $package->Pickup_City;
-                $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                 $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                 $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -621,14 +510,9 @@ class WHookController extends Controller
                 $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                 $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                $packageHistory->Service_Level                = $package->Service_Level;
-                $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                 $packageHistory->Notes                        = $package->Notes;
-                $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
                 $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
-                $packageHistory->Name                         = $package->Name;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
                 $packageHistory->created_at                   = $created_at;

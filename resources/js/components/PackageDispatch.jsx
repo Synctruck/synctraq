@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
+import ReactLoading from 'react-loading';
 
 let count = 1;
 
@@ -33,8 +34,10 @@ function PackageDispatch() {
     const [readOnly, setReadOnly] = useState(false);
     const [checkAll, setCheckAll] = useState(0);
 
-    const [quantityDispatch, setQuantityDispatch]       = useState(0);
-    const [quantityDispatchAll, setQuantityDispatchAll] = useState(0);
+    const [quantityDispatch, setQuantityDispatch]         = useState(0);
+    const [quantityDispatchAll, setQuantityDispatchAll]   = useState(0);
+    const [quantityFailed, setQuantityFailed]             = useState(0);
+    const [quantityHighPriority, setQuantityHighPriority] = useState(0);
 
     // const [dataView, setDataView] = useState('today');
     const [dateStart, setDateStart] = useState(auxDateInit);
@@ -43,6 +46,7 @@ function PackageDispatch() {
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
+    const [autorizationDispatch, setAutorizationDispatch] = useState(false);
 
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
@@ -60,7 +64,9 @@ function PackageDispatch() {
     const [StateSearch, setStateSearch]         = useState('all');
     const [idCompany, setCompany]               = useState(0);
 
-    const inputFileRef  = React.useRef();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const inputFileRef = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
@@ -102,16 +108,21 @@ function PackageDispatch() {
 
     const listAllPackageDispatch = (pageNumber, StateSearch, RouteSearchList) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package-dispatch/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageDispatch(response.packageDispatchList.data);
             setTotalPackage(response.packageDispatchList.total);
             setTotalPage(response.packageDispatchList.per_page);
             setPage(response.packageDispatchList.current_page);
             setQuantityDispatch(response.quantityDispatch);
             setQuantityDispatchAll(response.quantityDispatchAll);
+            setQuantityFailed(response.quantityFailed);
+            setQuantityHighPriority(response.quantityHighPriority);
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -128,6 +139,15 @@ function PackageDispatch() {
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
+            }
+
+            if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
+            {
+                setAutorizationDispatch(false);
+            }
+            else
+            {
+                setAutorizationDispatch(true);
             }
         });
     }
@@ -478,6 +498,7 @@ function PackageDispatch() {
 
         if(sendDispatch)
         {
+            setIsLoading(true);
             setReadOnly(true);
             setSendDispatch(0);
 
@@ -487,6 +508,7 @@ function PackageDispatch() {
             formData.append('idTeam', idTeam);
             formData.append('idDriver', idDriver);
             formData.append('RouteSearch', RouteSearch);
+            formData.append('autorizationDispatch', autorizationDispatch);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -498,7 +520,34 @@ function PackageDispatch() {
             .then(res => res.json()).
             then((response) => {
 
-                    if(response.stateAction == 'validatedFilterPackage')
+                    setIsLoading(false);
+
+                    if(response.stateAction == 'notAutorization')
+                    {
+                        setTextMessage('This driver has packages pending return. You must mark the authorization to make the dispatch #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+                    }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedLost')
+                    {
+                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedFilterPackage')
                     {
                         let packageBlocked  = response.packageBlocked;
                         let packageManifest = response.packageManifest;
@@ -545,6 +594,14 @@ function PackageDispatch() {
                     else if(response.stateAction == 'notRoute')
                     {
                         setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notDimensions')
+                    {
+                        setTextMessage("PACKAGE HAS NO RECORDED DIMENSIONS #"+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
@@ -670,6 +727,17 @@ function PackageDispatch() {
                 },
             );
         }
+        /*if(autorizationDispatch == true)
+        {
+            
+        }
+        else
+        {
+            swal("You must mark the authorization to carry out the dispatch!", {
+
+                icon: "warning",
+            });
+        }*/
     }
 
     const handlerImport = (e) => {
@@ -827,7 +895,7 @@ function PackageDispatch() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>{ packageDispatch.taskOnfleet }</td>
-                <td style={ {textAlign: 'center'} }>
+                <td style={ {display: 'none'} }>
                     { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(packageDispatch.Reference_Number_1) }>
                         <i className="bx bx-edit-alt"></i>
@@ -1588,6 +1656,16 @@ function PackageDispatch() {
         location.href = url_general +'package-failed';
     }
 
+    const handlerRedirectHighPriority = () => {
+
+        location.href = url_general +'package-high-priority';
+    }
+
+    const handlerAutorization = () => {
+
+        setAutorizationDispatch(!autorizationDispatch);
+    }
+
     return (
 
         <section className="section">
@@ -1600,15 +1678,14 @@ function PackageDispatch() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-1">
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
                                                 </div>
                                             </div>
-                                            <div className="col-lg-1">
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
                                                 </div>
@@ -1644,7 +1721,9 @@ function PackageDispatch() {
 
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                        <i className="ri-file-excel-fill"></i> EXPORT
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -1728,7 +1807,6 @@ function PackageDispatch() {
                                                     :
                                                         ''
                                                 }
-
                                             </div>
                                             <div className="row">
                                                 <div className="col-lg-12 text-center">
@@ -1775,6 +1853,18 @@ function PackageDispatch() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>
+                                        <div className="row">
+                                            <div className="col-sm-12" style={ {display: 'none'} }>
+                                                <div className="form-check">
+                                                    <input className="form-check-input" type="checkbox" id="gridCheck1" checked={ autorizationDispatch } onChange={ () => handlerAutorization() }/>
+                                                    <label className="form-check-label text-danger" for="gridCheck1" >
+                                                        DISPATCH VERIFICATION
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="col-lg-12 form-group">
                                         <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                         <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
@@ -1787,20 +1877,31 @@ function PackageDispatch() {
                                 <hr/><br/>
 
                                 <div className="row">
-                                    <div className="col-lg-4">
-                                        <div className="form-group">
-                                            <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
-                                        </div><br/>
+                                    <div className="col-lg-3 mb-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3 mb-2">
                                         <div className="form-group">
                                             <b className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERED: { quantityDispatchAll }</b>
                                         </div><br/>
                                     </div>
-                                    <div className="col-lg-4">
+                                    <div className="col-lg-3 mb-2">
                                         <div className="form-group">
-                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS</b>
-                                        </div><br/>
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS: { quantityFailed }</b>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-3 mb-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectHighPriority()  } style={ {borderRadius: '10px', padding: '10px'} }> HIGH PRIORITY: { quantityHighPriority }</b>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -1902,7 +2003,7 @@ function PackageDispatch() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>TASK ONFLEET</th>
-                                                <th>ACTION</th>
+                                                <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

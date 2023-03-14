@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Assigned, Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Driver, PackageHistory, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -17,6 +17,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
 use Session;
+use Log;
 
 class PackageCheckController extends Controller
 {
@@ -44,6 +45,8 @@ class PackageCheckController extends Controller
             if($lineNumber > 1)
             {
                 $row = str_getcsv($raw_string);
+
+                Log::info($row);
 
                 $data = [
 

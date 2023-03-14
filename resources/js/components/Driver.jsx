@@ -363,15 +363,6 @@ function Driver() {
 
     const listDriverTable = listUser.map( (user, i) => {
 
-        let buttonDelete ='';
-
-        if(user.history_dispatch.length == 0)
-        {
-            buttonDelete =  <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
-                                <i className="bx bxs-trash-alt"></i>
-                            </button>;
-        }
-
         return (
 
             <tr key={i}>
@@ -404,7 +395,17 @@ function Driver() {
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
 
-                    { buttonDelete }
+                    {
+                        (
+                            user.deleteUser == 0
+                            ?
+                                <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
+                                    <i className="bx bxs-trash-alt"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );
@@ -433,6 +434,42 @@ function Driver() {
         );
     });
 
+    const handlerResetPassword = (emailUser) => {
+
+        swal({
+            title: "You want to reset password?",
+            text: "Password will be reset!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                fetch(url_general +'user/resetPassword/'+ emailUser)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("Password reset successfully!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else if(response.stateAction == false)
+                    {
+                        swal(response.message, {
+
+                            icon: "warning",
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
     const modalDriverInsert = <React.Fragment>
                                     <div className="modal fade" id="modalDriverInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -444,9 +481,16 @@ function Driver() {
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <a href="#" className="text-danger" onClick={ () => handlerResetPassword(email)  }><b><u>Reset Password</u></b></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Role</label>
+                                                                    <label className="form">Role</label>
                                                                     <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
                                                                         { listRoleSelect }
@@ -476,14 +520,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>First Name</label>
+                                                                    <label className="form">First Name</label>
                                                                     <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Last Name</label>
+                                                                    <label className="form">Last Name</label>
                                                                     <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
                                                                 </div>
@@ -493,14 +537,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Phone</label>
+                                                                    <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Email</label>
+                                                                    <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
                                                                 </div>
@@ -509,14 +553,14 @@ function Driver() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Id Onfleet</label>
+                                                                    <label className="form">Id Onfleet</label>
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
                                                                 </div>
                                                             </div>
 
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Status</label>
+                                                                    <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
                                                                         <option value="Active" >Active</option>
@@ -547,12 +591,9 @@ function Driver() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-10">
-                                        Driver List
-                                    </div>
                                     <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>

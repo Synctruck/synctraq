@@ -6,8 +6,10 @@ import swal from 'sweetalert'
 
 function Comments() {
 
-    const [id, setId]      = useState(0);
+    const [id, setId]                    = useState(0);
     const [description, setDescription]  = useState('');
+    const [statusCode, setStatusCode]    = useState('');
+    const [finalStatus, setFinalStatus]  = useState('');
 
     const [listComment, setListComment] = useState([]);
 
@@ -17,23 +19,25 @@ function Comments() {
 
     const [titleModal, setTitleModal] = useState('');
 
-    const [textSearch, setSearch] = useState('');
-    const [textButtonSave, setTextButtonSave] = useState('Guardar');
+    const [textSearch, setSearch]                   = useState('');
+    const [finalStatusSearch, setFinalStatusSearch] = useState(0);
+    const [textButtonSave, setTextButtonSave]       = useState('Guardar');
+
 
     useEffect(() => {
 
-        listAllRoute(page);
+        listAllComment(page);
 
-    }, [textSearch])
+    }, [ textSearch, finalStatusSearch ])
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllRoute(pageNumber);
+        listAllComment(pageNumber);
     }
 
-    const listAllRoute = (pageNumber) => {
+    const listAllComment = (pageNumber) => {
 
-        fetch(url_general +'comments/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'comments/list?page='+ pageNumber +'&textSearch='+ textSearch +'&finalStatus='+ finalStatusSearch)
         .then(res => res.json())
         .then((response) => {
 
@@ -75,6 +79,8 @@ function Comments() {
         const formData = new FormData();
 
         formData.append('description', description);
+        formData.append('statusCode', statusCode);
+        formData.append('finalStatus', finalStatus);
 
         clearValidation();
 
@@ -99,7 +105,7 @@ function Comments() {
                             icon: "success",
                         });
 
-                        listAllRoute(1);
+                        listAllComment(1);
                         clearForm();
                     }
                     else(response.status == 422)
@@ -133,7 +139,7 @@ function Comments() {
 
                 if(response.stateAction)
                 {
-                    listAllRoute(1);
+                    listAllComment(1);
 
                     swal("Comment updated!", {
 
@@ -164,6 +170,8 @@ function Comments() {
 
             setId(comment.id);
             setDescription(comment.description);
+            setStatusCode(comment.statusCode);
+            setFinalStatus(comment.finalStatus);
 
             handlerOpenModal(comment.id);
         });
@@ -193,7 +201,7 @@ function Comments() {
                             icon: "success",
                         });
 
-                        listAllRoute(page);
+                        listAllComment(page);
                     }
                 });
             } 
@@ -204,40 +212,48 @@ function Comments() {
 
         setId(0);
         setDescription('');
+        setStatusCode('');
+        setFinalStatus('');
     }
 
     const clearValidation = () => {
 
         document.getElementById('description').style.display = 'none';
         document.getElementById('description').innerHTML     = '';
+
+        document.getElementById('statusCode').style.display = 'none';
+        document.getElementById('statusCode').innerHTML     = '';
+
+        document.getElementById('finalStatus').style.display = 'none';
+        document.getElementById('finalStatus').innerHTML     = '';
     }
 
     const listCommentTable = listComment.map( (comment, i) => {
 
         return (
 
-            <tr key={i} className={ (comment.final == 1 ? 'alert-danger' : '') }>
+            <tr key={i} className={ (comment.finalStatus == 1 ? 'alert-danger' : '') }>
                 <td><b>{ comment.description }</b></td>
                 <td>{ comment.statusCode  }</td>
                 <td>
                     {
                         (
-                            comment.final == 0
-                            ? 
-                                 <>
-                                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getComment(comment.id) }>
-                                        <i className="bx bx-edit-alt"></i>
-                                    </button> &nbsp;
-
-                                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteComment(comment.id) }>
-                                        <i className="bx bxs-trash-alt"></i>
-                                    </button>
-                                 </>
-                            : 
-                                ''
+                            comment.finalStatus == 1
+                            ?
+                                <div className="alert alert-danger font-weight-bold">YES</div>
+                            :
+                                <div className="alert alert-success font-weight-bold">NOT</div>
                         )
-
                     }
+                </td>
+                <td>
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getComment(comment.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button> &nbsp;
+
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteComment(comment.id) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
                 </td>
             </tr>
         );
@@ -249,15 +265,29 @@ function Comments() {
                                             <form onSubmit={ handlerSaveRoute }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
-                                                        <h5 className="modal-title" id="exampleModalLabel">{ titleModal }</h5>
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <label>Name</label>
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">DESCRIPTION</label>
                                                                 <div id="description" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ description } maxLength="100" onChange={ (e) => setDescription(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">STATUS CODE</label>
+                                                                <div id="statusCode" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ statusCode } maxLength="50" onChange={ (e) => setStatusCode(e.target.value) } required/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">FINAL STATUS</label>
+                                                                <div id="finalStatus" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select value={ finalStatus } className="form-control" onChange={ (e) => setFinalStatus(e.target.value) } required>
+                                                                    <option value="" style={ {display: 'none'} } selected>Select</option>
+                                                                    <option value="1" >Yes</option>
+                                                                    <option value="0" >Not</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -280,23 +310,44 @@ function Comments() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
-                                <div className="row form-group">
-                                    <div className="col-lg-10"> 
-                                        Comments List
-                                    </div>
-                                    <div className="col-lg-2">
-                                        <button className="btn btn-success btn-sm pull-right" title="Agregar" onClick={ () => handlerOpenModal(0) }>
-                                            <i className="bx bxs-plus-square"></i>
+                                <div className="row">
+                                    <div className="col-lg-2 form-group">
+                                        <button className="btn btn-success form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
+                                            <i className="bx bxs-plus-square"></i> Add
                                         </button>
                                     </div>
                                 </div>
-                            </h5>
-                            <div className="row form-group">
-                                <div className="col-lg-12"> 
-                                    <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Search..."/>
-                                    <br/>
+                                <div className="row">
+                                    <dvi className="col-lg-8 form-group">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    DESCRIPTION:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <input type="text" value={ textSearch } onChange={ (e) => setSearch(e.target.value) } className="form-control"/>
+                                            </div>
+                                        </div>
+                                    </dvi>
+                                    <dvi className="col-lg-4 form-group">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    FINAL STATUS:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select value={ finalStatusSearch } className="form-control" onChange={ (e) => setFinalStatusSearch(e.target.value) } required>
+                                                    <option value="1" >Yes</option>
+                                                    <option value="0" >Not</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
                                 </div>
-                            </div>
+                            </h5>
+
                             <div className="row form-group">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed">
@@ -304,6 +355,7 @@ function Comments() {
                                             <tr>
                                                 <th>DESCRIPTION</th>
                                                 <th>STATUS CODE</th>
+                                                <th>FINAL STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

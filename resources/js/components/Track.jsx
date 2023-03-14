@@ -92,7 +92,7 @@ function Track() {
         setDispatchDesc('');
 
         listDetails.map((item,i) => {
-            if(item.status == 'On hold'){
+            if(item.status == 'Manifest'){
                 setOnholdDesc(moment(item.created_at).format('LL'))
             }
             if(item.status == 'Inbound'){
@@ -124,7 +124,7 @@ function Track() {
 
             if(! finalStep){
                 finalStep = listDetails.find(item => {
-                    return item.status =='On hold'
+                    return item.status =='Manifest'
                 });
             }
         }
@@ -133,7 +133,7 @@ function Track() {
             console.log('final step: ',finalStep.status);
 
             switch (finalStep.status) {
-                case 'On hold':
+                case 'Manifest':
                     setStep(0);
                     break;
                 case 'Inbound':
@@ -190,14 +190,14 @@ function Track() {
                         </div>
 
 
-                        <h6 className="pt-4">Traking details </h6><hr />
+                        <h6 className="pt-4">Tracking details </h6><hr />
                         <div className='row'>
                              <h5 className='text-center'>PACKAGE ID: {packageId}  / CLIENT: { packageClient }</h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
                                     <Steps.Item title="In Fulfillment" description={onholdDesc} />
                                     <Steps.Item title="Inbound" description={inboundDesc}/>
-                                    <Steps.Item title="Out of Delivery" description={dispatchDesc}/>
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc}/>
                                     <Steps.Item title="Delivery" description={deliveryDesc}/>
                                 </Steps>
                             </div>

@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import ReactLoading from 'react-loading';
 
 function PackageBlocked() {
 
@@ -19,6 +20,7 @@ function PackageBlocked() {
     const inputFileRef  = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [isLoading, setIsLoading]           = useState(false);
 
     useEffect(() => {
 
@@ -28,11 +30,15 @@ function PackageBlocked() {
 
     const listPackage = () => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package-blocked/list')
         .then(res => res.json()).
         then((response) => {
 
                 setListPackageBlocked(response.listPackageBlocked.data);
+
+                setIsLoading(false);
             },
         );
     }
@@ -40,6 +46,8 @@ function PackageBlocked() {
     const handlerInsert = (e) => {
 
         e.preventDefault();
+
+        setIsLoading(true);
 
         const formData = new FormData();
 
@@ -83,6 +91,8 @@ function PackageBlocked() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
+
+                setIsLoading(false);
             }
         );
     }
@@ -115,6 +125,8 @@ function PackageBlocked() {
 
             if(willDelete)
             {
+                setIsLoading(true);
+
                 fetch(url_general +'package-blocked/delete/'+ id)
                 .then(response => response.json())
                 .then(response => {
@@ -128,6 +140,8 @@ function PackageBlocked() {
 
                         listPackage();
                     }
+
+                    setIsLoading(false);
                 });
             }
         });
@@ -175,12 +189,25 @@ function PackageBlocked() {
                                                         <input type="text" className="form-control" value={ comment } onChange={ (e) => setComment(e.target.value) } maxLength="200" required/>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-2">
-                                                    <div className="form-group">
-                                                        <label htmlFor="" className="text-white">--</label>
-                                                        <button className="btn btn-primary form-control">Save</button>
-                                                    </div>
-                                                </div>
+                                                {
+                                                    (
+                                                        isLoading
+                                                        ?
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="" className="text-white">--</label>
+                                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                                </div>
+                                                            </div>
+                                                        :
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="" className="text-white">--</label>
+                                                                    <button className="btn btn-primary form-control">Save</button>
+                                                                </div>
+                                                            </div>
+                                                    )
+                                                }
                                                 <div className="col-lg-12">
                                                     <div className="col-lg-2 form-group">
                                                         <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>

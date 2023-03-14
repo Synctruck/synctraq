@@ -35,7 +35,7 @@ class ReportController extends Controller
         $states = explode(',', $state);
 
         $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
-                                ->where('status', 'On hold');
+                                ->where('status', 'Manifest');
 
         if($route != 'all')
         {
@@ -50,7 +50,7 @@ class ReportController extends Controller
         $listAll = $listAll->paginate(50);
 
         $listState = PackageHistory::select('Dropoff_Province')
-                                    ->where('status', 'On hold')
+                                    ->where('status', 'Manifest')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
@@ -688,7 +688,7 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listPackageManifest = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'On hold');
+        $listPackageManifest = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Manifest');
 
         if($route != 'all')
         {

@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
+import ReactLoading from 'react-loading';
 
 function ReportReturnCompany() {
 
@@ -13,6 +14,7 @@ function ReportReturnCompany() {
     const [listTeam, setListTeam]             = useState([]);
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
+    const [listCompany , setListCompany]      = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -23,16 +25,20 @@ function ReportReturnCompany() {
     const [dateEnd, setDateEnd]         = useState(auxDateInit);
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [idCompany, setCompany]       = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
     const [Description_Return, setDescriptionReturn]  = useState('');
     const [Weight, setWeight]                         = useState('');
+    const [Width, setWidth]                           = useState('');
+    const [Length, setLength]                         = useState('');
+    const [Height, setHeight]                         = useState('');
     const [client, setClient]                         = useState('');
-    const [measures, setMeasures]                     = useState('');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     const [file, setFile]             = useState('');
     const [btnDisplay, setbtnDisplay] = useState('none');
@@ -45,6 +51,12 @@ function ReportReturnCompany() {
     const [disabledButton, setDisabledButton] = useState(false);
 
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
+
+    useEffect( () => {
+
+        listAllCompany();
+        listAllRoute();
+    }, []);
 
     useEffect(() => {
 
@@ -62,19 +74,26 @@ function ReportReturnCompany() {
     useEffect(() => {
 
         listReturnCompany(1, RouteSearch, StateSearch);
-        listAllRoute();
 
-    }, [dateInit, dateEnd]);
+    }, [dateInit, dateEnd, idCompany]);
 
+    const onBtnClickFile = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRef.current.click();
+    }
 
     const listReturnCompany = (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
         setListReport([]);
 
-        fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/return-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.packageReturnCompanyList.data);
             setTotalPackage(response.packageReturnCompanyList.total);
             setTotalPage(response.packageReturnCompanyList.per_page);
@@ -125,6 +144,21 @@ function ReportReturnCompany() {
         });
     }
 
+    const listAllCompany = () => {
+
+        setListCompany([]);
+
+        fetch(url_general +'company/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            let CustomListCompany = [{id:0,name:"All companies"},...response.companyList];
+            setCompany(0);
+            setListCompany(CustomListCompany);
+
+        });
+    }
+
     const listAllRoute = () => {
 
         setListRoute([]);
@@ -164,7 +198,7 @@ function ReportReturnCompany() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch;
         }
     }
 
@@ -174,10 +208,10 @@ function ReportReturnCompany() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageReturnCompany.Date_Return.substring(5, 7) }-{ packageReturnCompany.Date_Return.substring(8, 10) }-{ packageReturnCompany.Date_Return.substring(0, 4) }
+                    { packageReturnCompany.created_at.substring(5, 7) }-{ packageReturnCompany.created_at.substring(8, 10) }-{ packageReturnCompany.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageReturnCompany.Date_Return ? packageReturnCompany.Date_Return.substring(11, 19):'' }
+                    { packageReturnCompany.created_at ? packageReturnCompany.created_at.substring(11, 19):'' }
                 </td>
                 <td>{ packageReturnCompany.company }</td>
                 <td><b>{ packageReturnCompany.Reference_Number_1 }</b></td>
@@ -191,7 +225,9 @@ function ReportReturnCompany() {
                 <td>{ packageReturnCompany.Description_Return }</td>
                 <td>{ packageReturnCompany.client }</td>
                 <td>{ packageReturnCompany.Weight }</td>
-                <td>{ packageReturnCompany.measures }</td>
+                <td>{ packageReturnCompany.Width }</td>
+                <td>{ packageReturnCompany.Length }</td>
+                <td>{ packageReturnCompany.Height }</td>
 
             </tr>
         );
@@ -281,7 +317,9 @@ function ReportReturnCompany() {
         formData.append('client', client);
         formData.append('Description_Return', Description_Return);
         formData.append('Weight', Weight);
-        formData.append('measures', measures);
+        formData.append('Width', Width);
+        formData.append('Length', Length);
+        formData.append('Height', Height);
 
         //clearValidation();
 
@@ -303,7 +341,30 @@ function ReportReturnCompany() {
                 setTextButtonSave('Guardar');
                 setDisabledButton(false);
 
-                if(response.stateAction == 'notExists')
+                if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        text: packageBlocked.comment,
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                    
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'validatedLost')
+                {
+                    swal('THE PACKAGE WAS RECORDED BEFORE AS LOST #'+ Reference_Number_1, {
+
+                        icon: "warning",
+                    });
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExists')
                 {
                     swal('Packet does not exist in Inbound or Dispatch!', {
 
@@ -352,9 +413,51 @@ function ReportReturnCompany() {
         myModal.show();
     }
 
+    const handlerImport = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', file);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'report/return-company/import', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("The file was imported!", {
+
+                        icon: "success",
+                    });
+
+                    listReturnCompany(1, RouteSearch, StateSearch);
+                }
+
+                setViewButtonSave('none');
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={company.id}>{company.name}</option>
+    })
+
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerInsert }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
@@ -365,41 +468,55 @@ function ReportReturnCompany() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>PACKAGE ID</label>
+                                                                    <label className="form">PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="16" required/>
+                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>COMMENT</label>
+                                                                    <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Description_Return } className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>CLIENT</label>
+                                                                    <label className="form">CLIENT</label>
                                                                     <div id="client" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-12">
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>WEIGHT</label>
+                                                                    <label className="form">WEIGHT</label>
                                                                     <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
+                                                                    <input type="number" value={ Weight } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWeight(e.target.value) } required/>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-12">
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>MEASURES</label>
-                                                                    <div id="measures" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ measures } className="form-control" onChange={ (e) => setMeasures(e.target.value) } required/>
+                                                                    <label className="form">WIDTH</label>
+                                                                    <div id="Width" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Width } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWidth(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">LENGTH</label>
+                                                                    <div id="Length" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Length } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setLength(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">HEIGHT</label>
+                                                                    <div id="Height" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" value={ Height } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setHeight(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -438,7 +555,21 @@ function ReportReturnCompany() {
                                             <div className="col-lg-3">
                                                 <div className="row">
                                                     <div className="col-lg-12">
-                                                        State :
+                                                        Company:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-3">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        State : 
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
@@ -459,8 +590,16 @@ function ReportReturnCompany() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
+                                    <div className="col-lg-3 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
@@ -468,7 +607,23 @@ function ReportReturnCompany() {
                                     <div className="col-lg-3">
                                         <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
                                     </div>
+                                    <div className="col-lg-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
+                                <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
@@ -486,10 +641,12 @@ function ReportReturnCompany() {
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
                                                 <th>ROUTE</th>
-                                                <th>Description Return</th>
-                                                <th>Client</th>
-                                                <th>Weight</th>
-                                                <th>Measures</th>
+                                                <th>DESCRIPTION</th>
+                                                <th>CLIENT</th>
+                                                <th>WEIGHT</th>
+                                                <th>WIDTH</th>
+                                                <th>LENGTH</th>
+                                                <th>HEIGHT</th>
                                             </tr>
                                         </thead>
                                         <tbody>

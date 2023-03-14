@@ -5,11 +5,11 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
-
+import ReactLoading from 'react-loading';
 
 function PackageAge() {
 
-    const [listReport, setListReport]                   = useState([]);
+    const [listReport, setListReport] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
@@ -28,6 +28,7 @@ function PackageAge() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
 
@@ -45,10 +46,13 @@ function PackageAge() {
 
     const listReportInbound = (pageNumber, stateSearch, routeSearch) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package-age/list/'+  idCompany +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListReport(response.listAll);
             setTotalPackage(response.packageHistoryList.total);
             setTotalPage(response.packageHistoryList.per_page);
@@ -90,7 +94,7 @@ function PackageAge() {
 
     const handlerExport = () => {
         
-        location.href = url_general +'package-age/export/'+ StateSearch +'/'+ RouteSearch;
+        location.href = url_general +'package-age/export/'+ idCompany +'/'+ StateSearch +'/'+ RouteSearch;
     }
 
     const listReportTable = listReport.map( (packageInbound, i) => {
@@ -105,6 +109,10 @@ function PackageAge() {
                 <td><b>{ packageInbound.company }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
                 <td>{ packageInbound.status }</td>
+                <td>
+                    { packageInbound.statusDate.substring(5, 7) }-{ packageInbound.statusDate.substring(8, 10) }-{ packageInbound.statusDate.substring(0, 4) }
+                </td>
+                <td>{ packageInbound.statusDescription }</td>
                 <td>{ packageInbound.Dropoff_Contact_Name }</td>
                 <td>{ packageInbound.Dropoff_Contact_Phone_Number }</td>
                 <td>{ packageInbound.Dropoff_Address_Line_1 }</td>
@@ -204,13 +212,23 @@ function PackageAge() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="col-lg-2 form-group">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
                                     </div>
                                 </div>
 
                                 <div className="row form-group">
-                                    <div className="col-lg-2 form-group">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Packages: { quantityInbound }</b>
+                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Packages: { quantityInbound }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">
@@ -259,6 +277,8 @@ function PackageAge() {
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
+                                                <th>STATUS DATE</th>
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>

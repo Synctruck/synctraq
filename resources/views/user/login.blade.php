@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
   <meta name="csrf-token" content="{{csrf_token()}}">
   <!-- Favicons -->
-  {{-- <link href="assets/img/favicon.png" rel="icon"> --}}
+  <link href="{{asset('img/favicon.ico')}}" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
@@ -71,9 +71,13 @@
     <script src="{{asset('admin/assets/vendor/tinymce/tinymce.min.js')}}"></script>
     <script src="{{asset('admin/assets/vendor/php-email-form/validate.js')}}"></script>
 
-    <!-- Template Main JS File -->
+    <!-- Template Main JS File --> 
     <script src="{{asset('admin/assets/js/main.js')}}"></script>
-    <script src="{{ asset('js/app.js') }}?{{time()}}" defer></script>
-</body>
 
+    <?php
+        $dateFileApp = date("Y-m-d-H-i-s", filemtime("./js/app.js"));
+    ?>
+
+    <script src="{{ asset('js/app.js') }}?{{$dateFileApp}}"></script>
+</body>
 </html>

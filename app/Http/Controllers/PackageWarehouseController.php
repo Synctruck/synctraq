@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackageHistory, PackageInbound, PackageDispatch, PackageManifest, PackageReturn, PackageWarehouse, States, User };
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -96,16 +96,34 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
         }
-        if($type == 'list'){
-            $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->paginate(50);
+        if($type == 'list')
+        {
+            $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')
+                                                        ->select(
+                                                            'created_at',
+                                                            'idUser',
+                                                            'company',
+                                                            'Reference_Number_1',
+                                                            'Dropoff_Contact_Name',
+                                                            'Dropoff_Contact_Phone_Number',
+                                                            'Dropoff_Address_Line_1',
+                                                            'Dropoff_City',
+                                                            'Dropoff_Province',
+                                                            'Dropoff_Postal_Code',
+                                                            'Weight',
+                                                            'Route'
+                                                        )
+                                                        ->paginate(50); 
         }
-        else{
+        else
+        {
             $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')->get();
         }
 
         return $packageListWarehouse;
     }
-    public function Export($idValidator, $dateStart,$dateEnd, $route, $state)
+
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv";
@@ -114,17 +132,18 @@ class PackageWarehouseController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
             $lineData = array(
                                 date('m-d-Y', strtotime($packageWarehouse->created_at)),
                                 date('H:i:s', strtotime($packageWarehouse->created_at)),
+                                $packageWarehouse->company,
                                 $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
                                 $packageWarehouse->Reference_Number_1,
                                 $packageWarehouse->Dropoff_Contact_Name,
@@ -150,6 +169,27 @@ class PackageWarehouseController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
+        
+        $packageLost = PackageLost::find($request->get('Reference_Number_1'));
+
+        if($packageLost)
+        {
+            return ['stateAction' => 'validatedLost'];
+        }
+
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
         $stateValidate    = $request->get('StateValidate');
         $stateValidate    = $stateValidate != '' ? explode(',', $stateValidate) : [];
@@ -163,9 +203,9 @@ class PackageWarehouseController extends Controller
                 {
                     return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
                 }
-            }
+            } 
             
-            $initDate = date('Y-m-d 00:00:00');
+            /*$initDate = date('Y-m-d 00:00:00');
             $endDate  = date('Y-m-d 23:59:59');
 
             $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -178,12 +218,12 @@ class PackageWarehouseController extends Controller
             if($countValidations >= 2)
             {
                 return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
-            }
+            }*/
 
-            /*if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
+            if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
             {
                 return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
-            }*/
+            }
 
             try
             {
@@ -198,21 +238,6 @@ class PackageWarehouseController extends Controller
                 $packageHistory->company                      = $packageWarehouse->company;
                 $packageHistory->idStore                      = $packageWarehouse->idStore;
                 $packageHistory->store                        = $packageWarehouse->store;
-                $packageHistory->Reference_Number_2           = $packageWarehouse->Reference_Number_2;
-                $packageHistory->Reference_Number_3           = $packageWarehouse->Reference_Number_3;
-                $packageHistory->Ready_At                     = $packageWarehouse->Ready_At;
-                $packageHistory->Del_Date                     = $packageWarehouse->Del_Date;
-                $packageHistory->Del_no_earlier_than          = $packageWarehouse->Del_no_earlier_than;
-                $packageHistory->Del_no_later_than            = $packageWarehouse->Del_no_later_than;
-                $packageHistory->Pickup_Contact_Name          = $packageWarehouse->Pickup_Contact_Name;
-                $packageHistory->Pickup_Company               = $packageWarehouse->Pickup_Company;
-                $packageHistory->Pickup_Contact_Phone_Number  = $packageWarehouse->Pickup_Contact_Phone_Number;
-                $packageHistory->Pickup_Contact_Email         = $packageWarehouse->Pickup_Contact_Email;
-                $packageHistory->Pickup_Address_Line_1        = $packageWarehouse->Pickup_Address_Line_1;
-                $packageHistory->Pickup_Address_Line_2        = $packageWarehouse->Pickup_Address_Line_2;
-                $packageHistory->Pickup_City                  = $packageWarehouse->Pickup_City;
-                $packageHistory->Pickup_Province              = $packageWarehouse->Pickup_Province;
-                $packageHistory->Pickup_Postal_Code           = $packageWarehouse->Pickup_Postal_Code;
                 $packageHistory->Dropoff_Contact_Name         = $packageWarehouse->Dropoff_Contact_Name;
                 $packageHistory->Dropoff_Company              = $packageWarehouse->Dropoff_Company;
                 $packageHistory->Dropoff_Contact_Phone_Number = $packageWarehouse->Dropoff_Contact_Phone_Number;
@@ -222,14 +247,9 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Dropoff_City                 = $packageWarehouse->Dropoff_City;
                 $packageHistory->Dropoff_Province             = $packageWarehouse->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $packageWarehouse->Dropoff_Postal_Code;
-                $packageHistory->Service_Level                = $packageWarehouse->Service_Level;
-                $packageHistory->Carrier_Name                 = $packageWarehouse->Carrier_Name;
-                $packageHistory->Vehicle_Type_Id              = $packageWarehouse->Vehicle_Type_Id;
                 $packageHistory->Notes                        = $packageWarehouse->Notes;
-                $packageHistory->Number_Of_Pieces             = $packageWarehouse->Number_Of_Pieces;
                 $packageHistory->Weight                       = $packageWarehouse->Weight;
                 $packageHistory->Route                        = $packageWarehouse->Route;
-                $packageHistory->Name                         = $packageWarehouse->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->quantity                     = $packageWarehouse->quantity;
@@ -311,23 +331,8 @@ class PackageWarehouseController extends Controller
                     $packageHistory->company                      = $package->company;
                     $packageHistory->idStore                      = $package->idStore;
                     $packageHistory->store                        = $package->store;
-                    $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                    $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
                     $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
                     $packageHistory->CLIENT                       = $request->get('CLIENT') ? $request->get('CLIENT') : '';
-                    $packageHistory->Ready_At                     = $package->Ready_At;
-                    $packageHistory->Del_Date                     = $package->Del_Date;
-                    $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                    $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                    $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                    $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                    $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                    $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                    $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                    $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                    $packageHistory->Pickup_City                  = $package->Pickup_City;
-                    $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                    $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                     $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                     $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                     $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -337,14 +342,9 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                     $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                     $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                    $packageHistory->Service_Level                = $package->Service_Level;
-                    $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                    $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                     $packageHistory->Notes                        = $package->Notes;
-                    $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
-                    $packageHistory->Name                         = $package->Name;
                     $packageHistory->idUser                       = Auth::user()->id;
                     $packageHistory->idUserInbound                = Auth::user()->id;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
@@ -359,7 +359,7 @@ class PackageWarehouseController extends Controller
 
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
+                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
                     //end data for inland
                 }
 
@@ -428,21 +428,6 @@ class PackageWarehouseController extends Controller
                     $packageReturn->company                      = $packageDispatch->company;
                     $packageReturn->idStore                      = $packageDispatch->idStore;
                     $packageReturn->store                        = $packageDispatch->store;
-                    $packageReturn->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageReturn->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageReturn->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageReturn->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageReturn->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageReturn->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageReturn->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageReturn->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageReturn->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageReturn->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageReturn->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageReturn->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageReturn->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageReturn->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageReturn->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
                     $packageReturn->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
                     $packageReturn->Dropoff_Company              = $packageDispatch->Dropoff_Company;
                     $packageReturn->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
@@ -452,14 +437,9 @@ class PackageWarehouseController extends Controller
                     $packageReturn->Dropoff_City                 = $packageDispatch->Dropoff_City;
                     $packageReturn->Dropoff_Province             = $packageDispatch->Dropoff_Province;
                     $packageReturn->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageReturn->Service_Level                = $packageDispatch->Service_Level;
-                    $packageReturn->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageReturn->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
                     $packageReturn->Notes                        = $packageDispatch->Notes;
-                    $packageReturn->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
                     $packageReturn->Weight                       = $packageDispatch->Weight;
                     $packageReturn->Route                        = $packageDispatch->Route;
-                    $packageReturn->Name                         = $packageDispatch->Name;
                     $packageReturn->idUser                       = Auth::user()->id;
                     $packageReturn->idTeam                       = $packageDispatch->idTeam;
                     $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
@@ -485,21 +465,6 @@ class PackageWarehouseController extends Controller
                     $packageHistory->company                      = $packageDispatch->company;
                     $packageHistory->idStore                      = $packageDispatch->idStore;
                     $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                    $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                    $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                    $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                    $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                    $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                    $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                    $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                    $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                    $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                    $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                    $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                    $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                    $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                    $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
                     $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
                     $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
                     $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
@@ -509,14 +474,9 @@ class PackageWarehouseController extends Controller
                     $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
                     $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
                     $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                    $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                    $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
                     $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->Name                         = $packageDispatch->Name;
                     $packageHistory->idTeam                       = $packageDispatch->idTeam;
                     $packageHistory->idUserReturn                 = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = Auth::user()->id;
@@ -551,21 +511,6 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->company                      = $package->company;
                 $packageWarehouse->idStore                      = $package->idStore;
                 $packageWarehouse->store                        = $package->store;
-                $packageWarehouse->Reference_Number_2           = $package->Reference_Number_2;
-                $packageWarehouse->Reference_Number_3           = $package->Reference_Number_3;
-                $packageWarehouse->Ready_At                     = $package->Ready_At;
-                $packageWarehouse->Del_Date                     = $package->Del_Date;
-                $packageWarehouse->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                $packageWarehouse->Del_no_later_than            = $package->Del_no_later_than;
-                $packageWarehouse->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                $packageWarehouse->Pickup_Company               = $package->Pickup_Company;
-                $packageWarehouse->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                $packageWarehouse->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                $packageWarehouse->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                $packageWarehouse->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                $packageWarehouse->Pickup_City                  = $package->Pickup_City;
-                $packageWarehouse->Pickup_Province              = $package->Pickup_Province;
-                $packageWarehouse->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                 $packageWarehouse->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageWarehouse->Dropoff_Company              = $package->Dropoff_Company;
                 $packageWarehouse->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -575,14 +520,9 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->Dropoff_City                 = $package->Dropoff_City;
                 $packageWarehouse->Dropoff_Province             = $package->Dropoff_Province;
                 $packageWarehouse->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                $packageWarehouse->Service_Level                = $package->Service_Level;
-                $packageWarehouse->Carrier_Name                 = $package->Carrier_Name;
-                $packageWarehouse->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                 $packageWarehouse->Notes                        = $package->Notes;
-                $packageWarehouse->Number_Of_Pieces             = $package->Number_Of_Pieces;
                 $packageWarehouse->Weight                       = $package->Weight;
                 $packageWarehouse->Route                        = $package->Route;
-                $packageWarehouse->Name                         = $package->Name;
                 $packageWarehouse->idUser                       = Auth::user()->id;
                 $packageWarehouse->quantity                     = $package->quantity;
                 $packageWarehouse->status                       = 'Warehouse';
@@ -597,21 +537,6 @@ class PackageWarehouseController extends Controller
                 $packageHistory->company                      = $package->company;
                 $packageHistory->idStore                      = $package->idStore;
                 $packageHistory->store                        = $package->store;
-                $packageHistory->Reference_Number_2           = $package->Reference_Number_2;
-                $packageHistory->Reference_Number_3           = $package->Reference_Number_3;
-                $packageHistory->Ready_At                     = $package->Ready_At;
-                $packageHistory->Del_Date                     = $package->Del_Date;
-                $packageHistory->Del_no_earlier_than          = $package->Del_no_earlier_than;
-                $packageHistory->Del_no_later_than            = $package->Del_no_later_than;
-                $packageHistory->Pickup_Contact_Name          = $package->Pickup_Contact_Name;
-                $packageHistory->Pickup_Company               = $package->Pickup_Company;
-                $packageHistory->Pickup_Contact_Phone_Number  = $package->Pickup_Contact_Phone_Number;
-                $packageHistory->Pickup_Contact_Email         = $package->Pickup_Contact_Email;
-                $packageHistory->Pickup_Address_Line_1        = $package->Pickup_Address_Line_1;
-                $packageHistory->Pickup_Address_Line_2        = $package->Pickup_Address_Line_2;
-                $packageHistory->Pickup_City                  = $package->Pickup_City;
-                $packageHistory->Pickup_Province              = $package->Pickup_Province;
-                $packageHistory->Pickup_Postal_Code           = $package->Pickup_Postal_Code;
                 $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                 $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -621,14 +546,9 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                 $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                $packageHistory->Service_Level                = $package->Service_Level;
-                $packageHistory->Carrier_Name                 = $package->Carrier_Name;
-                $packageHistory->Vehicle_Type_Id              = $package->Vehicle_Type_Id;
                 $packageHistory->Notes                        = $package->Notes;
-                $packageHistory->Number_Of_Pieces             = $package->Number_Of_Pieces;
                 $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
-                $packageHistory->Name                         = $package->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->quantity                     = $package->quantity;
@@ -649,6 +569,15 @@ class PackageWarehouseController extends Controller
                 DB::rollback();
 
                 return ['stateAction' => true];
+            }
+        }
+        else
+        {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
             }
         }
 

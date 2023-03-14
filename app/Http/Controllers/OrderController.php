@@ -22,9 +22,8 @@ class OrderController extends Controller
     {
         $routes = explode(',', $route);
         $states = explode(',', $state);
-        $null   = env('APP_ENV') == 'local' ? 'NULL' : null;
 
-        $packageList = PackageManifest::where('idStore', '!=', $null);
+        $packageList = PackageManifest::where('idStore', '!=', 0);
 
         if($idCompany != 0)
         {
@@ -51,7 +50,22 @@ class OrderController extends Controller
             $packageList = $packageList->orderBy('created_at', 'desc');
         }
 
-        $packageList = $packageList->paginate(50);
+        $packageList = $packageList->select(
+                                    'created_at',
+                                    'company',
+                                    'store',
+                                    'Reference_Number_1',
+                                    'Dropoff_Contact_Name',
+                                    'Dropoff_Contact_Phone_Number',
+                                    'Dropoff_Address_Line_1',
+                                    'Dropoff_City',
+                                    'Dropoff_Province',
+                                    'Dropoff_Postal_Code',
+                                    'Weight',
+                                    'Route',
+                                    'quantity',
+                                )
+                                ->paginate(50);
 
         $quantityPackage = $packageList->total();
 
@@ -66,6 +80,20 @@ class OrderController extends Controller
     {
         $packageList = PackageManifest::where('idStore', '!=', 'NULL')
                                     ->where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                    ->select(
+                                        'created_at',
+                                        'company',
+                                        'Reference_Number_1',
+                                        'Dropoff_Contact_Name',
+                                        'Dropoff_Contact_Phone_Number',
+                                        'Dropoff_Address_Line_1',
+                                        'Dropoff_City',
+                                        'Dropoff_Province',
+                                        'Dropoff_Postal_Code',
+                                        'Weight',
+                                        'Route',
+                                        'quantity',
+                                    )
                                     ->paginate(50); 
         
         return ['packageList' => $packageList];
@@ -85,6 +113,7 @@ class OrderController extends Controller
                 "Dropoff_Province" => ["required"],
                 "Dropoff_Postal_Code" => ["required"],
                 "quantity" => ["required", "numeric", "min:1", "max:127"],
+                "date" => ["required", "date"],
             ],
             [
                 "idCompany.required" => "Select an item",
@@ -104,6 +133,9 @@ class OrderController extends Controller
 
                 "quantity.required" => "The field is required.",
                 "quantity.numeric" => "Enter a numeric value",
+
+                "date.required" => "The field is required.",
+                "date.date" => "Enter a numeric value",
             ]
         );
 
@@ -126,7 +158,10 @@ class OrderController extends Controller
             $Reference_Number_1DCC  = 'DCC'. $time;
 
             //*******************************************
-            //REGISTER STORE
+            //REGISTER ORDER
+
+            $created_at = $request->get('date') .' '. date('H:i:s');
+
             $package = new PackageManifest();
 
             $package->idCompany                    = $request->get('idCompany');
@@ -142,13 +177,13 @@ class OrderController extends Controller
             $package->Dropoff_Province             = $store->state;
             $package->Dropoff_Postal_Code          = $store->zipCode;
             $package->Weight                       = $Weight;
-            $package->quantity                     = $quantity;
+            $package->quantity                     = $quantity; 
             $package->Route                        = $store->route;
-            $package->status                       = 'On hold';
+            $package->status                       = 'Manifest';
+            $package->created_at                   = $created_at;
+            $package->updated_at                   = $created_at;
 
             $package->save();
-
-            $created_at = date('Y-m-d H:i:s');
 
             $packageHistory = new PackageHistory();
 
@@ -169,9 +204,9 @@ class OrderController extends Controller
             $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->idUserManifest               = Auth::user()->id;
             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-            $packageHistory->Description                  = 'On hold - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $packageHistory->Description                  = 'Manifest - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->Route                        = $route ? $route->name : '';
-            $packageHistory->status                       = 'On hold';
+            $packageHistory->status                       = 'Manifest';
             $packageHistory->quantity                     = $quantity;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
@@ -197,7 +232,9 @@ class OrderController extends Controller
             $package->Weight                       = $Weight;
             $package->quantity                     = $quantity;
             $package->Route                        = $route ? $route->name : '';
-            $package->status                       = 'On hold';
+            $package->status                       = 'Manifest';
+            $package->created_at                   = $created_at;
+            $package->updated_at                   = $created_at;
 
             $package->save();
 
@@ -222,15 +259,14 @@ class OrderController extends Controller
             $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->idUserManifest               = Auth::user()->id;
             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-            $packageHistory->Description                  = 'On hold - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $packageHistory->Description                  = 'Manifest - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->Route                        = $route ? $route->name : '';
-            $packageHistory->status                       = 'On hold';
+            $packageHistory->status                       = 'Manifest';
             $packageHistory->quantity                     = $quantity;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
 
             $packageHistory->save();
-
 
             $store->delete = 1;
 
@@ -254,7 +290,7 @@ class OrderController extends Controller
         $Reference_Number_1 = substr($Reference_Number_1, 3, 13);
 
         $orderList = PackageHistory::where('Reference_Number_1', 'like', '%'. $Reference_Number_1 .'%')
-                                    ->where('status', 'On hold')
+                                    ->where('status', 'Manifest')
                                     ->orderBy('Reference_Number_1', 'desc')
                                     ->get();
 

@@ -35,11 +35,21 @@ function Login() {
                         icon: "success",
                     });
                     setTimeout( () => {
-                        if(response.user.idRole == 3 || response.user.idRole == 4){
-                            location.href = '/profile'
 
-                        }else{
-                            location.href = './home'
+                        if(response.user.changePasswordMandatory == 0)
+                        {
+                            location.href = '/profile';
+                        }
+                        else
+                        {
+                            if(response.user.idRole == 3 || response.user.idRole == 4)
+                            {
+                                location.href = '/profile';
+                            }
+                            else
+                            {
+                                location.href = './home';
+                            }
                         }
 
                     }, 1500);
@@ -66,7 +76,7 @@ function Login() {
                 <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
                   <div className="d-flex justify-content-center py-4">
-                    <img src='/img/logo.PNG'  width={200} alt='img'/>
+                    <img src='/img/logo.png'  width={200} alt='img'/>
                   </div>
 
                   <div className="card mb-3">

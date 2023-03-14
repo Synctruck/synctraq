@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
+import ReactLoading from 'react-loading';
 
 function PackageInbound() {
 
@@ -36,7 +37,7 @@ function PackageInbound() {
     const [disabledInput, setDisabledInput] = useState(false);
 
     const [readInput, setReadInput] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
 
@@ -83,12 +84,14 @@ function PackageInbound() {
 
     const listAllPackageInbound = (pageNumber, route, state) => {
 
+        setIsLoading(true);
         setListPackageInbound([]);
 
         fetch(url_general +'package-inbound/list/'+ idCompany +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageInbound(response.packageList.data);
             setTotalPackage(response.packageList.total);
             setTotalPage(response.packageList.per_page);
@@ -446,13 +449,49 @@ function PackageInbound() {
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'notInland')
+                    if(response.stateAction == 'validatedReturnCompany')
                     {
-                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    else if(response.stateAction == 'validatedLost')
+                    {
+                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessage('warning'); 
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+                        
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        setTextMessage('');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
                         setTypeMessage('warning');
                         setNumberPackage('');
 
-                        document.getElementById('soundPitidoError').play();
+                        document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction == 'notExists')
                     {
@@ -510,6 +549,14 @@ function PackageInbound() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'validated')
+                    {
+                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction)
                     {
                         setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
@@ -526,7 +573,7 @@ function PackageInbound() {
                         document.getElementById('Reference_Number_1').focus();
                         document.getElementById('soundPitidoSuccess').play();
 
-                        handlerPrint('labelPrint');
+                        //handlerPrint('labelPrint');
                     }
                     else
                     {
@@ -613,7 +660,8 @@ function PackageInbound() {
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
-                <td>
+                <td>{ pack.Weight }</td>
+                <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
                     </button>
@@ -773,7 +821,9 @@ function PackageInbound() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
-                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -855,11 +905,18 @@ function PackageInbound() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
-                                        </div>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
+                                            )
+                                        }
                                     </div>
+
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
@@ -992,7 +1049,8 @@ function PackageInbound() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>ACTION</th>
+                                                <th>WEIGHT</th>
+                                                <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

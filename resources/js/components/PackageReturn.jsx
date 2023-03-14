@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment/moment'
+import ReactLoading from 'react-loading';
 
 function PackageReturn() {
 
@@ -46,23 +47,22 @@ function PackageReturn() {
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
     const [idCompany, setCompany]       = useState(0);
+    const [isLoading, setIsLoading]     = useState(false);
 
-    const [textSearch, setSearch] = useState('');
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
     useEffect(() => {
 
-        listAllComment(page);
+        listAllComment();
         listAllRoute();
         listAllCompany();
 
-    }, [textSearch])
+    }, []);
 
     useEffect(() => {
 
-        listAllComment();
         listAllPackageReturn(page, RouteSearch, StateSearch);
 
     }, [idCompany, idTeam, idDriver,dateStart,dateEnd]);
@@ -71,11 +71,7 @@ function PackageReturn() {
 
         return (
             (
-                comment.finalStatus == 1
-                ?
-                    <option key={ i } value={ comment.description } style={ {background: 'red', color: 'white'} }> { comment.description }</option>
-                :
-                    <option key={ i } value={ comment.description }> { comment.description }</option>
+                <option key={ i } value={ comment.description }> { comment.description }</option>
             )
 
         );
@@ -83,10 +79,13 @@ function PackageReturn() {
 
     const listAllPackageReturn = (pageNumber, route, state) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'package/list/return/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageReturn(response.packageReturnList.data);
             setQuantityReturn(response.quantityReturn);
             setTotalPackage(response.packageReturnList.total);
@@ -111,19 +110,13 @@ function PackageReturn() {
         });
     }
 
-    useEffect(() => {
+    const listAllComment = () => {
 
-        listAllComment(page);
-
-    }, [textSearch])
-
-    const listAllComment = (pageNumber) => {
-
-        fetch(url_general +'comments/list?page='+ pageNumber +'&textSearch='+ textSearch)
+        fetch(url_general +'comments/getAll/0')
         .then(res => res.json())
-        .then((response) => {
+        .then((response) => { 
 
-            setListComment(response.commentList.data);
+            setListComment(response.commentList);
         });
     }
 
@@ -421,6 +414,7 @@ function PackageReturn() {
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         setReadOnly(true);
+        setIsLoading(true);
 
         fetch(url_general +'package/return/dispatch', {
             headers: { "X-CSRF-TOKEN": token },
@@ -431,10 +425,47 @@ function PackageReturn() {
         then((response) => {
 
                 clearForm();
+                setIsLoading(false);
 
-                if(response.stateAction == true)
+                if(response.stateAction == 'validatedFilterPackage')
                 {
-                    setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
+                    let packageBlocked  = response.packageBlocked;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ returnReference_Number_1,
+                        text: packageBlocked.comment,
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'validatedReturnCompany')
+                {
+                    setTextMessage("The package was registered before for return to the company #"+ returnReference_Number_1);
+                }
+                else if(response.stateAction == 'packageInPreDispatch')
+                {
+                    setTextMessage('The package is in  PRE DISPATCH #'+ returnReference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedLost')
+                {
+                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == true)
+                {
+                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
 
@@ -454,7 +485,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notUser')
                 {
-                    setTextMessage("El paquete N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
+                    setTextMessage("The package N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
                     setTypeMessage('error');
                     setReturnNumberPackage('');
 
@@ -463,7 +494,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notDispatch')
                 {
-                    setTextMessage("El paquete #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
+                    setTextMessage("The package #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
                     setTypeMessage('warning');
                     setNumberPackage('');
 
@@ -472,7 +503,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction)
                 {
-                    setTextMessage("Paquete N° "+ returnReference_Number_1 +" fue retornado!");
+                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
                     setTypeMessage('success');
                     setNumberPackage('');
 
@@ -505,9 +536,7 @@ function PackageReturn() {
     }
     const exportAllPackageReturn = (  route, state) => {
 
-
-        location.href = url_general +'package/list/return/export/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
-
+        location.href = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
@@ -563,37 +592,14 @@ function PackageReturn() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2 mb-2">
                                         <div className="form-group">
-                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                            <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                <i className="ri-file-excel-fill"></i> EXPORT
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="col-lg-8 text-center">
-                                        {
-                                            typeMessage == 'success'
-                                            ?
-                                                <h2 className="text-success">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-
-                                        {
-                                            typeMessage == 'error'
-                                            ?
-                                                <h2 className="text-danger">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-
-                                        {
-                                            typeMessage == 'warning'
-                                            ?
-                                                <h2 className="text-warning">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                    </div>
-                                    <div className="col-lg-12">
+                                    <div className="col-lg-12 mb-2">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
                                                 <div className="col-lg-4">
@@ -660,18 +666,48 @@ function PackageReturn() {
                                                 }
                                             </div>
                                         </form>
-                                        <div className="col-lg-2 form-group">
-                                            <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
-                                            <audio id="soundPitidoError" src="../sound/pitido-error.mp3" preload="auto"></audio>
-                                            <audio id="soundPitidoWarning" src="../sound/pitido-warning.mp3" preload="auto"></audio>
-                                        </div>
+                                        <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoError" src="../sound/pitido-error.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoWarning" src="../sound/pitido-warning.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
+                                    </div>
+                                    <div className="col-lg-12 mb-3 text-center">
+                                        {
+                                            typeMessage == 'success'
+                                            ?
+                                                <h2 className="text-success">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
+
+                                        {
+                                            typeMessage == 'error'
+                                            ?
+                                                <h2 className="text-danger">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
+
+                                        {
+                                            typeMessage == 'warning'
+                                            ?
+                                                <h2 className="text-warning">{ textMessage }</h2>
+                                            :
+                                                ''
+                                        }
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
-                                        </div>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
+                                            )
+                                        }
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">

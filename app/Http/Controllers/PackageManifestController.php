@@ -26,42 +26,11 @@ class PackageManifestController extends Controller
         return view('package.index');
     }
 
-    public function List(Request $request, $idCompany, $route, $state)
+    public function List(Request $request, $status, $idCompany, $route, $state)
     {
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-        $null   = env('APP_ENV') == 'local' ? 'NULL' : null;
-
-        $packageList = PackageManifest::where('idStore', $null);
-
-        if($idCompany != 0)
-        {
-            $packageList = $packageList->where('idCompany', $idCompany);
-        }
-
-        if($route != 'all')
-        {
-            $packageList = $packageList->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $packageList = $packageList->whereIn('Dropoff_Province', $states);
-        }
-
-        if($request->get('textSearch'))
-        {
-            $packageList = $packageList->where('Reference_Number_1', 'like', '%'. $request->get('textSearch') .'%')
-                                        ->orderBy('created_at', 'desc');
-        }
-        else
-        {
-            $packageList = $packageList->orderBy('created_at', 'desc');
-        }
-
-        $packageList = $packageList->paginate(50);
-
-        $quantityPackage = $packageList->total();
+        $data            = $this->GetData($status, $idCompany, $route, $state, 'list');
+        $packageList     = $data['packageList'];
+        $quantityPackage = $data['quantityPackage'];
 
         $listState  = PackageManifest::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
@@ -75,7 +44,7 @@ class PackageManifestController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "Reference_Number_1" => ["required", "unique:package"],
+                "Reference_Number_1" => ["required", "unique:packagemanifest"],
                 "Dropoff_Contact_Name" => ["required"],
 
                 "Dropoff_Contact_Phone_Number" => ["required"],
@@ -112,7 +81,7 @@ class PackageManifestController extends Controller
         }
 
         $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                                    ->where('status', 'On hold')
+                                                    ->where('status', 'Manifest')
                                                     ->first();
 
         if(!$packageHistory)
@@ -120,6 +89,8 @@ class PackageManifestController extends Controller
             try
             {
                 DB::beginTransaction();
+
+                $created_at = date('Y-m-d H:i:s');
 
                 $package = new PackageManifest();
 
@@ -132,7 +103,9 @@ class PackageManifestController extends Controller
                 $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
-                $package->status                       = 'On hold';
+                $package->status                       = 'Manifest';
+                $package->created_at                   = $created_at;
+                $package->updated_at                   = $created_at;
 
                 $package->save();
 
@@ -152,8 +125,10 @@ class PackageManifestController extends Controller
                 $packageHistory->idUser                       =  Auth::user()->id;
                 $packageHistory->idUserManifest               =  Auth::user()->id;
                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'On hold - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                $packageHistory->status                       = 'On hold';
+                $packageHistory->Description                  = 'Manifest - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->status                       = 'Manifest';
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
 
                 $packageHistory->save();
 
@@ -163,7 +138,6 @@ class PackageManifestController extends Controller
                 {
                     $packageNotExists->delete();
                 }
-
 
                 DB::commit();
 
@@ -179,6 +153,91 @@ class PackageManifestController extends Controller
         }
 
         return ['stateAction' => 'exists'];
+    } 
+
+    public function Export($status, $idCompany, $route, $state)
+    {
+        $delimiter = ",";
+        $filename = "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $data        = $this->GetData($status, $idCompany, $route, $state, 'export');
+        $packageList = $data['packageList'];
+
+        foreach($packageList as $packageManifest)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageManifest->created_at)),
+                                date('H:i:s', strtotime($packageManifest->created_at)),
+                                $packageManifest->company,
+                                $packageManifest->Reference_Number_1,
+                                $packageManifest->Dropoff_Contact_Name,
+                                $packageManifest->Dropoff_Contact_Phone_Number,
+                                $packageManifest->Dropoff_Address_Line_1,
+                                $packageManifest->Dropoff_City,
+                                $packageManifest->Dropoff_Province,
+                                $packageManifest->Dropoff_Postal_Code,
+                                $packageManifest->Weight,
+                                $packageManifest->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
+    public function GetData($status, $idCompany, $route, $state, $type)
+    {
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $packageList = PackageManifest::where('idStore', 0)
+                                    ->where('status', $status);
+
+        if($idCompany != 0)
+        {
+            $packageList = $packageList->where('idCompany', $idCompany);
+        }
+
+        if($route != 'all')
+        {
+            $packageList = $packageList->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageList = $packageList->whereIn('Dropoff_Province', $states);
+        }
+
+        $packageList = $packageList->orderBy('created_at', 'desc');
+
+        if($type == 'list')
+        {
+            $packageList = $packageList->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                    ->paginate(50);
+
+            $quantityPackage = $packageList->total();
+        }
+        else
+        {
+            $packageList     = $packageList->get();
+            $quantityPackage = 0;
+        }
+        
+        return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
     }
 
     public function Get($Reference_Number_1)
@@ -241,6 +300,7 @@ class PackageManifestController extends Controller
         $package->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
         $package->Weight                       = $request->get('Weight');
         $package->Route                        = $request->get('Route');
+        $package->updated_at                   = date('Y-m-d H:i:s');
 
         $package->save();
 
@@ -337,9 +397,8 @@ class PackageManifestController extends Controller
 
         $packageIDs = explode(',', $packageIDs);
 
-        $listPackageHistory = PackageHistory::where('status', 'On hold')
+        $listPackageHistory = PackageHistory::where('status', 'Manifest')
                                             ->whereIn('Reference_Number_1', $packageIDs)
-                                            ->where('status', 'On hold')
                                             ->get();
 
         if($quantitylines > count($listPackageHistory))
@@ -371,28 +430,14 @@ class PackageManifestController extends Controller
                         {
                             $packageBlocked = PackageBlocked::where('Reference_Number_1', $row[0])->first();
 
-                            $company = Company::find($row[32]);
+                            $created_at = date('Y-m-d H:i:s');
+                            $company    = Company::find($row[32]);
 
                             $package = new PackageManifest();
 
                             $package->Reference_Number_1 = $row[0];
                             $package->idCompany          = $company->id;
                             $package->company            = $company->name;
-                            $package->Reference_Number_2 = $row[1];
-                            $package->Reference_Number_3 = $row[2];
-                            $package->Ready_At = $row[3];
-                            $package->Del_Date = $row[4];
-                            $package->Del_no_earlier_than = $row[5];
-                            $package->Del_no_later_than = $row[6];
-                            $package->Pickup_Contact_Name = $row[7];
-                            $package->Pickup_Company = $row[8];
-                            $package->Pickup_Contact_Phone_Number = $row[9];
-                            $package->Pickup_Contact_Email = $row[10];
-                            $package->Pickup_Address_Line_1 = $row[11];
-                            $package->Pickup_Address_Line_2 = $row[12];
-                            $package->Pickup_City = $row[13];
-                            $package->Pickup_Province = $row[14];
-                            $package->Pickup_Postal_Code = $row[15];
                             $package->Dropoff_Contact_Name = $row[16];
                             $package->Dropoff_Company = $row[17];
                             $package->Dropoff_Contact_Phone_Number = $row[18];
@@ -402,15 +447,12 @@ class PackageManifestController extends Controller
                             $package->Dropoff_City = $row[22];
                             $package->Dropoff_Province = $row[23];
                             $package->Dropoff_Postal_Code = $row[24];
-                            $package->Service_Level = $row[25];
-                            $package->Carrier_Name = $row[26];
-                            $package->Vehicle_Type_Id = $row[27];
                             $package->Notes = $row[28];
-                            $package->Number_Of_Pieces = $row[29];
                             $package->Weight = $row[30];
-                            $package->Name = isset($row[31]) ? $row[31] : '';
                             $package->filter = $packageBlocked ? 1 : 0;
-                            $package->status = 'On hold';
+                            $package->status = 'Manifest';
+                            $package->created_at = $created_at;
+                            $package->updated_at = $created_at;
 
                             $route = Routes::where('zipCode', $row[24])->first();
 
@@ -421,7 +463,6 @@ class PackageManifestController extends Controller
                                 $route->zipCode = $row[24];
                                 $route->name    = $row[31];
                                 $route->save();
-
                             }
 
                             $package->Route = $route->name;
@@ -434,21 +475,6 @@ class PackageManifestController extends Controller
                             $packageHistory->Reference_Number_1           = $row[0];
                             $packageHistory->idCompany                    = $company->id;
                             $packageHistory->company                      = $company->name;
-                            $packageHistory->Reference_Number_2           = $row[1];
-                            $packageHistory->Reference_Number_3           = $row[2];
-                            $packageHistory->Ready_At                     = $row[3];
-                            $packageHistory->Del_Date                     = $row[4];
-                            $packageHistory->Del_no_earlier_than          = $row[5];
-                            $packageHistory->Del_no_later_than            = $row[6];
-                            $packageHistory->Pickup_Contact_Name          = $row[7];
-                            $packageHistory->Pickup_Company               = $row[8];
-                            $packageHistory->Pickup_Contact_Phone_Number  = $row[9];
-                            $packageHistory->Pickup_Contact_Email         = $row[10];
-                            $packageHistory->Pickup_Address_Line_1        = $row[11];
-                            $packageHistory->Pickup_Address_Line_2        = $row[12];
-                            $packageHistory->Pickup_City                  = $row[13];
-                            $packageHistory->Pickup_Province              = $row[14];
-                            $packageHistory->Pickup_Postal_Code           = $row[15];
                             $packageHistory->Dropoff_Contact_Name         = $row[16];
                             $packageHistory->Dropoff_Company              = $row[17];
                             $packageHistory->Dropoff_Contact_Phone_Number = $row[18];
@@ -458,19 +484,14 @@ class PackageManifestController extends Controller
                             $packageHistory->Dropoff_City                 = $row[22];
                             $packageHistory->Dropoff_Province             = $row[23];
                             $packageHistory->Dropoff_Postal_Code          = $row[24];
-                            $packageHistory->Service_Level                = $row[25];
-                            $packageHistory->Carrier_Name                 = $row[26];
-                            $packageHistory->Vehicle_Type_Id              = $row[27];
                             $packageHistory->Notes                        = $row[28];
-                            $packageHistory->Number_Of_Pieces             = $row[29];
                             $packageHistory->Weight                       = $row[30];
                             $packageHistory->Route                        = $route->name;
-                            $packageHistory->Name                         = isset($row[32]) ? $row[32] : '';
-                            $packageHistory->idUser                       =  Auth::user()->id;
-                            $packageHistory->idUserManifest               =  Auth::user()->id;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->idUserManifest               = Auth::user()->id;
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
-                            $packageHistory->Description                  = 'On hold - for: '.  Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                            $packageHistory->status                       = 'On hold';
+                            $packageHistory->Description                  = 'Manifest: Not yet received: '. $company->name;
+                            $packageHistory->status                       = 'Manifest';
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 

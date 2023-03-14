@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
-
+import ReactLoading from 'react-loading';
 
 function ReportInbound() {
 
@@ -30,6 +30,7 @@ function ReportInbound() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
 
@@ -47,15 +48,18 @@ function ReportInbound() {
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
+        setIsLoading(true);
+
         fetch(url_general +'report/list/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
-            setListReport(response.listAll.data);
-            setTotalPackage(response.listAll.total);
-            setTotalPage(response.listAll.per_page);
-            setPage(response.listAll.current_page);
-            setQuantityInbound(response.listAll.total);
+            setIsLoading(false);
+            setListReport(response.listAll);
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityInbound(response.packageHistoryList.total);
 
             setListState(response.listState);
             setListTruck(response.listTruck);
@@ -140,23 +144,30 @@ function ReportInbound() {
 
             <tr key={i} className="alert-success">
                 <td>
-                    { pack.Date_Inbound.substring(5, 7) }-{ pack.Date_Inbound.substring(8, 10) }-{ pack.Date_Inbound.substring(0, 4) }
+                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }<br/>
+                    { pack.created_at.substring(11, 19) }
                 </td>
-                <td>
-                    { pack.Date_Inbound.substring(11, 19) }
-                </td>
+                <td>{ pack.dispatchDate }</td>
+                <td><b>{ pack.timeDispatch}</b></td>
+                <td>{ pack.deliveryDate }</td>
+                <td><b>{ pack.timeDelivery}</b></td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.validator.name +' '+ pack.validator.nameOfOwner }</b></td>
-                <td>{ pack.TRUCK }</td>
+                <td><b>{ pack.validator }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.status }</td>
+                <td>
+                    { pack.statusDate.substring(5, 7) }-{ pack.statusDate.substring(8, 10) }-{ pack.statusDate.substring(0, 4) }<br/>
+                    { pack.statusDate.substring(11, 19) }
+                </td>
+                <td>{ pack.statusDescription }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
                 <td>{ pack.Dropoff_Address_Line_1 }</td>
                 <td>{ pack.Dropoff_City }</td>
                 <td>{ pack.Dropoff_Province }</td>
                 <td>{ pack.Dropoff_Postal_Code }</td>
-                <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
+                <td>{ pack.Weight }</td>
             </tr>
         );
     });
@@ -285,9 +296,18 @@ function ReportInbound() {
                                         <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                 </div>
+
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { quantityInbound }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row form-group">
@@ -354,19 +374,24 @@ function ReportInbound() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
+                                                <th>DISPATCH DATE</th>
+                                                <th>TIME DISPATCH</th>
+                                                <th>DELIVERY DATE</th>
+                                                <th>TIME DELIVERY</th>
                                                 <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
-                                                <th>TRUCK #</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
+                                                <th>STATUS DATE</th>
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
-                                                <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>WEIGHT</th>
                                             </tr>
                                         </thead>
                                         <tbody>

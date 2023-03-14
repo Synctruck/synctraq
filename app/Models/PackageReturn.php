@@ -24,9 +24,14 @@ class PackageReturn extends Model
         return $this->belongsTo('App\Models\User', 'idTeam', 'id');
     }
 
-    public function driver()
+    public function driver() 
     {
         return $this->belongsTo('App\Models\User', 'idUserReturn', 'id');
+    }
+
+    public function package_price_company_team()
+    {
+        return $this->hasMany('App\Models\PackagePriceCompanyTeam', 'Reference_Number_1');
     }
 
     //observers

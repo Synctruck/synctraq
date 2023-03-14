@@ -4,6 +4,8 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import Pace from 'react-pace-progress'
+import ReactLoading from 'react-loading';
 
 function Package() {
 
@@ -33,11 +35,13 @@ function Package() {
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
+    const [status, setStatus]           = useState('Manifest');
     const [idCompany, setCompany]       = useState(0);
 
     const inputFileRef  = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [isLoading, setIsLoading]           = useState(false);
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#cff4fc';
 
@@ -63,15 +67,16 @@ function Package() {
 
     useEffect(() => {
 
-        listAllPackage(page, RouteSearch, StateSearch);
+        listAllPackage(page, status, RouteSearch, StateSearch);
 
-    }, [idCompany]);
+    }, [status, idCompany]);
 
-    const listAllPackage = (pageNumber, route, state) => {
+    const listAllPackage = (pageNumber, status, route, state) => {
 
         LoadingShow();
+        setIsLoading(true);
 
-        fetch(url_general +'package-manifest/list/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
+        fetch(url_general +'package-manifest/list/'+ status +'/'+ idCompany +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -81,6 +86,7 @@ function Package() {
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setListState(response.listState);
+            setIsLoading(false);
 
             if(listState.length == 0)
             {
@@ -93,7 +99,7 @@ function Package() {
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackage(pageNumber, RouteSearch, StateSearch);
+        listAllPackage(pageNumber, status, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -123,6 +129,7 @@ function Package() {
 
         setTextButtonImport('Saving...');
         setDisabledButton(true);
+        setIsLoading(true);
 
         fetch(url_general +'package-manifest/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -134,6 +141,7 @@ function Package() {
 
                 setTextButtonImport('Save');
                 setDisabledButton(false);
+                setIsLoading(false);
 
                 if(response.status == 504)
                 {
@@ -151,7 +159,7 @@ function Package() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackage(page, RouteSearch, StateSearch);
+                    listAllPackage(page, status, RouteSearch, StateSearch);
                     setViewButtonSave('none');
                 }
 
@@ -292,7 +300,7 @@ function Package() {
                         clearForm();
                     }
 
-                    listAllPackage(page, RouteSearch, StateSearch);
+                    listAllPackage(page, status, RouteSearch, StateSearch);
                 }
                 else if(response.status == 422)
                 {
@@ -368,13 +376,13 @@ function Package() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackage(1, routesSearch, StateSearch);
+            listAllPackage(1, status, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackage(1, 'all', StateSearch);
+            listAllPackage(1, status, 'all', StateSearch);
         }
     };
 
@@ -409,13 +417,13 @@ function Package() {
 
             setStateSearch(statesSearch);
 
-            listAllPackage(1, RouteSearch, statesSearch);
+            listAllPackage(1, status, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackage(1, RouteSearch, 'all');
+            listAllPackage(1, status, RouteSearch, 'all');
         }
     };
 
@@ -574,6 +582,27 @@ function Package() {
         );
     });
 
+    const exportAllPackageInbound = (route, state) => {
+
+        location.href = url_general +'package-manifest/export/'+ status +'/'+ idCompany +'/'+ route +'/'+ state
+    }
+
+    const handlerExport = () => {
+
+        // let date1= moment(dateStart);
+        // let date2 = moment(dateEnd);
+        // let difference = date2.diff(date1,'days');
+
+        // if(difference> limitToExport){
+        //     swal(`Maximum limit to export is ${limitToExport} days`, {
+        //         icon: "warning",
+        //     });
+        // }else{
+
+        // }
+        exportAllPackageInbound(RouteSearch, StateSearch);
+    }
+
     const onBtnClickFile = () => {
 
         setViewButtonSave('none');
@@ -591,7 +620,7 @@ function Package() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-2 form-group">
+                                    <div className="col-lg-2 form-group" style={ { display: 'none'} }>
                                         <button className="btn btn-success pull-right form-control" title="Agregar" onClick={ () => handlerOpenModal(0) }>
                                             <i className="bx bxs-plus-square"></i> Add
                                         </button>
@@ -599,8 +628,8 @@ function Package() {
                                     <div className="col-lg-2 form-group">
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
+                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> IMPORT
                                                 </button>
                                                 <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
                                             </div>
@@ -611,16 +640,58 @@ function Package() {
                                             </div>
                                         </form>
                                     </div>
+                                    <div className="col-2 mb-2">
+                                        <div className="row">
+                                            <div className="col-12">
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row mb-3" style={ {display: (isLoading ? 'block' : 'none')} }>
+                                            <div className="col-lg-12">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>On hold: { quantityPackage }</b>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Manifest: { quantityPackage }</b>
+                                            )
+                                        }
                                     </div>
                                     <dvi className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Company:
+                                                    STATUS:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatus(e.target.value) }>
+                                                    <option value="Manifest">Manifest</option>
+                                                    <option value="NeverReceived">Never Received</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </dvi>
+                                    <dvi className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    COMPANY:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
@@ -635,7 +706,7 @@ function Package() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    State :
+                                                    STATE :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
@@ -647,7 +718,7 @@ function Package() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Route :
+                                                    ROUTE :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">

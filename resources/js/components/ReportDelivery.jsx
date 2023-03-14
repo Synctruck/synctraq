@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
+import ReactLoading from 'react-loading';
 
 function ReportDelivery() {
 
@@ -32,13 +33,18 @@ function ReportDelivery() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
-    const [file, setFile]             = useState('');
-    const [btnDisplay, setbtnDisplay] = useState('none');
+    const [file, setFile]                       = useState('');
+    const [filePhoto, setFilePhoto]             = useState('');
+    const [btnDisplay, setbtnDisplay]           = useState('none');
+    const [btnDisplayPhoto, setbtnDisplayPhoto] = useState('none');
 
-    const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [viewButtonSave, setViewButtonSave]           = useState('none');
+    const [viewButtonSavePhoto, setViewButtonSavePHoto] = useState('none');
 
-    const inputFileRef  = React.useRef();
+    const inputFileRef       = React.useRef();
+    const inputFileRefPhotos = React.useRef();
 
     useEffect(() => {
 
@@ -52,6 +58,19 @@ function ReportDelivery() {
         }
 
     }, [file]);
+
+    useEffect(() => {
+
+        if(String(filePhoto) == 'undefined' || filePhoto == '')
+        {
+            setViewButtonSavePHoto('none');
+        }
+        else
+        {
+            setViewButtonSavePHoto('block');
+        }
+
+    }, [filePhoto]);
 
     useEffect( () => {
 
@@ -75,19 +94,21 @@ function ReportDelivery() {
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
         setListReport([]);
 
         fetch(url_general +'report/list/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
-            setListReport(response.reportList.data);
+            setIsLoading(false);
+            setListReport(response.reportList);
             setListDeliveries(response.listDeliveries);
-            setTotalPackage(response.reportList.total);
-            setTotalPage(response.reportList.per_page);
-            setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
-
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityDispatch(response.packageHistoryList.total);
+ 
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -186,7 +207,47 @@ function ReportDelivery() {
                 icon: "warning",
             });
         }else{
-            location.href = url_general +'report/export/delivery/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+            location.href = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        }
+    }
+
+    const handlerViewMap = (taskOnfleet, arrivalLonLat) => {
+
+        LoadingShowMap();
+
+        if(taskOnfleet != '')
+        {
+            fetch(url_general +'package-dispatch/getCoordinates/'+ taskOnfleet)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response)
+                {
+                    console.log(response['completionDetails']['lastLocation']);
+
+                    let lastLocation = response['completionDetails']['lastLocation'];
+                    let latitude     = lastLocation[1];
+                    let longitude    = lastLocation[0];
+                    
+                    window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
+                }
+                else
+                {
+                    swal('Attention!', 'The TASK ONFLEET does not exists', 'warning');
+                }
+
+                LoadingHideMap();
+            });
+        }
+        else
+        {
+            let longitudeLat = arrivalLonLat.split(',');
+            let latitude     = longitudeLat[1];
+            let longitude    = longitudeLat[0].split('`')[1];
+                    
+            window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
+
+            LoadingHideMap();
         }
     }
 
@@ -197,13 +258,16 @@ function ReportDelivery() {
 
         let photoHttp = false;
 
-        if(!packageDelivery.idOnfleet)
+        if(packageDelivery.photoUrl == '')
         {
-            photoHttp = true;
-        }
-        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
-        {
-            photoHttp = true;
+            if(!packageDelivery.idOnfleet)
+            {
+                photoHttp = true;
+            }
+            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+            {
+                photoHttp = true;
+            }
         }
 
         if(photoHttp)
@@ -271,18 +335,42 @@ function ReportDelivery() {
                 urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
             }
         }
+        else if(packageDelivery.photoUrl != '')
+        {
+            let idsImages = packageDelivery.photoUrl.split(',');
+
+            if(idsImages.length == 1)
+            {
+                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+            }
+            else if(idsImages.length >= 2)
+            {
+                imgs =  <>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                        </>
+
+                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+            }
+        }
 
         let team   = (packageDelivery.team ? packageDelivery.team.name : '');
         let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
+
+        console.log(packageDelivery.Reference_Number_1 +': '+ urlImage);
 
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packageDelivery.updated_at.substring(5, 7) }-{ packageDelivery.updated_at.substring(8, 10) }-{ packageDelivery.updated_at.substring(0, 4) }
+                    { packageDelivery.Date_Delivery.substring(5, 7) }-{ packageDelivery.Date_Delivery.substring(8, 10) }-{ packageDelivery.Date_Delivery.substring(0, 4) }<br/>
+                    { packageDelivery.Date_Delivery.substring(11, 19) }
                 </td>
                 <td>
-                    { packageDelivery.updated_at.substring(11, 19) }
+                    { packageDelivery.inboundDate.substring(5, 7) }-{ packageDelivery.inboundDate.substring(8, 10) }-{ packageDelivery.inboundDate.substring(0, 4) }<br/>
+                    { packageDelivery.inboundDate.substring(11, 19) }
                 </td>
                 <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
@@ -296,7 +384,11 @@ function ReportDelivery() {
                 <td>{ packageDelivery.Dropoff_Postal_Code }</td>
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td>{ packageDelivery.taskOnfleet }</td>
+                <td>
+                    { packageDelivery.taskOnfleet }
+                    <br/><br/>
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
+                </td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
                 </td>
@@ -467,8 +559,46 @@ function ReportDelivery() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackage();
-                    setbtnDisplay('none');
+                    listReportDispatch(1, RouteSearch, StateSearch);
+                    setViewButtonSave('none');
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const handlerImportPhotos = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('file', filePhoto);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'package-delivery/import-photo', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("Se importó el archivo!", {
+
+                        icon: "success",
+                    });
+
+                    document.getElementById('fileImportPhoto').value = '';
+
+                    listReportDispatch(1, RouteSearch, StateSearch);
+                    setViewButtonSavePHoto('none');
                 }
 
                 LoadingHide();
@@ -481,6 +611,13 @@ function ReportDelivery() {
         setViewButtonSave('none');
 
         inputFileRef.current.click();
+    }
+
+    const onBtnClickFilePhotos = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRefPhotos.current.click();
     }
 
     const [messageUpdateOnfleet, setMessageUpdateOnfleet] = useState('');
@@ -518,10 +655,32 @@ function ReportDelivery() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const[urlMap, setUrlMap] = useState('');
+
+    const modalViewMap = <React.Fragment>
+                                    <div className="modal fade" id="modalViewMap" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <iframe src={ urlMap } frameborder="0" style={ {width: '100%'} }></iframe>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
             { modalViewImages }
+            { modalViewMap }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -531,7 +690,7 @@ function ReportDelivery() {
                                     <div className="col-lg-2 mb-3">
                                         <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
-                                    <div className="col-lg-2 mb-3">
+                                    <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
@@ -547,15 +706,35 @@ function ReportDelivery() {
                                         </form>
                                     </div>
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerUpdateState() }>Updated Onfleet</button>
+                                        <form onSubmit={ handlerImportPhotos }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFilePhotos() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImportPhoto" className="form-control" ref={ inputFileRefPhotos } style={ {display: 'none'} } onChange={ (e) => setFilePhoto(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSavePhoto} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImportPhotos() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                     <div className="col-lg-2 mb-3 text-warning">
                                         { messageUpdateOnfleet }
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row form-group">
@@ -658,7 +837,7 @@ function ReportDelivery() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
+                                                <th>INBOUND DATE</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>

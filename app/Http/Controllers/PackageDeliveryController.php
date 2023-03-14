@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageInbound, PackageManifest, TeamRoute, User};
+use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageReturnCompany, TeamRoute, User};
+
+use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
+
+use App\Http\Controllers\Api\PackageController;
 
 use Illuminate\Support\Facades\Validator;
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
+use Illuminate\Support\Facades\Auth;
 
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Log;
 use Session;
 
 class PackageDeliveryController extends Controller
@@ -259,20 +258,23 @@ class PackageDeliveryController extends Controller
         return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
     }
 
-    public function Import(Request $request)
+    public function ImportPhoto(Request $request)
     {
         $file = $request->file('file');
 
-        $file->move(public_path() .'/file-import', 'delivery.csv');
+        $file->move(public_path() .'/file-import', 'delivery-photo.csv');
 
-        $handle = fopen(public_path('file-import/delivery.csv'), "r");
+        $handle = fopen(public_path('file-import/delivery-photo.csv'), "r");
 
         $lineNumber = 1;
-
-        $countSave = 0;
+        $countSave  = 0;
 
         try
         {
+            Log::info("================================");
+            Log::info("================================");
+            Log::info("===== START - FILE IMPORT DELIVERY - PHOTO");
+
             DB::beginTransaction();
 
             while (($raw_string = fgets($handle)) !== false)
@@ -280,88 +282,218 @@ class PackageDeliveryController extends Controller
                 $row = str_getcsv($raw_string);
 
                 if(isset($row[0]))
-                {
-                    $packageDispatch = PackageDispatch::find($row[0]);
+                { 
+                    $contador        = 0;
+                    $packageManifest = PackageManifest::find($row[0]);
+                    $packageAux      = null;
 
+                    if($packageManifest)
+                    {
+                        $packageAux = $packageManifest;
+
+                        $contador++;
+                    }
+
+                    $packageInbound = PackageInbound::find($row[0]);
+                    
+                    if($packageInbound)
+                    {
+                        $packageAux = $packageInbound;
+
+                        $contador++;
+                    }
+
+                    $packageWarehouse = PackageWarehouse::find($row[0]);
+                    
+                    if($packageWarehouse)
+                    {
+                        $packageAux = $packageWarehouse;
+
+                        $contador++;
+                    }
+
+                    $packageFailed = PackageFailed::find($row[0]);
+                    
+                    if($packageFailed)
+                    {
+                        $packageAux = $packageFailed;
+
+                        $contador++;
+                    }
+
+                    $packageDispatch = PackageDispatch::find($row[0]);
+                    
                     if($packageDispatch)
                     {
-                        $user = User::find($packageDispatch->idUserDispatch);
+                        $packageAux = $packageDispatch;
 
-                        if($user)
+                        $contador++;
+                    }
+
+                    $packageReturnCompany = PackageReturnCompany::find($row[0]);
+                    
+                    if($packageReturnCompany)
+                    {
+                        $packageAux = $packageReturnCompany;
+
+                        $contador++;
+                    }
+
+                    $packageDispatch = $packageAux;
+
+                    if($contador == 1)
+                    {
+                        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : explode('https://', 'https://');
+
+                        if(count($photoUrls) == 2 && $row[1] != '')
                         {
-                            if($user->nameTeam)
-                            {
-                                $description = 'For: '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
-                            }
-                            else
-                            {
-                                $description = 'For: Team (not exists) / '. $user->name;
-                            }
+                            $photoUrl = explode('/', $photoUrls[1])[1];
+                        }
+                        else if(count($photoUrls) > 2 && $row[1] != '')
+                        {
+                            $photoUrl1 = explode('/', $photoUrls[1])[1];
+                            $photoUrl2 = explode('/', $photoUrls[2])[1];
+
+                            $photoUrl = $photoUrl1 .','. $photoUrl2;
                         }
                         else
                         {
-                            $description = 'For: Import Report Delivery';
+                            $photoUrl = '';
+                        }
+                        
+                        $description   = '';
+                        $idTeam        = 0;
+                        $arrivalLonLat = $row[3]; 
+                        $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
+
+                        if(isset($row[4]) && $row[4] != '')
+                        {
+                            $user   = User::find($row[4]);
+                            $idTeam = $row[4];
+
+                            if($user)
+                            {
+                                $description = 'For: '. $user->name .' (Import Report Delivery)';
+                            }
                         }
 
-                        $packageHistory = new PackageHistory();
+                        $description = $description ? $description : 'For: Import Report Delivery (Photo)';
 
-                        $packageHistory->id                           = uniqid();
-                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                        $packageHistory->company                      = $packageDispatch->company;
-                        $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                        $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                        $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                        $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                        $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                        $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                        $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                        $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                        $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                        $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                        $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                        $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                        $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                        $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                        $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
-                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                        $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                        $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                        $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
-                        $packageHistory->Notes                        = $packageDispatch->Notes;
-                        $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
-                        $packageHistory->Weight                       = $packageDispatch->Weight;
-                        $packageHistory->Route                        = $packageDispatch->Route;
-                        $packageHistory->Name                         = $packageDispatch->Name;
-                        $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                        $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                        $packageHistory->idUser                       = $packageDispatch->idUser;
-                        $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
-                        $packageHistory->Date_Delivery                = $packageDispatch->created_at;
-                        $packageHistory->Description                  = $description;
-                        $packageHistory->status                       = 'Delivery';
-                        $packageHistory->created_at                   = $packageDispatch->created_at;
-                        $packageHistory->updated_at                   = $packageDispatch->created_at;
+                        if($packageDispatch)
+                        {
+                            $packageHistory = new PackageHistory();
 
-                        $packageHistory->save();
+                            $packageHistory->id                           = uniqid();
+                            $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                            $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                            $packageHistory->company                      = $packageDispatch->company;
+                            $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                            $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                            $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                            $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                            $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                            $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                            $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                            $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                            $packageHistory->Notes                        = $packageDispatch->Notes;
+                            $packageHistory->Weight                       = $packageDispatch->Weight;
+                            $packageHistory->Route                        = $packageDispatch->Route;
+                            $packageHistory->idTeam                       = $idTeam;
+                            $packageHistory->idUserDispatch               = $packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : 0;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->idUserDelivery               = $packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : 0;
+                            $packageHistory->Date_Delivery                = $created_at;
+                            $packageHistory->Description                  = $description;
+                            $packageHistory->status                       = 'Delivery';
+                            $packageHistory->created_at                   = $created_at;
+                            $packageHistory->updated_at                   = $created_at;
 
-                        $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                        $packageDispatch->workerName         = $user ?  $user->name .' '. $user->nameOfOwner : '';
-                        $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                        $packageDispatch->recipientNotes     = $user ?  $user->nameTeam : '';
-                        $packageDispatch->photoUrl           = '';
-                        $packageDispatch->Date_Delivery      = $packageDispatch->created_at;
-                        $packageDispatch->status             = 'Delivery';
+                            $packageHistory->save();
 
-                        $packageDispatch->save();
+                            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete' || $packageDispatch->status == 'Delivery')
+                            {
+                                $packageDispatch->photoUrl           = $photoUrl;
+                                $packageDispatch->Date_Delivery      = $created_at;
+                                $packageDispatch->arrivalLonLat      = $arrivalLonLat;
+                                $packageDispatch->send_csv           = 1;
+                                $packageDispatch->status             = 'Delivery';
+                                $packageDispatch->updated_at         = $created_at;
+
+                                if($idTeam)
+                                {
+                                    $packageDispatch->idTeam = $idTeam;
+                                }
+
+                                $packageDispatch->save();
+                            }
+                            else if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delete' && $packageDispatch->status != 'Delivery')
+                            {
+                                $packageDis = new PackageDispatch();
+
+                                $packageDis->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                                $packageDis->idCompany                    = $packageDispatch->idCompany;
+                                $packageDis->company                      = $packageDispatch->company;
+                                $packageDis->idStore                      = $packageDispatch->idStore;
+                                $packageDis->store                        = $packageDispatch->store;
+                                $packageDis->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                                $packageDis->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                                $packageDis->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                                $packageDis->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                                $packageDis->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                                $packageDis->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                                $packageDis->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                                $packageDis->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                                $packageDis->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                                $packageDis->Notes                        = $packageDispatch->Notes;
+                                $packageDis->Weight                       = $packageDispatch->Weight;
+                                $packageDis->Route                        = $packageDispatch->Route;
+                                $packageDis->idUser                       = Auth::user()->id;
+
+                                if($idTeam)
+                                {
+                                    $packageDis->idTeam = $idTeam;
+                                }
+
+                                $packageDis->idUserDispatch               = 0;
+                                $packageDis->Date_Dispatch                = $created_at;
+                                $packageDis->Date_Delivery                = $created_at;
+                                $packageDis->quantity                     = 0;
+                                $packageDis->pricePaymentCompany          = 0;
+                                $packageDis->pricePaymentTeam             = 0;
+                                $packageDis->idPaymentTeam                = '';
+                                $packageDis->photoUrl                     = $photoUrl;
+                                $packageDis->arrivalLonLat                = $arrivalLonLat;
+                                $packageDis->send_csv                     = 1;
+                                $packageDis->status                       = 'Delivery';
+                                $packageDis->created_at                   = $created_at;
+                                $packageDis->updated_at                   = $created_at;
+
+                                $packageDis->save();
+
+                                $packageDispatch->delete();
+                            }
+
+                            if(isset($row[5]) && $row[5] == 'YES')
+                            {
+                                //data for INLAND 
+                                $packageController = new PackageController();
+                                $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+                                //end data for inland
+                            }
+
+                            if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
+                            {
+                                //create or update price company team
+                                $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                                $packagePriceCompanyTeamController->Insert($packageDispatch);
+                            }
+                        }
+                    }
+                    elseif($contador > 1) 
+                    {
+                        Log::info("================================");
+                        Log::info("===== PACKAGE TWO STATUS - Reference_Number_1:". $row[0]);
                     }
                 }
             }
@@ -370,6 +502,10 @@ class PackageDeliveryController extends Controller
 
             DB::commit();
 
+            Log::info("===== END - FILE IMPORT DELIVERY - PHOTO");
+            Log::info("================================");
+            Log::info("================================");
+
             return ['stateAction' => true];
         }
         catch(Exception $e)
@@ -377,6 +513,180 @@ class PackageDeliveryController extends Controller
             DB::rollback();
 
             return ['stateAction' => false];
+        }
+    }
+
+    public function CreateDeliveryForImport($packageDispatch, $row)
+    {
+        $packageDispatchAux = PackageDispatch::find($packageDispatch->Reference_Number_1);
+
+        if(isset($row[4]) && $row[4] != '')
+        {
+            $description = 'For: Brooks Courier (Import Report Delivery)';
+        }
+        else
+        {
+            $description = 'For: Import Report Delivery (Photo)';
+        }
+
+        $photoUrls = $row[1] != '' ? explode('https://', $row[1]) : 'https://';
+
+        if(count($photoUrls) == 2)
+        {
+            $photoUrl = explode('/', $photoUrls[1])[1];
+        }
+        else if(count($photoUrls) > 2)
+        {
+            $photoUrl1 = explode('/', $photoUrls[1])[1];
+            $photoUrl2 = explode('/', $photoUrls[2])[1];
+
+            $photoUrl = $photoUrl1 .','. $photoUrl2;
+        }
+        else
+        {
+            $photoUrl = '';
+        }
+
+        $arrivalLonLat = $row[3]; 
+        $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
+
+        if($packageDispatchAux == null && $packageDispatch->status != 'Delivery')
+        {
+            $packageHistory = new PackageHistory(); 
+
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageDispatch->idCompany;
+            $packageHistory->company                      = $packageDispatch->company;
+            $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageDispatch->Notes;
+            $packageHistory->Weight                       = $packageDispatch->Weight;
+            $packageHistory->Route                        = $packageDispatch->Route;
+            $packageHistory->idTeam                       = $packageDispatch->idTeam;
+            $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+            $packageHistory->idUser                       = $packageDispatch->idUser;
+            $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
+            $packageHistory->Date_Delivery                = $created_at;
+            $packageHistory->Description                  = $description;
+            $packageHistory->status                       = 'Delivery';
+            $packageHistory->created_at                   = $created_at;
+            $packageHistory->updated_at                   = $created_at;
+
+            $packageHistory->save();
+            
+            if($packageDispatch->status == 'Dispatch' || $packageDispatch->status == 'Delete')
+            {
+                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
+                $packageDispatch->workerName         = '';
+                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
+                $packageDispatch->recipientNotes     = '';
+                $packageDispatch->photoUrl           = $photoUrl;
+                $packageDispatch->Date_Delivery      = $created_at;
+                $packageDispatch->arrivalLonLat      = $arrivalLonLat;
+                $packageDispatch->status             = 'Delivery';
+
+                if(isset($row[4]) && $row[4] != '')
+                {
+                    $packageDispatch->idTeam = $row[4];
+                }
+
+                $packageDispatch->save();
+            }
+            else
+            {
+                $packageDis = new PackageDispatch();
+
+                $packageDis->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                $packageDis->idCompany                    = $packageDispatch->idCompany;
+                $packageDis->company                      = $packageDispatch->company;
+                $packageDis->idStore                      = $packageDispatch->idStore;
+                $packageDis->store                        = $packageDispatch->store;
+                $packageDis->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                $packageDis->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                $packageDis->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                $packageDis->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                $packageDis->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                $packageDis->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                $packageDis->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                $packageDis->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                $packageDis->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                $packageDis->Notes                        = $packageDispatch->Notes;
+                $packageDis->Weight                       = $packageDispatch->Weight;
+                $packageDis->Route                        = $packageDispatch->Route;
+                $packageDis->idUser                       = Auth::user()->id;
+                $packageDis->idTeam                       = 0;
+                $packageDis->idUserDispatch               = 0;
+                $packageDis->Date_Dispatch                = $created_at;
+                $packageDis->Date_Delivery                = $created_at;
+                $packageDis->quantity                     = 0;
+                $packageDis->pricePaymentCompany          = 0;
+                $packageDis->pricePaymentTeam             = 0;
+                $packageDis->idPaymentTeam                = '';
+                $packageDis->status                       = 'Delivery';
+                $packageDis->created_at                   = $created_at;
+                $packageDis->updated_at                   = $created_at;
+
+                $packageDis->save();
+            }
+        }
+        else if($packageDispatchAux)
+        {
+            if($packageDispatch->photoUrl == '')
+            {
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packageDispatchAux->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageDispatchAux->idCompany;
+                $packageHistory->company                      = $packageDispatchAux->company;
+                $packageHistory->Dropoff_Contact_Name         = $packageDispatchAux->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packageDispatchAux->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatchAux->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageDispatchAux->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageDispatchAux->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packageDispatchAux->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packageDispatchAux->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageDispatchAux->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageDispatchAux->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $packageDispatchAux->Notes;
+                $packageHistory->Weight                       = $packageDispatchAux->Weight;
+                $packageHistory->Route                        = $packageDispatchAux->Route;
+                $packageHistory->idTeam                       = $packageDispatchAux->idTeam;
+                $packageHistory->idUserDispatch               = $packageDispatchAux->idUserDispatch;
+                $packageHistory->idUser                       = $packageDispatchAux->idUser;
+                $packageHistory->idUserDelivery               = $packageDispatchAux->idUserDispatch;
+                $packageHistory->Date_Delivery                = $created_at;
+                $packageHistory->Description                  = $description;
+                $packageHistory->status                       = 'Delivery';
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
+
+                $packageHistory->save();
+
+                $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
+                $packageDispatch->workerName         = '';
+                $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
+                $packageDispatch->recipientNotes     = '';
+                $packageDispatch->photoUrl           = $photoUrl;
+                $packageDispatch->Date_Delivery      = $created_at;
+                $packageDispatch->arrivalLonLat      = $arrivalLonLat;
+                $packageDispatch->status             = 'Delivery';
+
+                if(isset($row[4]) && $row[4] != '')
+                {
+                    $packageDispatch->idTeam = $row[4];
+                }
+
+                $packageDispatch->save();
+            }
         }
     }
 
@@ -522,21 +832,6 @@ class PackageDeliveryController extends Controller
                                 $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                                 $packageHistory->idCompany                    = $packageDispatch->idCompany;
                                 $packageHistory->company                      = $packageDispatch->company;
-                                $packageHistory->Reference_Number_2           = $packageDispatch->Reference_Number_2;
-                                $packageHistory->Reference_Number_3           = $packageDispatch->Reference_Number_3;
-                                $packageHistory->Ready_At                     = $packageDispatch->Ready_At;
-                                $packageHistory->Del_Date                     = $packageDispatch->Del_Date;
-                                $packageHistory->Del_no_earlier_than          = $packageDispatch->Del_no_earlier_than;
-                                $packageHistory->Del_no_later_than            = $packageDispatch->Del_no_later_than;
-                                $packageHistory->Pickup_Contact_Name          = $packageDispatch->Pickup_Contact_Name;
-                                $packageHistory->Pickup_Company               = $packageDispatch->Pickup_Company;
-                                $packageHistory->Pickup_Contact_Phone_Number  = $packageDispatch->Pickup_Contact_Phone_Number;
-                                $packageHistory->Pickup_Contact_Email         = $packageDispatch->Pickup_Contact_Email;
-                                $packageHistory->Pickup_Address_Line_1        = $packageDispatch->Pickup_Address_Line_1;
-                                $packageHistory->Pickup_Address_Line_2        = $packageDispatch->Pickup_Address_Line_2;
-                                $packageHistory->Pickup_City                  = $packageDispatch->Pickup_City;
-                                $packageHistory->Pickup_Province              = $packageDispatch->Pickup_Province;
-                                $packageHistory->Pickup_Postal_Code           = $packageDispatch->Pickup_Postal_Code;
                                 $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
                                 $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
                                 $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
@@ -546,14 +841,9 @@ class PackageDeliveryController extends Controller
                                 $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
                                 $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
                                 $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                                $packageHistory->Service_Level                = $packageDispatch->Service_Level;
-                                $packageHistory->Carrier_Name                 = $packageDispatch->Carrier_Name;
-                                $packageHistory->Vehicle_Type_Id              = $packageDispatch->Vehicle_Type_Id;
                                 $packageHistory->Notes                        = $packageDispatch->Notes;
-                                $packageHistory->Number_Of_Pieces             = $packageDispatch->Number_Of_Pieces;
                                 $packageHistory->Weight                       = $packageDispatch->Weight;
                                 $packageHistory->Route                        = $packageDispatch->Route;
-                                $packageHistory->Name                         = $packageDispatch->Name;
                                 $packageHistory->idTeam                       = $packageDispatch->idTeam;
                                 $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                                 $packageHistory->idUser                       = 64;

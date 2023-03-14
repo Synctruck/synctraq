@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment/moment'
+import ReactLoading from 'react-loading';
 
 function PackageWarehouse() {
 
@@ -40,8 +41,8 @@ function PackageWarehouse() {
     const [displayButton, setDisplayButton] = useState('none');
 
     const [disabledInput, setDisabledInput] = useState(false);
-
-    const [readInput, setReadInput] = useState(false);
+    const [isLoading, setIsLoading]         = useState(false);
+    const [readInput, setReadInput]         = useState(false);
 
     var dateNow = new Date();
     const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate() 
@@ -95,12 +96,14 @@ function PackageWarehouse() {
 
     const listAllPackageWarehouse = (pageNumber, route, state) => {
 
+        setIsLoading(true);
         setOptionsStateValidate([]);
 
         fetch(url_general +'package-warehouse/list/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
+            setIsLoading(false);
             setListPackageInbound(response.packageList.data);
             setTotalPackage(response.packageList.total);
             setTotalPage(response.packageList.per_page);
@@ -441,6 +444,7 @@ function PackageWarehouse() {
 
             setReadInput(true);
             setSendWarehouse(0);
+            setIsLoading(true);
 
             fetch(url_general +'package-warehouse/insert', {
                 headers: { "X-CSRF-TOKEN": token },
@@ -450,10 +454,56 @@ function PackageWarehouse() {
             .then(res => res.json())
             .then((response) => {
 
+                    setIsLoading(false);
                     setTextMessageDate('');
                     setTextMessage2('');
 
-                    if(response.stateAction == 'nonValidatedState')
+                    if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
+                        }
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+
+                        setTypeMessage('primary');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedLost')
+                    {
+                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessage('warning');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'nonValidatedState')
                     {
                         setTextMessage("#"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
                         setTypeMessage('error');
@@ -599,7 +649,7 @@ function PackageWarehouse() {
 
     const exportAllPackageWarehouse = (route, state) => {
 
-        location.href = url_general +'package-warehouse/export/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        location.href = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
     }
 
     const handlerExport = () => {
@@ -780,7 +830,9 @@ function PackageWarehouse() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
-                                                <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerExport() }>EXPORT</button>
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -833,6 +885,7 @@ function PackageWarehouse() {
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                                 <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
                                     </div>
@@ -860,10 +913,16 @@ function PackageWarehouse() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <div className="form-group">
-                                            <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Total: { totalPackage }</b>
-                                        </div>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Warehouse: { totalPackage }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row">

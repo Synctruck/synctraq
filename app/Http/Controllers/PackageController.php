@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, TeamRoute, User};
+use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackagePreDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -45,11 +45,11 @@ class PackageController extends Controller
 
     public function List(Request $request)
     {
-        $packageList = Package::where('status', 'On hold')
+        $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
 
-        $quantityPackage = Package::where('status', 'On hold')->get()->count();
+        $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
     }
@@ -115,7 +115,7 @@ class PackageController extends Controller
         $package->idUserWarehouse = 0;
         $package->idUserDispatch = 0;
         $package->Date_Inbound = $request->get('status') ? null : date('Y-m-d H:i:s');
-        $package->status = $request->get('status') ? 'On hold' : 'Inbound';
+        $package->status = $request->get('status') ? 'Manifest' : 'Inbound';
 
         $package->save();
 
@@ -159,6 +159,16 @@ class PackageController extends Controller
                 $package = PackageInbound::find($request->get('Reference_Number_1'));
             }
 
+            if($package == null)
+            {
+                $package = PackagePreDispatch::find($request->get('Reference_Number_1'));
+            }
+
+            if($package == null)
+            {
+                $package = PackageWarehouse::find($request->get('Reference_Number_1'));
+            }
+
             if($package)
             {
                 $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
@@ -173,7 +183,27 @@ class PackageController extends Controller
                 $package->save();
             }
 
-            $packageHistoryList = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
+            $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
+            $packageHighPriority = PackageHighPriority::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($request->get('highPriority') == 'Normal')
+            {
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
+            }
+            else if($request->get('highPriority') != 'Normal')
+            {
+                if($packageHighPriority == null)
+                {
+                    $packageHighPriority = new PackageHighPriority();
+
+                    $packageHighPriority->Reference_Number_1 = $request->get('Reference_Number_1');
+
+                    $packageHighPriority->save();
+                }
+            }
 
             foreach($packageHistoryList as $packageHistory)
             {
@@ -188,7 +218,8 @@ class PackageController extends Controller
                 $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
                 $packageHistory->Weight                       = $request->get('Weight');
                 $packageHistory->Route                        = $request->get('Route');
-                $packageHistory->internal_comment             = $request->internal_comment;
+                $packageHistory->internal_comment             = $request->get('internal_comment');
+                $packageHistory->highPriority                 = $request->get('highPriority');
 
                 $packageHistory->save();
             }
@@ -207,9 +238,11 @@ class PackageController extends Controller
 
     public function Search($Reference_Number_1)
     {
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
         $packageHistoryList = PackageHistory::with([
+                                                'driver',
                                                 'user' => function($query){
                                                     $query->select('id', 'name', 'nameOfOwner');
                                                 }
@@ -222,13 +255,17 @@ class PackageController extends Controller
 
         $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
 
-        $noteOnfleet = '';
+        $noteOnfleet       = '';
+        $latitudeLongitude = [0, 0];
 
         if($packageDispatch && $packageDispatch->status == 'Delivery')
         {
-            $responseOnfleet = $this->SearchTask($packageDispatch->taskOnfleet);
-            $noteOnfleet     = $responseOnfleet['stateAction'] == false ? null: $responseOnfleet['onfleet']['destination']['notes'];
+            $responseOnfleet   = $this->SearchTask($packageDispatch->taskOnfleet);
+            $noteOnfleet       = $responseOnfleet['stateAction'] == false ? null : $responseOnfleet['onfleet']['destination']['notes'];
+            $latitudeLongitude = $responseOnfleet['stateAction'] == false ? $latitudeLongitude : $responseOnfleet['onfleet']['completionDetails']['lastLocation'];
         }
+
+        $actualStatus = $this->GetStatus($Reference_Number_1);
 
         return [
 
@@ -236,7 +273,9 @@ class PackageController extends Controller
             'packageHistoryList' => $packageHistoryList,
             'packageDelivery' => $packageDelivery,
             'packageDispatch' => $packageDispatch,
+            'actualStatus' => $actualStatus['status'],
             'notesOnfleet' => $noteOnfleet,
+            'latitudeLongitude' => $latitudeLongitude,
         ];
     }
 
@@ -288,6 +327,124 @@ class PackageController extends Controller
         }
     }
 
+    public function SearchByFilters(Request $request)
+    {
+        if($request->get('Dropoff_Contact_Name') == null && $request->get('Dropoff_Contact_Phone_Number') == null && $request->get('Dropoff_Address_Line_1') == null)
+        {
+            return ['packageHistoryList' => []];
+        }
+
+        $data = $this->GetData($request);
+        
+        $packageHistoryList    = $data['packageHistoryList'];
+
+        return [
+
+            'packageHistoryList' => $packageHistoryList,
+        ];
+    }
+
+    public function GetData($request)
+    {
+        $idsAll = PackageHighPriority::get('Reference_Number_1');
+
+        $packageHistoryList = PackageHistory::select(
+
+                                                'created_at',
+                                                'company',
+                                                'Reference_Number_1',
+                                                'internal_comment',
+                                                'Dropoff_Contact_Name',
+                                                'Dropoff_Contact_Name',
+                                                'Dropoff_Contact_Phone_Number',
+                                                'Dropoff_Address_Line_1',
+                                                'Dropoff_City',
+                                                'Dropoff_Province',
+                                                'Dropoff_Postal_Code',
+                                                'Route'
+                                            )
+                                            ->where('status', 'Manifest');
+        
+        if($request->get('Dropoff_Contact_Name'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Contact_Name', 'like', '%'. $request->get('Dropoff_Contact_Name') .'%');
+        }
+
+        if($request->get('Dropoff_Contact_Phone_Number'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Contact_Phone_Number', 'like', '%'. $request->get('Dropoff_Contact_Phone_Number') .'%');
+        }
+
+        if($request->get('Dropoff_Address_Line_1'))
+        {
+            $packageHistoryList = $packageHistoryList->where('Dropoff_Address_Line_1', 'like', '%'. $request->get('Dropoff_Address_Line_1') .'%');
+        }
+
+        $packageHistoryList    = $packageHistoryList->get();
+        $idsExists             = [];
+        $packageHistoryListNew = [];
+
+        foreach($packageHistoryList as $packageHistory)
+        {
+            if(in_array($packageHistory->Reference_Number_1, $idsExists) === false)
+            {
+                $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
+                $endDate  = date('Y-m-d');
+
+                $status   = $this->GetStatus($packageHistory->Reference_Number_1);
+ 
+                $package = [
+
+                    "created_at" => $packageHistory->created_at,
+                    "company" => $packageHistory->company,
+                    "company" => $packageHistory->company,
+                    "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                    "internal_comment" => $packageHistory->internal_comment,
+                    "status" => $status['status'],
+                    "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                    "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                    "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                    "Dropoff_City" => $packageHistory->Dropoff_City,
+                    "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                    "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                    "Route" => $packageHistory->Route,
+                ];
+
+                array_push($packageHistoryListNew, $package);
+                array_push($idsExists, $packageHistory->Reference_Number_1);
+            }
+        }
+
+        return [
+
+            'packageHistoryList' => $packageHistoryListNew,
+        ];
+    }
+
+    public function GetStatus($Reference_Number_1)
+    {
+        $package = PackageManifest::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+
+        if($package)
+        {
+            return ['status' => $package->status];
+        }
+
+        return ['status' => ''];
+    }
+
     public function IndexInbound()
     {
         return view('package.inbound');
@@ -321,20 +478,6 @@ class PackageController extends Controller
 
                         $package->Reference_Number_1 = $row[0];
                         $package->Reference_Number_2 = $row[1];
-                        $package->Reference_Number_3 = $row[2];
-                        $package->Ready_At = $row[3];
-                        $package->Del_Date = $row[4];
-                        $package->Del_no_earlier_than = $row[5];
-                        $package->Del_no_later_than = $row[6];
-                        $package->Pickup_Contact_Name = $row[7];
-                        $package->Pickup_Company = $row[8];
-                        $package->Pickup_Contact_Phone_Number = $row[9];
-                        $package->Pickup_Contact_Email = $row[10];
-                        $package->Pickup_Address_Line_1 = $row[11];
-                        $package->Pickup_Address_Line_2 = $row[12];
-                        $package->Pickup_City = $row[13];
-                        $package->Pickup_Province = $row[14];
-                        $package->Pickup_Postal_Code = $row[15];
                         $package->Dropoff_Contact_Name = $row[16];
                         $package->Dropoff_Company = $row[17];
                         $package->Dropoff_Contact_Phone_Number = $row[18];
@@ -344,15 +487,10 @@ class PackageController extends Controller
                         $package->Dropoff_City = $row[22];
                         $package->Dropoff_Province = $row[23];
                         $package->Dropoff_Postal_Code = $row[24];
-                        $package->Service_Level = $row[25];
-                        $package->Carrier_Name = $row[26];
-                        $package->Vehicle_Type_Id = $row[27];
                         $package->Notes = $row[28];
-                        $package->Number_Of_Pieces = $row[29];
                         $package->Weight = $row[30];
                         $package->Route = $row[31];
-                        $package->Name = isset($row[32]) ? $row[32] : '';
-                        $package->status = 'On hold';
+                        $package->status = 'Manifest';
 
                         $packageHistory = new PackageHistory();
 
@@ -360,7 +498,7 @@ class PackageController extends Controller
                         $packageHistory->idPackage = $row[0];
                         $packageHistory->description = 'Importación de Package';
                         $packageHistory->user = Auth::user()->email;
-                        $packageHistory->status = 'On hold';
+                        $packageHistory->status = 'Manifest';
 
                         $packageHistory->save();
 
@@ -558,7 +696,7 @@ class PackageController extends Controller
 
                     if($package)
                     {
-                        if($package->status == 'On hold' || $package->status == 'Inbound')
+                        if($package->status == 'Manifest' || $package->status == 'Inbound')
                         {
                             $package->Inbound       = 1;
                             $package->idUserInbound = Auth::user()->id;
@@ -832,7 +970,7 @@ class PackageController extends Controller
 
                     if($package)
                     {
-                        if($package->status == 'On hold' || $package->status == 'Inbound')
+                        if($package->status == 'Manifest' || $package->status == 'Inbound')
                         {
                             $team = User::where('name', $row[1])
                                         ->where('idRole', 3)
@@ -992,7 +1130,28 @@ class PackageController extends Controller
             $packageReturnList = $packageReturnList->whereIn('Dropoff_Province', $states);
         }
 
-        $packageReturnList = $packageReturnList->with(['team', 'driver'])->paginate(50);
+        $packageReturnList = $packageReturnList->with(['team', 'driver'])
+                                                ->select(
+                                                    'Date_Return',
+                                                    'idTeam',
+                                                    'idUserReturn',
+                                                    'company',
+                                                    'Reference_Number_1',
+                                                    'Description_Return',
+                                                    'Description_Onfleet',
+                                                    'Dropoff_Contact_Name',
+                                                    'Dropoff_Contact_Phone_Number',
+                                                    'Dropoff_Address_Line_1',
+                                                    'Dropoff_City',
+                                                    'Dropoff_Province',
+                                                    'Dropoff_Postal_Code',
+                                                    'Weight',
+                                                    'Route',
+                                                    'taskOnfleet',
+                                                    'statusOnfleet',
+                                                    'photoUrl',
+                                                )
+                                                ->paginate(50); 
 
         $quantityReturn = $packageReturnList->total();
 
@@ -1004,7 +1163,7 @@ class PackageController extends Controller
     }
 
 
-    public function ListReturnExport($dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
     {
         $delimiter = ",";
         $filename = "PACKAGES - RETURN " . date('Y-m-d H:i:s') . ".csv";
@@ -1013,7 +1172,7 @@ class PackageController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE' ,'HOUR', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
+        $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION RETURN', 'DESCRIPTION ONFLEET', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1052,6 +1211,11 @@ class PackageController extends Controller
 
         }
 
+        if($idCompany != 0)
+        {
+            $packageReturnList = PackageReturn::where('idCompany', $idCompany);
+        }
+
         if($idTeam && $idDriver)
         {
             $packageReturnList = $packageReturnList->where('idUserReturn', $idDriver);
@@ -1077,8 +1241,7 @@ class PackageController extends Controller
 
         $packageReturnList = $packageReturnList->with(['team', 'driver'])->orderBy('Date_Return', 'desc')->get();
 
-
-       foreach($packageReturnList as $packageReturn)
+        foreach($packageReturnList as $packageReturn)
         {
 
             if($packageReturn->driver && $packageReturn->driver->idTeam)
@@ -1095,9 +1258,12 @@ class PackageController extends Controller
             $lineData = array(
                 date('m-d-Y', strtotime($packageReturn->Date_Return)),
                 date('H:i:s', strtotime($packageReturn->Date_Return)),
+                $packageReturn->company,
                 $team,
                 $driver,
                 $packageReturn->Reference_Number_1,
+                $packageReturn->Description_Return,
+                $packageReturn->Description_Onfleet,
                 $packageReturn->Dropoff_Contact_Name,
                 $packageReturn->Dropoff_Contact_Phone_Number,
                 $packageReturn->Dropoff_Address_Line_1,
@@ -1383,5 +1549,253 @@ class PackageController extends Controller
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+    }
+
+    public function DeleteClearPackage()
+    {
+        $startDate = date('2022-11-01 00:00:00');
+        $endDate   = date('2022-12-17 23:59:59');
+
+        $routes = ['DE1', 'DE2', 'DE3', 'PA5', 'J2H', 'J2G'];
+
+        try
+        {
+            DB::beginTransaction();
+
+            $Reference_Number_1s = [];
+
+            $packageInboundList = PackageInbound::whereBetween('created_at', [$startDate, $endDate])
+                                            ->whereIn('Route', $routes)
+                                            ->get();
+
+            foreach($packageInboundList as $packageInbound)
+            {
+                $packageInbound = PackageInbound::find($packageInbound->Reference_Number_1);
+
+                if($packageInbound)
+                {
+                    $packageInbound->delete();
+                }
+
+                $packageDispatch = PackageDispatch::find($packageInbound->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->delete();
+                }
+
+                $packageHighPriority = PackageHighPriority::find($packageInbound->Reference_Number_1);
+
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
+
+                $packageFailed = PackageFailed::find($packageInbound->Reference_Number_1);
+
+                if($packageFailed)
+                {
+                    $packageFailed->delete();
+                }
+
+                $packageReturn = PackageReturn::where('Reference_Number_1', $packageInbound->Reference_Number_1)->first();
+
+                if($packageReturn)
+                {
+                    $packageReturn->delete();
+                }
+
+                $packageReturnCompany = PackageReturnCompany::find($packageInbound->Reference_Number_1);
+
+                if($packageReturnCompany)
+                {
+                    $packageReturnCompany->delete();
+                }
+
+                array_push($Reference_Number_1s, $packageInbound->Reference_Number_1);
+            }
+
+            $packageWarehouseList = PackageWarehouse::whereBetween('created_at', [$startDate, $endDate])
+                                                ->whereIn('Route', $routes)
+                                                ->get();
+
+            foreach($packageWarehouseList as $packageWarehouse)
+            {
+                $packageWarehouse = PackageWarehouse::find($packageWarehouse->Reference_Number_1);
+
+                if($packageWarehouse)
+                {
+                    $packageWarehouse->delete();
+                }
+
+                $packageDispatch = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->delete();
+                }
+
+                $packageHighPriority = PackageHighPriority::find($packageWarehouse->Reference_Number_1);
+
+                if($packageHighPriority)
+                {
+                    $packageHighPriority->delete();
+                }
+
+                $packageFailed = PackageFailed::find($packageWarehouse->Reference_Number_1);
+
+                if($packageFailed)
+                {
+                    $packageFailed->delete();
+                }
+
+                $packageReturn = PackageReturn::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)->first();
+
+                if($packageReturn)
+                {
+                    $packageReturn->delete();
+                }
+
+                $packageReturnCompany = PackageReturnCompany::find($packageWarehouse->Reference_Number_1);
+
+                if($packageReturnCompany)
+                {
+                    $packageReturnCompany->delete();
+                }
+
+                array_push($Reference_Number_1s, $packageWarehouse->Reference_Number_1);
+            }
+
+            $packageHistoryList = PackageHistory::whereIn('Reference_Number_1', $Reference_Number_1s)->get();
+
+            foreach($packageHistoryList as $packageHistory)
+            {
+                $packageHistory = PackageHistory::find($packageHistory->id);
+
+                if($packageHistory)
+                {
+                    $packageHistory->delete();
+                }
+            }
+
+            DB::commit();
+
+            return "correct update";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
+    }
+
+    public function ChangePackageToDispatch()
+    {
+        $startDate = date('2022-06-01 00:00:00');
+        $endDate   = date('2022-10-31 23:59:59');
+
+        try
+        {
+            DB::beginTransaction();
+
+            //$listPackageInbound = PackageInbound::whereBetween('created_at', [$startDate, $endDate])->get();
+            //$listPackageInbound = PackageWarehouse::whereBetween('created_at', [$startDate, $endDate])->get();
+            //$listPackageInbound = PackageFailed::whereBetween('created_at', [$startDate, $endDate])->get();
+
+            /*foreach($listPackageInbound as $package)
+            {
+                $package = PackageFailed::find($package->Reference_Number_1);
+
+                $created_at = $package->created_at;
+
+                $packageDispatch = PackageDispatch::find($package->Reference_Number_1);
+
+                if($packageDispatch == null)
+                {
+                    $packageDispatch = new PackageDispatch();
+
+                    $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageDispatch->idCompany                    = $package->idCompany;
+                    $packageDispatch->company                      = $package->company;
+                    $packageDispatch->idStore                      = $package->idStore;
+                    $packageDispatch->store                        = $package->store;
+                    $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                    $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageDispatch->Notes                        = $package->Notes;
+                    $packageDispatch->Weight                       = $package->Weight;
+                    $packageDispatch->Route                        = $package->Route;
+                    $packageDispatch->Date_Dispatch                = $created_at;
+                    $packageDispatch->quantity                     = $package->quantity;
+                    $packageDispatch->pricePaymentCompany          = 0;
+                    $packageDispatch->pricePaymentTeam             = 0;
+                    $packageDispatch->idPaymentTeam                = '';
+                    $packageDispatch->status                       = 'Delivery';
+                    $packageDispatch->created_at                   = $created_at;
+                    $packageDispatch->updated_at                   = $created_at;
+
+                    $packageDispatch->save();
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageHistory->idCompany                    = $package->idCompany;
+                    $packageHistory->company                      = $package->company;
+                    $packageHistory->idStore                      = $package->idStore;
+                    $packageHistory->store                        = $package->store;
+                    $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $package->Notes;
+                    $packageHistory->Weight                       = $package->Weight;
+                    $packageHistory->Route                        = $package->Route;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->Date_Dispatch                = $created_at;
+                    $packageHistory->dispatch                     = 1;
+                    $packageHistory->autorizationDispatch         = 1;
+                    $packageHistory->Description                  = 'Force delivery';
+                    $packageHistory->quantity                     = $package->quantity;
+                    $packageHistory->status                       = 'Delivery';
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
+
+                    $packageHistory->save();
+                }
+                else
+                {
+                    $packageDispatch->status     = 'Delivery';
+                    $packageDispatch->created_at = $created_at;
+                    $packageDispatch->updated_at = $created_at;
+
+                    $packageDispatch->save();
+                }
+
+                $package->delete();
+            }*/
+
+            DB::commit();
+
+            return "correct change package to dispatch";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
     }
 }

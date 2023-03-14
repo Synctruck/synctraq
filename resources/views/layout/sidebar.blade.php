@@ -50,7 +50,16 @@
                 </li>
             @endif
 
-            @if(hasPermission('dispatch.index'))
+            @if(hasPermission('predispatch.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-pre-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-dispatch')}}">
+                        <i class="bx bx-car"></i>
+                        <span>PRE - DISPATCH</span>
+                    </a>
+                </li>
+            @endif
+
+            @if(hasPermission('predispatch.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch')}}">
                         <i class="bx bx-car"></i>
@@ -74,13 +83,21 @@
                     <span>CHECK STOP</span>
                 </a>
             </li>
-
             <li>
                 <a class="nav-link {{Request::is('package-age') ? 'show' : 'collapsed'}}" href="{{url('/package-age')}}">
                     <i class="bx bx-calendar-exclamation"></i>
                     <span>AGE OF PACKAGES</span>
                 </a>
             </li>
+
+            @if(hasPermission('highPriority.index'))
+                <li>
+                    <a class="nav-link {{Request::is('package-high-priority') ? 'show' : 'collapsed'}}" href="{{url('/package-high-priority')}}">
+                        <i class="bx bx-car"></i>
+                        <span>HIGH PRIORITY</span>
+                    </a>
+                </li>
+            @endif
 
             {{-- @if(Auth::user()->role->name == 'Administrador')
                 <li >
@@ -98,9 +115,6 @@
                 </a>
             </li>
 
-
-
-
             {{-- <li class="nav-heading">* DESELECT</li> --}}
             {{-- @if(Auth::user()->role->name == 'Administrador')
                 <li >
@@ -117,7 +131,7 @@
                         <i class="bx bx-car"></i>
                         <span>RE-INBOUND</span>
                     </a>
-                </li>
+                </li> 
             @endif
 
             @if(hasPermission('warehouse.index'))
@@ -125,6 +139,24 @@
                     <a class="nav-link {{Request::is('package-warehouse') ? 'show' : 'collapsed'}}" href="{{url('/package-warehouse')}}">
                         <i class="bx bx-car"></i>
                         <span>WAREHOUSE</span>
+                    </a>
+                </li>
+            @endif
+
+            @if(hasPermission('lost.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-lost') ? 'show' : 'collapsed'}}" href="{{url('/package-lost')}}">
+                        <i class="bx bx-car"></i>
+                        <span>LOST PACKAGE</span>
+                    </a>
+                </li>
+            @endif
+
+            @if(hasPermission('prerts.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-pre-rts') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-rts')}}">
+                        <i class="bx bx-car"></i>
+                        <span>PRE - RTS</span>
                     </a>
                 </li>
             @endif
@@ -156,58 +188,38 @@
             </li>
             @endif
 
-                {{-- <li class="nav-heading" id="titleReports" >Reports</li> --}}
-                @if(hasPermission('report.index'))
+            @if(hasPermission('report.index'))
                 <li >
                    <a class="nav-link {{Request::is('reports/general') ? 'show' : 'collapsed'}}" href="{{url('/reports/general')}}">
                        <i class="bx bxs-report"></i>
                        <span>GENERAL REPORTS</span>
                    </a>
                </li>
-               @endif
+           @endif
 
-                 @if(hasPermission('configuration.index'))
-                 <li >
+            @if(hasPermission('configuration.index'))
+                <li >
                     <a class="nav-link {{Request::is('configurations') ? 'show' : 'collapsed'}}" href="{{url('/configurations')}}">
                         <i class="ri-settings-4-line"></i>
                         <span>CONFIGURATION</span>
                     </a>
                 </li>
-                @endif
+            @endif
 
-
-
-                <li class="nav-item" id="liUlFinanzas">
-                    <a class="nav-link {{ (Request::is('package-delivery/finance') || Request::is('package-delivery/check')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('package-delivery/finance') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
-                      <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
-                    </a>
-                    <ul id="ulFinanzas" class="nav-content collapse {{(Request::is('package-delivery/check') || Request::is('package-delivery/finance') || Request::is('company') || Request::is('anti-scan'))? 'show' : ''}}" data-bs-parent="#ulFinanzas" style="">
-                        @if(hasPermission('checkDelivery.index'))
-                        <li >
-                            <a class="nav-link {{Request::is('package-delivery/check') ? 'show' : 'collapsed'}}" href="{{url('/package-delivery/check')}}">
-                                <i class="bx bxs-check-circle"></i>
-                                <span>CHECK - UNCHECK DELIVERY</span>
+            <li class="nav-item" id="liUlFinanzas">
+                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
+                  <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="ulFinanzas" class="nav-content collapse {{(Request::is('charge-company'))? 'show' : ''}}" data-bs-parent="#ulFinanzas" style="">
+                    @if(hasPermission('chargeCompany.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('charge-company') ? 'active' : 'collapsed'}}" href="{{url('charge-company')}}">
+                                <i class="bx bxs-dollar-circle"></i>
+                                <span>CHARGES</span>
                             </a>
                         </li>
-                        @endif
-                        @if(hasPermission('validatedDelivery.index'))
-                            <li>
-                                <a class="nav-link {{Request::is('package-delivery/finance') ? 'active' : 'collapsed'}}" href="{{url('package-delivery/finance')}}">
-                                    <i class="bx bxs-dollar-circle"></i>
-                                    <span>VALIDATE DELIVERY</span>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </li>
-
-            {{-- <li class="nav-heading">----------------</li>
-            <li>
-                <a class="nav-link {{Request::is('user/changePassword') ? 'active' : 'collapsed'}}" href="{{url('user/changePassword')}}">
-                    <i class="bx bxs-key"></i>
-                    <span>Change Password</span>
-                </a>
-            </li> --}}
-
+                    @endif
+                </ul>
+            </li>
     </ul>
 </aside><!-- End Sidebar-->

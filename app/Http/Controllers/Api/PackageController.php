@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\{ Comment, Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, Routes };
 
+use DateTime;
 use DB;
 use Log;
 use Session;
@@ -33,11 +34,11 @@ class PackageController extends Controller
 
     public function List(Request $request)
     {
-        $packageList = Package::where('status', 'On hold')
+        $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
             
-        $quantityPackage = Package::where('status', 'On hold')->get()->count();
+        $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
     }
@@ -94,7 +95,6 @@ class PackageController extends Controller
             $data['Dropoff_Contact_Phone_Number'] = $request->get('shipment')['ship_to']['phone_number'];
             $data['Dropoff_Address_Line_1']  = $request->get('shipment')['ship_to']['address_line1'];
             $data['Dropoff_Address_Line_2']  = $request->get('shipment')['ship_to']['address_line2'];
-            $data['address_line3']  = $request->get('shipment')['ship_to']['address_line3'];
             $data['Dropoff_City']  = $request->get('shipment')['ship_to']['city_locality'];
             $data['Dropoff_Province'] = $request->get('shipment')['ship_to']['state_province'];
             $data['Dropoff_Postal_Code']    = $request->get('shipment')['ship_to']['postal_code'];
@@ -111,12 +111,10 @@ class PackageController extends Controller
             $data['hazardous_goods_type']  = $request->get('shipment')['shipment_details']['hazardous_goods_type'];
             $data['label_message']         = $request->get('shipment')['shipment_details']['label_message'];
             $data['shipper_notes_1']       = $request->get('shipment')['shipment_details']['shipper_notes_1'];
-            $data['shipper_notes_2']       = $request->get('shipment')['shipment_details']['shipper_notes_2'];
             $data['contains_alcohol']      = $request->get('shipment')['shipment_details']['contains_alcohol'];
             $data['insured_value']         = $request->get('shipment')['shipment_details']['insured_value'];
             $data['service_code']          = $request->get('shipment')['shipment_details']['service_code'];
             $data['Route']                 = isset($request->get('shipment')['shipment_details']['route_name']) ? $request->get('shipment')['shipment_details']['route_name'] : '';
-            $data['extra_data']            = $request->get('shipment')['shipment_details']['extra_data'];
 
             $validator = Validator::make($data,
 
@@ -185,7 +183,7 @@ class PackageController extends Controller
             }
 
             $packageHistory = PackageHistory::where('Reference_Number_1', $data['Reference_Number_1'])
-                                                    ->where('status', 'On hold')
+                                                    ->where('status', 'Manifest')
                                                     ->first();
 
             if(!$packageHistory)
@@ -211,12 +209,11 @@ class PackageController extends Controller
                     $package->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
                     $package->Weight                        = $data['Weight'];
                     $package->Route                         = $routeName;
-                    $package->status                        = 'On hold';
+                    $package->status                        = 'Manifest';
                     $package->manifest_id                   = $data['manifest_id'];
                     $package->mixing_center_shortcode       = $data['mixing_center_shortcode'];
                     $package->address_type                  = $data['address_type'];
                     $package->Dropoff_Address_Line_2        = $data['Dropoff_Address_Line_2'];
-                    $package->address_line3                 = $data['address_line3'];
                     $package->address_residential_indicator = $data['address_residential_indicator'];
                     $package->weight_unit                   = $data['weight_unit'];
                     $package->width                         = $data['width'];
@@ -227,12 +224,12 @@ class PackageController extends Controller
                     $package->hazardous_goods_type          = $data['hazardous_goods_type'];
                     $package->label_message                 = $data['label_message'];
                     $package->shipper_notes_1               = $data['shipper_notes_1'];
-                    $package->shipper_notes_2               = $data['shipper_notes_2'];
                     $package->contains_alcohol              = $data['contains_alcohol'];
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
-                    $package->extra_data                    = $data['extra_data'];
-
+                    $package->created_at                    = date('Y-m-d H:i:s');
+                    $package->updated_at                    = date('Y-m-d H:i:s'); 
+                    
                     $package->save();
 
                     $packageHistory = new PackageHistory();
@@ -249,12 +246,11 @@ class PackageController extends Controller
                     $packageHistory->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
                     $packageHistory->Weight                        = $data['Weight'];
                     $packageHistory->Route                         = $routeName;
-                    $packageHistory->status                        = 'On hold';
+                    $packageHistory->status                        = 'Manifest';
                     $packageHistory->manifest_id                   = $data['manifest_id'];
                     $packageHistory->mixing_center_shortcode       = $data['mixing_center_shortcode'];
                     $packageHistory->address_type                  = $data['address_type'];
                     $packageHistory->Dropoff_Address_Line_2        = $data['Dropoff_Address_Line_2'];
-                    $packageHistory->address_line3                 = $data['address_line3'];
                     $packageHistory->address_residential_indicator = $data['address_residential_indicator'];
                     $packageHistory->weight_unit                   = $data['weight_unit'];
                     $packageHistory->width                         = $data['width'];
@@ -265,12 +261,10 @@ class PackageController extends Controller
                     $packageHistory->hazardous_goods_type          = $data['hazardous_goods_type'];
                     $packageHistory->label_message                 = $data['label_message'];
                     $packageHistory->shipper_notes_1               = $data['shipper_notes_1'];
-                    $packageHistory->shipper_notes_2               = $data['shipper_notes_2'];
                     $packageHistory->contains_alcohol              = $data['contains_alcohol'];
                     $packageHistory->insured_value                 = $data['insured_value'];
                     $packageHistory->service_code                  = $data['service_code'];
-                    $packageHistory->extra_data                    = $data['extra_data'];
-                    $packageHistory->Description                   = 'On hold - for company: '. $company->name;
+                    $packageHistory->Description                   = 'Not yet received: '. $company->name;
                     $packageHistory->created_at                    = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                    = date('Y-m-d H:i:s');
 
@@ -342,7 +336,7 @@ class PackageController extends Controller
             }
 
             $packageManifest = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
-                                            ->where('status', 'On hold')
+                                            ->where('status', 'Manifest')
                                             ->first();
 
             $packageHistoryList = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
@@ -413,14 +407,14 @@ class PackageController extends Controller
         }
     }
 
-    public function SendStatusToInland($package, $status, $idPhoto = null)
+    public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
 
-        if($status == 'Return')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
             $company = Company::find($package->idCompany);
 
@@ -441,16 +435,40 @@ class PackageController extends Controller
             $url_webhook       = $companyStatus->company->url_webhook;
             $typeServices      = $companyStatus->company->typeServices;
         }
-        
+
         if($typeServices == 'API')
         {
+            if($status == 'ReturnCompany')
+            {
+                $statusCodeCompany = 'scan_out_for_return';
+            }
+            elseif($status == 'Lost')
+            {
+                $statusCodeCompany = 'not_delivered_lost';
+            }
+
             if($status == 'Delivery')
             {
-                $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto .'/800x.png' .'",';
+                Log::info('idPhoto');
+                Log::info($idPhoto);
+                if(count($idPhoto) == 1)
+                {
+                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                }
+                else
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+
+                    $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
+                }
             }
 
             Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
             Log::info($pod_url);
+
+            $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+            $created_at      = $created_at_temp->format(DateTime::ATOM);
 
             $curl = curl_init();
 
@@ -471,8 +489,9 @@ class PackageController extends Controller
                             "label": "",
                             "value": ""
                         }
-                    ]
-                }',
+                    ],
+                    "datetime" : "'. $created_at .'"
+                }', 
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'

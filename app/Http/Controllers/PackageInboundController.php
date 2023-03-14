@@ -3,17 +3,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-use App\Models\{Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, States,LiveRoute};
+
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute };
+
 
 use Illuminate\Support\Facades\Validator;
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -21,14 +17,12 @@ use Barryvdh\DomPDF\Facade\PDF;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
+use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
+
 use DB;
-
-use Illuminate\Support\Facades\Auth;
-
 use Log;
-
 use Session;
 
 class PackageInboundController extends Controller
@@ -68,7 +62,6 @@ class PackageInboundController extends Controller
 
     public function List($idCompany, $dateStart,$dateEnd, $route, $state)
     {
-
         $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state);
         $quantityInbound = $packageListInbound->total();
 
@@ -109,14 +102,17 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->where('idCompany', $idCompany);
         }
-        if($type =='list'){
+
+        if($type =='list')
+        {
             $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')
+                                                ->select('company', 'TRUCK', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
                                                 ->paginate(50);
-        }else{
-            $packageListInbound = $packageListInbound->where('reInbound', 0)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        }
+        else{
+            
+            $packageListInbound = $packageListInbound->where('reInbound', 0)->orderBy('created_at', 'desc')->get(); 
         }
 
         return $packageListInbound;
@@ -178,6 +174,20 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($packageBlocked)
+        {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+        
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+        if($package)
+        {
+            return ['stateAction' => 'packageInPreDispatch'];
+        }
+
         $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 
@@ -188,6 +198,13 @@ class PackageInboundController extends Controller
         elseif($packageWarehouse)
         {
             return ['stateAction' => 'validatedWarehouse', 'packageWarehouse' => $packageWarehouse];
+        }
+
+        $packageLost = PackageLost::find($request->get('Reference_Number_1'));
+
+        if($packageLost)
+        {
+            return ['stateAction' => 'validatedLost'];
         }
 
         $packageManifest = PackageManifest::with('blockeds')->find($request->get('Reference_Number_1'));
@@ -212,11 +229,63 @@ class PackageInboundController extends Controller
             {
                 DB::beginTransaction();
 
-                //data for INLAND
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
-                //end data for inland
+                $dimensions = 0;
+                $weight     = $packageManifest->Weight;
+                $width      = 0;
+                $height     = 0;
+                $length     = 0;
+                $cuIn       = $length * $height * $width;
 
+                ////////// COMPANY ///////////////////////////////////////////////////
+                //calculando dimensiones y precios para company
+                /*$dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+                $dimFactorCompany = $dimFactorCompany->factor;
+
+                $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
+                $dimWeightCompanyRound = ceil($dimWeightCompany);
+
+                $weightCompany = $weight;
+
+                //precio base de cobro a compañia
+                $priceCompany = new RangePriceCompanyController();
+                $priceCompany = $priceCompany->GetPriceCompany($packageManifest->idCompany, $weightCompany);
+
+                //precio peakeseason
+                $companyController       = new CompanyController();
+                $peakeSeasonPriceCompany = $companyController->GetPeakeSeason($packageManifest->idCompany, $weightCompany);
+                
+                //precio base
+                $priceBaseCompany = number_format($priceCompany + $peakeSeasonPriceCompany, 2);
+
+                $dieselPrice = Configuration::first()->diesel_price;
+
+                $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
+                $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
+                $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
+                ///////// END COMPANY
+
+                $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+
+                $packagePriceCompanyTeam->id                         = date('YmdHis') .'-'. $packageManifest->Reference_Number_1;
+                $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
+                $packagePriceCompanyTeam->weight                     = $weightCompany;
+                $packagePriceCompanyTeam->length                     = 0;
+                $packagePriceCompanyTeam->height                     = 0;
+                $packagePriceCompanyTeam->width                      = 0;
+                $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
+                $packagePriceCompanyTeam->cuIn                       = 0;
+                $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
+                $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
+                $packagePriceCompanyTeam->dimWeightCompanyRound      = $dimWeightCompanyRound;
+                $packagePriceCompanyTeam->priceWeightCompany         = $priceCompany;
+                $packagePriceCompanyTeam->peakeSeasonPriceCompany    = $peakeSeasonPriceCompany;
+                $packagePriceCompanyTeam->priceBaseCompany           = $priceBaseCompany;
+                $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
+                $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
+                $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
+
+                $packagePriceCompanyTeam->save();
+*/
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
@@ -224,23 +293,8 @@ class PackageInboundController extends Controller
                 $packageInbound->company                      = $packageManifest->company;
                 $packageInbound->idStore                      = $packageManifest->idStore;
                 $packageInbound->store                        = $packageManifest->store;
-                $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
-                $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
                 $packageInbound->CLIENT                       = $packageManifest->company;
-                $packageInbound->Ready_At                     = $packageManifest->Ready_At;
-                $packageInbound->Del_Date                     = $packageManifest->Del_Date;
-                $packageInbound->Del_no_earlier_than          = $packageManifest->Del_no_earlier_than;
-                $packageInbound->Del_no_later_than            = $packageManifest->Del_no_later_than;
-                $packageInbound->Pickup_Contact_Name          = $packageManifest->Pickup_Contact_Name;
-                $packageInbound->Pickup_Company               = $packageManifest->Pickup_Company;
-                $packageInbound->Pickup_Contact_Phone_Number  = $packageManifest->Pickup_Contact_Phone_Number;
-                $packageInbound->Pickup_Contact_Email         = $packageManifest->Pickup_Contact_Email;
-                $packageInbound->Pickup_Address_Line_1        = $packageManifest->Pickup_Address_Line_1;
-                $packageInbound->Pickup_Address_Line_2        = $packageManifest->Pickup_Address_Line_2;
-                $packageInbound->Pickup_City                  = $packageManifest->Pickup_City;
-                $packageInbound->Pickup_Province              = $packageManifest->Pickup_Province;
-                $packageInbound->Pickup_Postal_Code           = $packageManifest->Pickup_Postal_Code;
                 $packageInbound->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
                 $packageInbound->Dropoff_Company              = $packageManifest->Dropoff_Company;
                 $packageInbound->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
@@ -250,14 +304,9 @@ class PackageInboundController extends Controller
                 $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
                 $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                 $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                $packageInbound->Service_Level                = $packageManifest->Service_Level;
-                $packageInbound->Carrier_Name                 = $packageManifest->Carrier_Name;
-                $packageInbound->Vehicle_Type_Id              = $packageManifest->Vehicle_Type_Id;
                 $packageInbound->Notes                        = $packageManifest->Notes;
-                $packageInbound->Number_Of_Pieces             = $packageManifest->Number_Of_Pieces;
                 $packageInbound->Weight                       = $packageManifest->Weight;
                 $packageInbound->Route                        = $packageManifest->Route;
-                $packageInbound->Name                         = $packageManifest->Name;
                 $packageInbound->idUser                       = Auth::user()->id;
                 $packageInbound->quantity                     = $packageManifest->quantity;
                 $packageInbound->status                       = 'Inbound';
@@ -272,23 +321,8 @@ class PackageInboundController extends Controller
                 $packageHistory->company                      = $packageManifest->company;
                 $packageHistory->idStore                      = $packageManifest->idStore;
                 $packageHistory->store                        = $packageManifest->store;
-                $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
-                $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
                 $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
                 $packageHistory->CLIENT                       = $request->get('CLIENT') ? $request->get('CLIENT') : '';
-                $packageHistory->Ready_At                     = $packageManifest->Ready_At;
-                $packageHistory->Del_Date                     = $packageManifest->Del_Date;
-                $packageHistory->Del_no_earlier_than          = $packageManifest->Del_no_earlier_than;
-                $packageHistory->Del_no_later_than            = $packageManifest->Del_no_later_than;
-                $packageHistory->Pickup_Contact_Name          = $packageManifest->Pickup_Contact_Name;
-                $packageHistory->Pickup_Company               = $packageManifest->Pickup_Company;
-                $packageHistory->Pickup_Contact_Phone_Number  = $packageManifest->Pickup_Contact_Phone_Number;
-                $packageHistory->Pickup_Contact_Email         = $packageManifest->Pickup_Contact_Email;
-                $packageHistory->Pickup_Address_Line_1        = $packageManifest->Pickup_Address_Line_1;
-                $packageHistory->Pickup_Address_Line_2        = $packageManifest->Pickup_Address_Line_2;
-                $packageHistory->Pickup_City                  = $packageManifest->Pickup_City;
-                $packageHistory->Pickup_Province              = $packageManifest->Pickup_Province;
-                $packageHistory->Pickup_Postal_Code           = $packageManifest->Pickup_Postal_Code;
                 $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
                 $packageHistory->Dropoff_Company              = $packageManifest->Dropoff_Company;
                 $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
@@ -298,14 +332,9 @@ class PackageInboundController extends Controller
                 $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
                 $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                $packageHistory->Service_Level                = $packageManifest->Service_Level;
-                $packageHistory->Carrier_Name                 = $packageManifest->Carrier_Name;
-                $packageHistory->Vehicle_Type_Id              = $packageManifest->Vehicle_Type_Id;
                 $packageHistory->Notes                        = $packageManifest->Notes;
-                $packageHistory->Number_Of_Pieces             = $packageManifest->Number_Of_Pieces;
                 $packageHistory->Weight                       = $packageManifest->Weight;
                 $packageHistory->Route                        = $packageManifest->Route;
-                $packageHistory->Name                         = $packageManifest->Name;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
@@ -317,6 +346,11 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
+
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
+                //end data for inland
 
                 $packageManifest->delete();
 
@@ -333,6 +367,13 @@ class PackageInboundController extends Controller
         }
         else
         {
+            $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+
+            if($packageReturnCompany)
+            {
+                return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+            }
+
             $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
                                             ->where('status', 'Inbound')
                                             ->where('inbound', 1)
@@ -504,21 +545,6 @@ class PackageInboundController extends Controller
                                     $packageInbound->company                      = $packageManifest->company;
                                     $packageInbound->idStore                      = $packageManifest->idStore;
                                     $packageInbound->store                        = $packageManifest->store;
-                                    $packageInbound->Reference_Number_2           = $packageManifest->Reference_Number_2;
-                                    $packageInbound->Reference_Number_3           = $packageManifest->Reference_Number_3;
-                                    $packageInbound->Ready_At                     = $packageManifest->Ready_At;
-                                    $packageInbound->Del_Date                     = $packageManifest->Del_Date;
-                                    $packageInbound->Del_no_earlier_than          = $packageManifest->Del_no_earlier_than;
-                                    $packageInbound->Del_no_later_than            = $packageManifest->Del_no_later_than;
-                                    $packageInbound->Pickup_Contact_Name          = $packageManifest->Pickup_Contact_Name;
-                                    $packageInbound->Pickup_Company               = $packageManifest->Pickup_Company;
-                                    $packageInbound->Pickup_Contact_Phone_Number  = $packageManifest->Pickup_Contact_Phone_Number;
-                                    $packageInbound->Pickup_Contact_Email         = $packageManifest->Pickup_Contact_Email;
-                                    $packageInbound->Pickup_Address_Line_1        = $packageManifest->Pickup_Address_Line_1;
-                                    $packageInbound->Pickup_Address_Line_2        = $packageManifest->Pickup_Address_Line_2;
-                                    $packageInbound->Pickup_City                  = $packageManifest->Pickup_City;
-                                    $packageInbound->Pickup_Province              = $packageManifest->Pickup_Province;
-                                    $packageInbound->Pickup_Postal_Code           = $packageManifest->Pickup_Postal_Code;
                                     $packageInbound->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
                                     $packageInbound->Dropoff_Company              = $packageManifest->Dropoff_Company;
                                     $packageInbound->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
@@ -528,14 +554,9 @@ class PackageInboundController extends Controller
                                     $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
                                     $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                                     $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                                    $packageInbound->Service_Level                = $packageManifest->Service_Level;
-                                    $packageInbound->Carrier_Name                 = $packageManifest->Carrier_Name;
-                                    $packageInbound->Vehicle_Type_Id              = $packageManifest->Vehicle_Type_Id;
                                     $packageInbound->Notes                        = $packageManifest->Notes;
-                                    $packageInbound->Number_Of_Pieces             = $packageManifest->Number_Of_Pieces;
                                     $packageInbound->Weight                       = $packageManifest->Weight;
                                     $packageInbound->Route                        = $packageManifest->Route;
-                                    $packageInbound->Name                         = $packageManifest->Name;
                                     $packageInbound->idUser                       = Auth::user()->id;
                                     $packageInbound->quantity                     = $packageManifest->quantity;
                                     $packageInbound->status                       = 'Inbound';
@@ -548,21 +569,6 @@ class PackageInboundController extends Controller
                                     $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
                                     $packageHistory->idCompany                    = $packageManifest->idCompany;
                                     $packageHistory->company                      = $packageManifest->company;
-                                    $packageHistory->Reference_Number_2           = $packageManifest->Reference_Number_2;
-                                    $packageHistory->Reference_Number_3           = $packageManifest->Reference_Number_3;
-                                    $packageHistory->Ready_At                     = $packageManifest->Ready_At;
-                                    $packageHistory->Del_Date                     = $packageManifest->Del_Date;
-                                    $packageHistory->Del_no_earlier_than          = $packageManifest->Del_no_earlier_than;
-                                    $packageHistory->Del_no_later_than            = $packageManifest->Del_no_later_than;
-                                    $packageHistory->Pickup_Contact_Name          = $packageManifest->Pickup_Contact_Name;
-                                    $packageHistory->Pickup_Company               = $packageManifest->Pickup_Company;
-                                    $packageHistory->Pickup_Contact_Phone_Number  = $packageManifest->Pickup_Contact_Phone_Number;
-                                    $packageHistory->Pickup_Contact_Email         = $packageManifest->Pickup_Contact_Email;
-                                    $packageHistory->Pickup_Address_Line_1        = $packageManifest->Pickup_Address_Line_1;
-                                    $packageHistory->Pickup_Address_Line_2        = $packageManifest->Pickup_Address_Line_2;
-                                    $packageHistory->Pickup_City                  = $packageManifest->Pickup_City;
-                                    $packageHistory->Pickup_Province              = $packageManifest->Pickup_Province;
-                                    $packageHistory->Pickup_Postal_Code           = $packageManifest->Pickup_Postal_Code;
                                     $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
                                     $packageHistory->Dropoff_Company              = $packageManifest->Dropoff_Company;
                                     $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
@@ -572,14 +578,9 @@ class PackageInboundController extends Controller
                                     $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
                                     $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                                     $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                                    $packageHistory->Service_Level                = $packageManifest->Service_Level;
-                                    $packageHistory->Carrier_Name                 = $packageManifest->Carrier_Name;
-                                    $packageHistory->Vehicle_Type_Id              = $packageManifest->Vehicle_Type_Id;
                                     $packageHistory->Notes                        = $packageManifest->Notes;
-                                    $packageHistory->Number_Of_Pieces             = $packageManifest->Number_Of_Pieces;
                                     $packageHistory->Weight                       = $packageManifest->Weight;
                                     $packageHistory->Route                        = $packageManifest->Route;
-                                    $packageHistory->Name                         = $packageManifest->Name;
                                     $packageHistory->idUser                       = Auth::user()->id;
                                     $packageHistory->idUserInbound                = Auth::user()->id;
                                     $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');

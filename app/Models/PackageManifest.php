@@ -12,13 +12,13 @@ class PackageManifest extends Model
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
-    public $timestamps = false;
-    public $false      = true;
+    public $timestamps   = false;
+    public $incrementing = false;
 
-    protected $casts = [
+    /*protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
+    ];*/
 
     public function blockeds()
     {
@@ -26,7 +26,7 @@ class PackageManifest extends Model
     }
 
     //observers
-    protected static function booted()
+    /*protected static function booted()
     {
         static::creating(function ($user) {
             $user->created_at = date('Y-m-d H:i:s');
@@ -36,7 +36,7 @@ class PackageManifest extends Model
         static::updating(function ($user) {
             $user->updated_at = date('Y-m-d H:i:s');
         });
-    }
+    }*/
 
     public function company_data()
     {

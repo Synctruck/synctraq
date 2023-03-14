@@ -20,7 +20,7 @@
             <div class="card info-card ">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #21618C ; background: #AED6F1 ">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #21618C ; background: #AED6F1">
                         <i class="bx bxs-report"></i>
                     </div>
                     <div class="ps-3">
@@ -148,27 +148,72 @@
         @endif
         <!-- Revenue Card -->
         @if(hasPermission('reportReturncompany.index'))
-        <!-- Customers Card -->
-        <div class="col-xxl-3 col-xl-12">
-            <a href="{{url('/report/return-company')}}" style="text-decoration: none">
-                <div class="card info-card customers-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bx bxs-report"></i>
+            <!-- Customers Card -->
+            <div class="col-xxl-3 col-xl-12">
+                <a href="{{url('/report/return-company')}}" style="text-decoration: none">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bx bxs-report"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>Return company</h6>
+                            </div>
+                            </div>
                         </div>
-                        <div class="ps-3">
-                            <h6>Return company</h6>
-                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{{url('/report/return-company')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
                         </div>
                     </div>
-                    <div class="card-footer text-end">
-                        <a href="{{url('/report/return-company')}}" href="/package-inbound">Go to report <i class="bi bi-arrow-right-circle"></i></a>
-                    </div>
-                </div>
-            </a>
+                </a>
+            </div><!-- End Customers Card -->
+        @endif
 
-        </div><!-- End Customers Card -->
+        @if(hasPermission('reportMassQuery.index'))
+            <!-- Customers Card -->
+            <div class="col-xxl-3 col-xl-12">
+                <a href="{{url('/report/mass-query')}}" style="text-decoration: none">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #21618C ; background: #AED6F1">
+                                <i class="bx bxs-report"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>Mass Query</h6>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{{url('/report/mass-query')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                </a>
+            </div><!-- End Customers Card -->
+        @endif
+
+        @if(hasPermission('reportAllPending.index'))
+            <!-- Customers Card -->
+            <div class="col-xxl-3 col-xl-12">
+                <a href="{{url('/report/all-pending')}}">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #BEBB00; background: rgb(255, 243, 205);">
+                                <i class="bx bxs-report"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>All pending</h6>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{{url('/report/all-pending')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
+                        </div>
+                    </div>
+                </a>
+            </div><!-- End Customers Card -->
         @endif
 
     </div>

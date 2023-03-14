@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageInboundController, PackageManifestController, PackageNotExistsController, PackageWarehouseController,  PackageReturnCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageMassQueryController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes 
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
@@ -26,8 +26,17 @@ Route::get('routes/getAll', [RoutesController::class, 'GetAll']);
 
 Route::get('/package-history/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
 Route::get('/package-history/search-task/{TASK}', [PackageController::class, 'SearchTask']);
+Route::post('/package-history/search-by-filters', [PackageController::class, 'SearchByFilters']);
+
+Route::get('/package/all-delete/clear-package', [PackageController::class, 'DeleteClearPackage']);
+Route::get('/package/all-change-to-delivery', [PackageController::class, 'ChangePackageToDispatch']);
 
 Route::group(['middleware' => 'auth'], function() {
+
+	Route::get('errors/maintenance', function(){
+
+		return view('errors.maintenance');
+	});
 
     Route::get('package-blocked', [PackageBlockedController::class, 'Index'])->middleware('permission:packageBlocked.index');
     Route::get('package-blocked/list', [PackageBlockedController::class, 'List']);
@@ -38,7 +47,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/dashboard', [IndexController::class, 'Dashboard'])->middleware('permission:dashboard.index');
 	Route::get('/dashboard/getallquantity/{startDate}/{endDate}', [IndexController::class, 'GetAllQuantity']);
-	Route::get('/dashboard/getDataPerDate/{startDate}', [IndexController::class, 'GetDataPerDate']);
+	Route::get('/dashboard/getDataPerDate/{startDate}/{endDate}', [IndexController::class, 'GetDataPerDate']);
 
 	Route::post('/package-history/update', [PackageController::class, 'Update']);
 
@@ -73,7 +82,8 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Maintenance package manifest
 	Route::get('/package-manifest', [PackageManifestController::class, 'Index'])->middleware('permission:manifest.index');
 	Route::get('/package-manifest/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
-	Route::get('/package-manifest/list/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
+	Route::get('/package-manifest/list/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
+	Route::get('/package-manifest/export/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'Export']);
 	Route::post('/package-manifest/insert', [PackageManifestController::class, 'Insert']);
 	Route::get('/package-manifest/get/{PACKAGE_ID}', [PackageManifestController::class, 'Get']);
 	Route::post('/package-manifest/update', [PackageManifestController::class, 'Update']);
@@ -81,6 +91,13 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-manifest/update/filter', [PackageManifestController::class, 'UpdateFilter']);
 	Route::post('/package-manifest/import', [PackageManifestController::class, 'Import']);
 	Route::get('/package-manifest/delete-duplicate', [PackageManifestController::class, 'DeleteDuplicate']);
+
+	//============ Validation lost
+	Route::get('/package-lost', [PackageLostController::class, 'Index'])->middleware('permission:lost.index');
+	Route::get('/package-lost/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'List']);
+	Route::get('/package-lost/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'Export']);
+	Route::post('/package-lost/insert', [PackageLostController::class, 'Insert']);
+	Route::post('/package-lost/import', [PackageLostController::class, 'Import']);
 
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index'])->middleware('permission:inbound.index');
@@ -102,16 +119,46 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-dispatch/update', [PackageDispatchController::class, 'Update']);
 	Route::post('/package-dispatch/change', [PackageDispatchController::class, 'Change']);
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
+	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
+	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
+
+	//============ PALET RTS 
+	Route::get('/pallet-rts/list/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'List']);
+	Route::get('/pallet-rts/export/{idCompany}/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'Export']);
+	Route::post('/pallet-rts/insert', [PalletRtsController::class, 'Insert']);
+	Route::get('/pallet-rts/print/{numberPallet}', [PalletRtsController::class, 'Print']);
+
+	Route::get('/package-pre-rts', [PackageReturnCompanyController::class, 'IndexPreRts'])->middleware('permission:prerts.index');
+	Route::get('/package-pre-rts/list/{numberPallet}', [PackageReturnCompanyController::class, 'ListPreRts']);
+	Route::post('/package-pre-rts/insert', [PackageReturnCompanyController::class, 'InsertPreRts']);
+	Route::get('/package-pre-rts/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
+
+	//============ PALET DISPACTH 
+	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
+	Route::get('/pallet-dispatch/export/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'Export']);
+	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
+	Route::get('/pallet-dispatch/print/{numberPallet}', [PalletDispatchController::class, 'Print']);
+
+	//============ Dispatch package
+	Route::get('/package-pre-dispatch', [PackagePreDispatchController::class, 'Index'])->middleware('permission:predispatch.index');
+	Route::get('/package-pre-dispatch/list/{numberPallet}', [PackagePreDispatchController::class, 'List']);
+	Route::get('/package-pre-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackagePreDispatchController::class, 'Export']);
+	Route::get('/package-pre-dispatch/getAll', [PackagePreDispatchController::class, 'GetAll']);
+	Route::post('/package-pre-dispatch/insert', [PackagePreDispatchController::class, 'Insert']);
+	Route::post('/package-pre-dispatch/chage-to-dispatch', [PackagePreDispatchController::class, 'ChangeToDispatch']);
 
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');
 	Route::get('/package-failed/list/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'List']);
+	Route::get('/package-failed/move/prefailed-to-failed', [PackageFailedController::class, 'MovePreFailedToFailed']);
 	Route::get('/package-failed/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'Export']);
 
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index'])->middleware('permission:delivery.index');
 	Route::get('/package-delivery/list', [PackageDeliveryController::class, 'List']);
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
+	Route::post('/package-delivery/import-photo', [PackageDeliveryController::class, 'ImportPhoto']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);
 	Route::get('/package-delivery/updatedDeliverFields', [PackageDeliveryController::class, 'UpdatedDeliverFields']);
 	Route::get('/package-delivery/updatedCreatedDate', [PackageDeliveryController::class, 'UpdatedCreatedDate']);
@@ -122,10 +169,30 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:validatedDelivery.index');
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
 
+	//=========== Charge Company
+	Route::get('/charge-company', [ChargeCompanyController::class, 'Index']);
+	Route::get('/charge-company/list/{dateInit}/{endDate}/{idCompany}/{status}', [ChargeCompanyController::class, 'List']);
+	Route::get('/charge-company/confirm/{idCharge}', [ChargeCompanyController::class, 'Confirm']);
+	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'Export']);
+
+	//=========== PAYMENT TEAM
+	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
+	Route::get('/payment-delivery/list/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'List']);
+	Route::post('/payment-delivery/insert', [PaymentDeliveryTeamController::class, 'Insert']);
+	Route::get('/payment-delivery/export/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'Export']);
+	Route::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment'])->middleware('permission:chargeCompany.index');
+	Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
+	Route::get('/payment-team/export/{id}', [PaymentDeliveryTeamController::class, 'ExportPayment']);
+
+
 	//=========== Age of Package
 	Route::get('/package-age', [PackageAgeController::class, 'Index']);
 	Route::get('/package-age/list/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'List']);
-	Route::get('/package-age/export/{routes}/{states}', [PackageAgeController::class, 'Export']);
+	Route::get('/package-age/export/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'Export']);
+
+	Route::get('/package-high-priority', [PackageHighPriorityController::class, 'Index'])->middleware('permission:highPriority.index');
+	Route::get('/package-high-priority/list/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'List']);
+	Route::get('/package-high-priority/export/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'Export']);
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);
@@ -134,7 +201,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/package/return', [PackageController::class, 'IndexReturn'])->middleware('permission:reinbound.index');
 	Route::get('/package/list/return/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturn']);
-	Route::get('/package/list/return/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
+	Route::get('/package/list/return/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
 	Route::post('/package/return/dispatch', [PackageDispatchController::class, 'Return']);
 	Route::get('/package/download/roadwarrior/{idCompany}/{idTeam}/{idDriver}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageController::class, 'DownloadRoadWarrior']);
 
@@ -144,7 +211,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index'])->middleware('permission:warehouse.index');
 	Route::get('/package-warehouse/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'List']);
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
-	Route::get('/package-warehouse/export/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
+	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
@@ -160,6 +227,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Maintenance of comments
 	Route::get('comments', [CommentsController::class, 'Index'])->middleware('permission:comment.index');
 	Route::get('comments/list', [CommentsController::class, 'List']);
+	Route::get('comments/getAll/{finalStatus}', [CommentsController::class, 'GetAllFinalStatus']);
 	Route::post('comments/insert', [CommentsController::class, 'Insert']);
 	Route::get('comments/get/{id}', [CommentsController::class, 'Get']);
 	Route::post('comments/update/{id}', [CommentsController::class, 'Update']);
@@ -193,12 +261,30 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
 
-	//============ Maintenance of comments
+	//============ Maintenance of stores
 	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);
 	Route::post('stores/insert', [StoreController::class, 'Insert']);
 	Route::get('stores/get/{id}', [StoreController::class, 'Get']);
 	Route::post('stores/update/{id}', [StoreController::class, 'Update']);
 	Route::get('stores/delete/{id}', [StoreController::class, 'Delete']);
+
+	//============ Maintenance of ranges company
+	Route::get('range-price-company/list/{idCompany}', [RangePriceCompanyController::class, 'List']);
+	Route::post('range-price-company/insert', [RangePriceCompanyController::class, 'Insert']);
+	Route::get('range-price-company/get/{id}', [RangePriceCompanyController::class, 'Get']);
+	Route::post('range-price-company/update/{id}', [RangePriceCompanyController::class, 'Update']);
+	Route::get('range-price-company/delete/{id}', [RangePriceCompanyController::class, 'Delete']);
+	Route::get('range-price-company/update/prices', [RangePriceCompanyController::class, 'UpdatePrices']);
+
+	//============ Maintenance of ranges teams
+	Route::get('range-price-team-route-company/list/{idTeam}/{idCompany}/{Route}', [RangePriceTeamRouteCompanyController::class, 'List']);
+	Route::post('range-price-team-route-company/insert', [RangePriceTeamRouteCompanyController::class, 'Insert']);
+	Route::get('range-price-team-route-company/get/{id}', [RangePriceTeamRouteCompanyController::class, 'Get']);
+	Route::post('range-price-team-route-company/update/{id}', [RangePriceTeamRouteCompanyController::class, 'Update']);
+	Route::get('range-price-team-route-company/delete/{id}', [RangePriceTeamRouteCompanyController::class, 'Delete']);
+	Route::post('range-price-team-route-company/import', [RangePriceTeamRouteCompanyController::class, 'Import']);
+	Route::get('range-price-team-route-company/list-configuration-price-team/{idTeam}', [RangePriceTeamRouteCompanyController::class, 'ListConfigurationPrice']);
+	Route::get('range-price-team-route-company/get-prices-team/{idTeam}/{routes}', [RangePriceTeamRouteCompanyController::class, 'GetPricesByIdTeam']);
 
 	//============ Processof orders
 	Route::get('orders', [OrderController::class, 'Index'])->middleware('permission:orders.index');
@@ -217,6 +303,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('routes/get/{id}', [RoutesController::class, 'Get']);
 	Route::post('routes/update/{id}', [RoutesController::class, 'Update']);
 	Route::get('routes/delete/{id}', [RoutesController::class, 'Delete']);
+	Route::get('routes/update/package/manifest/inbound/warehouse', [RoutesController::class, 'UpdateRoutePackageManifestInboundWarehouse']);
 	Route::get('routes/update/package', [RoutesController::class, 'UpdateRoutePackage']);
 
 	//============ Maintenance of teams
@@ -238,6 +325,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('user/delete/{id}', [UserController::class, 'Delete']);
 	Route::get('user/changePassword', [UserController::class, 'ChangePassword']);
 	Route::post('user/changePassword/save', [UserController::class, 'SaveChangePassword']);
+	Route::get('user/resetPassword/{userEmail}', [UserController::class, 'ResetPassword']);
 	Route::get('profile', [UserController::class, 'Profile']);
 	Route::post('profile', [UserController::class, 'UpdateProfile']);
 	Route::get('getProfile', [UserController::class, 'getProfile']);
@@ -251,7 +339,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/manifest', [ReportController::class, 'IndexManifest'])->middleware('permission:reportManifest.index');
 	Route::get('/report/list/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
-	Route::get('/report/export/manifest/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
+	Route::get('/report/export/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
 
 	Route::get('/report/inbound', [ReportController::class, 'IndexInbound'])->middleware('permission:reportInbound.index');
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
@@ -259,15 +347,15 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/delivery', [ReportController::class, 'IndexDelivery'])->middleware('permission:reportDelivery.index');
 	Route::get('/report/list/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDelivery']);
-	Route::get('/report/export/delivery/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDelivery']);
+	Route::get('/report/export/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDelivery']);
 
 	Route::get('/report/dispatch', [ReportController::class, 'IndexDispatch'])->middleware('permission:reportDispatch.index');
 	Route::get('/report/list/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDispatch']);
 	Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDispatch']);
 
 	Route::get('/report/failed', [ReportController::class, 'IndexFailed'])->middleware('permission:reportFailed.index');
-	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListFailed']);
-	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportFailed']);
+	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ListFailed']);
+	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ExportFailed']);
 
 	Route::get('/report/notExists', [ReportController::class, 'IndexNotExists'])->middleware('permission:reportNotexists.index');
 	Route::get('/report/list/notexists/{dateInit}/{dateEnd}', [ReportController::class, 'ListNotExists']);
@@ -278,9 +366,18 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/export/assigns/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportAssigns']);
 
 	Route::get('/report/return-company', [PackageReturnCompanyController::class, 'Index'])->middleware('permission:reportReturncompany.index');
-	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
+	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
-	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::post('/report/return-company/import', [PackageReturnCompanyController::class, 'Import']);
+	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::get('/report/return-company/update-created-at', [PackageReturnCompanyController::class, 'UpdateCreatedAt']);
+
+	Route::get('/report/mass-query', [PackageMassQueryController::class, 'Index'])->middleware('permission:reportMassquery.index');
+	Route::post('/report/mass-query/import', [PackageMassQueryController::class, 'Import']);
+
+	Route::get('/report/all-pending', [ReportController::class, 'IndexAllPending'])->middleware('permission:reportAllPending.index');
+	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ListAllPending']);
+	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ExportAllPending']);
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 
@@ -291,6 +388,8 @@ Route::group(['middleware' => 'auth'], function() {
 Route::get('/package-check', [PackageCheckController::class, 'Index']);
 Route::post('/package-check/import', [PackageCheckController::class, 'Import']);
 
+
 Route::get('/package-delivery/updatedOnfleet', [PackageDeliveryController::class, 'UpdatedOnfleet']);
 Route::get('find-route/{barcCode}', [PackageInboundController::class,'findRoute']);
 Route::post('upload-live-routes',[RoutesController::class,'UploadLiveRoutes']);
+

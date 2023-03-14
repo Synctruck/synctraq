@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import ReactLoading from 'react-loading';
 
 function Orders() {
 
@@ -38,6 +39,7 @@ function Orders() {
 
     const inputFileRef  = React.useRef();
 
+    const [isLoading, setIsLoading]           = useState(false);
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#cff4fc';
@@ -70,7 +72,7 @@ function Orders() {
 
     const listAllPackage = (pageNumber, route, state) => {
 
-        LoadingShow();
+        setIsLoading(true);
 
         fetch(url_general +'orders/list/'+ idCompanyFilter +'/'+ route +'/'+ state +'?page='+ pageNumber)
         .then(res => res.json())
@@ -82,6 +84,7 @@ function Orders() {
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setListState(response.listState);
+            setIsLoading(false);
 
             if(listState.length == 0)
             {
@@ -204,6 +207,7 @@ function Orders() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code]                   = useState('');
     const [Weight, setWeight]                                             = useState('');
     const [quantity, setQuantity]                                         = useState('');
+    const [dateOrder, setDateOrder]                                       = useState('');
     const [orderNumber, setOrderNumber]                                   = useState('');
     const [action, setAction]                                             = useState('');
 
@@ -278,6 +282,7 @@ function Orders() {
         formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
         formData.append('Weight', Weight);
         formData.append('quantity', quantity);
+        formData.append('date', dateOrder);
 
         clearValidation();
 
@@ -285,6 +290,7 @@ function Orders() {
 
         setDisabledButton(true);
         setTextButtonSave('Saving...');
+        setIsLoading(true);
 
         fetch(url_general +'orders/insert', {
             headers: { "X-CSRF-TOKEN": token },
@@ -296,6 +302,7 @@ function Orders() {
 
                 setTextButtonSave('Save');
                 setDisabledButton(false);
+                setIsLoading(false);
 
                 if(response.stateAction == 'notInland')
                 {
@@ -353,9 +360,13 @@ function Orders() {
 
             if(willDelete)
             {
+                setIsLoading(true);
+
                 fetch(url_general +'orders/delete/'+ Reference_Number_1)
                 .then(response => response.json())
                 .then(response => {
+
+                    setIsLoading(false);
 
                     if(response.stateAction)
                     {
@@ -596,6 +607,13 @@ function Orders() {
                                                             <input type="number" value={ quantity } className="form-control" onChange={ (e) => setQuantity(e.target.value) } required/>
                                                         </div>
                                                     </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="form-group">
+                                                            <label>DATE</label>
+                                                            <div id="date" className="text-danger" style={ {display: 'none'} }></div>
+                                                            <input type="date" value={ dateOrder } className="form-control" onChange={ (e) => setDateOrder(e.target.value) } required/>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="modal-footer">
@@ -652,6 +670,8 @@ function Orders() {
 
         e.preventDefault();
 
+        setIsLoading(true);
+
         let formData = new FormData();
 
         formData.append('Reference_Number_1', orderNumber);
@@ -673,6 +693,7 @@ function Orders() {
                 setTotalPackage(response.packageList.total);
                 setTotalPage(response.packageList.per_page);
                 setPage(response.packageList.current_page);
+                setIsLoading(false);
             });
         }
         else
@@ -725,8 +746,16 @@ function Orders() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2">
-                                        <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Orders: { quantityPackage }</b>
+                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-info" style={ {borderRadius: '10px', padding: '10px'} }>Orders: { quantityPackage }</b>
+                                            )
+                                        }
                                     </div>
                                     <dvi className="col-lg-2">
                                         <div className="row">

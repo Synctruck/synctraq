@@ -28,14 +28,14 @@ class HomeController extends Controller
         $endDate  = $endDate.' 23:59:59';
 
         $quantityManifest = PackageHistory::select(DB::raw('DISTINCT Reference_Number_1'))->whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
-                                                ->where('status', 'On hold')
+                                                ->where('status', 'Manifest')
                                                 ->where('idCompany',Auth::guard('partner')->user()->id)
                                                 ->get()
                                                 ->count();
 
         // $quantityManifestByRoutes =  PackageHistory::whereBetween('created_at', [$leastOneDayDateStart, $leastOneDayDateEnd])
         //                                             ->select('Route', DB::raw('COUNT(id) AS total'))
-        //                                             ->where('status', 'On hold')
+        //                                             ->where('status', 'Manifest')
         //                                             ->groupBy('Route')
         //                                             ->get();
 

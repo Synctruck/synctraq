@@ -5,8 +5,6 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-use App\Models\ScheduleTask;
-
 use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
@@ -33,6 +31,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('test:task-ae');
         $schedule->command('task:ae-manifest');
+        $schedule->command('test:task-insert-package-failed');
         /*$schedule->call(function(){
 
             DB::table('schedule_task')->delete();

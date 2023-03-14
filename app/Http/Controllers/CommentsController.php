@@ -23,8 +23,16 @@ class CommentsController extends Controller
     {
         $commentList = Comment::orderBy('finalStatus', 'asc')
                                 ->where('description', 'like', '%'. $request->get('textSearch') .'%')
+                                ->where('finalStatus', $request->get('finalStatus'))
                                 ->paginate($this->paginate);
         
+        return ['commentList' => $commentList];
+    }
+
+    public function GetAllFinalStatus($finalStatus)
+    {
+        $commentList = Comment::where('finalStatus', $finalStatus)->get();
+
         return ['commentList' => $commentList];
     }
 
@@ -33,12 +41,19 @@ class CommentsController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "description" => ["required", "unique:comments", "max:300"],
+                "description" => ["required", "unique:comments", "max:100"],
+                "statusCode" => ["required", "max:50"],
+                "finalStatus" => ["required"],
             ],
             [
                 "description.unique" => "Comment already exists",
-                "description.required" => "El campo es requerido",
-                "description.max"  => "Debe ingresar máximo 300 dígitos",
+                "description.required" => "The field is required",
+                "description.max"  => "You must enter a maximum of 100 digits",
+
+                "statusCode.required" => "The field is required",
+                "statusCode.max"  => "You must enter a maximum of 50 digits",
+
+                "finalStatus.required" => "Select item",
             ]
         );
 
@@ -64,12 +79,19 @@ class CommentsController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "description" => ["required", "unique:comments,description,$id", "max:300"],
+                "description" => ["required", "unique:comments,description,$id", "max:100"],
+                "statusCode" => ["required", "max:50"],
+                "finalStatus" => ["required"],
             ],
             [
                 "description.unique" => "Comment already exists",
-                "description.required" => "El campo es requerido",
-                "description.max"  => "Debe ingresar máximo 300 dígitos",
+                "description.required" => "The field is required",
+                "description.max"  => "You must enter a maximum of 100 digits",
+
+                "statusCode.required" => "The field is required",
+                "statusCode.max"  => "You must enter a maximum of 50 digits",
+
+                "finalStatus.required" => "Select item",
             ]
         );
 

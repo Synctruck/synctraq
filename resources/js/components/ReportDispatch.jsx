@@ -5,7 +5,7 @@ import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment'
-
+import ReactLoading from 'react-loading';
 
 function ReportDispatch() {
 
@@ -32,6 +32,7 @@ function ReportDispatch() {
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
+    const [isLoading, setIsLoading]       = useState(false);
 
     useEffect( () => {
         if(auth.idRole == 3){
@@ -52,17 +53,19 @@ function ReportDispatch() {
 
     const listReportDispatch = async (pageNumber, routeSearch, stateSearch) => {
 
+        setIsLoading(true);
         setListReport([]);
 
         const responseData = await fetch(url_general +'report/list/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ routeSearch +'/'+ stateSearch +'?page='+ pageNumber)
         .then(res =>  res.json())
         .then((response) => {
-            setListReport(response.reportList.data);
 
-            setTotalPackage(response.reportList.total);
-            setTotalPage(response.reportList.per_page);
-            setPage(response.reportList.current_page);
-            setQuantityDispatch(response.reportList.total);
+            setIsLoading(false);
+            setListReport(response.reportList);
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityDispatch(response.packageHistoryList.total);
 
             setRoleUser(response.roleUser);
             setListState(response.listState);
@@ -182,10 +185,14 @@ function ReportDispatch() {
 
             <tr key={i}>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(5, 7) }-{ packageDispatch.Date_Dispatch.substring(8, 10) }-{ packageDispatch.Date_Dispatch.substring(0, 4) }
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packageDispatch.Date_Dispatch.substring(11, 19) }
+                    { packageDispatch.created_at.substring(11, 19) }
+                </td>
+                <td>
+                    { packageDispatch.inboundDate.substring(5, 7) }-{ packageDispatch.inboundDate.substring(8, 10) }-{ packageDispatch.inboundDate.substring(0, 4) }<br/>
+                    { packageDispatch.inboundDate.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
@@ -373,8 +380,16 @@ function ReportDispatch() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2 mb-3">
-                                        <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
+                                    <div className="col-lg-2 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="row form-group">
@@ -475,6 +490,7 @@ function ReportDispatch() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
+                                                <th>INBOUND DATE</th>
                                                 <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'

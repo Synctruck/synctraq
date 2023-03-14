@@ -13,6 +13,7 @@ import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import moment from 'moment';
 import { Grid } from '@mui/material'
 import { CalendarPicker } from '@mui/x-date-pickers'
+import ReactLoading from 'react-loading';
 
 // moment().format();
 
@@ -34,14 +35,22 @@ function Dashboard() {
 
     const [textLoading, setTextLoading] = useState('Loading...');
 
-    const [loading, setLoading] = useState('block');
+    const [loading, setLoading]     = useState('block');
     const [dateStart, setDateStart] = useState(auxDateStart);
-    const [dateEnd, setDateEnd] = useState(auxDateStart);
+    const [dateEnd, setDateEnd]     = useState(auxDateStart);
+
+    const [dateStartTable, setDateStartTable] = useState(auxDateStart);
+    const [dateEndTable, setDateEndTable]     = useState(auxDateStart);
+
     const [dateStartReport, setDateStartReport] = useState(auxDateStart);
     const [listDataPerRoute, setListDataPerRoute] = useState([]);
     const [listDataPerTeam, setListDataPerTeam] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(false);
+
     const [listPackageRouteTotal, setListPackageRouteTotal]     = useState({
         inbound: 0,
+        warehouse: 0,
         reinbound: 0,
         dispatch: 0,
         failed: 0,
@@ -78,9 +87,9 @@ function Dashboard() {
         }
       }
 
-    useEffect(() => {
+    /*useEffect(() => {
         getDataPerDate();
-    },[]);
+    },[]);*/
 
     useEffect(() => {
         getAllQuantityStatusPackage();
@@ -90,12 +99,12 @@ function Dashboard() {
     useEffect(() => {
         getDataPerDate();
         return () => {}
-    }, [valueCalendar]);
+    }, [dateStartTable, dateEndTable]);
 
     useEffect(() => {
-        initPieChart();
+        //initPieChart();
         return () => {
-            chartPie.destroy();
+            //chartPie.destroy();
         }
     },[listDataPie]);
 
@@ -120,15 +129,27 @@ function Dashboard() {
     const [packageHistoryList, setPackageHistoryList] = useState([]);
     const [packageStateList, setPackageStateList] = useState([]);
 
+    const sortHelper = (data, sortBy) => {
+      if (data.find(x => typeof x[sortBy] !== 'number')) 
+        // sort by localeCompare
+        return data.sort((a,b) => a[sortBy].localeCompare(b[sortBy]))
+      else
+        // sort by number
+        return data.sort((a,b) => a[sortBy] - b[sortBy])
+    }
+
     const getDataPerDate = async () => {
+        
         setLoading('block');
         setCart('none');
+        setIsLoading(true);
 
-        await  fetch(`${url_general}dashboard/getDataPerDate/${valueCalendar}/`)
+        await  fetch(`${url_general}dashboard/getDataPerDate/${dateStartTable}/${dateEndTable}`)
         .then(res => res.json())
         .then((response) => {
 
             let totalInboundRoute   = 0;
+            let totalWarehouseRoute = 0;
             let totalReinboundRoute = 0;
             let totalReturn         = 0;
             let totalDispatchRoute  = 0;
@@ -139,17 +160,26 @@ function Dashboard() {
 
             response.packageRouteList.forEach( route => {
 
-                let quantityInboundRoute = 0;
+                let quantityInboundRoute   = 0;
+                let quantityWarehouseRoute = 0;
                 let quantityReinboundRoute = 0;
-                let quantityDispatchRoute = 0;
-                let quantityFailedRoute = 0;
-                let quantityDeliveryRoute = 0;
+                let quantityDispatchRoute  = 0;
+                let quantityFailedRoute    = 0;
+                let quantityDeliveryRoute  = 0;
 
                 response.packageHistoryInbound.forEach( packageHistory => {
 
                     if(packageHistory.Route == route.Route)
                     {
                         quantityInboundRoute++;
+                    }
+                });
+
+                response.packageHistoryWarehouse.forEach( packageHistory => {
+
+                    if(packageHistory.Route == route.Route)
+                    {
+                        quantityWarehouseRoute++;
                     }
                 });
 
@@ -187,6 +217,7 @@ function Dashboard() {
                 });
 
                 totalInboundRoute   = parseInt(totalInboundRoute) + parseInt(quantityInboundRoute);
+                totalWarehouseRoute = parseInt(totalWarehouseRoute) + parseInt(quantityWarehouseRoute)
                 totalReinboundRoute = parseInt(totalReinboundRoute) + parseInt(quantityReinboundRoute);
                 totalDispatchRoute  = parseInt(totalDispatchRoute) + parseInt(quantityDispatchRoute);
                 totalFailedRoute    = parseInt(totalFailedRoute) + parseInt(quantityFailedRoute);
@@ -196,7 +227,8 @@ function Dashboard() {
 
                     Route: route.Route,
                     total_inbound: quantityInboundRoute,
-                    total_reinbound: quantityReinboundRoute,
+                    total_warehouse: quantityWarehouseRoute,
+                    total_pending: quantityInboundRoute + quantityWarehouseRoute,
                     total_dispatch: quantityDispatchRoute,
                     total_failed: quantityFailedRoute,
                     total_delivery: quantityDeliveryRoute,
@@ -215,18 +247,21 @@ function Dashboard() {
             let totalPackagesRoute = {
 
                 inbound: totalInboundRoute,
-                reinbound: parseInt(totalReinboundRoute) + parseInt(totalReturn),
+                warehouse: totalWarehouseRoute,
+                pending: parseInt(totalInboundRoute) + parseInt(totalWarehouseRoute),
                 dispatch: totalDispatchRoute,
                 failed: totalFailedRoute,
                 delivery: totalDeliveryRoute
             };
-
+            
+            sortHelper(listReportPerRoute, 'total_pending').reverse()
             setListPackageRouteTotal(totalPackagesRoute);
             setListDataPerRoute(listReportPerRoute);
 
             let dataPie = [];
 
             dataPie.push(totalInboundRoute);
+            dataPie.push(totalWarehouseRoute);
             dataPie.push(totalReinboundRoute);
             dataPie.push(totalDispatchRoute);
             dataPie.push(totalFailedRoute);
@@ -234,21 +269,18 @@ function Dashboard() {
 
             setListDataPie(dataPie);
 
-            let totalReinboundTeam = 0;
             let totalDispatchTeam = 0;
             let totalFailedTeam = 0;
             let totalDeliveryTeam = 0;
 
             response.dataPerTeams.forEach(element => {
 
-                totalReinboundTeam += element.total_reinbound;
                 totalDispatchTeam += element.total_dispatch;
                 totalFailedTeam += element.total_failed;
                 totalDeliveryTeam += element.total_delivery;
             });
 
             let totalPackagesTeam = {
-                                reinbound: totalReinboundTeam,
                                 dispatch: totalDispatchTeam,
                                 failed: totalFailedTeam,
                                 delivery: totalDeliveryTeam
@@ -256,7 +288,7 @@ function Dashboard() {
 
             setListPackageTeamTotal(totalPackagesTeam);
             setListDataPerTeam(response.dataPerTeams);
-            
+            setIsLoading(false);
             /*response.dataPerRoutes.forEach(element => {
 
                 totalInboundRoute += element.total_inbound;
@@ -325,10 +357,11 @@ function Dashboard() {
                     { item.Route }
                 </td>
                 <td className='text-end'>{ item.total_inbound }</td>
-                <td className='text-end' style={ {display: 'none'} }>{ item.total_reinbound }</td>
+                <td className='text-end'>{ item.total_warehouse }</td>
+                <td className='text-end'>{ item.total_pending }</td>
                 <td className='text-end'>{ item.total_dispatch }</td>
-                <td className='text-end'>{ item.total_failed }</td>
-                <td className='text-end'>{ item.total_delivery }</td>
+                <td className='text-end' style={ {display: 'none'} }>{ item.total_failed }</td>
+                <td className='text-end' style={ {display: 'none'} }>{ item.total_delivery }</td>
             </tr>
         );
     });
@@ -381,6 +414,7 @@ function Dashboard() {
               data: listDataPie,
               backgroundColor: [
                 '#198754',//inbound
+                '#ffc107',//dispatch
                 '#38D9A1',//re-inbound
                 '#ffc107',//dispatch
                 '#dc3545',//failed
@@ -389,6 +423,7 @@ function Dashboard() {
             }],
             labels: [
               'Inbound',
+              'Warehouse',
               'Re-Inbound',
               'Dispatch',
               'Failed',
@@ -398,10 +433,6 @@ function Dashboard() {
           options: pieOptions
         });
     }
-
-
-
-
 
     return (
 
@@ -415,7 +446,7 @@ function Dashboard() {
                                 <div className="col-lg-2">
                                     <div className="row">
                                         <div className="col-lg-12">
-                                            Start date:
+                                            <label className="form">Start date:</label>
                                         </div>
                                         <div className="col-lg-12">
                                             <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
@@ -425,14 +456,13 @@ function Dashboard() {
                                 <div className="col-lg-2">
                                     <div className="row">
                                         <div className="col-lg-12">
-                                            End date :
+                                            <label className="form">End date:</label>
                                         </div>
                                         <div className="col-lg-12">
                                             <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <div className="row justify-content-center">
                                 <div className="col-lg-4">
@@ -553,68 +583,65 @@ function Dashboard() {
                                 REPORT PER DATE <span>{valueCalendar.format('LL')}</span>
                             </div>
                             <div className='row justify-content-center '>
-                                <div className='col-lg-4 col-sm-12'>
-                                   <div className='row'>
-                                        <div className="col-lg-12">
+                                <div className='col-lg-12 col-sm-12'>
+                                    <div className="row">
+                                        <div className="col-lg-2">
                                             <div className="row">
-
                                                 <div className="col-lg-12">
-
-                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                        <Grid item xs={12} md={6}>
-                                                            <CalendarPicker date={valueCalendar} onChange={(newDate) => setValueCalendar(newDate)} />
-                                                        </Grid>
-                                                    </LocalizationProvider>
+                                                    <label className="form">Start date:</label>
+                                                </div>
+                                                <div className="col-lg-12">
+                                                    <input type="date" className='form-control' value={ dateStartTable } onChange={ (e) => setDateStartTable(e.target.value) }/>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='col-12 col-sm-12 mt-2'>
+                                        <div className="col-lg-2">
+                                            <div className="row">
+                                                <div className="col-lg-12">
+                                                    <label className="form">End date:</label>
+                                                </div>
+                                                <div className="col-lg-12">
+                                                    <input type="date" className='form-control' value={ dateEndTable } onChange={ (e) => setDateEndTable(e.target.value) }/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                            {
+                                                (
+                                                    isLoading
+                                                    ? 
+                                                        <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                    :
+                                                        ''
+                                                )
+                                            }
+                                        </div>
+                                        <div className="col-lg-12" style={ {display: 'none'} }>
+
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <Grid item xs={12} md={6}>
+                                                    <CalendarPicker date={valueCalendar} onChange={(newDate) => setValueCalendar(newDate)} />
+                                                </Grid>
+                                            </LocalizationProvider>
+                                        </div>
+                                    </div>
+                                    <div className='row'>
+                                        <div className='col-12 col-sm-12 mt-2' style={ {display: 'none'} }>
                                             <h6 className="card-title"> <span>CHART PER DAY </span></h6>
-                                            <canvas className="chart w-100" id="pieChart"></canvas>
-                                        </div>
-                                        <div className='col-12 mt-2'>
-                                            <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
-                                            <div className="row form-group table-responsive">
-                                                <div className="col-lg-12">
-                                                    <table className="table table-hover table-condensed table-bordered">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
-                                                                    <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
-                                                                    <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'} }>RE-INBOUND</th>
-                                                                    <th className='bg-warning'>DISPATCH</th>
-                                                                    <th className='bg-danger'>FAILED</th>
-                                                                    <th className='bg-info'>DELIVERY</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
-                                                                    <td></td>
-                                                                    <td><b>   TOTAL:</b></td>
-                                                                    <td className='text-end' style={ {display: 'none'} }><b>{listPackageTeamTotal.reinbound}</b></td>
-                                                                    <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
-                                                                    <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
-                                                                    <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
-                                                                </tr>
-                                                                { listDataTablePerTeam }
-                                                            </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
+                                            <canvas className="chart w-100" id="pieChart" style={ {display: 'none'} }></canvas>
                                         </div>
                                    </div>
                                 </div>
-                                <div className='col-lg-8 col-sm-12'>
-                                    <h6 className="card-title "> <span>DATA TABLE PER DAY</span></h6>
+                                <div className='col-lg-6 mt-2' style={ {display: 'none'} }>
+                                    <h6 className="card-title "> <span>DATA TABLE PER DAY - TEAM</span></h6>
                                     <div className="row form-group table-responsive">
                                         <div className="col-lg-12">
                                             <table className="table table-hover table-condensed table-bordered">
                                                     <thead>
                                                         <tr>
                                                             <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
-                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
-                                                            <th className='bg-success'>INBOUND</th>
-                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'}}>RE-INBOUND</th>
+                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
+                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'} }>RE-INBOUND</th>
                                                             <th className='bg-warning'>DISPATCH</th>
                                                             <th className='bg-danger'>FAILED</th>
                                                             <th className='bg-info'>DELIVERY</th>
@@ -624,11 +651,44 @@ function Dashboard() {
                                                         <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
                                                             <td></td>
                                                             <td><b>   TOTAL:</b></td>
+                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageTeamTotal.reinbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
+                                                            <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
+                                                            <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
+                                                        </tr>
+                                                        { listDataTablePerTeam }
+                                                    </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-lg-12 col-sm-12 mt-2'>
+                                    <h6 className="card-title "> <span>DATA TABLE PER DAY - ROUTE</span></h6>
+                                    <div className="row form-group table-responsive">
+                                        <div className="col-lg-12">
+                                            <table className="table table-hover table-condensed table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
+                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
+                                                            <th className='bg-success'>INBOUND</th>
+                                                            <th className='bg-warning'>WAREHOUSE</th>
+                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff' }}>TOTAL PENDING DISPATCH</th>
+                                                            <th className='bg-warning'>DISPATCH</th>
+                                                            <th className='bg-danger' style={ {display: 'none'} }>FAILED</th>
+                                                            <th className='bg-info' style={ {display: 'none'} }>DELIVERY</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
+                                                            <td></td>
+                                                            <td><b>   TOTAL:</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
-                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.reinbound}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.warehouse}</b></td>
+                                                            <td className='text-end'><b>{listPackageRouteTotal.pending}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.dispatch}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.failed}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.delivery}</b></td>
+                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.failed}</b></td>
+                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.delivery}</b></td>
                                                         </tr>
                                                         { listDataTablePerRoute }
                                                     </tbody>
