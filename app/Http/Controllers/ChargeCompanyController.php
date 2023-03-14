@@ -63,24 +63,9 @@ class ChargeCompanyController extends Controller
         $filename = "CHARGE - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
 
         //create a file pointer
-        $file    = fopen('php://memory', 'w');
+        $file   = fopen('php://memory', 'w');
         $charge = ChargeCompany::find($idCharge);
-
-        //set column headers
-        $fields = array('CHARGE', 'REGISTER DATE', date('m-d-Y H:i:s', strtotime($charge->created_at)), 'COMPANY', $charge->company->name, 'TOTAL', $charge->total);
-        fputcsv($file, $fields, $delimiter);
-
-        //set column headers
-        $fields = array('', 'RANGE DATE', date('m-d-Y', strtotime($charge->startDate)) .' - '. date('m-d-Y', strtotime($charge->endDate)));
-        fputcsv($file, $fields, $delimiter);
-
-        $fields = array('');
-        fputcsv($file, $fields, $delimiter);
-
-        $fields = array('PACKAGE DELIVERIES');
-        fputcsv($file, $fields, $delimiter);
-
-        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'WEIGHT', 'WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'TOTAL PRICE');
+        $fields = array('DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -94,7 +79,7 @@ class ChargeCompanyController extends Controller
             if($packageDelivery)
             {
                 $team = $packageDelivery->team ? $packageDelivery->team->name : '';
-                $date = date('m-d-Y', strtotime($packageDelivery->updated_at)) .' '. date('H:i:s', strtotime($packageDelivery->updated_at));
+                $date = date('m-d-Y', strtotime($packageDelivery->Date_Delivery)) .' '. date('H:i:s', strtotime($packageDelivery->Date_Delivery));
             }
             else
             {
