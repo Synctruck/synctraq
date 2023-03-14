@@ -807,7 +807,7 @@ function Orders() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>STORE</th>
-                                                <th>ORDER</th>
+                                                <th>ORDER NUMBER</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDREESS</th>
