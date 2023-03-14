@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam };
 
+use App\Http\Controllers\{ PackagePriceCompanyTeamController };
+
 use Log;
 use Mail;
 
@@ -50,14 +52,14 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Friday' && (int)$nowHour == 12)
+        if($dayName == 'Monday')
         {
             try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-d');
+                $nowDate   = date('Y-m-12');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
@@ -99,11 +101,11 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'DIM WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageDelivery = PackageDispatch::whereBetween('created_at', [$startDate, $endDate])
+        $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('idCompany', $idCompany)
                                                 ->where('status', 'Delivery')
                                                 ->get();
@@ -123,8 +125,27 @@ class TaskPackageSendPreFactura extends Command
 
                 if($packagePriceCompanyTeam)
                 {
-                    $team        = $packageDelivery->team  ? $packageDelivery->team->name : '';
+                    if($packagePriceCompanyTeam->weight == 0.00)
+                    {
+                        $packagePriceCompanyTeam->delete();
 
+                        $packagePriceCompanyTeam = null;
+                    }
+                }
+
+                if($packagePriceCompanyTeam == null)
+                {
+                    //create or update price company team
+                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                    $packagePriceCompanyTeamController->Insert($packageDelivery);
+
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                                    ->first();
+                }
+
+                if($packagePriceCompanyTeam) 
+                {
+                    $team                = $packageDelivery->team  ? $packageDelivery->team->name : '';
                     $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                     if($chargeCompanyDetail == null)
@@ -144,7 +165,7 @@ class TaskPackageSendPreFactura extends Command
                                         $team,
                                         $packageDelivery->Reference_Number_1,
                                         $packagePriceCompanyTeam->dieselPriceCompany,
-                                        $packagePriceCompanyTeam->dimWeightCompany,
+                                        $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
                                         $packagePriceCompanyTeam->priceWeightCompany,
                                         $packagePriceCompanyTeam->peakeSeasonPriceCompany,

@@ -121,7 +121,7 @@ function ReportAllPending() {
         }
         else
         {
-            location.href = url_general +'report/all-pending/export/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ StateSearch;
+            location.href = url_general +'report/all-pending/export/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ StateSearch +'/'+ StatusSearch;
         }
     }
 

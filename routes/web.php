@@ -377,7 +377,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/all-pending', [ReportController::class, 'IndexAllPending'])->middleware('permission:reportAllPending.index');
 	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ListAllPending']);
-	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}', [ReportController::class, 'ExportAllPending']);
+	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ExportAllPending']);
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 
@@ -388,4 +388,8 @@ Route::group(['middleware' => 'auth'], function() {
 Route::get('/package-check', [PackageCheckController::class, 'Index']);
 Route::post('/package-check/import', [PackageCheckController::class, 'Import']);
 
+
 Route::get('/package-delivery/updatedOnfleet', [PackageDeliveryController::class, 'UpdatedOnfleet']);
+Route::get('find-route/{barcCode}', [PackageInboundController::class,'findRoute']);
+Route::post('upload-live-routes',[RoutesController::class,'UploadLiveRoutes']);
+

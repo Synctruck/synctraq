@@ -153,8 +153,13 @@ function ReportInbound() {
                 <td><b>{ pack.timeDelivery}</b></td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.validator }</b></td>
-                <td>{ pack.TRUCK }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.status }</td>
+                <td>
+                    { pack.statusDate.substring(5, 7) }-{ pack.statusDate.substring(8, 10) }-{ pack.statusDate.substring(0, 4) }<br/>
+                    { pack.statusDate.substring(11, 19) }
+                </td>
+                <td>{ pack.statusDescription }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
                 <td>{ pack.Dropoff_Address_Line_1 }</td>
@@ -375,8 +380,10 @@ function ReportInbound() {
                                                 <th>TIME DELIVERY</th>
                                                 <th>COMPANY</th>
                                                 <th>VALIDATOR</th>
-                                                <th>TRUCK #</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
+                                                <th>STATUS DATE</th>
+                                                <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDRESS</th>

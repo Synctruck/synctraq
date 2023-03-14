@@ -167,7 +167,6 @@ class ReportController extends Controller
                                     'created_at',
                                     'company',
                                     'idUserInbound',
-                                    'TRUCK',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
@@ -192,58 +191,60 @@ class ReportController extends Controller
 
         foreach($listAll as $packageHistory)
         {
-            if(in_array($packageHistory->Reference_Number_1, $idsExists) === false)
+            $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Dispatch')
+                                            ->first();
+
+            $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Delivery')
+                                            ->get()
+                                            ->last();
+            
+            $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
+
+            $timeDispatchDate = 0;
+            $timeDeliveryDate = 0;
+
+            if($packageDispatch)
             {
-                $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                                ->where('status', 'Dispatch')
-                                                ->first();
-
-                $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                                ->where('status', 'Delivery')
-                                                ->get()
-                                                ->last();
-                
-                $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
-
-                $timeDispatchDate = 0;
-                $timeDeliveryDate = 0;
-
-                if($packageDispatch)
-                {
-                    $timeDispatchDate = (strtotime($packageDispatch->created_at) - strtotime($packageHistory->created_at)) / 86400;
-                    $timeDispatchDate = number_format($timeDispatchDate, 2);
-                }
-
-                if($packageDelivery)
-                {
-                    $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageHistory->created_at)) / 86400;
-                    $timeDeliveryDate = number_format($timeDeliveryDate, 2);
-                }
-
-                $package = [
-
-                    "created_at" => $packageHistory->created_at,
-                    "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
-                    "timeDispatch" => ($timeDispatchDate >= 0 ? $timeDispatchDate : ''),
-                    "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
-                    "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
-                    "company" => $packageHistory->company,
-                    "validator" => $validator,
-                    "TRUCK" => $packageHistory->TRUCK, 
-                    "Reference_Number_1" => $packageHistory->Reference_Number_1,
-                    "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
-                    "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
-                    "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
-                    "Dropoff_City" => $packageHistory->Dropoff_City,
-                    "Dropoff_Province" => $packageHistory->Dropoff_Province,
-                    "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
-                    "Route" => $packageHistory->Route,
-                    "Weight" => $packageHistory->Weight
-                ];
-
-                array_push($packageHistoryListNew, $package);
-                array_push($idsExists, $packageHistory->Reference_Number_1);
+                $timeDispatchDate = (strtotime($packageDispatch->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                $timeDispatchDate = number_format($timeDispatchDate, 2);
             }
+
+            if($packageDelivery)
+            {
+                $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                $timeDeliveryDate = number_format($timeDeliveryDate, 2);
+            }
+
+            $status = $this->GetStatus($packageHistory->Reference_Number_1);
+
+            $package = [
+
+                "created_at" => $packageHistory->created_at,
+                "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
+                "timeDispatch" => ($timeDispatchDate >= 0 ? $timeDispatchDate : ''),
+                "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
+                "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
+                "company" => $packageHistory->company,
+                "validator" => $validator,
+                "status" => $status['status'],
+                "statusDate" => $status['statusDate'],
+                "statusDescription" => $status['statusDescription'],
+                "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageHistory->Dropoff_City,
+                "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                "Route" => $packageHistory->Route,
+                "Weight" => $packageHistory->Weight
+            ];
+
+            array_push($packageHistoryListNew, $package);
+            array_push($idsExists, $packageHistory->Reference_Number_1);
+            
         }
 
         return [
@@ -691,13 +692,9 @@ class ReportController extends Controller
 
     private function getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status, $type = 'list')
     {
-        $dateInit             = $dateInit .' 00:00:00';
-        $dateEnd              = $dateEnd .' 23:59:59';
-        $states               = explode(',', $state);
-        $packageList          = [];
-        $packageManifestList  = [];
-        $packageInboundList   = [];
-        $packageWarehouseList = [];
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+        $states   = explode(',', $state);
 
         $packageManifestList  = PackageManifest::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Manifest');
         $packageInboundList   = PackageInbound::whereBetween('created_at', [$dateInit, $dateEnd]);
@@ -791,10 +788,9 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'TIME DISPATCH - DAYS', 'DELIVERY DATE', 'TIME DELIVERY - DAYS', 'COMPANY', 'VALIDATOR', 'TRUCK #', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+        $fields = array('DATE', 'HOUR', 'DISPATCH DATE', 'TIME DISPATCH - DAYS', 'DELIVERY DATE', 'TIME DELIVERY - DAYS', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
 
         fputcsv($file, $fields, $delimiter);
-
 
         $listPackageInbound = $this->getDataInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
         $listPackageInbound = $listPackageInbound['listAll'];
@@ -810,8 +806,10 @@ class ReportController extends Controller
                                 $packageInbound['timeDelivery'],
                                 $packageInbound['company'],
                                 $packageInbound['validator'],
-                                $packageInbound['TRUCK'],
                                 $packageInbound['Reference_Number_1'],
+                                $packageInbound['status'],
+                                $packageInbound['statusDate'],
+                                $packageInbound['statusDescription'],
                                 $packageInbound['Dropoff_Contact_Name'],
                                 $packageInbound['Dropoff_Contact_Phone_Number'],
                                 $packageInbound['Dropoff_Address_Line_1'],
@@ -1044,7 +1042,7 @@ class ReportController extends Controller
         fpassthru($file);
     }
 
-    public function ExportAllPending($idCompany, $dateInit, $dateEnd, $state)
+    public function ExportAllPending($idCompany, $dateInit, $dateEnd, $state, $status)
     {
         $delimiter = ",";
         $filename = "Report All Pending " . date('Y-m-d H:i:s') . ".csv";
@@ -1053,11 +1051,11 @@ class ReportController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'STATUS');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'STATUS');
 
         fputcsv($file, $fields, $delimiter);
 
-        $data                  = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $type = 'export');
+        $data                  = $this->getDataAllPending($idCompany, $dateInit, $dateEnd, $state, $status, $type = 'export');
         $packageListAllPending = $data['packageList'];
 
         foreach($packageListAllPending as $packagePending)
@@ -1065,6 +1063,7 @@ class ReportController extends Controller
             $lineData = array(
                                 date('m/d/Y', strtotime($packagePending->created_at)),
                                 date('H:i:s', strtotime($packagePending->created_at)),
+                                $packagePending->company,
                                 $packagePending->Reference_Number_1,
                                 $packagePending->Dropoff_Contact_Name,
                                 $packagePending->Dropoff_Contact_Phone_Number,
