@@ -59,7 +59,7 @@ class TaskPackageSendPreFactura extends Command
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-02-26');
+                $nowDate   = date('Y-m-12');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
@@ -67,7 +67,6 @@ class TaskPackageSendPreFactura extends Command
 
                 foreach($companyList as $company)
                 {
-                    Log::info('IdCompany:'. $company->id);
                     if($company->id == 10 || $company->id == 11)
                     {
                         $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
