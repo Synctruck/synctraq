@@ -59,7 +59,7 @@ class TaskPackageSendPreFactura extends Command
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-12');
+                $nowDate   = date('Y-m-05');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
@@ -67,13 +67,13 @@ class TaskPackageSendPreFactura extends Command
 
                 foreach($companyList as $company)
                 {
-                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                    $contents  = public_path($filename);
-
-                    array_push($files, $contents);
-
                     if($company->id == 10 || $company->id == 11)
                     {
+                        $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                        $contents  = public_path($filename);
+
+                        array_push($files, $contents);
+                    
                         $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
                     }
                 }
@@ -104,7 +104,7 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -125,16 +125,6 @@ class TaskPackageSendPreFactura extends Command
             {
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
-
-                if($packagePriceCompanyTeam)
-                {
-                    if($packagePriceCompanyTeam->weight == 0.00)
-                    {
-                        $packagePriceCompanyTeam->delete();
-
-                        $packagePriceCompanyTeam = null;
-                    }
-                }
 
                 if($packagePriceCompanyTeam == null || date("l", strtotime($packageDelivery->Date_Delivery)) == 'Monday')
                 {
@@ -162,7 +152,7 @@ class TaskPackageSendPreFactura extends Command
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
-                                        date('m-d-Y', strtotime($packageDelivery->updated_at)),
+                                        date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
                                         $packageDelivery->company,
                                         $packageDelivery->Reference_Number_1,
                                         '$'. $packagePriceCompanyTeam->dieselPriceCompany,
