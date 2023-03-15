@@ -40,7 +40,7 @@ class PackagePriceCompanyTeamController extends Controller
         {
             if($getDiesel == 0)
             {
-                if(date('Y-m-d', strtotime($historyDiesel)) >= $date('Y-m-d', strtotime($packageDispatch->Date_Delivery)))
+                if(date('Y-m-d', strtotime($historyDiesel)) >= date('Y-m-d', strtotime($packageDispatch->Date_Delivery)))
                 {
                     $dieselPriceCompany = $historyDiesel->price;
                     $getDiesel          = 1;
