@@ -52,38 +52,36 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Tuesday')
+        try
         {
-            try
+            DB::beginTransaction();
+
+            $files     = [];
+            $nowDate   = date('Y-m-12');
+            $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
+
+            $companyList = Company::all();
+
+            foreach($companyList as $company)
             {
-                DB::beginTransaction();
+                $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                $contents  = public_path($filename);
 
-                $files     = [];
-                $nowDate   = date('Y-m-12');
-                $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
+                array_push($files, $contents);
 
-                $companyList = Company::all();
-
-                foreach($companyList as $company)
-                {
-                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                    $contents  = public_path($filename);
-
-                    array_push($files, $contents);
-
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
-                }
-
-                $this->SendPreFactura($startDate, $endDate, $files);
-
-                DB::commit(); 
+                $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
             }
-            catch(Exception $e)
-            {
-                DB::rollback();
-            }
+
+            $this->SendPreFactura($startDate, $endDate, $files);
+
+            DB::commit(); 
         }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
+        
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
