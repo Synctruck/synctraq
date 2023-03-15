@@ -52,7 +52,7 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Monday')
+        if($dayName == 'Tuesday')
         {
             try
             {
