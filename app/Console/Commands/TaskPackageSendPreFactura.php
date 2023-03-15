@@ -50,7 +50,7 @@ class TaskPackageSendPreFactura extends Command
         $dayName = date("l");
         $nowHour = date('H'); 
 
-        Log::info('Hoy es: '. $dayName);
+        Log::info('Hoy es => : '. $dayName);
 
         try
         {
