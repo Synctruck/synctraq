@@ -59,7 +59,7 @@ class TaskPackageSendPreFactura extends Command
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-05');
+                $nowDate   = date('Y-02-26');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
