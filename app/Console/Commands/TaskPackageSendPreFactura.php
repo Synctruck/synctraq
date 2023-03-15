@@ -50,38 +50,40 @@ class TaskPackageSendPreFactura extends Command
         $dayName = date("l");
         $nowHour = date('H'); 
 
-        Log::info('Hoy es => : '. $dayName);
+        Log::info('Hoy es: '. $dayName);
 
-        try
+        if($dayName == 'Tuesday')
         {
-            DB::beginTransaction();
-
-            $files     = [];
-            $nowDate   = date('Y-m-12');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
-
-            $companyList = Company::all();
-
-            foreach($companyList as $company)
+            try
             {
-                $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                $contents  = public_path($filename);
+                DB::beginTransaction();
 
-                array_push($files, $contents);
+                $files     = [];
+                $nowDate   = date('Y-m-12');
+                $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 
-                $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                $companyList = Company::all();
+
+                foreach($companyList as $company)
+                {
+                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                    $contents  = public_path($filename);
+
+                    array_push($files, $contents);
+
+                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                }
+
+                $this->SendPreFactura($startDate, $endDate, $files);
+
+                DB::commit(); 
             }
-
-            $this->SendPreFactura($startDate, $endDate, $files);
-
-            DB::commit(); 
+            catch(Exception $e)
+            {
+                DB::rollback();
+            }
         }
-        catch(Exception $e)
-        {
-            DB::rollback();
-        }
-        
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
