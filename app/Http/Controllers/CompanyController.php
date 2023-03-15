@@ -327,7 +327,7 @@ class CompanyController extends Controller
                                                     ->where('but_less', '>=',  $dieselPrice)
                                                     ->first()->surcharge_percentage;
 
-        return $surchargePercentage; 
+        return $surchargePercentage;
     }
 
     /*public function GetConfigurationRates($idCompany)

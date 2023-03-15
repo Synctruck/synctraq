@@ -26,7 +26,7 @@ class TaskPackageSendPreFactura extends Command
      * The console command description.
      *
      * @var string
-     */ 
+     */
     protected $description = 'Enviar correo con paquetes para facturar(Pre factura)';
 
     /**
@@ -48,7 +48,7 @@ class TaskPackageSendPreFactura extends Command
     public function handle()
     {
         $dayName = date("l");
-        $nowHour = date('H'); 
+        $nowHour = date('H');
 
         Log::info('Hoy es: '. $dayName);
 
@@ -72,12 +72,15 @@ class TaskPackageSendPreFactura extends Command
 
                     array_push($files, $contents);
 
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    if($company->id == 10 || $company->id == 11)
+                    {
+                        $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    }
                 }
 
                 $this->SendPreFactura($startDate, $endDate, $files);
 
-                DB::commit(); 
+                DB::commit();
             }
             catch(Exception $e)
             {
@@ -150,7 +153,7 @@ class TaskPackageSendPreFactura extends Command
                     if($chargeCompanyDetail == null)
                     {
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
-                        
+
                         $chargeCompanyDetail = new ChargeCompanyDetail();
 
                         $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;

@@ -46,17 +46,14 @@ class PackagePriceCompanyTeamController extends Controller
 
             foreach($historyDieselList as $historyDiesel)
             {
-                if($getDiesel == 0)
-                {
-                    $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
-                    $timeChangeDateStart = strtotime($nowDate);
-                    $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
-                    $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
+                $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+                $timeChangeDateStart = strtotime($nowDate);
+                $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+                $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
 
-                    if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
-                    {
-                        $dieselPriceCompany = $historyDiesel->price;
-                    }
+                if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
+                {
+                    $dieselPriceCompany = $historyDiesel->price;
                 }
             }
         }
