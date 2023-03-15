@@ -72,7 +72,10 @@ class TaskPackageSendPreFactura extends Command
 
                     array_push($files, $contents);
 
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    if($company->id == 10 || $company->id == 11)
+                    {
+                        $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    }
                 }
 
                 $this->SendPreFactura($startDate, $endDate, $files);
