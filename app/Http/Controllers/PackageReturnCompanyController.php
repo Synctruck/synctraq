@@ -387,7 +387,7 @@ class PackageReturnCompanyController extends Controller
                             {
                                 //create or update price company
                                 $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                $packagePriceCompanyTeamController->Insert($packageInbound);
+                                $packagePriceCompanyTeamController->Insert($packageInbound, 'old');
                             }
                         }
                     }

@@ -488,7 +488,7 @@ class PackageDeliveryController extends Controller
 
                                 //create or update price company team
                                 $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                $packagePriceCompanyTeamController->Insert($packageDispatch);
+                                $packagePriceCompanyTeamController->Insert($packageDispatch, 'old');
                             }
                         }
                     }

@@ -81,18 +81,18 @@ class RangePriceCompanyController extends Controller
 
             [
                 "idCompany" => ["required"],
-                "minWeight" => ["required", "min:1", "max:126", "numeric"],
-                "maxWeight" => ["required", "min:1", "max:126", "numeric"],
+                "minWeight" => ["required", "min:0", "max:126", "numeric"],
+                "maxWeight" => ["required", "min:0", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
-                "minWeight.min"  => "Enter minimum 1",
+                "minWeight.min"  => "Enter minimum 0",
                 "minWeight.max"  => "Enter maximum 126",
                 "minWeight.numeric"  => "Enter only numbers",
 
                 "maxWeight.required" => "The field is required",
-                "maxWeight.min"  => "Enter minimum 1",
+                "maxWeight.min"  => "Enter minimum 0",
                 "maxWeight.max"  => "Enter maximum 126",
                 "maxWeight.numeric"  => "Enter only numbers",
 
