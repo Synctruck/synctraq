@@ -34,26 +34,37 @@ class PackageInboundController extends Controller
 
     public function findRoute($barCode)
     {  
-        $packageInbound = PackageInbound::select('Dropoff_Postal_Code as packageZipCode','Route as packageRouteName')->where('Reference_Number_1', $barCode)->where('status', 'Inbound')->get();
-    
-        $packageZipCode     = $packageInbound[0]->packageZipCode;
-        $packageRouteName   = $packageInbound[0]->packageRouteName;
+        $packageRouteName = 'N/A';
+        $packageZipCode   = 'N/A';
 
-        $liveRoute = LiveRoute::select('route_name as routeName')->where('zip_code',$packageZipCode)->get();
+        $packageInbound = PackageInbound::select('Dropoff_Postal_Code as packageZipCode','Route as packageRouteName')->where('Reference_Number_1', $barCode)->where('status', 'Inbound')->get();
+       
+        if ($packageInbound->count()) {
+            
+            $packageZipCode     = $packageInbound[0]->packageZipCode;
+            $packageRouteName   = $packageInbound[0]->packageRouteName;
+
+             $liveRoute = LiveRoute::select('route_name as routeName')->where('zip_code',$packageZipCode)->get();
         
-        if($liveRoute->count())
-        {   
-            $packageRouteName =  $liveRoute->pluck('routeName')->implode(', ');     
+             if($liveRoute->count())
+            {   
+              $packageRouteName =  $liveRoute->pluck('routeName')->implode(', ');     
+            }
         } 
 
         $html = '<table>
-                   <tr height="20px">
-                     <td></td>
-                     <td></td>
-                   </tr>
+                   
                    <tr>
                      <td width="1px"></td>
-                     <td><h1>Route: '.$packageRouteName.'</h1></td>
+                     <td><span style="font-size:25px;">Route: '.$packageRouteName.'</span></td>
+                   </tr>
+                   <tr>
+                   <tr>
+                     <td width="1px"></td>
+                     <td><span style="font-size:25px;">Zip Code: '.$packageZipCode.'</h1></td>
+                   </tr>
+                     <td width="1px"></td>
+                     <td><span style="font-size:25px;">Package: '.$barCode.'<span></td>
                    </tr>
                 </table>';
            
