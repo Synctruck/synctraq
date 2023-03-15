@@ -67,6 +67,7 @@ class TaskPackageSendPreFactura extends Command
 
                 foreach($companyList as $company)
                 {
+                    Log::info('IdCompany:'. $company->id);
                     if($company->id == 10 || $company->id == 11)
                     {
                         $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
