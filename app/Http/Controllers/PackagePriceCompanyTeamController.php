@@ -33,10 +33,10 @@ class PackagePriceCompanyTeamController extends Controller
 
         $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
-        $dieselPriceCompany = 0;
+        $dieselPriceCompany = Configuration::first()->diesel_price;
         $getDiesel          = 0;
 
-        foreach($historyDieselList as $historyDiesel)
+        /*foreach($historyDieselList as $historyDiesel)
         {
             if($getDiesel == 0)
             {
@@ -46,7 +46,7 @@ class PackagePriceCompanyTeamController extends Controller
                     $getDiesel          = 1;
                 }
             }
-        }
+        }*/
 
         $dimWeightCompanyRound = ceil($packageDispatch->Weight);
 
