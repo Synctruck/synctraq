@@ -133,7 +133,7 @@ class TaskPackageSendPreFactura extends Command
                     }
                 }
 
-                if($packagePriceCompanyTeam == null)
+                if($packagePriceCompanyTeam == null || date("l", strtotime($packageDelivery->Date_Delivery)) == 'Monday')
                 {
                     //create or update price company team
                     $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();

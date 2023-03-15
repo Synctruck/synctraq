@@ -386,7 +386,7 @@ function Companies() {
                 {
                     listAllRange(idCompany);
 
-                    swal("Store updated!", {
+                    swal("Range updated!", {
 
                         icon: "success",
                     });
@@ -395,8 +395,8 @@ function Companies() {
                 {
                     for(const index in response.errors)
                     {
-                        document.getElementById(index +'Store').style.display = 'block';
-                        document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                        document.getElementById(index +'Range').style.display = 'block';
+                        document.getElementById(index +'Range').innerHTML     = response.errors[index][0];
                     }
                 }
 
@@ -1105,12 +1105,12 @@ function Companies() {
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">MIN. WEIGHT</label>
                                                                 <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">MAX WEIGHT</label>
                                                                 <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">Price $</label>

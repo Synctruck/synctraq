@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackagePriceCompanyTeam, PeakeSeasonCompany };
+use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany };
 
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 
@@ -30,7 +30,24 @@ class PackagePriceCompanyTeamController extends Controller
 
         $Reference_Number_1    = $packageDispatch->Reference_Number_1;
         $weight                = $packageDispatch->Weight;
-        $dieselPriceCompany    = Configuration::first()->diesel_price;
+
+        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+
+        $dieselPriceCompany = 0;
+        $getDiesel          = 0;
+
+        foreach($historyDieselList as $historyDiesel)
+        {
+            if($getDiesel == 0)
+            {
+                if(date('Y-m-d', strtotime($historyDiesel)) >= $date('Y-m-d', strtotime($packageDispatch->Date_Delivery)))
+                {
+                    $dieselPriceCompany = $historyDiesel->price;
+                    $getDiesel          = 1;
+                }
+            }
+        }
+
         $dimWeightCompanyRound = ceil($packageDispatch->Weight);
 
         $priceWeightCompany = new RangePriceCompanyController();
