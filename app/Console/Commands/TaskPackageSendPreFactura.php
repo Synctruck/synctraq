@@ -52,7 +52,7 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Monday')
+        if($dayName == 'Wednesday')
         {
             try
             {
@@ -137,7 +137,7 @@ class TaskPackageSendPreFactura extends Command
                 {
                     //create or update price company team
                     $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                    $packagePriceCompanyTeamController->Insert($packageDelivery);
+                    $packagePriceCompanyTeamController->Insert($packageDelivery, 'old');
 
                     $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();

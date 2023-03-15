@@ -16,7 +16,7 @@ use Session;
 
 class PackagePriceCompanyTeamController extends Controller
 {
-    public function Insert($packageDispatch)
+    public function Insert($packageDispatch, $from)
     {
         Log::info("==== REGISTER - PRICE COMPANY TEAM");
         $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDispatch->Reference_Number_1)->first();
@@ -33,17 +33,30 @@ class PackagePriceCompanyTeamController extends Controller
 
         $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
-        $dieselPriceCompany = 0;
-        $getDiesel          = 0;
-
-        foreach($historyDieselList as $historyDiesel)
+        if($from == 'today')
         {
-            if($getDiesel == 0)
+            $dieselPriceCompany = Configuration::first()->diesel_price;
+        }
+        else
+        {
+            $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+
+            $dieselPriceCompany = 0;
+            $getDiesel          = 0;
+
+            foreach($historyDieselList as $historyDiesel)
             {
-                if(date('Y-m-d', strtotime($historyDiesel)) >= $date('Y-m-d', strtotime($packageDispatch->Date_Delivery)))
+                if($getDiesel == 0)
                 {
-                    $dieselPriceCompany = $historyDiesel->price;
-                    $getDiesel          = 1;
+                    $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+                    $timeChangeDateStart = strtotime($nowDate);
+                    $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+                    $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
+
+                    if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
+                    {
+                        $dieselPriceCompany = $historyDiesel->price;
+                    }
                 }
             }
         }

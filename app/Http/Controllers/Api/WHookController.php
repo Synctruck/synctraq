@@ -117,7 +117,7 @@ class WHookController extends Controller
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                        $packagePriceCompanyTeamController->Insert($packageDispatch);
+                        $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
                     //data for INLAND
