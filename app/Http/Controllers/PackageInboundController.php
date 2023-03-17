@@ -65,7 +65,7 @@ class PackageInboundController extends Controller
                      <td><span style="font-size:17px;">Zip Code: '.$packageZipCode.'</h1></td>
                    </tr>
                      <td width="1px"></td>
-                     <td><span style="font-size:17px;">Package: '.$barCode.'<span></td>
+                     <td><span style="font-size:15px;">Package: '.$barCode.'<span></td>
                    </tr>
                 </table>';
            
