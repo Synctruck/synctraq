@@ -193,7 +193,19 @@ function Charge() {
         }
     }
 
+    const handlerChangeFormatPrice = (number) => {
+
+        const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+        const rep = '$1,';
+        let arr   = number.toString().split('.');
+        arr[0]    = arr[0].replace(exp,rep);
+
+        return arr[1] ? arr.join('.'): arr[0];
+    }
+
     const listReportTable = listReport.map( (charge, i) => {
+
+        let total = handlerChangeFormatPrice(charge.total);
 
         return (
 
@@ -206,7 +218,7 @@ function Charge() {
                 <td><b>{ charge.company.name }</b></td>
                 <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
                 <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
-                <td className="text-success text-right"><b>{ charge.total +' $' }</b></td>
+                <td className="text-success text-right"><b>{ '$ '+ total }</b></td>
                 <td>
                     <button className={ (charge.status == 'DRAFT INVOICE' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(charge.id, charge.status) }>
                         { charge.status }
