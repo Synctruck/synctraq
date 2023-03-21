@@ -218,7 +218,7 @@ function Charge() {
                 <td><b>{ charge.company.name }</b></td>
                 <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
                 <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
-                <td className="text-success text-right"><b>{ '$ '+ total }</b></td>
+                <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
                 <td>
                     <button className={ (charge.status == 'DRAFT INVOICE' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(charge.id, charge.status) }>
                         { charge.status }
