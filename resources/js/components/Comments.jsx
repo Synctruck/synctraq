@@ -20,7 +20,7 @@ function Comments() {
     const [titleModal, setTitleModal] = useState('');
 
     const [textSearch, setSearch]                   = useState('');
-    const [finalStatusSearch, setFinalStatusSearch] = useState(0);
+    const [finalStatusSearch, setFinalStatusSearch] = useState('Retry');
     const [textButtonSave, setTextButtonSave]       = useState('Guardar');
 
 
@@ -80,7 +80,7 @@ function Comments() {
 
         formData.append('description', description);
         formData.append('statusCode', statusCode);
-        formData.append('finalStatus', finalStatus);
+        formData.append('category', finalStatus);
 
         clearValidation();
 
@@ -171,7 +171,7 @@ function Comments() {
             setId(comment.id);
             setDescription(comment.description);
             setStatusCode(comment.statusCode);
-            setFinalStatus(comment.finalStatus);
+            setFinalStatus(comment.category);
 
             handlerOpenModal(comment.id);
         });
@@ -232,20 +232,10 @@ function Comments() {
 
         return (
 
-            <tr key={i} className={ (comment.finalStatus == 1 ? 'alert-danger' : '') }>
+            <tr key={i}>
                 <td><b>{ comment.description }</b></td>
                 <td>{ comment.statusCode  }</td>
-                <td>
-                    {
-                        (
-                            comment.finalStatus == 1
-                            ?
-                                <div className="alert alert-danger font-weight-bold">YES</div>
-                            :
-                                <div className="alert alert-success font-weight-bold">NOT</div>
-                        )
-                    }
-                </td>
+                <td>{ comment.category }</td>
                 <td>
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getComment(comment.id) }>
                         <i className="bx bx-edit-alt"></i>
@@ -281,12 +271,13 @@ function Comments() {
                                                                 <input type="text" className="form-control" value={ statusCode } maxLength="50" onChange={ (e) => setStatusCode(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-12 form-group">
-                                                                <label className="form">FINAL STATUS</label>
+                                                                <label className="form">CATEGORY</label>
                                                                 <div id="finalStatus" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select value={ finalStatus } className="form-control" onChange={ (e) => setFinalStatus(e.target.value) } required>
                                                                     <option value="" style={ {display: 'none'} } selected>Select</option>
-                                                                    <option value="1" >Yes</option>
-                                                                    <option value="0" >Not</option>
+                                                                    <option value="Retry" >Retry</option>
+                                                                    <option value="Terminal" >Terminal</option>
+                                                                    <option value="RTS" >RTS</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -318,7 +309,7 @@ function Comments() {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <dvi className="col-lg-8 form-group">
+                                    <div className="col-lg-8 form-group">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -329,22 +320,23 @@ function Comments() {
                                                 <input type="text" value={ textSearch } onChange={ (e) => setSearch(e.target.value) } className="form-control"/>
                                             </div>
                                         </div>
-                                    </dvi>
-                                    <dvi className="col-lg-4 form-group">
+                                    </div>
+                                    <div className="col-lg-4 form-group">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    FINAL STATUS:
+                                                    CATEGORY:
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <select value={ finalStatusSearch } className="form-control" onChange={ (e) => setFinalStatusSearch(e.target.value) } required>
-                                                    <option value="1" >Yes</option>
-                                                    <option value="0" >Not</option>
+                                                    <option value="Retry" >Retry</option>
+                                                    <option value="Terminal" >Terminal</option>
+                                                    <option value="RTS" >RTS</option>
                                                 </select>
                                             </div>
                                         </div>
-                                    </dvi>
+                                    </div>
                                 </div>
                             </h5>
 
@@ -355,7 +347,7 @@ function Comments() {
                                             <tr>
                                                 <th>DESCRIPTION</th>
                                                 <th>STATUS CODE</th>
-                                                <th>FINAL STATUS</th>
+                                                <th>CATEGORY</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>
