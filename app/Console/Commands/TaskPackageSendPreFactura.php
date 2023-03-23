@@ -52,14 +52,14 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Wednesday')
+        if($dayName == 'Tuesday')
         {
             try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-12');
+                $nowDate   = date('Y-m-19');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
 

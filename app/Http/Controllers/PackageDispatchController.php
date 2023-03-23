@@ -1099,6 +1099,7 @@ class PackageDispatchController extends Controller
                     $photoUrl            = '';
                     $statusOnfleet       = '';
                     $Date_Return         = date('Y-m-d H:i:s');
+                    $Category_Return     = $request->get('CategoryReturn');
                     $Description_Return  = $request->get('Description_Return');
                     $Description_Onfleet = '';
 
@@ -1341,7 +1342,9 @@ class PackageDispatchController extends Controller
                         }
                     }
 
-                    $comment = Comment::where('description', $Description_Return)->first();
+                    $comment = Comment::where('description', $Description_Return)
+                                        ->where('category', $Category_Return)
+                                        ->first();
 
                     //data for INLAND
                     $packageController = new PackageController();

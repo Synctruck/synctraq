@@ -33,6 +33,7 @@ function PackageReturn() {
     const [descriptionReturn, setDescriptionReturn] = useState('');
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [CategoryReturn, setCategoryReturn]    = useState('');
 
     const [showReturnPackage, setShowReturnPackage] = useState('none');
     const [iconReturnPackage, setIconReturnPackage] = useState('bi bi-eye-fill');
@@ -55,7 +56,6 @@ function PackageReturn() {
 
     useEffect(() => {
 
-        listAllComment();
         listAllRoute();
         listAllCompany();
 
@@ -110,9 +110,9 @@ function PackageReturn() {
         });
     }
 
-    const listAllComment = () => {
+    const listAllComment = (category) => {
 
-        fetch(url_general +'comments/getAll/0')
+        fetch(url_general +'comments/get-all-by-category/'+ category)
         .then(res => res.json())
         .then((response) => { 
 
@@ -407,6 +407,7 @@ function PackageReturn() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', returnReference_Number_1);
+        formData.append('CategoryReturn', CategoryReturn);
         formData.append('Description_Return', descriptionReturn);
 
         clearValidation();
@@ -581,6 +582,12 @@ function PackageReturn() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const hanlderGetComment = (category) => {
+
+        setCategoryReturn(category);
+        listAllComment(category);
+    }
+
     return (
 
         <section className="section">
@@ -602,14 +609,27 @@ function PackageReturn() {
                                     <div className="col-lg-12 mb-2">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
-                                                <div className="col-lg-4">
+                                                <div className="col-lg-3">
                                                     <div className="form-group">
                                                         <label>PACKAGE ID</label>
                                                         <div id="returnReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                         <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-4">
+
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label>RETURN CATEGORY</label>
+                                                        <div id="returnCategory" className="text-danger" style={ {display: 'none'} }></div>
+                                                        <select value={ CategoryReturn } className="form-control" onChange={ (e) => hanlderGetComment(e.target.value) } required>
+                                                            <option value="" >Select item</option>
+                                                            <option value="Retry" >Retry</option>
+                                                            <option value="Terminal" >Terminal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-lg-3">
                                                     <div className="form-group">
                                                         <label>RETURN COMMENT</label>
                                                         <div id="descriptionReturn" className="text-danger" style={ {display: 'none'} }></div>

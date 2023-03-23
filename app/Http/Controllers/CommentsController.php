@@ -23,15 +23,15 @@ class CommentsController extends Controller
     {
         $commentList = Comment::orderBy('finalStatus', 'asc')
                                 ->where('description', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('finalStatus', $request->get('finalStatus'))
+                                ->where('category', $request->get('finalStatus'))
                                 ->paginate($this->paginate);
         
         return ['commentList' => $commentList];
     }
 
-    public function GetAllFinalStatus($finalStatus)
+    public function GetAllByCategory($category)
     {
-        $commentList = Comment::where('finalStatus', $finalStatus)->get();
+        $commentList = Comment::where('category', $category)->get();
 
         return ['commentList' => $commentList];
     }
@@ -43,7 +43,7 @@ class CommentsController extends Controller
             [
                 "description" => ["required", "unique:comments", "max:100"],
                 "statusCode" => ["required", "max:50"],
-                "finalStatus" => ["required"],
+                "category" => ["required"],
             ],
             [
                 "description.unique" => "Comment already exists",
@@ -53,7 +53,7 @@ class CommentsController extends Controller
                 "statusCode.required" => "The field is required",
                 "statusCode.max"  => "You must enter a maximum of 50 digits",
 
-                "finalStatus.required" => "Select item",
+                "category.required" => "Select item",
             ]
         );
 
@@ -81,7 +81,7 @@ class CommentsController extends Controller
             [
                 "description" => ["required", "unique:comments,description,$id", "max:100"],
                 "statusCode" => ["required", "max:50"],
-                "finalStatus" => ["required"],
+                "category" => ["required"],
             ],
             [
                 "description.unique" => "Comment already exists",
@@ -91,7 +91,7 @@ class CommentsController extends Controller
                 "statusCode.required" => "The field is required",
                 "statusCode.max"  => "You must enter a maximum of 50 digits",
 
-                "finalStatus.required" => "Select item",
+                "category.required" => "Select item",
             ]
         );
 
