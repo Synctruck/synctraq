@@ -386,8 +386,14 @@ function ReportDelivery() {
                 <td>{ packageDelivery.Route }</td>
                 <td>
                     { packageDelivery.taskOnfleet }
-                    <br/><br/>
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
+                    <br/>
+                    {
+                        ( packageDelivery.taskOnfleet != '' || packageDelivery.arrivalLonLat)
+                        ?
+                            <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
+                        :
+                            ''
+                    }
                 </td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
