@@ -258,11 +258,16 @@ class PackageController extends Controller
         $noteOnfleet       = '';
         $latitudeLongitude = [0, 0];
 
-        if($packageDispatch && $packageDispatch->status == 'Delivery')
+        if($packageDispatch && $packageDispatch->taskOnfleet != '' && $packageDispatch->status == 'Delivery')
         {
             $responseOnfleet   = $this->SearchTask($packageDispatch->taskOnfleet);
             $noteOnfleet       = $responseOnfleet['stateAction'] == false ? null : $responseOnfleet['onfleet']['destination']['notes'];
             $latitudeLongitude = $responseOnfleet['stateAction'] == false ? $latitudeLongitude : $responseOnfleet['onfleet']['completionDetails']['lastLocation'];
+        }
+        else if($packageDispatch && $packageDispatch->arrivalLonLat != '')
+        {
+            $localization       = explode(',', $packageDispatch->arrivalLonLat);
+            $latitudeLongitude = [$localization[0] , $localization[1]];
         }
 
         $actualStatus = $this->GetStatus($Reference_Number_1);
