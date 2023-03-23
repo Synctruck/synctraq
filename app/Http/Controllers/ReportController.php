@@ -522,6 +522,7 @@ class ReportController extends Controller
                 "Route" => $packageDelivery->Route,
                 "pricePaymentTeam" => $packageDelivery->pricePaymentTeam,
                 "pieces" => $packageDelivery->pieces,
+                "taskOnfleet" => $packageDelivery->taskOnfleet
             ];
 
             array_push($packageHistoryListNew, $package);
