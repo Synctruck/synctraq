@@ -267,7 +267,11 @@ class PackageController extends Controller
         else if($packageDispatch && $packageDispatch->arrivalLonLat != '')
         {
             $localization       = explode(',', $packageDispatch->arrivalLonLat);
-            $latitudeLongitude = [$localization[0] , $localization[1]];
+
+            if(count($localization) > 1)
+            {
+                $latitudeLongitude = [$localization[0] , $localization[1]];
+            }
         }
 
         $actualStatus = $this->GetStatus($Reference_Number_1);
