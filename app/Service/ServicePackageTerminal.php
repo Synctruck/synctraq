@@ -39,4 +39,9 @@ class ServicePackageTerminal{
 
         $packageTerminal->save();
     }
+
+    public function Get($Reference_Number_1)
+    {
+        return PackageTerminal::find($Reference_Number_1);
+    }
 }

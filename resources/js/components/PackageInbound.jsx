@@ -487,7 +487,15 @@ function PackageInbound() {
                     }
                     else if(response.stateAction == 'packageInPreDispatch')
                     {
-                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageTerminal')
+                    {
+                        setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
                         setTypeMessage('warning');
                         setNumberPackage('');
 

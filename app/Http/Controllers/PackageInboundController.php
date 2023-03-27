@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute };
 
@@ -198,6 +199,14 @@ class PackageInboundController extends Controller
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
+        }
+
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
         }
 
         $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));

@@ -8,7 +8,7 @@ use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamCon
 
 use App\Http\Controllers\Api\{ PackageController };
 
-use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{ Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -116,6 +116,13 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        $comment = Comment::where('description', $request->get('Description_Return'))->first();
+
+        if(!$comment)
+        {
+            return ['stateAction' => 'commentNotExists'];
+        }
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -152,7 +159,7 @@ class PackageReturnCompanyController extends Controller
                                                 ->where('status', 'Manifest')
                                                 ->first();
 
-                $company = Company::find($packageHistory->idCompany);
+                $company = Company::find($packageHistory->idCompany); 
 
                 $packageReturnCompany = new PackageReturnCompany();
 

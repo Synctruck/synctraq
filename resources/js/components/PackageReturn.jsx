@@ -495,7 +495,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notDispatch')
                 {
-                    setTextMessage("The package #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
+                    setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch!");
                     setTypeMessage('warning');
                     setNumberPackage('');
 

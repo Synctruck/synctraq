@@ -2,19 +2,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
-
-use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
-use App\Service\ServicePackageTerminal;
-
 use DB;
-use Illuminate\Support\Facades\Auth;
 use Log;
 use Session;
 
@@ -273,6 +273,14 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'packageInPreDispatch'];
         }
         
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
+        }
+
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
         if($packageLost)
