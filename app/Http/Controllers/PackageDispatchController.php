@@ -2,17 +2,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
-
-use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Api\{ PackageController, XceleratorController };
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
 use DB;
-use Illuminate\Support\Facades\Auth;
 use Log;
 use Session;
 
@@ -271,6 +273,14 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'packageInPreDispatch'];
         }
         
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
+        }
+
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
         if($packageLost)
@@ -1214,13 +1224,16 @@ class PackageDispatchController extends Controller
                     }
 
                     //update dispatch
-                    $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                    $packageHistory = PackageHistory::where('Reference_Number_1', 'INLAND103845989')
                                                     ->where('dispatch', 1)
                                                     ->first();
 
-                    $packageHistory->dispatch = 0;
+                    if($packageHistory)
+                    {
+                        $packageHistory->dispatch = 0;
 
-                    $packageHistory->save();
+                        $packageHistory->save();
+                    }
 
                     //update inbound
                     $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -1243,59 +1256,73 @@ class PackageDispatchController extends Controller
                         $packageWarehouse->delete();
                     }
 
-                    $packageWarehouse = new PackageWarehouse();
+                    $comment = Comment::where('description', $Description_Return)
+                                        ->where('category', $Category_Return)
+                                        ->first();
 
-                    $packageWarehouse->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageWarehouse->idCompany                    = $packageDispatch->idCompany;
-                    $packageWarehouse->company                      = $packageDispatch->company;
-                    $packageWarehouse->idStore                      = $packageDispatch->idStore;
-                    $packageWarehouse->store                        = $packageDispatch->store;
-                    $packageWarehouse->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageWarehouse->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageWarehouse->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageWarehouse->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageWarehouse->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageWarehouse->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageWarehouse->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageWarehouse->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageWarehouse->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageWarehouse->Notes                        = $packageDispatch->Notes;
-                    $packageWarehouse->Weight                       = $packageDispatch->Weight;
-                    $packageWarehouse->Route                        = $packageDispatch->Route;
-                    $packageWarehouse->idUser                       = Auth::user()->id;
-                    $packageWarehouse->quantity                     = $packageDispatch->quantity;
-                    $packageWarehouse->status                       = 'Warehouse';
+                    if($comment && $comment->category == 'Retry')
+                    {
+                        $packageWarehouse = new PackageWarehouse();
 
-                    $packageWarehouse->save();
+                        $packageWarehouse->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageWarehouse->idCompany                    = $packageDispatch->idCompany;
+                        $packageWarehouse->company                      = $packageDispatch->company;
+                        $packageWarehouse->idStore                      = $packageDispatch->idStore;
+                        $packageWarehouse->store                        = $packageDispatch->store;
+                        $packageWarehouse->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageWarehouse->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageWarehouse->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageWarehouse->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageWarehouse->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageWarehouse->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageWarehouse->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageWarehouse->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageWarehouse->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageWarehouse->Notes                        = $packageDispatch->Notes;
+                        $packageWarehouse->Weight                       = $packageDispatch->Weight;
+                        $packageWarehouse->Route                        = $packageDispatch->Route;
+                        $packageWarehouse->idUser                       = Auth::user()->id;
+                        $packageWarehouse->quantity                     = $packageDispatch->quantity;
+                        $packageWarehouse->status                       = 'Warehouse';
 
-                    $packageHistory = new PackageHistory();
+                        $packageWarehouse->save();
 
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                    $packageHistory->company                      = $packageDispatch->company;
-                    $packageHistory->idStore                      = $packageDispatch->idStore;
-                    $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                    $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->idUser                       = Auth::user()->id;
-                    $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                    $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->status                       = 'Warehouse';
-                    $packageHistory->created_at                   = $created_at_Warehouse;
-                    $packageHistory->updated_at                   = $created_at_Warehouse;
+                        $packageHistory = new PackageHistory();
 
-                    $packageHistory->save();
+                        $packageHistory->id                           = uniqid();
+                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                        $packageHistory->company                      = $packageDispatch->company;
+                        $packageHistory->idStore                      = $packageDispatch->idStore;
+                        $packageHistory->store                        = $packageDispatch->store;
+                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageHistory->Notes                        = $packageDispatch->Notes;
+                        $packageHistory->Weight                       = $packageDispatch->Weight;
+                        $packageHistory->Route                        = $packageDispatch->Route;
+                        $packageHistory->idUser                       = Auth::user()->id;
+                        $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                        $packageHistory->quantity                     = $packageDispatch->quantity;
+                        $packageHistory->status                       = 'Warehouse';
+                        $packageHistory->created_at                   = $created_at_Warehouse;
+                        $packageHistory->updated_at                   = $created_at_Warehouse;
+
+                        $packageHistory->save();
+                    }
+                    else if($comment && $comment->category == 'Terminal')
+                    {
+                        $statusReturn = 'Terminal';
+                        
+                        $servicePackageTerminal = new ServicePackageTerminal();
+                        $servicePackageTerminal->Insert($packageDispatch);
+                    }
 
                     $packageHistory = new PackageHistory();
 
@@ -1342,9 +1369,6 @@ class PackageDispatchController extends Controller
                         }
                     }
 
-                    $comment = Comment::where('description', $Description_Return)
-                                        ->where('category', $Category_Return)
-                                        ->first();
 
                     //data for INLAND
                     $packageController = new PackageController();

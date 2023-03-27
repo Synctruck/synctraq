@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
 
@@ -15,7 +18,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use DB;
-use Illuminate\Support\Facades\Auth;
+
 use Session;
 
 class PackageWarehouseController extends Controller
@@ -181,6 +184,14 @@ class PackageWarehouseController extends Controller
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
+        }
+        
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
         }
         
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));

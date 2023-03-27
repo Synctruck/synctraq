@@ -496,6 +496,14 @@ function PackageWarehouse() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'packageTerminal')
+                    {
+                        setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'validatedLost')
                     {
                         setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
