@@ -223,7 +223,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
                 $packageInbound->delete();
 
