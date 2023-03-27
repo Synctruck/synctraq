@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use Log;
 use Session;
 
 class PackageReturnCompanyController extends Controller
@@ -222,6 +223,8 @@ class PackageReturnCompanyController extends Controller
                 
                 $packageHistory->save();
 
+                Log::info('ReturnCompany: send status: '. $comment->statusCode);
+                
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
