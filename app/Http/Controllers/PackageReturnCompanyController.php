@@ -8,12 +8,13 @@ use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamCon
 
 use App\Http\Controllers\Api\{ PackageController };
 
-use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{ Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use Log;
 use Session;
 
 class PackageReturnCompanyController extends Controller
@@ -116,6 +117,13 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        $comment = Comment::where('description', $request->get('Description_Return'))->first();
+
+        if(!$comment)
+        {
+            return ['stateAction' => 'commentNotExists'];
+        }
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -152,7 +160,7 @@ class PackageReturnCompanyController extends Controller
                                                 ->where('status', 'Manifest')
                                                 ->first();
 
-                $company = Company::find($packageHistory->idCompany);
+                $company = Company::find($packageHistory->idCompany); 
 
                 $packageReturnCompany = new PackageReturnCompany();
 
@@ -215,8 +223,10 @@ class PackageReturnCompanyController extends Controller
                 
                 $packageHistory->save();
 
+                Log::info('ReturnCompany: send status: '. $comment->statusCode);
+                
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
                 $packageInbound->delete();
 

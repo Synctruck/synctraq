@@ -15,6 +15,7 @@ function ReportReturnCompany() {
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
     const [listCompany , setListCompany]      = useState([]);
+    const [listComment, setListComment]       = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -355,6 +356,15 @@ function ReportReturnCompany() {
                     
                     document.getElementById('soundPitidoBlocked').play();
                 }
+                else if(response.stateAction == 'commentNotExists')
+                {
+                    swal('The COMMENT does not exist #'+ Reference_Number_1, {
+
+                        icon: "warning",
+                    });
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
                 else if(response.stateAction == 'validatedLost')
                 {
                     swal('THE PACKAGE WAS RECORDED BEFORE AS LOST #'+ Reference_Number_1, {
@@ -411,6 +421,7 @@ function ReportReturnCompany() {
         });
 
         myModal.show();
+        listAllComment('RTS');
     }
 
     const handlerImport = (e) => {
@@ -455,6 +466,26 @@ function ReportReturnCompany() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const listAllComment = (category) => {
+
+        fetch(url_general +'comments/get-all-by-category/'+ category)
+        .then(res => res.json())
+        .then((response) => { 
+
+            setListComment(response.commentList);
+        });
+    }
+
+    const optionsComment = listComment.map( (comment, i) => {
+
+        return (
+            (
+                <option key={ i } value={ comment.description }> { comment.description }</option>
+            )
+
+        );
+    });
+
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -479,7 +510,10 @@ function ReportReturnCompany() {
                                                                 <div className="form-group">
                                                                     <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Description_Return } className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required/>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
+                                                                        <option value="">Selection comment</option>
+                                                                        { optionsComment }
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">

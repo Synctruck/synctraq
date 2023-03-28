@@ -440,7 +440,7 @@ class PackageController extends Controller
         {
             if($status == 'ReturnCompany')
             {
-                $statusCodeCompany = 'scan_out_for_return';
+                $statusCodeCompany = $idPhoto;
             }
             elseif($status == 'Lost')
             {
