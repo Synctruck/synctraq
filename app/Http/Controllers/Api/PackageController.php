@@ -430,6 +430,9 @@ class PackageController extends Controller
                                                 ->where('status', $status)
                                                 ->first();
 
+            Log::info('companyStatus');
+            Log::info($companyStatus);
+            Log::info('===========');
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
             $url_webhook       = $companyStatus->company->url_webhook;
