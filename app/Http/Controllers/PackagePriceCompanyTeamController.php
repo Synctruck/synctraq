@@ -58,7 +58,7 @@ class PackagePriceCompanyTeamController extends Controller
 
                 if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
                 {
-                    $dieselPriceCompany = $historyDiesel->price;
+                    $dieselPriceCompany = $historyDiesel->roundPrice;
                 }
             }
         }
