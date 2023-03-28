@@ -51,6 +51,7 @@ class PackagePriceCompanyTeamController extends Controller
                 $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
                 $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
 
+                Log::info('Reference_Number_1: '. $packageDispatch->Reference_Number_1);
                 Log::info('timeChangeDateStart: '. $timeChangeDateStart);
                 Log::info('timeDeliveryDate: '. $timeDeliveryDate);
                 Log::info('timeChangeDateEnd: '. $timeChangeDateEnd);
