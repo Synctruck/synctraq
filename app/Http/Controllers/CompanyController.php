@@ -332,6 +332,18 @@ class CompanyController extends Controller
                                                     ->where('but_less', '>=',  $dieselPrice)
                                                     ->first()->surcharge_percentage;
 
+        if($surchargePercentage)
+        {
+            Log::info('surcharge_percentage');
+            Log::info($surchargePercentage);
+            Log::info('=====================');
+        }
+        else
+        {
+            Log::info('not_surcharge_percentage');
+            Log::info('=====================');
+        }
+
         return $surchargePercentage;
     }
 
