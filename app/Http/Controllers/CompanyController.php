@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
 use DB;
+use Log;
 use Session;
 
 class CompanyController extends Controller
@@ -322,10 +323,26 @@ class CompanyController extends Controller
 
     public function GetPercentage($idCompany, $dieselPrice)
     {
+        Log::info('GetPercentage');
+        Log::info('idCompany:'. $idCompany);
+        Log::info('dieselPrice:'. $dieselPrice);
+
         $surchargePercentage = RangeDieselCompany::where('idCompany', $idCompany)
                                                     ->where('at_least', '<=', $dieselPrice)
                                                     ->where('but_less', '>=',  $dieselPrice)
                                                     ->first()->surcharge_percentage;
+
+        if($surchargePercentage)
+        {
+            Log::info('surcharge_percentage');
+            Log::info($surchargePercentage);
+            Log::info('=====================');
+        }
+        else
+        {
+            Log::info('not_surcharge_percentage');
+            Log::info('=====================');
+        }
 
         return $surchargePercentage;
     }

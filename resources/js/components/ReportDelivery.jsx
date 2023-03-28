@@ -388,7 +388,7 @@ function ReportDelivery() {
                     { packageDelivery.taskOnfleet }
                     <br/>
                     {
-                        ( packageDelivery.taskOnfleet != '' || packageDelivery.arrivalLonLat)
+                        ( packageDelivery.taskOnfleet != '' || packageDelivery.arrivalLonLat != '')
                         ?
                             <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
                         :

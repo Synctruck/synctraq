@@ -52,16 +52,16 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Tuesday')
+        if($dayName == 'Monday' && $nowHour == 12)
         {
             try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-19');
-                $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
+                $nowDate   = date('Y-m-d');
+                $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
 
@@ -188,6 +188,17 @@ class TaskPackageSendPreFactura extends Command
     {
         $files = $files;
         $data  = ['startDate' => $startDate, 'endDate' => $endDate];
+
+        Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
+
+            $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
+            ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+
+            foreach ($files as $file)
+            {
+                $message->attach($file);
+            }
+        });
 
         Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
 
