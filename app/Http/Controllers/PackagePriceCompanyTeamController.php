@@ -51,6 +51,10 @@ class PackagePriceCompanyTeamController extends Controller
                 $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
                 $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
 
+                Log::info('timeChangeDateStart: '. $timeChangeDateStart);
+                Log::info('timeDeliveryDate: '. $timeDeliveryDate);
+                Log::info('timeChangeDateEnd: '. $timeChangeDateEnd);
+
                 if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
                 {
                     $dieselPriceCompany = $historyDiesel->price;
