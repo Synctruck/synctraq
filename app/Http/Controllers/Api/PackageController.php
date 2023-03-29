@@ -413,6 +413,7 @@ class PackageController extends Controller
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
+        $package_id        = "";
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
@@ -475,8 +476,18 @@ class PackageController extends Controller
 
             $curl = curl_init();
 
+            if($package->idCompany == 1)
+            {
+                $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
+            }
+            else
+            {
+                $urlWebhook = $url_webhook;
+                $package_id = '"package_id": "'. $package->Reference_Number_1 .'",';
+            }
+
             curl_setopt_array($curl, array(
-                CURLOPT_URL => $url_webhook . $package->Reference_Number_1 .'/update-status',
+                CURLOPT_URL => ,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -485,6 +496,7 @@ class PackageController extends Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS =>'{
+                    '. $package_id .'
                     "status": "'. $statusCodeCompany .'",
                     '. $pod_url .'
                     "metadata": [
