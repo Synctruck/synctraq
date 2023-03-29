@@ -499,9 +499,9 @@ class PackageController extends Controller
                     "datetime" : "'. $created_at .'"
             }';
 
-            Log::info('DATA SEND WEBHOOK- COMPANY'):
+            Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
-            
+
             curl_setopt_array($curl, array(
                 CURLOPT_URL => ,
                 CURLOPT_RETURNTRANSFER => true,
