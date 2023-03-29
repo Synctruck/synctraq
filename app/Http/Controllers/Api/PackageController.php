@@ -486,16 +486,7 @@ class PackageController extends Controller
                 $package_id = '"package_id": "'. $package->Reference_Number_1 .'",';
             }
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => ,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS =>'{
+            $dataSend = '{
                     '. $package_id .'
                     "status": "'. $statusCodeCompany .'",
                     '. $pod_url .'
@@ -506,7 +497,21 @@ class PackageController extends Controller
                         }
                     ],
                     "datetime" : "'. $created_at .'"
-                }', 
+            }';
+
+            Log::info('DATA SEND WEBHOOK- COMPANY'):
+            Log::info($dataSend);
+            
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => ,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $dataSend, 
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'
