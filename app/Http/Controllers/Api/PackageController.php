@@ -503,7 +503,7 @@ class PackageController extends Controller
             Log::info($dataSend);
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => ,
+                CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
