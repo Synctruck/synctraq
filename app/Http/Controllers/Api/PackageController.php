@@ -542,17 +542,17 @@ class PackageController extends Controller
     public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
     {
         $dataStructure = '{
-            "shipment_number": "'. $Reference_Number_1 .'",
+            "shipment_number": "XDL00991686001",
             "tracking": {
                 "events": [
                     {
-                        "name": "'. $statusCodeCompany .'",
-                        "date": "'. $created_at .'",
-                        "comment": "'. $status .'"
+                        "name": "RCF",
+                        "date": "2023-03-30T19:18:18-04:00",
+                        "comment": "Inbound"
                     }
                 ],
                 "status": {
-                    "to": "'. $statusCodeCompany .'",
+                    "to": "RCF",
                     "latitude":"40.655849",
                     "longitude":"-73.794281"
                 }
