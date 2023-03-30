@@ -24,7 +24,7 @@ class PackageBlockedController extends Controller
         return view('package.blocked');
     }
 
-    public function List(Request $request)
+    public function List()
     {            
         return ['listPackageBlocked' => $this->servicePackageBlocked->List()];
     }
