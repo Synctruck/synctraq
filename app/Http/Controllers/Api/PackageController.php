@@ -479,21 +479,8 @@ class PackageController extends Controller
             if($package->idCompany == 1)
             {
                 $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
-            }
-            else
-            {
-                $companyStatus = CompanyStatus::with('company')
-                                                ->where('idCompany', $package->idCompany)
-                                                ->where('status', $status)
-                                                ->first();
 
-                $statusCodeCompany = $companyStatus->statusCodeCompany;
-                $urlWebhook        = $url_webhook;
-                $package_id        = '"package_id": "'. $package->Reference_Number_1 .'",';
-            }
-
-            $dataSend = '{
-                    '. $package_id .'
+                $dataSend = '{
                     "status": "'. $statusCodeCompany .'",
                     '. $pod_url .'
                     "metadata": [
@@ -503,11 +490,26 @@ class PackageController extends Controller
                         }
                     ],
                     "datetime" : "'. $created_at .'"
-            }';
+                }';
+            }
+            else
+            {
+                $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
+                                                ->first();
 
+
+                $statusCodeCompany = $companyStatus->statusCodeCompany;
+                $dataSend          = $this->GetDataSmartKargo($package->Reference_Number_1, $status, $statusCodeCompany, $created_at);
+                $urlWebhook        = $url_webhook;
+            }
+
+            
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
 
+            dd($dataSend);
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
@@ -537,6 +539,30 @@ class PackageController extends Controller
             Log::info('REPONSE STATUS: '. $response['status']);
             Log::info('============INLAND - END STATUS UPDATE');
         }
+    }
+
+    public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
+    {
+        $dataStructure = '{
+            "shipment_number":'. $Reference_Number_1 .',
+            "tracking": {
+                "events": [
+                    {
+                        "name": '. $statusCodeCompany .',
+                        "date" '. $created_at .',
+                        "comment": '. $status .',
+                    }
+                ],
+                "status": [
+                    "to": '. $statusCodeCompany .',
+                    "latitude":"40.655849",
+                    "longitude":"-73.794281"
+                ]
+            }
+        }';
+
+
+        return $dataStructure;
     }
 
     public function UpdateManifestRouteByZipCode()
