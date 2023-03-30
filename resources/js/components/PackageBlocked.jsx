@@ -66,6 +66,7 @@ function PackageBlocked() {
         .then(res => res.json()).
         then((response) => {
 
+                console.log(response);
                 if(response.stateAction == true)
                 {
                     swal("Package saved!", {
