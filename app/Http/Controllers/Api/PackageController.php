@@ -547,7 +547,7 @@ class PackageController extends Controller
                 "events": [
                     {
                         "name": "'. $statusCodeCompany .'",
-                        "date": "'. $created_at .'",
+                        "date": '. $created_at .',
                         "comment": "'. $status .'"
                     }
                 ],
@@ -558,7 +558,6 @@ class PackageController extends Controller
                 }
             }
         }';
-
 
         return $dataStructure;
     }
