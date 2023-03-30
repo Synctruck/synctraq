@@ -482,8 +482,14 @@ class PackageController extends Controller
             }
             else
             {
-                $urlWebhook = $url_webhook;
-                $package_id = '"package_id": "'. $package->Reference_Number_1 .'",';
+                $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
+                                                ->first();
+
+                $statusCodeCompany = $companyStatus->statusCodeCompany;
+                $urlWebhook        = $url_webhook;
+                $package_id        = '"package_id": "'. $package->Reference_Number_1 .'",';
             }
 
             $dataSend = '{
