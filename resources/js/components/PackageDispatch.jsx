@@ -533,11 +533,7 @@ function PackageDispatch() {
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
 
-            if(latitude !=0 && longitude != 0)
-            {
-
-            }
-            else
+            if(latitude == 0 || longitude == 0)
             {
                 swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
 
