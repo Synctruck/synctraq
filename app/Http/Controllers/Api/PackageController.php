@@ -543,6 +543,8 @@ class PackageController extends Controller
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
         $created_at_gdl = $created_at;
+        $created_at_adl = $created_at;
+        $created_at_rts = $created_at;
 
         if($statusCodeCompany == 'RCF')
         {
@@ -631,7 +633,77 @@ class PackageController extends Controller
                         {
                             "name": "GDL",
                             "date": "'. $created_at_gdl .'",
+                            "comment": "Dispatch"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at_now .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "Pods":[
+                        {
+                            "mimeType": "url",
+                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
+                        },
+                        {
+                            "mimeType": "url",
+                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude":"40.655849",
+                        "longitude":"-73.794281"
+                    }
+                }
+            }';
+        }
+        elseif($statusCodeCompany == 'RTS')
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+            $packageReturn   = PackageReturn::where('Reference_Number_1', $Reference_Number_1)->get();
+
+            if($packageInbound)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageInbound->created_at);
+                $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            if($packageDispatch)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
+                $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
+            }
+            
+            if(count($packageReturn) > 0)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->last()->created_at);
+                $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            $dataStructure = '{
+                "shipment_number": "'. $Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at_rfc .'",
                             "comment": "Inbound"
+                        },
+                        {
+                            "name": "GDL",
+                            "date": "'. $created_at_gdl .'",
+                            "comment": "Dispatch"
+                        },
+                        {
+                            "name": "ADL",
+                            "date": "'. $created_at_adl .'",
+                            "comment": "ReInbound"
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
