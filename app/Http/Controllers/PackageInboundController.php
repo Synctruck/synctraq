@@ -187,6 +187,8 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
+        dd($request->all());
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -367,6 +369,9 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
+
+                $packageManifest['latitude']  = $request->get('latitude');
+                $packageManifest['longitude'] = $request->get('longitude');
 
                 //data for INLAND
                 $packageController = new PackageController();

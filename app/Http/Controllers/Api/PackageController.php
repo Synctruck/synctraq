@@ -500,7 +500,7 @@ class PackageController extends Controller
 
 
                 $statusCodeCompany = $companyStatus->statusCodeCompany;
-                $dataSend          = $this->GetDataSmartKargo($package->Reference_Number_1, $status, $statusCodeCompany, $created_at, $idPhoto);
+                $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
                 $urlWebhook        = $url_webhook;
             }
 
@@ -538,7 +538,7 @@ class PackageController extends Controller
         }
     }
 
-    public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at, $idPhoto = null)
+    public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
     {
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
@@ -549,7 +549,7 @@ class PackageController extends Controller
         if($statusCodeCompany == 'RCF')
         {
             $dataStructure = '{
-                "shipment_number": "'. $Reference_Number_1 .'",
+                "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
                     "events": [
                         {
@@ -560,15 +560,15 @@ class PackageController extends Controller
                     ],
                     "status": {
                         "to": "'. $statusCodeCompany .'",
-                        "latitude":"40.655849",
-                        "longitude":"-73.794281"
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'",
                     }
                 }
             }';
         }
         elseif($statusCodeCompany == 'GDL')
         {
-            $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
                                             ->where('status', 'Inbound')
                                             ->first();
 
@@ -579,7 +579,7 @@ class PackageController extends Controller
             }
             
             $dataStructure = '{
-                "shipment_number": "'. $Reference_Number_1 .'",
+                "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
                     "events": [
                         {
@@ -603,11 +603,11 @@ class PackageController extends Controller
         }
         elseif($statusCodeCompany == 'DDL' || $statusCodeCompany == 'ADL')
         {
-            $packageInbound = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+            $packageInbound = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
                                             ->where('status', 'Inbound')
                                             ->first();
 
-            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+            $packageDispatch = PackageDispatch::find($package->Reference_Number_1);
 
             if($packageInbound)
             {
@@ -651,7 +651,7 @@ class PackageController extends Controller
             }
 
             $dataStructure = '{
-                "shipment_number": "'. $Reference_Number_1 .'",
+                "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
                     "events": [
                         {
@@ -683,12 +683,12 @@ class PackageController extends Controller
         }
         elseif($statusCodeCompany == 'RTS')
         {
-            $packageInbound = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+            $packageInbound = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
                                             ->where('status', 'Inbound')
                                             ->first();
 
-            $packageDispatch = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->where('status', 'Dispatch')->get();
-            $packageReturn   = PackageReturn::where('Reference_Number_1', $Reference_Number_1)->get();
+            $packageDispatch = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)->where('status', 'Dispatch')->get();
+            $packageReturn   = PackageReturn::where('Reference_Number_1', $package->Reference_Number_1)->get();
 
             if($packageInbound)
             {
@@ -709,7 +709,7 @@ class PackageController extends Controller
             }
 
             $dataStructure = '{
-                "shipment_number": "'. $Reference_Number_1 .'",
+                "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
                     "events": [
                         {
