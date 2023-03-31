@@ -86,7 +86,7 @@ function PackageDispatch() {
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
 
-                console.log("Latitude is :", position.coords.latitude);
+                console.log("Latitude isss :", position.coords.latitude);
                 console.log("Longitude is :", position.coords.longitude);
             });
         }
@@ -532,7 +532,7 @@ function PackageDispatch() {
             formData.append('autorizationDispatch', autorizationDispatch);
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
-            
+
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch(url_general +'package-dispatch/insert', {
