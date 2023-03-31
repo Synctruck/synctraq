@@ -432,7 +432,6 @@ class PackageController extends Controller
                                                 ->first();
 
             Log::info('companyStatus');
-            Log::info($companyStatus);
             Log::info('===========');
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
