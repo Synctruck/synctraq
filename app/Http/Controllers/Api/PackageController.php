@@ -599,7 +599,7 @@ class PackageController extends Controller
                 }
             }';
         }
-        elseif($statusCodeCompany == 'DDL')
+        elseif($statusCodeCompany == 'DDL' || $statusCodeCompany == 'ADL')
         {
             $packageInbound = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                             ->where('status', 'Inbound')
