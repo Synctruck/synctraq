@@ -542,7 +542,9 @@ class PackageController extends Controller
     public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
     {
         $created_at_now = $created_at;
-        
+        $created_at_rfc = $created_at;
+        $created_at_gdl = $created_at;
+
         if($statusCodeCompany == 'RCF')
         {
             $dataStructure = '{
@@ -588,6 +590,64 @@ class PackageController extends Controller
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
                             "comment": "'. $status .'"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude":"40.655849",
+                        "longitude":"-73.794281"
+                    }
+                }
+            }';
+        }
+        elseif($statusCodeCompany == 'DDL')
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+
+            if($packageInbound)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageInbound->created_at);
+                $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            if($packageDispatch)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
+                $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
+            }
+            
+            $dataStructure = '{
+                "shipment_number": "'. $Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at_rfc .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "GDL",
+                            "date": "'. $created_at_gdl .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at_now .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "Pods":[
+                        {
+                            "mimeType": "url",
+                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
+                        },
+                        {
+                            "mimeType": "url",
+                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
                         }
                     ],
                     "status": {
