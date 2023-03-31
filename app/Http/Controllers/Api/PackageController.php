@@ -541,23 +541,62 @@ class PackageController extends Controller
 
     public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
     {
-        $dataStructure = '{
-            "shipment_number": "'. $Reference_Number_1 .'",
-            "tracking": {
-                "events": [
-                    {
-                        "name": "'. $statusCodeCompany .'",
-                        "date": "'. $created_at .'",
-                        "comment": "'. $status .'"
+        if($statusCodeCompany == 'RCF')
+        {
+            $dataStructure = '{
+                "shipment_number": "'. $Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude":"40.655849",
+                        "longitude":"-73.794281"
                     }
-                ],
-                "status": {
-                    "to": "'. $statusCodeCompany .'",
-                    "latitude":"40.655849",
-                    "longitude":"-73.794281"
                 }
+            }';
+        }
+        elseif($statusCodeCompany == 'GDL')
+        {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            if($packageHistory)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageHistory->created_at);
+                $created_at      = $created_at_temp->format(DateTime::ATOM);
             }
-        }';
+            
+            $dataStructure = '{
+                "shipment_number": "'. $Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude":"40.655849",
+                        "longitude":"-73.794281"
+                    }
+                }
+            }';
+        }
+        
 
         return $dataStructure;
     }
