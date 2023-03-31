@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, Routes };
+use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes };
 
 use DateTime;
 use DB;
