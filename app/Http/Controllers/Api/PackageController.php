@@ -414,6 +414,7 @@ class PackageController extends Controller
         $url_webhook       = '';
         $pod_url           = "";
         $package_id        = "";
+        $header_curl       = "";        
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
@@ -477,7 +478,12 @@ class PackageController extends Controller
 
             if($package->idCompany == 1)
             {
-                $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
+                $header_curl = array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
+                $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
 
                 $dataSend = '{
                     "status": "'. $statusCodeCompany .'",
@@ -493,6 +499,11 @@ class PackageController extends Controller
             }
             else
             {
+                $header_curl = array(
+                    'code: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
                 $companyStatus = CompanyStatus::with('company')
                                                 ->where('idCompany', $package->idCompany)
                                                 ->where('status', $status)
@@ -507,6 +518,7 @@ class PackageController extends Controller
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
 
+
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
@@ -517,10 +529,7 @@ class PackageController extends Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $dataSend, 
-                CURLOPT_HTTPHEADER => array(
-                    'code: '. $key_webhook,
-                    'Content-Type: application/json'
-                ),
+                CURLOPT_HTTPHEADER => $header_curl,
             ));
 
             $response = curl_exec($curl);
