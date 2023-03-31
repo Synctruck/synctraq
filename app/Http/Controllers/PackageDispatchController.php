@@ -1058,9 +1058,7 @@ class PackageDispatchController extends Controller
     }
 
     public function Return(Request $request)
-    {
-        dd($request->all());
-        
+    {        
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
