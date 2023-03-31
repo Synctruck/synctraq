@@ -543,6 +543,9 @@ class PackageDispatchController extends Controller
                             {
                                 DB::commit();
 
+                                $package['latitude']  = $request->get('latitude');
+                                $package['longitude'] = $request->get('longitude');
+
                                 //data for INLAND
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
