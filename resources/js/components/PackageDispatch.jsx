@@ -94,7 +94,7 @@ function PackageDispatch() {
         {
             swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
         }
-        
+
         listAllCompany();
         listAllRoute();
 
@@ -530,6 +530,8 @@ function PackageDispatch() {
             formData.append('idDriver', idDriver);
             formData.append('RouteSearch', RouteSearch);
             formData.append('autorizationDispatch', autorizationDispatch);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
