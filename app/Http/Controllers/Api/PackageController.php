@@ -665,7 +665,7 @@ class PackageController extends Controller
                                             ->where('status', 'Inbound')
                                             ->first();
 
-            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+            $packageDispatch = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->where('status', 'Dispatch')->get();
             $packageReturn   = PackageReturn::where('Reference_Number_1', $Reference_Number_1)->get();
 
             if($packageInbound)
@@ -674,9 +674,9 @@ class PackageController extends Controller
                 $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
             }
 
-            if($packageDispatch)
+            if(count($packageDispatch) > 0)
             {
-                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->last()->created_at);
                 $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
             }
             
