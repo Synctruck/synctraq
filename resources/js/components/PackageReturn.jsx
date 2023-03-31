@@ -34,6 +34,8 @@ function PackageReturn() {
 
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [CategoryReturn, setCategoryReturn]    = useState('');
+    const [latitude, setLatitude]                = useState(0);
+    const [longitude, setLongitude]              = useState(0);
 
     const [showReturnPackage, setShowReturnPackage] = useState('none');
     const [iconReturnPackage, setIconReturnPackage] = useState('bi bi-eye-fill');
@@ -55,6 +57,24 @@ function PackageReturn() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#f8d7da';
 
     useEffect(() => {
+
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is:", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+        }
 
         listAllRoute();
         listAllCompany();
@@ -409,7 +429,16 @@ function PackageReturn() {
         formData.append('Reference_Number_1', returnReference_Number_1);
         formData.append('CategoryReturn', CategoryReturn);
         formData.append('Description_Return', descriptionReturn);
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
 
+        if(latitude == 0 || longitude == 0)
+        {
+            swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
+
+            return 0;
+        }
+            
         clearValidation();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
