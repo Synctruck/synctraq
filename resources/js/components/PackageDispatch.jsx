@@ -47,6 +47,9 @@ function PackageDispatch() {
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
+    
+    const [latitude, setLatitude]   = useState(0);
+    const [longitude, setLongitude] = useState(0);
 
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
