@@ -543,7 +543,6 @@ class PackageDispatchController extends Controller
                             {
                                 DB::commit();
 
-                                
                                 //data for INLAND
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
