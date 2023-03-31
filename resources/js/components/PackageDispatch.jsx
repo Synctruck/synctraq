@@ -533,6 +533,17 @@ function PackageDispatch() {
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
 
+            if(latitude !=0 && longitude != 0)
+            {
+
+            }
+            else
+            {
+                swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
+
+                return 0;
+            }
+
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch(url_general +'package-dispatch/insert', {
