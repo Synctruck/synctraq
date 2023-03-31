@@ -714,11 +714,7 @@ class PackageController extends Controller
                     "Pods":[
                         {
                             "mimeType": "url",
-                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
-                        },
-                        {
-                            "mimeType": "url",
-                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
+                            "content": ""
                         }
                     ],
                     "status": {
