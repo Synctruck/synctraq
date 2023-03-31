@@ -77,6 +77,24 @@ function PackageDispatch() {
 
     useEffect(() => {
 
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is :", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+        }
+        
         listAllCompany();
         listAllRoute();
 
