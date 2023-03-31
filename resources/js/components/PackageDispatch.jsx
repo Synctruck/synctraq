@@ -48,9 +48,6 @@ function PackageDispatch() {
     const [idDriverAsing, setIdDriverAsing] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
 
-    const [latitude, setLatitude]   = useState(0);
-    const [longitude, setLongitude] = useState(0);
-
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
     const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
@@ -76,24 +73,6 @@ function PackageDispatch() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#d1e7dd';
 
     useEffect(() => {
-
-        if("geolocation" in navigator)
-        {
-            console.log("Available");
-
-            navigator.geolocation.getCurrentPosition(function(position) {
-
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
-
-                console.log("Latitude is :", position.coords.latitude);
-                console.log("Longitude is :", position.coords.longitude);
-            });
-        }
-        else
-        {
-            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
-        }
 
         listAllCompany();
         listAllRoute();
@@ -530,9 +509,7 @@ function PackageDispatch() {
             formData.append('idDriver', idDriver);
             formData.append('RouteSearch', RouteSearch);
             formData.append('autorizationDispatch', autorizationDispatch);
-            formData.append('latitude', latitude);
-            formData.append('longitude', longitude);
-            
+
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch(url_general +'package-dispatch/insert', {
