@@ -187,8 +187,6 @@ class PackageInboundController extends Controller
 
     public function Insert(Request $request)
     {
-        dd($request->all());
-
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
