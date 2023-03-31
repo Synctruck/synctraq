@@ -22,6 +22,8 @@ function PackageInbound() {
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
+    const [latitude, setLatitude]                = useState(0);
+    const [longitude, setLongitude]              = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -52,6 +54,24 @@ function PackageInbound() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#fff3cd';
 
     useEffect(() => {
+
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is :", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+        }
 
         listAllRoute();
         listAllCompany();
@@ -432,171 +452,180 @@ function PackageInbound() {
             formData.append('Reference_Number_1', Reference_Number_1);
             formData.append('TRUCK', Truck);
             formData.append('CLIENT', Client);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
 
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if(latitude !=0 && longitude != 0)
+            {
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            setReadInput(true);
-            setSendInbound(0);
+                setReadInput(true);
+                setSendInbound(0);
 
-            fetch(url_general +'package-inbound/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
+                fetch(url_general +'package-inbound/insert', {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then((response) => {
 
-                    setTextMessageDate('');
-                    setTextMessage2('');
+                        setTextMessageDate('');
+                        setTextMessage2('');
 
-                    if(response.stateAction == 'validatedReturnCompany')
-                    {
-                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
-                    }
-                    else if(response.stateAction == 'validatedLost')
-                    {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                        setTypeMessage('warning'); 
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
+                        if(response.stateAction == 'validatedReturnCompany')
                         {
+                            setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                        }
+                        else if(response.stateAction == 'validatedLost')
+                        {
+                            setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                            setTypeMessage('warning'); 
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedFilterPackage')
+                        {
+                            let packageBlocked  = response.packageBlocked;
+                            let packageManifest = response.packageManifest;
+
+                            if(packageBlocked)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                    text: packageBlocked.comment,
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                });
+                            }
+                            
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                            setTextMessage('');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoBlocked').play();
+                        }
+                        else if(response.stateAction == 'packageInPreDispatch')
+                        {
+                            setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'packageTerminal')
+                        {
+                            setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'notExists')
+                        {
+                            setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                            setTypeMessage('error');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'validatedInbound')
+                        {
+                            let packageInbound = response.packageInbound;
+
+                            setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
+                            setTextMessageDate(packageInbound.created_at);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedWarehouse')
+                        {
+                            let packageWarehouse = response.packageWarehouse;
+
+                            setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                            setTextMessageDate(packageWarehouse.created_at);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedFilterPackage')
+                        {
+                            let packageManifest = response.packageManifest;
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
                             Swal.fire({
                                 icon: 'error',
                                 title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
+                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
                                 showConfirmButton: false,
                                 timer: 2000,
-                            });
+                            })
+
+                            setTypeMessage('primary');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoBlocked').play();
                         }
-                        
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                        else if(response.stateAction == 'validatedFilterState')
+                        {
+                            setTextMessage("OTHER STATE "+ Reference_Number_1);
+                            setTypeMessage('primary');
+                            setNumberPackage('');
 
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validated')
+                        {
+                            setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
 
-                        setTextMessage('');
-                        setNumberPackage('');
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction)
+                        {
+                            setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
+                            setTypeMessage('success');
+                            setNumberPackage('');
 
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'packageInPreDispatch')
-                    {
-                        setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                            setWeightLabel(response.packageInbound.Weight);
+                            setStateLabel(response.packageInbound.Dropoff_Province);
+                            setRouteLabel(response.packageInbound.Route);
+                            setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'packageTerminal')
-                    {
-                        setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                            listAllPackageInbound(1, RouteSearch, StateSearch);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                        setTypeMessage('error');
-                        setNumberPackage('');
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoSuccess').play();
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validatedInbound')
-                    {
-                        let packageInbound = response.packageInbound;
+                            //handlerPrint('labelPrint');
+                        }
+                        else
+                        {
+                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                            setTypeMessage('error');
+                            setNumberPackage('');
 
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                        setTextMessageDate(packageInbound.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoError').play();
+                        }
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedWarehouse')
-                    {
-                        let packageWarehouse = response.packageWarehouse;
-
-                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                        setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageManifest = response.packageManifest;
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                            showConfirmButton: false,
-                            timer: 2000,
-                        })
-
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterState')
-                    {
-                        setTextMessage("OTHER STATE "+ Reference_Number_1);
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction)
-                    {
-                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
-                        setTypeMessage('success');
-                        setNumberPackage('');
-
-                        setWeightLabel(response.packageInbound.Weight);
-                        setStateLabel(response.packageInbound.Dropoff_Province);
-                        setRouteLabel(response.packageInbound.Route);
-                        setReferenceLabel(response.packageInbound.Reference_Number_1);
-
-                        listAllPackageInbound(1, RouteSearch, StateSearch);
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
-
-                        //handlerPrint('labelPrint');
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessage('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-
-                    setReadInput(false);
-                    setSendInbound(1);
-                },
-            );
+                        setReadInput(false);
+                        setSendInbound(1);
+                    },
+                );
+            }
+            else
+            {
+                swal('Atención', 'Debe compartir la ubicación de su dispositivo', 'warning');
+            }
         }
     }
 
