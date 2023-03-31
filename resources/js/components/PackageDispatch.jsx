@@ -765,6 +765,17 @@ function PackageDispatch() {
                 swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
             }
         }
+        /*if(autorizationDispatch == true)
+        {
+            
+        }
+        else
+        {
+            swal("You must mark the authorization to carry out the dispatch!", {
+
+                icon: "warning",
+            });
+        }*/
     }
 
     const handlerImport = (e) => {
