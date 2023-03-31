@@ -500,7 +500,7 @@ class PackageController extends Controller
 
 
                 $statusCodeCompany = $companyStatus->statusCodeCompany;
-                $dataSend          = $this->GetDataSmartKargo($package->Reference_Number_1, $status, $statusCodeCompany, $created_at);
+                $dataSend          = $this->GetDataSmartKargo($package->Reference_Number_1, $status, $statusCodeCompany, $created_at, $idPhoto);
                 $urlWebhook        = $url_webhook;
             }
 
@@ -538,7 +538,7 @@ class PackageController extends Controller
         }
     }
 
-    public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
+    public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at, $idPhoto = null)
     {
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
@@ -621,6 +621,35 @@ class PackageController extends Controller
                 $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
             }
             
+            $contentPhoto = '';
+
+            if($statusCodeCompany == 'DDL')
+            {
+                if(count($idPhoto) == 1)
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    }';
+                }
+                else
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    },
+                                    {
+                                        "mimeType": "url",
+                                        "content": "'. $photo2 .'"
+                                    }';
+                }
+            }
+
             $dataStructure = '{
                 "shipment_number": "'. $Reference_Number_1 .'",
                 "tracking": {
@@ -642,14 +671,7 @@ class PackageController extends Controller
                         }
                     ],
                     "Pods":[
-                        {
-                            "mimeType": "url",
-                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
-                        },
-                        {
-                            "mimeType": "url",
-                            "content": "https://d15p8tr8p0vffz.cloudfront.net/abe4e431c22cb3fcc104346c/800x.png"
-                        }
+                        '. $contentPhoto .'
                     ],
                     "status": {
                         "to": "'. $statusCodeCompany .'",
