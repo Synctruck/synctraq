@@ -541,6 +541,8 @@ class PackageController extends Controller
 
     public function GetDataSmartKargo($Reference_Number_1, $status, $statusCodeCompany, $created_at)
     {
+        $created_at_now = $created_at;
+        
         if($statusCodeCompany == 'RCF')
         {
             $dataStructure = '{
@@ -584,7 +586,7 @@ class PackageController extends Controller
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
-                            "date": "'. $created_at .'",
+                            "date": "'. $created_at_now .'",
                             "comment": "'. $status .'"
                         }
                     ],
