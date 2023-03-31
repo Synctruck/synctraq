@@ -543,7 +543,6 @@ class PackageDispatchController extends Controller
                             {
                                 DB::commit();
 
-                                $package['latitude']  = $request->get('latitude');
                                 
                                 //data for INLAND
                                 $packageController = new PackageController();
