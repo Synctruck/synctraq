@@ -86,7 +86,7 @@ function PackageDispatch() {
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
 
-                console.log("Latitude is dddd:", position.coords.latitude);
+                console.log("Latitude is:", position.coords.latitude);
                 console.log("Longitude is :", position.coords.longitude);
             });
         }
