@@ -518,7 +518,6 @@ class PackageController extends Controller
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
 
-
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
