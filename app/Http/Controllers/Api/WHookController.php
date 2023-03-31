@@ -35,7 +35,8 @@ class WHookController extends Controller
             $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
 
             Log::info("==== TASK COMPLETED");
-            Log::info($request);
+            Log::info("==== Reference_Number_1: ". $Reference_Number_1);
+            
             if($completionDetailsStatus == true)
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
