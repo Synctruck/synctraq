@@ -27,6 +27,8 @@ function ReportReturnCompany() {
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
     const [idCompany, setCompany]       = useState(0);
+    const [latitude, setLatitude]       = useState(0);
+    const [longitude, setLongitude]     = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
     const [Description_Return, setDescriptionReturn]  = useState('');
@@ -54,6 +56,24 @@ function ReportReturnCompany() {
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     useEffect( () => {
+
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is:", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'Browser does not support location sharing, please use another browser.', 'error');
+        }
 
         listAllCompany();
         listAllRoute();
@@ -321,8 +341,17 @@ function ReportReturnCompany() {
         formData.append('Width', Width);
         formData.append('Length', Length);
         formData.append('Height', Height);
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
 
         //clearValidation();
+
+        if(latitude == 0 || longitude == 0)
+        {
+            swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+
+            return 0;
+        }
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 

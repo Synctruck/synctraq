@@ -225,6 +225,9 @@ class PackageReturnCompanyController extends Controller
 
                 Log::info('ReturnCompany: send status: '. $comment->statusCode);
                 
+                $packageInbound['latitude']  = $request->get('latitude');
+                $packageInbound['longitude'] = $request->get('longitude');
+
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
