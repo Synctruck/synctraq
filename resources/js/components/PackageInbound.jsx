@@ -624,7 +624,7 @@ function PackageInbound() {
             }
             else
             {
-                swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
             }
         }
     }

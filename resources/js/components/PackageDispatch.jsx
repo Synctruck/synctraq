@@ -535,7 +535,7 @@ function PackageDispatch() {
 
             if(latitude == 0 || longitude == 0)
             {
-                swal('Atención', 'Debe compartir la ubicación de su dispositivo y recargue la ventana.', 'warning');
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
 
                 return 0;
             }
