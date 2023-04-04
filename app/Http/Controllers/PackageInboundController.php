@@ -371,6 +371,7 @@ class PackageInboundController extends Controller
                 $packageManifest['latitude']  = $request->get('latitude');
                 $packageManifest['longitude'] = $request->get('longitude');
 
+                dd($packageManifest);
                 //data for INLAND
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
