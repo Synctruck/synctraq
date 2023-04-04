@@ -409,8 +409,7 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package)
     {
-        dd($package);
-        /*$statusCodeCompany = '';
+        $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
@@ -536,7 +535,7 @@ class PackageController extends Controller
             Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
             Log::info('REPONSE STATUS: '. $response['status']);
             Log::info('============INLAND - END STATUS UPDATE');
-        }*/
+        }
     }
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
