@@ -413,11 +413,15 @@ class PackageController extends Controller
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 479410832e4b526210023d9da19929c15fb89d49
         $statusCodeCompany = '';
 =======
         Log::info($package);
+=======
+        dd($package);
+>>>>>>> b577f55338df1524b94b9f070a4e0dad396d0234
         /*$statusCodeCompany = '';
 >>>>>>> d09a58f19406e6c09377c5bcfcc9647a9639ba1e
         $key_webhook       = '';
