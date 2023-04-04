@@ -683,8 +683,8 @@ class PackageController extends Controller
                     ],
                     "status": {
                         "to": "'. $statusCodeCompany .'",
-                        "latitude":"40.655849",
-                        "longitude":"-73.794281"
+                        "latitude":"",
+                        "longitude":""
                     }
                 }
             }';
@@ -738,7 +738,7 @@ class PackageController extends Controller
                         {
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
-                            "comment": "'. $status .'"
+                            "comment": "'. $package->Description_Return .'"
                         }
                     ],
                     "Pods":[

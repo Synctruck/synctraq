@@ -1348,7 +1348,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at_ReInbound;
                     $packageHistory->updated_at                   = $created_at_ReInbound;
 
-                    $packageHistory->save(); 
+                    $packageHistory->save();
 
                     $deleteDispatch = true;
 
@@ -1362,7 +1362,7 @@ class PackageDispatchController extends Controller
                     }
 
                     $packageDispatch['Description_Return'] = $Description_Return;
-                    
+
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
