@@ -1310,7 +1310,6 @@ class PackageDispatchController extends Controller
                     }
                     else if($comment && $comment->category == 'Terminal')
                     {
-                        dd($comment);
                         $statusReturn = 'Terminal';
                         
                         $servicePackageTerminal = new ServicePackageTerminal();
@@ -1364,6 +1363,8 @@ class PackageDispatchController extends Controller
 
                     $packageDispatch['Description_Return'] = $Description_Return;
 
+                    dd($comment);
+                    
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
