@@ -1361,7 +1361,8 @@ class PackageDispatchController extends Controller
                         }
                     }
 
-
+                    $packageDispatch['Description_Return'] = $Description_Return;
+                    
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
