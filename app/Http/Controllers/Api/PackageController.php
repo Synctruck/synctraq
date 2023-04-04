@@ -409,7 +409,7 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package)
     {
-        Log::info($package);
+        dd($package);
         /*$statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
