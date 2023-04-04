@@ -409,7 +409,133 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
-        
+        $statusCodeCompany = '';
+        $key_webhook       = '';
+        $url_webhook       = '';
+        $pod_url           = "";
+        $package_id        = "";
+
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
+        {
+            $company = Company::find($package->idCompany);
+
+            $statusCodeCompany = $idPhoto;
+            $key_webhook       = $company->key_webhook;
+            $url_webhook       = $company->url_webhook;
+            $typeServices      = $company->typeServices;
+        }
+        else
+        {
+            $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
+                                                ->first();
+
+            Log::info('companyStatus');
+            Log::info('===========');
+            $statusCodeCompany = $companyStatus->statusCodeCompany;
+            $key_webhook       = $companyStatus->company->key_webhook;
+            $url_webhook       = $companyStatus->company->url_webhook;
+            $typeServices      = $companyStatus->company->typeServices;
+        }
+
+        if($typeServices == 'API')
+        {
+            if($status == 'ReturnCompany')
+            {
+                $statusCodeCompany = $idPhoto;
+            }
+            elseif($status == 'Lost')
+            {
+                $statusCodeCompany = 'not_delivered_lost';
+            }
+
+            if($status == 'Delivery')
+            {
+                Log::info('idPhoto');
+                Log::info($idPhoto);
+                if(count($idPhoto) == 1)
+                {
+                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                }
+                else
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+
+                    $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
+                }
+            }
+
+            Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
+            Log::info($pod_url);
+
+            $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+            $created_at      = $created_at_temp->format(DateTime::ATOM);
+
+            $curl = curl_init();
+
+            if($package->idCompany == 1)
+            {
+                $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
+
+                $dataSend = '{
+                    "status": "'. $statusCodeCompany .'",
+                    '. $pod_url .'
+                    "metadata": [
+                        {
+                            "label": "",
+                            "value": ""
+                        }
+                    ],
+                    "datetime" : "'. $created_at .'"
+                }';
+            }
+            else
+            {
+                $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
+                                                ->first();
+
+
+                $statusCodeCompany = $companyStatus->statusCodeCompany;
+                $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
+                $urlWebhook        = $url_webhook;
+            }
+
+            Log::info('DATA SEND WEBHOOK- COMPANY');
+            Log::info($dataSend);
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $urlWebhook,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $dataSend, 
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $response = json_decode($response, true);
+
+            curl_close($curl);
+            
+            Log::info($response);
+
+            Log::info('===========  INLAND - STATUS UPDATE');
+            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+            Log::info('REPONSE STATUS: '. $response['status']);
+            Log::info('============INLAND - END STATUS UPDATE');
+        }
     }
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
