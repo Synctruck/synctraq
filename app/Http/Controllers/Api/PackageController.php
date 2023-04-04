@@ -733,7 +733,7 @@ class PackageController extends Controller
                         {
                             "name": "ADL",
                             "date": "'. $created_at_adl .'",
-                            "comment": "ReInbound"
+                            "comment": "'. ( $packageReturn ? $packageReturn->Description_Return : 'ReInbound' ).'"
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
