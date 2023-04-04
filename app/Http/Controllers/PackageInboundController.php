@@ -373,7 +373,7 @@ class PackageInboundController extends Controller
 
                 //data for INLAND
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packageManifest, 'Inbound', null);
                 //end data for inland
 
                 $packageManifest->delete();
