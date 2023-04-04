@@ -528,7 +528,14 @@ class PackageController extends Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $dataSend, 
+<<<<<<< HEAD
                 CURLOPT_HTTPHEADER => $header_curl,
+=======
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                ),
+>>>>>>> fcac21b48398ad4781e7d24b7fbd0f0f7c63b1b2
             ));
 
             $response = curl_exec($curl);

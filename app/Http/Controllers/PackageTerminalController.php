@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Service\ServicePackageTerminal;
+use App\Service\ServicePackageTerminal;
 
 use Auth;
 use DB;
@@ -19,9 +19,24 @@ class PackageTerminalController extends Controller
         return view('package.age');
     }
 
-    public function Insert($package)
+    public function MoveToWarehouse($Reference_Number_1)
     {
-        $serviceTerminal = new ServicePackageTerminal();
-        $serviceTerminal->Insert($package);
+        try
+        {
+            DB::beginTransaction();
+
+            $serviceTerminal = new ServicePackageTerminal();
+            $serviceTerminal = $serviceTerminal->MoveToWarehouse($Reference_Number_1);    
+        
+            DB::commit();
+
+            return $serviceTerminal;
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "ROLLBACK";
+        }
     }
 }

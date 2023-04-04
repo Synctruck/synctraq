@@ -685,7 +685,7 @@ function PackageRts() {
                 }
                 else if(response.stateAction == 'notExists')
                 {
-                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH] #"+ Reference_Number_1);
+                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH, TERMINAL] #"+ Reference_Number_1);
                     setTypeMessageDispatch('error');
                     setNumberPackage('');
 
