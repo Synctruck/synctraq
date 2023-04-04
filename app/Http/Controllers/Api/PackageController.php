@@ -410,6 +410,7 @@ class PackageController extends Controller
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
@@ -556,6 +557,9 @@ class PackageController extends Controller
 =======
         Log::info("normal");
 >>>>>>> 24b2c43b69bd9970a45dc3eee680c15f68148e8c
+=======
+        
+>>>>>>> ffa563ab43b19ea79281a49ec159f4f140a21186
     }
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
