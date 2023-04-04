@@ -37,7 +37,7 @@ class PackageController extends Controller
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
-            
+
         $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
@@ -70,7 +70,7 @@ class PackageController extends Controller
                     ]
                 , 400);
             }
-            
+
             if($request->get('manifest') == null || $request->get('shipment') == null)
             {
                 return response()->json(
@@ -193,7 +193,7 @@ class PackageController extends Controller
                     DB::beginTransaction();
 
                     $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
-                    
+
                     $routeName = $route ? $route->name : $data['Route'];
 
                     $package = new PackageManifest();
@@ -228,8 +228,8 @@ class PackageController extends Controller
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
                     $package->created_at                    = date('Y-m-d H:i:s');
-                    $package->updated_at                    = date('Y-m-d H:i:s'); 
-                    
+                    $package->updated_at                    = date('Y-m-d H:i:s');
+
                     $package->save();
 
                     $packageHistory = new PackageHistory();
@@ -269,7 +269,7 @@ class PackageController extends Controller
                     $packageHistory->updated_at                    = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
- 
+
                     $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
 
                     if($packageNotExists)
@@ -407,13 +407,14 @@ class PackageController extends Controller
         }
     }
 
-    public function SendStatusToInland($package)
+    public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
         $package_id        = "";
+        $header_curl       = "";
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
@@ -516,18 +517,15 @@ class PackageController extends Controller
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $dataSend, 
-                CURLOPT_HTTPHEADER => array(
-                    'Authorization: '. $key_webhook,
-                    'Content-Type: application/json'
-                ),
+                CURLOPT_POSTFIELDS => $dataSend,
+                CURLOPT_HTTPHEADER => $header_curl,
             ));
 
             $response = curl_exec($curl);
             $response = json_decode($response, true);
 
             curl_close($curl);
-            
+
             Log::info($response);
 
             Log::info('===========  INLAND - STATUS UPDATE');
@@ -577,7 +575,7 @@ class PackageController extends Controller
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageHistory->created_at);
                 $created_at      = $created_at_temp->format(DateTime::ATOM);
             }
-            
+
             $dataStructure = '{
                 "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
@@ -620,7 +618,7 @@ class PackageController extends Controller
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
                 $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
             }
-            
+
             $contentPhoto = '';
 
             if($statusCodeCompany == 'DDL')
@@ -701,7 +699,7 @@ class PackageController extends Controller
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->last()->created_at);
                 $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
             }
-            
+
             if(count($packageReturn) > 0)
             {
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->last()->created_at);
@@ -747,7 +745,7 @@ class PackageController extends Controller
                 }
             }';
         }
-        
+
 
         return $dataStructure;
     }
@@ -755,11 +753,11 @@ class PackageController extends Controller
     public function UpdateManifestRouteByZipCode()
     {
         $listPackageManifest = PackageManifest::all();
-        
+
         foreach($listPackageManifest as $packageManifest)
         {
             $route = Routes::where('zipCode', $packageManifest->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
@@ -776,11 +774,11 @@ class PackageController extends Controller
     public function UpdateInboundRouteByZipCode()
     {
         $listPackageInbound = PackageInbound::all();
-        
+
         foreach($listPackageInbound as $packageInbound)
         {
             $route = Routes::where('zipCode', $packageInbound->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageInbound = PackageInbound::find($packageInbound->Reference_Number_1);
@@ -797,11 +795,11 @@ class PackageController extends Controller
     public function UpdateWarehouseRouteByZipCode()
     {
         $listPackageWarehouse = PackageWarehouse::all();
-        
+
         foreach($listPackageWarehouse as $packageWarehouse)
         {
             $route = Routes::where('zipCode', $packageWarehouse->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageWarehouse = PackageWarehouse::find($packageWarehouse->Reference_Number_1);

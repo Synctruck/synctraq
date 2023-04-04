@@ -368,12 +368,12 @@ class PackageInboundController extends Controller
 
                 $packageHistory->save();
 
-                //$packageManifest['latitude']  = $request->get('latitude');
-                //$packageManifest['longitude'] = $request->get('longitude');
+                $packageManifest['latitude']  = $request->get('latitude');
+                $packageManifest['longitude'] = $request->get('longitude');
 
                 //data for INLAND
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageManifest);
+                $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
                 //end data for inland
 
                 $packageManifest->delete();
