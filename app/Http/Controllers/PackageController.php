@@ -4,7 +4,14 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackagePreDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{
+        Configuration, Driver, Package, PackageBlocked, 
+        PackageDelivery, PackageDispatch, PackagePreDispatch, 
+        PackageFailed, PackagePreFailed, PackageHistory, 
+        PackageHighPriority, PackageInbound, PackageManifest, 
+        PackageNotExists, PackageReturn, PackageReturnCompany, 
+        PackageWarehouse, TeamRoute, User
+    };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -445,6 +452,8 @@ class PackageController extends Controller
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+
+        $package = $package != null ? $package : Package::find($Reference_Number_1);
 
         if($package)
         {

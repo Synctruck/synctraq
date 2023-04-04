@@ -8,6 +8,8 @@ use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamCon
 
 use App\Http\Controllers\Api\{ PackageController };
 
+use App\Service\ServicePackageTerminal;
+
 use App\Models\{ Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
 
 use Illuminate\Support\Facades\Validator;
@@ -117,6 +119,8 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        $servicePackageTerminal = new ServicePackageTerminal();
+
         $comment = Comment::where('description', $request->get('Description_Return'))->first();
 
         if(!$comment)
@@ -150,6 +154,11 @@ class PackageReturnCompanyController extends Controller
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
         }
         
+        if(!$packageInbound)
+        {
+            $packageInbound = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+        }
+
         if($packageInbound)
         {
             try
@@ -494,6 +503,8 @@ class PackageReturnCompanyController extends Controller
 
     public function InsertPreRts(Request $request)
     {
+        $servicePackageTerminal = new ServicePackageTerminal();
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -529,7 +540,12 @@ class PackageReturnCompanyController extends Controller
                 return ['stateAction' => ($packageInbound->status == 'PreRts' ? 'packageInRts' : 'packageReturnCompany')];
             }
         }
- 
+    
+        if(!$packageInbound)
+        {
+            $packageInbound = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+        }
+
         if($packageInbound)
         {
             $palletRts = PalletRts::find($request->get('numberPallet'));
@@ -580,7 +596,9 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
                 $packageReturnCompany->status                       = 'PreRts';
-
+                $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
+                $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
+                
                 $packageReturnCompany->save();
 
                 //regsister history
