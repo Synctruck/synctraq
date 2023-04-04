@@ -411,12 +411,18 @@ class PackageController extends Controller
     {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
         $package_id        = "";
+<<<<<<< HEAD
         $header_curl       = "";        
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
@@ -480,12 +486,16 @@ class PackageController extends Controller
 
             if($package->idCompany == 1)
             {
+<<<<<<< HEAD
                 $header_curl = array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'
                 );
 
                 $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
+=======
+                $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
 
                 $dataSend = '{
                     "status": "'. $statusCodeCompany .'",
@@ -501,11 +511,14 @@ class PackageController extends Controller
             }
             else
             {
+<<<<<<< HEAD
                 $header_curl = array(
                     'code: '. $key_webhook,
                     'Content-Type: application/json'
                 );
 
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
                 $companyStatus = CompanyStatus::with('company')
                                                 ->where('idCompany', $package->idCompany)
                                                 ->where('status', $status)
@@ -520,7 +533,10 @@ class PackageController extends Controller
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
 
+<<<<<<< HEAD
             dd($dataSend);
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
@@ -532,13 +548,19 @@ class PackageController extends Controller
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $dataSend, 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 CURLOPT_HTTPHEADER => $header_curl,
 =======
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'
                 ),
+<<<<<<< HEAD
 >>>>>>> fcac21b48398ad4781e7d24b7fbd0f0f7c63b1b2
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
             ));
 
             $response = curl_exec($curl);
@@ -554,12 +576,15 @@ class PackageController extends Controller
             Log::info('REPONSE STATUS: '. $response['status']);
             Log::info('============INLAND - END STATUS UPDATE');
         }
+<<<<<<< HEAD
 =======
         Log::info("normal");
 >>>>>>> 24b2c43b69bd9970a45dc3eee680c15f68148e8c
 =======
         
 >>>>>>> ffa563ab43b19ea79281a49ec159f4f140a21186
+=======
+>>>>>>> 479410832e4b526210023d9da19929c15fb89d49
     }
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
