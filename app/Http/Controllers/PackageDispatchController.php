@@ -1362,8 +1362,6 @@ class PackageDispatchController extends Controller
                     }
 
                     $packageDispatch['Description_Return'] = $Description_Return;
-
-                    dd($comment);
                     
                     //data for INLAND
                     $packageController = new PackageController();
