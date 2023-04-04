@@ -478,7 +478,12 @@ class PackageController extends Controller
 
             if($package->idCompany == 1)
             {
-                $urlWebhook = $url_webhook . $package->Reference_Number_1 .'/update-status';
+                $header_curl = array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
+                $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
 
                 $dataSend = '{
                     "status": "'. $statusCodeCompany .'",
@@ -494,6 +499,11 @@ class PackageController extends Controller
             }
             else
             {
+                $header_curl = array(
+                    'code: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
                 $companyStatus = CompanyStatus::with('company')
                                                 ->where('idCompany', $package->idCompany)
                                                 ->where('status', $status)
