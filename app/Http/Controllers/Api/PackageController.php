@@ -407,7 +407,7 @@ class PackageController extends Controller
         }
     }
 
-    public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
+    public function SendStatusToInland($package)
     {
         Log::info($package);
         /*$statusCodeCompany = '';
