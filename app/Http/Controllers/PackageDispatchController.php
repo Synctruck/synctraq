@@ -1310,6 +1310,7 @@ class PackageDispatchController extends Controller
                     }
                     else if($comment && $comment->category == 'Terminal')
                     {
+                        dd($comment);
                         $statusReturn = 'Terminal';
                         
                         $servicePackageTerminal = new ServicePackageTerminal();
