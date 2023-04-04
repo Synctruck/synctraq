@@ -136,7 +136,7 @@ function PackageReturn() {
         .then(res => res.json())
         .then((response) => { 
 
-            setListComment(response.commentList);
+            setListComment(response.commentList); 
         });
     }
 
@@ -613,6 +613,7 @@ function PackageReturn() {
 
     const hanlderGetComment = (category) => {
 
+        setListComment([]);
         setCategoryReturn(category);
         listAllComment(category);
     }
@@ -669,6 +670,7 @@ function PackageReturn() {
                                                     </div>
                                                     <br/>
                                                 </div>
+
                                                 {
                                                     roleUser == 'Administrador'
                                                     ?
