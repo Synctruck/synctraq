@@ -407,7 +407,7 @@ class PackageController extends Controller
         }
     }
 
-    public function SendStatusToInland($package)
+    public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
         $statusCodeCompany = '';
         $key_webhook       = '';
