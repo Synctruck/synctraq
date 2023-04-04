@@ -412,9 +412,14 @@ class PackageController extends Controller
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 479410832e4b526210023d9da19929c15fb89d49
         $statusCodeCompany = '';
+=======
+        Log::info($package);
+        /*$statusCodeCompany = '';
+>>>>>>> d09a58f19406e6c09377c5bcfcc9647a9639ba1e
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
@@ -564,7 +569,7 @@ class PackageController extends Controller
             ));
 
             $response = curl_exec($curl);
-            /*$response = json_decode($response, true);
+            $response = json_decode($response, true);
 
             curl_close($curl);
             
@@ -574,6 +579,7 @@ class PackageController extends Controller
             Log::info('PACKAGE ID: '. $package->Reference_Number_1);
             Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
             Log::info('REPONSE STATUS: '. $response['status']);
+<<<<<<< HEAD
             Log::info('============INLAND - END STATUS UPDATE');*/
         }
 <<<<<<< HEAD
@@ -585,6 +591,10 @@ class PackageController extends Controller
 >>>>>>> ffa563ab43b19ea79281a49ec159f4f140a21186
 =======
 >>>>>>> 479410832e4b526210023d9da19929c15fb89d49
+=======
+            Log::info('============INLAND - END STATUS UPDATE');
+        }*/
+>>>>>>> d09a58f19406e6c09377c5bcfcc9647a9639ba1e
     }
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
