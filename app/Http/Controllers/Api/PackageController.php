@@ -507,6 +507,7 @@ class PackageController extends Controller
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
 
+            dd($dataSend);
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
                 CURLOPT_RETURNTRANSFER => true,
@@ -526,10 +527,15 @@ class PackageController extends Controller
             $response = curl_exec($curl);
             $response = json_decode($response, true);
 
-            
             curl_close($curl);
             
-            
+            Log::info($response);
+
+            Log::info('===========  INLAND - STATUS UPDATE');
+            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+            Log::info('REPONSE STATUS: '. $response['status']);
+            Log::info('============INLAND - END STATUS UPDATE');
         }
     }
 
