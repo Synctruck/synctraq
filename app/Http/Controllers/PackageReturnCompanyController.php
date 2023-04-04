@@ -236,7 +236,7 @@ class PackageReturnCompanyController extends Controller
                 
                 $packageInbound['latitude']            = $request->get('latitude');
                 $packageInbound['longitude']           = $request->get('longitude');
-                $packageDispatch['Description_Return'] = $request->get('Description_Return');
+                $packageInbound['Description_Return'] = $request->get('Description_Return');
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
