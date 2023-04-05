@@ -70,7 +70,7 @@ function PackageInbound() {
         }
         else
         {
-            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+            swal('Error', 'The browser does not support sharing your location, please use another browser.', 'error');
         }
 
         listAllRoute();
