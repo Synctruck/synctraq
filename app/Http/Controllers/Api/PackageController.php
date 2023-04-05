@@ -548,7 +548,6 @@ class PackageController extends Controller
 
     public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
     {
-        dd($package->Description_Return);
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
         $created_at_gdl = $created_at;
