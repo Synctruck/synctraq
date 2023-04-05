@@ -119,6 +119,7 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        dd($request->all());
         $servicePackageTerminal = new ServicePackageTerminal();
 
         $comment = Comment::where('description', $request->get('Description_Return'))->first();
@@ -236,8 +237,8 @@ class PackageReturnCompanyController extends Controller
                 
                 $packageInbound['latitude']            = $request->get('latitude');
                 $packageInbound['longitude']           = $request->get('longitude');
-                $packageInbound['Description_Return'] = $request->get('Description_Return');
-
+                $packageInbound['Description_Return']  = $request->get('Description_Return');
+ 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
