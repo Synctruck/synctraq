@@ -1048,7 +1048,7 @@ function Companies() {
                                                             </div>
                                                             <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
                                                                 <label className="form">URL WEBHOOK</label>
-                                                                <input type="text" className="form-control" value={ urlWebhook } maxLength="200" onChange={ (e) => setUrlWebhook(e.target.value) }/>
+                                                                <input type="text" className="form-control" value={ urlWebhook } maxLength="250" onChange={ (e) => setUrlWebhook(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label className="form">Manifest</label>
