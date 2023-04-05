@@ -153,7 +153,7 @@
             @endif
 
             @if(hasPermission('prerts.index'))
-                <li >
+                <li style="display: none;">
                     <a class="nav-link {{Request::is('package-pre-rts') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-rts')}}">
                         <i class="bx bx-car"></i>
                         <span>PRE - RTS</span>
