@@ -704,6 +704,7 @@ class PackageController extends Controller
                 $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
             }
 
+
             if(count($packageDispatch) > 0)
             {
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->last()->created_at);
@@ -712,7 +713,8 @@ class PackageController extends Controller
 
             if(count($packageReturn) > 0)
             {
-                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->last()->created_at);
+                $packageReturn   = $packageReturn->last();
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->created_at);
                 $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
             }
 
@@ -733,7 +735,7 @@ class PackageController extends Controller
                         {
                             "name": "ADL",
                             "date": "'. $created_at_adl .'",
-                            "comment": "'. ( $packageReturn ? $packageReturn->Description_Return : 'ReInbound' ).'"
+                            "comment": "'. ( $packageReturn ? $packageReturn->Description_Return : 'ReInbound' ) .'"
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
