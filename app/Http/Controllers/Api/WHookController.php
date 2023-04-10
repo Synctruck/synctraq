@@ -121,6 +121,8 @@ class WHookController extends Controller
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
+                    Log::info($packageDispatch->company);
+                    
                     if($packageDispatch->company != 'Smart Kargo')
                     {
                         //data for INLAND
