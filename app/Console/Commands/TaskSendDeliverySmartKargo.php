@@ -83,7 +83,7 @@ class TaskSendDeliverySmartKargo extends Command
 
                     $packageDelivery->save();
                     
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
+                    $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
                 }
             }
 
