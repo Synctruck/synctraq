@@ -56,56 +56,64 @@ class TaskSendDeliverySmartKargo extends Command
                                             ->where('send_delivery_company', 0)
                                             ->where('status', 'Delivery')
                                             ->get();
-        try
+        if(count($packageDeliveryList) > 0)
         {
-            Log::info('================');
-            Log::info('================');
-            Log::info('START- SEND SMARTKARGO');
-
-            DB::beginTransaction();
-
-            foreach($packageDeliveryList as $packageDelivery)
+            try
             {
-                $packageController         = new PackageController();
-                $packageDispatchController = new PackageDispatchController();
+                Log::info('================');
+                Log::info('================');
+                Log::info('START- SEND SMARTKARGO');
 
-                $dataTaskOnfleet = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
+                DB::beginTransaction();
 
-                if($dataTaskOnfleet)
+                foreach($packageDeliveryList as $packageDelivery)
                 {
-                    $location = $dataTaskOnfleet['completionDetails']['lastLocation'];
+                    $packageController         = new PackageController();
+                    $packageDispatchController = new PackageDispatchController();
 
-                    if(count($location) == 2)
+                    $dataTaskOnfleet = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
+
+                    if($dataTaskOnfleet)
                     {
-                        $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                        $location = $dataTaskOnfleet['completionDetails']['lastLocation'];
 
-                        $packageDelivery->arrivalLonLat         = $location[0] .','. $location[1];
-                        $packageDelivery->send_delivery_company = 1;
+                        if(count($location) == 2)
+                        {
+                            $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
 
-                        $packageDelivery->save();
+                            $packageDelivery->arrivalLonLat         = $location[0] .','. $location[1];
+                            $packageDelivery->send_delivery_company = 1;
 
-                        $packageDelivery['latitude']  = $location[1];
-                        $packageDelivery['longitude'] = $location[0];
+                            $packageDelivery->save();
 
-                        Log::info('Latitude:'. $packageDelivery['latitude']);
+                            $packageDelivery['latitude']  = $location[1];
+                            $packageDelivery['longitude'] = $location[0];
 
-                        $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
+                            Log::info('Latitude:'. $packageDelivery['latitude']);
+
+                            $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
+                        }
                     }
                 }
+
+                DB::commit();
+
+                Log::info('END - SEND SMARTKARGO');
+                Log::info('================');
+                Log::info('================');
             }
+            catch(Exception $e)
+            {
+                DB::rollback();
 
-            DB::commit();
-
-            Log::info('END - SEND SMARTKARGO');
-            Log::info('================');
-            Log::info('================');
+                Log::info('ROLLBACK - SEND SMARTKARGO');
+                Log::info('================');
+                Log::info('================');
+            }
         }
-        catch(Exception $e)
+        else
         {
-            DB::rollback();
-
-            Log::info('ROLLBACK - SEND SMARTKARGO');
-            Log::info('================');
+            Log::info('DOES NOT EXISTS PACKAGES - SEND SMARTKARGO');
             Log::info('================');
         }
     }
