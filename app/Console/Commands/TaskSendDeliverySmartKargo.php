@@ -68,7 +68,7 @@ class TaskSendDeliverySmartKargo extends Command
                 $packageController         = new PackageController();
                 $packageDispatchController = new PackageDispatchController();
 
-                $dataTaskOnfleet           = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
+                $dataTaskOnfleet = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
 
                 if($dataTaskOnfleet)
                 {
@@ -83,7 +83,7 @@ class TaskSendDeliverySmartKargo extends Command
 
                     $packageDelivery->save();
                     
-                    Log::info($packageDelivery);
+                    Log::info('Latitude:'. $packageDelivery['latitude']);
                     $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
                 }
             }
