@@ -82,8 +82,6 @@ class TaskSendDeliverySmartKargo extends Command
             Log::info('END - SEND SMARTKARGO');
             Log::info('================');
             Log::info('================');
-
-            return ['quantity' => count($packageListDelivery)];
         }
         catch(Exception $e)
         {
