@@ -52,8 +52,6 @@ class TaskSendDeliverySmartKargo extends Command
     {
         $packageDeliveryList = PackageDispatch::where('status', 'Delivery')
                                             ->where('idCompany', 15)
-                                            ->where('arrivalLonLat', '')
-                                            ->where('taskOnfleet', '!=', '')
                                             ->get();
         try
         {
@@ -69,7 +67,7 @@ class TaskSendDeliverySmartKargo extends Command
                 $dataTaskOnfleet           = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
 
                 Log::info($dataTaskOnfleet);
-                
+
                 if($dataTaskOnfleet)
                 {
                     Log::info($dataTaskOnfleet);
