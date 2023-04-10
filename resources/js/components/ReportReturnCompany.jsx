@@ -437,8 +437,10 @@ function ReportReturnCompany() {
         setReference_Number_1('');
         setDescriptionReturn('');
         setClient('');
-        setMeasures('');
         setWeight('');
+        setWidth('');
+        setLength('');
+        setHeight('');
     }
 
     const handlerOpenModal = (PACKAGE_ID) => {
