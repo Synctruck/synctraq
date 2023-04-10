@@ -75,6 +75,8 @@ class TaskSendDeliverySmartKargo extends Command
                     $packageDelivery->arrivalLonLat = $location[0] .','. $location[1];
 
                     $packageDelivery->save();
+
+                    Log::info($packageDelivery->arrivalLonLat);
                 }
             }
 
