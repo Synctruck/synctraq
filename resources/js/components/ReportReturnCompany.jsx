@@ -417,6 +417,7 @@ function ReportReturnCompany() {
                         icon: "success",
                     });
 
+                    listAllComment('RTS');
                     listReturnCompany(1, RouteSearch, StateSearch);
                     clearForm();
                 }
