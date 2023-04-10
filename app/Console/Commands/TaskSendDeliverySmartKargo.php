@@ -10,6 +10,8 @@ use App\Models\{ Company, PackageDispatch };
 
 use App\Http\Controllers\PackageDispatchController;
 
+use App\Http\Controllers\Api\PackageController;
+
 use Log;
 
 class TaskSendDeliverySmartKargo extends Command
@@ -63,12 +65,16 @@ class TaskSendDeliverySmartKargo extends Command
 
             foreach($packageDeliveryList as $packageDelivery)
             {
+                $packageController         = new PackageController();
                 $packageDispatchController = new PackageDispatchController();
+
                 $dataTaskOnfleet           = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
 
                 if($dataTaskOnfleet)
                 {
-                    $location = $dataTaskOnfleet['completionDetails']['lastLocation'];
+                    $location                     = $dataTaskOnfleet['completionDetails']['lastLocation'];
+                    $packageDelivery['latitude']  = $location[1];
+                    $packageDelivery['longitude'] = $location[0];
 
                     $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
 
@@ -76,6 +82,8 @@ class TaskSendDeliverySmartKargo extends Command
                     $packageDelivery->send_delivery_company = 1;
 
                     $packageDelivery->save();
+                    
+                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
                 }
             }
 
