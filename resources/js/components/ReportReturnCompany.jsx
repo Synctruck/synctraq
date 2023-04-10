@@ -31,7 +31,7 @@ function ReportReturnCompany() {
     const [longitude, setLongitude]     = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
-    const [Description_Return, setDescriptionReturn]  = useState('');
+    const [Description_Return, setDescriptionReturn]  = useState('empty');
     const [Weight, setWeight]                         = useState('');
     const [Width, setWidth]                           = useState('');
     const [Length, setLength]                         = useState('');
@@ -436,7 +436,7 @@ function ReportReturnCompany() {
     const clearForm = () => {
 
         setReference_Number_1('');
-        setDescriptionReturn('');
+        setDescriptionReturn('empty');
         setClient('');
         setWeight('');
         setWidth('');
@@ -543,7 +543,7 @@ function ReportReturnCompany() {
                                                                     <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
-                                                                        <option value="">Selection comment</option>
+                                                                        <option value="empty">Selection comment</option>
                                                                         { optionsComment }
                                                                     </select>
                                                                 </div>

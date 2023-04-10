@@ -119,7 +119,6 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
-        dd($request->all());
         $servicePackageTerminal = new ServicePackageTerminal();
 
         $comment = Comment::where('description', $request->get('Description_Return'))->first();
