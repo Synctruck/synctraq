@@ -75,19 +75,22 @@ class TaskSendDeliverySmartKargo extends Command
                 {
                     $location = $dataTaskOnfleet['completionDetails']['lastLocation'];
 
-                    $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                    if(count($location) == 2)
+                    {
+                        $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
 
-                    $packageDelivery->arrivalLonLat         = $location[0] .','. $location[1];
-                    $packageDelivery->send_delivery_company = 1;
+                        $packageDelivery->arrivalLonLat         = $location[0] .','. $location[1];
+                        $packageDelivery->send_delivery_company = 1;
 
-                    $packageDelivery->save();
+                        $packageDelivery->save();
 
-                    $packageDelivery['latitude']  = $location[1];
-                    $packageDelivery['longitude'] = $location[0];
+                        $packageDelivery['latitude']  = $location[1];
+                        $packageDelivery['longitude'] = $location[0];
 
-                    Log::info('Latitude:'. $packageDelivery['latitude']);
+                        Log::info('Latitude:'. $packageDelivery['latitude']);
 
-                    $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);           
+                        $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
+                    }
                 }
             }
 
