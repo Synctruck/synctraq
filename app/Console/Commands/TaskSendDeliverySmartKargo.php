@@ -68,11 +68,14 @@ class TaskSendDeliverySmartKargo extends Command
 
                 if($dataTaskOnfleet)
                 {
-                    Log::info($dataTaskOnfleet['completionDetails']['lastLocation']);
+                    $location = $dataTaskOnfleet['completionDetails']['lastLocation'];
+
+                    $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+
+                    $packageDelivery->arrivalLonLat = $location[0] .','. $location[1];
+
+                    $packageDelivery->save();
                 }
-                //$packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-
-
             }
 
             DB::commit();
