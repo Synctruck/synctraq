@@ -66,11 +66,9 @@ class TaskSendDeliverySmartKargo extends Command
                 $packageDispatchController = new PackageDispatchController();
                 $dataTaskOnfleet           = $packageDispatchController->GetOnfleetShorId($packageDelivery->taskOnfleet);
 
-                Log::info($dataTaskOnfleet);
-
                 if($dataTaskOnfleet)
                 {
-                    Log::info($dataTaskOnfleet);
+                    Log::info($dataTaskOnfleet['completionDetails']);
                 }
                 //$packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
 
