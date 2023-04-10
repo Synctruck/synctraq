@@ -52,8 +52,9 @@ class TaskSendDeliverySmartKargo extends Command
 
     public function SendDelivery()
     {
-        $packageDeliveryList = PackageDispatch::where('status', 'Delivery')
-                                            ->where('idCompany', 15)
+        $packageDeliveryList = PackageDispatch::where('company', 'Smart Kargo')
+                                            ->where('send_delivery_company', 0)
+                                            ->where('status', 'Delivery')
                                             ->get();
         try
         {
@@ -85,7 +86,7 @@ class TaskSendDeliverySmartKargo extends Command
                     $packageDelivery['longitude'] = $location[0];
 
                     Log::info('Latitude:'. $packageDelivery['latitude']);
-                    
+
                     $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);           
                 }
             }
