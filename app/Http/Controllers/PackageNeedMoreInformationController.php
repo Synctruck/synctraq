@@ -39,4 +39,4 @@ class PackageNeedMoreInformationController extends Controller
             return "ROLLBACK";
         }
     }
-}a
+}

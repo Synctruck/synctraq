@@ -50,6 +50,15 @@
                 </li>
             @endif
 
+            @if(hasPermission('inbound.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-nmi') ? 'show' : 'collapsed'}}" href="{{url('/package-nmi')}}">
+                        <i class="bx bxs-book-reader"></i>
+                        <span>NEED MORE INFORMATION</span>
+                    </a>
+                </li>
+            @endif
+
             @if(hasPermission('predispatch.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-pre-dispatch') ? 'show' : 'collapsed'}}" href="{{url('/package-pre-dispatch')}}">
