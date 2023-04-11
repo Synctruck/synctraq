@@ -121,10 +121,19 @@ class WHookController extends Controller
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
-                    //data for INLAND
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
-                    //end data for inland
+                    if($packageDispatch->company != 'Smart Kargo')
+                    {
+                        Log::info($packageDispatch->company);
+
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                        //end data for inland
+                    }
+                    else
+                    {
+                        Log::info('Does not send status to '. $packageDispatch->company);
+                    }
                 }
             }
 

@@ -417,6 +417,7 @@ function ReportReturnCompany() {
                         icon: "success",
                     });
 
+                    listAllComment('RTS');
                     listReturnCompany(1, RouteSearch, StateSearch);
                     clearForm();
                 }
@@ -435,10 +436,11 @@ function ReportReturnCompany() {
     const clearForm = () => {
 
         setReference_Number_1('');
-        setDescriptionReturn('');
         setClient('');
-        setMeasures('');
         setWeight('');
+        setWidth('');
+        setLength('');
+        setHeight('');
     }
 
     const handlerOpenModal = (PACKAGE_ID) => {

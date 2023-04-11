@@ -683,8 +683,8 @@ class PackageController extends Controller
                     ],
                     "status": {
                         "to": "'. $statusCodeCompany .'",
-                        "latitude":"",
-                        "longitude":""
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'",
                     }
                 }
             }';
