@@ -27,7 +27,7 @@ class PackageInboundController extends Controller
         Log::info("Reference_Number_1: ". $Reference_Number_1);
         Log::info("dimensions");
         Log::info($request['responses']['dimension']['info']['dimensions']);
-        
+
         if($packageManifest)
         {
             if($packageManifest->filter || count($packageManifest->blockeds) > 0)
@@ -48,7 +48,7 @@ class PackageInboundController extends Controller
                     $width      = $dimensions['width'];
                     $height     = $dimensions['height'];
                     $length     = $dimensions['length'];
-                    $cuIn       = $length * $height * $width;
+                    $dimensions       = $length .','. $height .','. $width;
 
                     try
                     {
@@ -72,7 +72,7 @@ class PackageInboundController extends Controller
                         $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageInbound->Notes                        = $cuIn;
+                        $packageInbound->Notes                        = $dimensions;
                         $packageInbound->Weight                       = $packageManifest->Weight;
                         $packageInbound->Route                        = $packageManifest->Route;
                         $packageInbound->quantity                     = $packageManifest->quantity;
@@ -99,7 +99,7 @@ class PackageInboundController extends Controller
                         $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageHistory->Notes                        = $cuIn;
+                        $packageHistory->Notes                        = $dimensions;
                         $packageHistory->Weight                       = $packageManifest->Weight;
                         $packageHistory->Route                        = $packageManifest->Route;
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
