@@ -1,5 +1,5 @@
 @extends('layout.admin')
-@section('title', 'Packages - Inbound')
+@section('title', 'Packages - Need More Information')
 @section('content')
 <div class="pagetitle">
   	<h1><b>PACKAGES - NEED MORE INFORMATION</b></h1>
@@ -14,6 +14,6 @@
 	let auxDateInit = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
 </script>
-<div id="packageValidation">
+<div id="packageNeedMoreInformation">
 </div>
 @endsection

@@ -572,7 +572,15 @@ function PackageDispatch() {
                     }
                     else if(response.stateAction == 'packageTerminal')
                     {
-                        setTextMessage('The package is in  TERMINAL STATUS #'+ Reference_Number_1);
+                        setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageNMI')
+                    {
+                        setTextMessage('The package is in NMI STATUS #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 

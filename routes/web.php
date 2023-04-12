@@ -109,8 +109,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
 
-	//============ Validation inbound
+	//============ PACKAGE NMI
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index']);
+	Route::get('/package-nmi/list', [PackageNeedMoreInformationController::class, 'List']);
+	Route::post('/package-nmi/insert', [PackageNeedMoreInformationController::class, 'Insert']);
+	Route::get('/package-nmi/move-to-warehouse/{PACKAGE_ID}', [PackageNeedMoreInformationController::class, 'MoveToWarehouse']);
 
 	//============ Dispatch package
 	Route::get('/package-dispatch', [PackageDispatchController::class, 'Index'])->middleware('permission:dispatch.index');

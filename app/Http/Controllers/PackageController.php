@@ -5,10 +5,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{
-        Configuration, Driver, Package, PackageBlocked, 
+        Configuration, Driver, Package, PackageBlocked,
         PackageDelivery, PackageDispatch, PackagePreDispatch, 
         PackageFailed, PackagePreFailed, PackageHistory, 
-        PackageHighPriority, PackageInbound, PackageManifest, 
+        PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, 
         PackageWarehouse, TeamRoute, User
     };
@@ -174,6 +174,11 @@ class PackageController extends Controller
             if($package == null)
             {
                 $package = PackageWarehouse::find($request->get('Reference_Number_1'));
+            }
+
+            if($package == null)
+            {
+                $package = PackageNeedMoreInformation::find($request->get('Reference_Number_1'));
             }
 
             if($package)
@@ -444,6 +449,8 @@ class PackageController extends Controller
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
 

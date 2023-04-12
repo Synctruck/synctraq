@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Service\ServicePackageTerminal;
+use App\Service\ServicePackageNeedMoreInformation;
 
 use Auth;
 use DB;
@@ -19,24 +19,38 @@ class PackageNeedMoreInformationController extends Controller
         return view('package.needmoreinformation');
     }
 
-    public function MoveToWarehouse($Reference_Number_1)
+    public function List(Request $request)
+    {
+        $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+    
+        return ['packageList' => $servicePackageNeedMoreInformation->List($request)];
+    }
+
+    public function Insert(Request $request)
     {
         try
         {
             DB::beginTransaction();
 
-            $serviceTerminal = new ServicePackageTerminal();
-            $serviceTerminal = $serviceTerminal->MoveToWarehouse($Reference_Number_1);    
+            $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+            $servicePackageNeedMoreInformation = $servicePackageNeedMoreInformation->Insert($request);    
         
             DB::commit();
 
-            return $serviceTerminal;
+            return $servicePackageNeedMoreInformation;
         }
         catch(Exception $e)
         {
             DB::rollback();
 
-            return "ROLLBACK";
+            return false;
         }
+    }
+
+    public function MoveToWarehouse($Reference_Number_1)
+    {
+        $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+
+        return $servicePackageNeedMoreInformation->MoveToWarehouse($Reference_Number_1);
     }
 }

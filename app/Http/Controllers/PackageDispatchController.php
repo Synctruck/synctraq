@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
-use \App\Service\ServicePackageTerminal;
+use \App\Service\{ ServicePackageTerminal, ServicePackageNeedMoreInformation };
 
 use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
 
@@ -279,6 +279,14 @@ class PackageDispatchController extends Controller
         if($package)
         {
             return ['stateAction' => 'packageTerminal'];
+        }
+
+        $servicePackageTerminal = new ServicePackageNeedMoreInformation();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageNMI'];
         }
 
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
