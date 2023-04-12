@@ -50,7 +50,7 @@
                 </li>
             @endif
 
-            @if(hasPermission('inbound.index'))
+            @if(hasPermission('nmi.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-nmi') ? 'show' : 'collapsed'}}" href="{{url('/package-nmi')}}">
                         <i class="bx bxs-book-reader"></i>
