@@ -20,7 +20,6 @@ class PackageInboundController extends Controller
     public function Insert(Request $request)
     {
         $Reference_Number_1 = $request['responses']['dimension']['info']['barcode'];
-
         $packageManifest    = PackageManifest::with('blockeds')->find($Reference_Number_1);
 
         Log::info("===================================");
@@ -49,61 +48,9 @@ class PackageInboundController extends Controller
                     $length     = $dimensions['length'];
                     $cuIn       = $length * $height * $width;
 
-                    ////////// COMPANY ///////////////////////////////////////////////////
-                    //calculando dimensiones y precios para company
-                    $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                    $dimFactorCompany = $dimFactorCompany->factor;
-
-                    $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
-                    $dimWeightCompanyRound = ceil($dimWeightCompany);
-
-                    $weightCompany = $weight > $dimWeightCompanyRound ? $weight : $dimWeightCompanyRound;
-
-                    //return "weight: ". $weight .' > dimWeightRoundCompany:'. $dimWeightRoundCompany .' idCompany:'. $packageManifest->idCompany;
-
-                    //precio base de cobro a compañia
-                    $priceCompany = new RangePriceCompanyController();
-                    $priceCompany = $priceCompany->GetPriceCompany($packageManifest->idCompany, $weightCompany);
-
-                    //precio peakeseason
-                    $companyController       = new CompanyController();
-                    $peakeSeasonPriceCompany = $companyController->GetPeakeSeason($packageManifest->idCompany, $weightCompany);
-                    
-                    //precio base
-                    $priceBaseCompany = number_format($priceCompany + $peakeSeasonPriceCompany, 2);
-
-                    $dieselPrice = Configuration::first()->diesel_price;
-
-                    $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
-                    $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
-                    $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
-                    ///////// END COMPANY
-
                     try
                     {
                         DB::beginTransaction();
-
-                        $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
-                        $packagePriceCompanyTeam->id                         = date('YmdHis');
-                        $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
-                        $packagePriceCompanyTeam->weight                     = $weight;
-                        $packagePriceCompanyTeam->length                     = $length;
-                        $packagePriceCompanyTeam->height                     = $height;
-                        $packagePriceCompanyTeam->width                      = $width;
-                        $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
-                        $packagePriceCompanyTeam->cuIn                       = $cuIn;
-                        $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
-                        $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
-                        $packagePriceCompanyTeam->dimWeightCompanyRound      = $dimWeightCompanyRound;
-                        $packagePriceCompanyTeam->priceWeightCompany         = $priceCompany;
-                        $packagePriceCompanyTeam->peakeSeasonPriceCompany    = $peakeSeasonPriceCompany;
-                        $packagePriceCompanyTeam->priceBaseCompany           = $priceBaseCompany;
-                        $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
-                        $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
-                        $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
-
-                        $packagePriceCompanyTeam->save();
 
                         $packageInbound = new PackageInbound();
 
@@ -123,7 +70,7 @@ class PackageInboundController extends Controller
                         $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageInbound->Notes                        = $packageManifest->Notes;
+                        $packageInbound->Notes                        = $cuIn;
                         $packageInbound->Weight                       = $packageManifest->Weight;
                         $packageInbound->Route                        = $packageManifest->Route;
                         $packageInbound->quantity                     = $packageManifest->quantity;
@@ -150,7 +97,7 @@ class PackageInboundController extends Controller
                         $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageHistory->Notes                        = $packageManifest->Notes;
+                        $packageHistory->Notes                        = $cuIn;
                         $packageHistory->Weight                       = $packageManifest->Weight;
                         $packageHistory->Route                        = $packageManifest->Route;
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
