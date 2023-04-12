@@ -48,7 +48,7 @@ class PackageInboundController extends Controller
                     $width      = $dimensions['width'];
                     $height     = $dimensions['height'];
                     $length     = $dimensions['length'];
-                    $dimensions       = $length .'|'. $height .'|'. $width;
+                    $dimensions = $length .'|'. $height .'|'. $width;
 
                     try
                     {
@@ -73,7 +73,7 @@ class PackageInboundController extends Controller
                         $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
                         $packageInbound->Notes                        = $dimensions;
-                        $packageInbound->Weight                       = $packageManifest->Weight;
+                        $packageInbound->Weight                       = $weight;
                         $packageInbound->Route                        = $packageManifest->Route;
                         $packageInbound->quantity                     = $packageManifest->quantity;
                         $packageInbound->status                       = 'Inbound';
@@ -100,7 +100,7 @@ class PackageInboundController extends Controller
                         $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
                         $packageHistory->Notes                        = $dimensions;
-                        $packageHistory->Weight                       = $packageManifest->Weight;
+                        $packageHistory->Weight                       = $weight;
                         $packageHistory->Route                        = $packageManifest->Route;
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                         $packageHistory->Description                  = 'Inbound - for: API CARGO';
