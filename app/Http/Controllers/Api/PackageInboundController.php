@@ -48,7 +48,7 @@ class PackageInboundController extends Controller
                     $width      = $dimensions['width'];
                     $height     = $dimensions['height'];
                     $length     = $dimensions['length'];
-                    $dimensions       = $length .','. $height .','. $width;
+                    $dimensions       = $length .'|'. $height .'|'. $width;
 
                     try
                     {
