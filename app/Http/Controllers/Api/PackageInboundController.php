@@ -25,7 +25,9 @@ class PackageInboundController extends Controller
         Log::info("===================================");
         Log::info("============== API - INBOUND ========");
         Log::info("Reference_Number_1: ". $Reference_Number_1);
-
+        Log::info("dimensions");
+        Log::info($request['responses']['dimension']['info']['dimensions']);
+        
         if($packageManifest)
         {
             if($packageManifest->filter || count($packageManifest->blockeds) > 0)
