@@ -388,11 +388,11 @@
                                 </div>
                                 <div class="col-lg-6 form-group">
                                     <label for="dimensionsSearch">DIMENSIONS</label>
-                                    <input type="text" id="dimensionsSearch" name="dimensionsSearch" class="form-control" readonly required>
+                                    <input type="text" id="dimensionsSearch" name="dimensionsSearch" class="form-control" required>
                                 </div>
-                                <div class="col-lg-3 form-group">
+                                <div class="col-lg-6 form-group">
                                     <label for="volumeSearch">VOLUME</label>
-                                    <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" readonly required>
+                                    <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" required>
                                 </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
@@ -699,6 +699,9 @@
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 }
 
+                document.getElementById('dimensionsSearch').value = '';
+                document.getElementById('volumeSearch').value     = '';
+
                 packageHistoryList.forEach( package =>  {
 
 
@@ -710,8 +713,18 @@
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
- 
-                    if(package.status == 'Delivery')
+                    
+                    if(packageHistoryList[1].status == 'Inbound')
+                    {
+                        let dimensions = packageHistoryList[1].Notes.split('|');
+
+                        if(dimensions.length == 3)
+                        {
+                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
+                            document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                        }
+                    }
+                    else if(package.status == 'Delivery')
                     {
                         Description = package.Description;
                         user        = (package.driver ? package.driver.name +' '+ package.driver.nameOfOwner : '');
@@ -772,16 +785,13 @@
                     }
                 }
 
-
                 document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;
                 document.getElementById('contactName').value           = '';
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
                 document.getElementById('highPriority').value          = 'Normal';
-                document.getElementById('dimensionsSearch').value      = '';
-                document.getElementById('volumeSearch').value          = '';
 
-                if(packageHistoryList.length == 1)
+                if(packageHistoryList.length == 0)
                 {
                     document.getElementById('idPackage').value       = packageHistoryList[0].Reference_Number_1;
                     document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
@@ -794,34 +804,6 @@
                     document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
                     document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
                     document.getElementById('highPriority').value    = packageHistoryList[0].highPriority;
-                }
-                else if(packageHistoryList.length > 1)
-                {
-                    if(packageHistoryList[1].status == 'Inbound')
-                    {
-                        if(packageHistoryList[1].Notes)
-                        {
-                            let dimensions = packageHistoryList[1].Notes.split('|');
-
-                            if(dimensions.length == 3)
-                            {
-                                document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
-                                document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
-                            }
-                        }
-                    }
-
-                    document.getElementById('idPackage').value       = packageHistoryList[1].Reference_Number_1;
-                    document.getElementById('contactName').value     = packageHistoryList[1].Dropoff_Contact_Name;
-                    document.getElementById('contactPhone').value    = packageHistoryList[1].Dropoff_Contact_Phone_Number;
-                    document.getElementById('contactAddress').value  = packageHistoryList[1].Dropoff_Address_Line_1;
-                    document.getElementById('contactCity').value     = packageHistoryList[1].Dropoff_City;
-                    document.getElementById('contactState').value    = packageHistoryList[1].Dropoff_Province;
-                    document.getElementById('contactZipCode').value  = packageHistoryList[1].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value   = packageHistoryList[1].Weight;
-                    document.getElementById('contactRoute').value    = packageHistoryList[1].Route;
-                    document.getElementById('internalComment').value = packageHistoryList[1].internal_comment;
-                    document.getElementById('highPriority').value    = packageHistoryList[1].highPriority;
                 }
 
                 if(searchGlobal == 1)
