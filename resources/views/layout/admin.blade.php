@@ -797,14 +797,13 @@
                 }
                 else if(packageHistoryList.length > 1)
                 {
-                    alert(packageHistoryList[1].Notes);
                     if(packageHistoryList[1].status == 'Inbound')
                     {
                         let dimensions = packageHistoryList[1].Notes.split('|');
 
                         if(dimensions.length == 3)
                         {
-                            document.getElementById('dimensionsSearch').value = 'Length: '+ $dimensions[0] +', Height: '+ $dimensions[1] +', Width: '+ $dimensions[2] 
+                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +', Height: '+ dimensions[1] +', Width: '+ $dimensions[2] 
                             document.getElementById('volumeSearch').value     = '';
                         }
                     }
