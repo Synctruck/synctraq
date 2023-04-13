@@ -724,9 +724,9 @@
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
                     
-                    if(packageHistoryList[1].status == 'Inbound')
+                    if(package.status == 'Inbound')
                     {
-                        let dimensions = packageHistoryList[1].Notes.split('|');
+                        let dimensions = package.Notes.split('|');
 
                         if(dimensions.length == 3)
                         {
