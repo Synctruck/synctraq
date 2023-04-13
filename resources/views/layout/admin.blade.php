@@ -797,12 +797,7 @@
                 }
                 else if(packageHistoryList.length > 1)
                 {
-                    if(packageHistoryList[1].status == 'NeverReceived')
-                    {
-                        document.getElementById('dimensionsSearch').value = '';
-                        document.getElementById('volumeSearch').value     = '';
-                    }
-                    else if(packageHistoryList[1].status == 'Inbound')
+                    if(packageHistoryList[1].status == 'Inbound')
                     {
                         let dimensions = packageHistoryList[1].split('|');
 
