@@ -386,19 +386,19 @@
                                         <option value="High">HIGH</option>
                                     </select>
                                 </div>
-                                <div class="col-lg-6 form-group">
+                                <div class="col-lg-2 form-group">
                                     <label for="lengthSearch">LENGTH</label>
                                     <input type="text" id="lengthSearch" name="lengthSearch" class="form-control" readonly>
                                 </div>
-                                 <div class="col-lg-6 form-group">
+                                <div class="col-lg-2 form-group">
                                     <label for="heightSearch">HEIGHT</label>
                                     <input type="text" id="heightSearch" name="heightSearch" class="form-control" readonly>
                                 </div>
-                                 <div class="col-lg-6 form-group">
+                                <div class="col-lg-2 form-group">
                                     <label for="widthSearch">WIDTH</label>
                                     <input type="text" id="widthSearch" name="widthSearch" class="form-control" readonly>
                                 </div>
-                                <div class="col-lg-6 form-group">
+                                <div class="col-lg-3 form-group">
                                     <label for="volumeSearch">VOLUME</label>
                                     <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" readonly>
                                 </div>
