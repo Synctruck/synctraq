@@ -804,7 +804,7 @@
                         if(dimensions.length == 3)
                         {
                             document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
-                            document.getElementById('volumeSearch').value     = '';
+                            document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
                         }
                     }
 
