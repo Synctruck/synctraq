@@ -388,11 +388,11 @@
                                 </div>
                                 <div class="col-lg-6 form-group">
                                     <label for="dimensionsSearch">DIMENSIONS</label>
-                                    <input type="text" id="dimensionsSearch" name="dimensionsSearch" class="form-control" required>
+                                    <input type="text" id="dimensionsSearch" name="dimensionsSearch" class="form-control" readonly required>
                                 </div>
-                                <div class="col-lg-6 form-group">
+                                <div class="col-lg-3 form-group">
                                     <label for="volumeSearch">VOLUME</label>
-                                    <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" required>
+                                    <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" readonly required>
                                 </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
@@ -803,7 +803,7 @@
 
                         if(dimensions.length == 3)
                         {
-                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +', Height: '+ dimensions[1] +', Width: '+ dimensions[2] 
+                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
                             document.getElementById('volumeSearch').value     = '';
                         }
                     }
