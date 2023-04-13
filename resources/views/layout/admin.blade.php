@@ -797,7 +797,7 @@
                 }
                 else if(packageHistoryList.length > 1)
                 {
-                    alert(packageHistoryList[1].status);
+                    alert(packageHistoryList[1].notes);
                     if(packageHistoryList[1].status == 'Inbound')
                     {
                         let dimensions = packageHistoryList[1].notes.split('|');
