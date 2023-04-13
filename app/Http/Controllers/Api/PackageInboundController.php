@@ -25,6 +25,8 @@ class PackageInboundController extends Controller
         Log::info("===================================");
         Log::info("============== API - INBOUND ========");
         Log::info("Reference_Number_1: ". $Reference_Number_1);
+        Log::info("dimensions");
+        Log::info($request['responses']['dimension']['info']['dimensions']);
 
         if($packageManifest)
         {
@@ -46,7 +48,7 @@ class PackageInboundController extends Controller
                     $width      = $dimensions['width'];
                     $height     = $dimensions['height'];
                     $length     = $dimensions['length'];
-                    $cuIn       = $length * $height * $width;
+                    $dimensions = $length .'|'. $height .'|'. $width;
 
                     try
                     {
@@ -70,8 +72,8 @@ class PackageInboundController extends Controller
                         $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageInbound->Notes                        = $cuIn;
-                        $packageInbound->Weight                       = $packageManifest->Weight;
+                        $packageInbound->Notes                        = $dimensions;
+                        $packageInbound->Weight                       = $weight;
                         $packageInbound->Route                        = $packageManifest->Route;
                         $packageInbound->quantity                     = $packageManifest->quantity;
                         $packageInbound->status                       = 'Inbound';
@@ -97,8 +99,8 @@ class PackageInboundController extends Controller
                         $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
                         $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
                         $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageHistory->Notes                        = $cuIn;
-                        $packageHistory->Weight                       = $packageManifest->Weight;
+                        $packageHistory->Notes                        = $dimensions;
+                        $packageHistory->Weight                       = $weight;
                         $packageHistory->Route                        = $packageManifest->Route;
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                         $packageHistory->Description                  = 'Inbound - for: API CARGO';
