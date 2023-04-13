@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -1136,6 +1136,7 @@ class ReportController extends Controller
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
