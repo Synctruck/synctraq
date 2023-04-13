@@ -799,7 +799,7 @@
                 {
                     if(packageHistoryList[1].status == 'Inbound')
                     {
-                        let dimensions = packageHistoryList[1].split('|');
+                        let dimensions = packageHistoryList[1].notes.split('|');
 
                         if(dimensions.length == 3)
                         {
