@@ -791,7 +791,7 @@
                 document.getElementById('contactAddress').value        = '';
                 document.getElementById('highPriority').value          = 'Normal';
 
-                if(packageHistoryList.length == 0)
+                if(packageHistoryList.length > 0)
                 {
                     document.getElementById('idPackage').value       = packageHistoryList[0].Reference_Number_1;
                     document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
