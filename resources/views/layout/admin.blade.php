@@ -726,15 +726,20 @@
                     
                     if(package.status == 'Inbound')
                     {
-                        let dimensions = package.Notes.split('|');
-
-                        if(dimensions.length == 3)
+                        if(package.Notes)
                         {
-                            document.getElementById('lengthSearch').value = dimensions[0];
-                            document.getElementById('heightSearch').value = dimensions[1];
-                            document.getElementById('widthSearch').value  = dimensions[2];
-                            document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            let dimensions = package.Notes.split('|');
+
+                            if(dimensions.length == 3)
+                            {
+                                document.getElementById('lengthSearch').value = dimensions[0];
+                                document.getElementById('heightSearch').value = dimensions[1];
+                                document.getElementById('widthSearch').value  = dimensions[2];
+                                document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            } 
                         }
+
+                        Description = package.Description;
                     }
                     else if(package.status == 'Delivery')
                     {
