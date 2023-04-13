@@ -797,10 +797,10 @@
                 }
                 else if(packageHistoryList.length > 1)
                 {
-                    alert(packageHistoryList[1].notes);
+                    alert(packageHistoryList[1].Notes);
                     if(packageHistoryList[1].status == 'Inbound')
                     {
-                        let dimensions = packageHistoryList[1].notes.split('|');
+                        let dimensions = packageHistoryList[1].Notes.split('|');
 
                         if(dimensions.length == 3)
                         {
