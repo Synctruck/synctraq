@@ -387,8 +387,16 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-6 form-group">
-                                    <label for="dimensionsSearch">DIMENSIONS</label>
-                                    <input type="text" id="dimensionsSearch" name="dimensionsSearch" class="form-control" required>
+                                    <label for="lengthSearch">LENGTH</label>
+                                    <input type="text" id="lengthSearch" name="lengthSearch" class="form-control" required>
+                                </div>
+                                 <div class="col-lg-6 form-group">
+                                    <label for="heightSearch">HEIGHT</label>
+                                    <input type="text" id="heightSearch" name="heightSearch" class="form-control" required>
+                                </div>
+                                 <div class="col-lg-6 form-group">
+                                    <label for="widthSearch">WIDTH</label>
+                                    <input type="text" id="widthSearch" name="widthSearch" class="form-control" required>
                                 </div>
                                 <div class="col-lg-6 form-group">
                                     <label for="volumeSearch">VOLUME</label>
@@ -699,8 +707,10 @@
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 }
 
-                document.getElementById('dimensionsSearch').value = '';
-                document.getElementById('volumeSearch').value     = '';
+                document.getElementById('lengthSearch').value = '';
+                document.getElementById('heightSearch').value = '';
+                document.getElementById('widthSearch').value  = '';
+                document.getElementById('volumeSearch').value = '';
 
                 packageHistoryList.forEach( package =>  {
 
@@ -720,8 +730,10 @@
 
                         if(dimensions.length == 3)
                         {
-                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
-                            document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            document.getElementById('lengthSearch').value = dimensions[0];
+                            document.getElementById('heightSearch').value = dimensions[1];
+                            document.getElementById('widthSearch').value  = dimensions[2];
+                            document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
                         }
                     }
                     else if(package.status == 'Delivery')
