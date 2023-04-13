@@ -778,6 +778,8 @@
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
                 document.getElementById('highPriority').value          = 'Normal';
+                document.getElementById('dimensionsSearch').value      = '';
+                document.getElementById('volumeSearch').value          = '';
 
                 if(packageHistoryList.length == 1)
                 {
@@ -795,6 +797,22 @@
                 }
                 else if(packageHistoryList.length > 1)
                 {
+                    if(packageHistoryList[1].status == 'NeverReceived')
+                    {
+                        document.getElementById('dimensionsSearch').value = '';
+                        document.getElementById('volumeSearch').value     = '';
+                    }
+                    else if(packageHistoryList[1].status == 'Inbound')
+                    {
+                        let dimensions = packageHistoryList[1].split('|');
+
+                        if(dimensions.length == 3)
+                        {
+                            document.getElementById('dimensionsSearch').value = 'Length: '+ $dimensions[0] +', Height: '+ $dimensions[1] +', Width: '+ $dimensions[2] 
+                            document.getElementById('volumeSearch').value     = '';
+                        }
+                    }
+
                     document.getElementById('idPackage').value       = packageHistoryList[1].Reference_Number_1;
                     document.getElementById('contactName').value     = packageHistoryList[1].Dropoff_Contact_Name;
                     document.getElementById('contactPhone').value    = packageHistoryList[1].Dropoff_Contact_Phone_Number;
