@@ -799,12 +799,15 @@
                 {
                     if(packageHistoryList[1].status == 'Inbound')
                     {
-                        let dimensions = packageHistoryList[1].Notes.split('|');
-
-                        if(dimensions.length == 3)
+                        if(packageHistoryList[1].Notes)
                         {
-                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
-                            document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            let dimensions = packageHistoryList[1].Notes.split('|');
+
+                            if(dimensions.length == 3)
+                            {
+                                document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +' Height: '+ dimensions[1] +' Width: '+ dimensions[2] 
+                                document.getElementById('volumeSearch').value     = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            }
                         }
                     }
 
