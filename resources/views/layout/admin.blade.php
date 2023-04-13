@@ -803,7 +803,7 @@
 
                         if(dimensions.length == 3)
                         {
-                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +', Height: '+ dimensions[1] +', Width: '+ $dimensions[2] 
+                            document.getElementById('dimensionsSearch').value = 'Length: '+ dimensions[0] +', Height: '+ dimensions[1] +', Width: '+ dimensions[2] 
                             document.getElementById('volumeSearch').value     = '';
                         }
                     }
