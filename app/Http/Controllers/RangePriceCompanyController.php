@@ -171,18 +171,21 @@ class RangePriceCompanyController extends Controller
 
         $quantityPackagesHistory = PackageHistory::whereBetween('created_at', [$startDate, $endDate])
                                                 ->where('status', 'Manifest')
+                                                ->where('idCompany', $idCompany)
                                                 ->get()
                                                 ->count();
 
-        Log::info('GetPriceCompanySmartKargo');
+        Log::info('QuantityPackage SM');
         Log::info($quantityPackagesHistory);
-
+        
         $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)
                                 ->where('maxWeight', '>=', $weight)
                                 ->orderBy('price', 'desc')
                                 ->get();
 
+        Log::info($range);
+        
         if($quantityPackagesHistory <= 500)
         {
             $priceBaseCompany = $range[0];
