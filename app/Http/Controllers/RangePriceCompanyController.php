@@ -139,7 +139,7 @@ class RangePriceCompanyController extends Controller
 
         if($company != 'Smart Kargo')
         {
-            $range =  GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1);
+            $range =  $this->GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1);
         }
         else
         {
