@@ -8,6 +8,8 @@ use App\Models\{ Company, PackageDispatch, PackageHistory, RangePriceCompany };
 
 use Illuminate\Support\Facades\Validator;
 
+use Log;
+
 class RangePriceCompanyController extends Controller
 {
     public function List($idCompany)
@@ -174,7 +176,7 @@ class RangePriceCompanyController extends Controller
 
         Log::info('GetPriceCompanySmartKargo');
         Log::info($quantityPackagesHistory);
-        
+
         $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)
                                 ->where('maxWeight', '>=', $weight)
