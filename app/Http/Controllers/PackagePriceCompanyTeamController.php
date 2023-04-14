@@ -66,7 +66,7 @@ class PackagePriceCompanyTeamController extends Controller
         $dimWeightCompanyRound = ceil($packageDispatch->Weight);
 
         $priceWeightCompany = new RangePriceCompanyController();
-        $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound);
+        $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound, $packageDispatch->Reference_Number_1);
 
         $peakeSeasonPriceCompany = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)->first();
 

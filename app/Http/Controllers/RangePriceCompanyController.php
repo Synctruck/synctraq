@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{ PackageDispatch, RangePriceCompany };
+use App\Models\{ Company, PackageDispatch, PackageHistory, RangePriceCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -133,12 +133,21 @@ class RangePriceCompanyController extends Controller
         return ['stateAction' => true];
     }
 
-    public function GetPriceCompany($idCompany, $weight)
+    public function GetPriceCompany($idCompany, $weight, $Reference_Number_1)
     {
-        $range = RangePriceCompany::where('idCompany', $idCompany)
+        $company = Company::find($idCompany);
+
+        if($company != 'Smart Kargo')
+        {
+            $range =  GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1);
+        }
+        else
+        {
+            $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)
                                 ->where('maxWeight', '>=', $weight)
                                 ->first();
+        }
 
         if($range == null)
         {
@@ -146,6 +155,40 @@ class RangePriceCompanyController extends Controller
         }
 
         return $range->price;
+    }
+
+    public function GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1)
+    {
+        $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                        ->where('status', 'Manifest')
+                                        ->first();
+
+        $date      = date('Y-m-d', strtotime('2023-04-12 10:20:03'));
+        $startDate = $date .' 00:00:00';
+        $endDate   = $date .' 23:59:59';
+
+        $quantityPackagesHistory = PackageHistory::whereBetween('created_at', [$startEnd, $endDate])->get()->count();
+
+        $range = RangePriceCompany::where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->orderBy('price', 'desc')
+                                ->get();
+
+        if($quantityPackagesHistory <= 500)
+        {
+            $priceBaseCompany = $range[0];
+        }
+        else if($quantityPackagesHistory > 500 && $quantityPackagesHistory < 1200)
+        {
+            $priceBaseCompany = $range[1];
+        }
+        else if($quantityPackagesHistory >= 1200)
+        {
+            $priceBaseCompany = $range[2];
+        }
+
+        return $priceBaseCompany;
     }
 
     public function CalculatePricePecercentaje($price, $fuelPercentage)

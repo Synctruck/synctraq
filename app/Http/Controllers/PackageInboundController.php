@@ -250,63 +250,6 @@ class PackageInboundController extends Controller
             {
                 DB::beginTransaction();
 
-                $dimensions = 0;
-                $weight     = $packageManifest->Weight;
-                $width      = 0;
-                $height     = 0;
-                $length     = 0;
-                $cuIn       = $length * $height * $width;
-
-                ////////// COMPANY ///////////////////////////////////////////////////
-                //calculando dimensiones y precios para company
-                /*$dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                $dimFactorCompany = $dimFactorCompany->factor;
-
-                $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
-                $dimWeightCompanyRound = ceil($dimWeightCompany);
-
-                $weightCompany = $weight;
-
-                //precio base de cobro a compañia
-                $priceCompany = new RangePriceCompanyController();
-                $priceCompany = $priceCompany->GetPriceCompany($packageManifest->idCompany, $weightCompany);
-
-                //precio peakeseason
-                $companyController       = new CompanyController();
-                $peakeSeasonPriceCompany = $companyController->GetPeakeSeason($packageManifest->idCompany, $weightCompany);
-                
-                //precio base
-                $priceBaseCompany = number_format($priceCompany + $peakeSeasonPriceCompany, 2);
-
-                $dieselPrice = Configuration::first()->diesel_price;
-
-                $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
-                $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
-                $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
-                ///////// END COMPANY
-
-                $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
-                $packagePriceCompanyTeam->id                         = date('YmdHis') .'-'. $packageManifest->Reference_Number_1;
-                $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
-                $packagePriceCompanyTeam->weight                     = $weightCompany;
-                $packagePriceCompanyTeam->length                     = 0;
-                $packagePriceCompanyTeam->height                     = 0;
-                $packagePriceCompanyTeam->width                      = 0;
-                $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
-                $packagePriceCompanyTeam->cuIn                       = 0;
-                $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
-                $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
-                $packagePriceCompanyTeam->dimWeightCompanyRound      = $dimWeightCompanyRound;
-                $packagePriceCompanyTeam->priceWeightCompany         = $priceCompany;
-                $packagePriceCompanyTeam->peakeSeasonPriceCompany    = $peakeSeasonPriceCompany;
-                $packagePriceCompanyTeam->priceBaseCompany           = $priceBaseCompany;
-                $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
-                $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
-                $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
-
-                $packagePriceCompanyTeam->save();
-*/
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
