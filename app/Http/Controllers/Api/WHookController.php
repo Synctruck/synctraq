@@ -121,7 +121,7 @@ class WHookController extends Controller
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
-                    /*if($packageDispatch->company != 'Smart Kargo')
+                    if($packageDispatch->company != 'Smart Kargo')
                     {
                         Log::info($packageDispatch->company);
 
@@ -133,7 +133,7 @@ class WHookController extends Controller
                     else
                     {
                         Log::info('Does not send status to '. $packageDispatch->company);
-                    }*/
+                    }
                 }
             }
 
