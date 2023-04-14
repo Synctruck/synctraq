@@ -167,7 +167,10 @@ class RangePriceCompanyController extends Controller
         $startDate = $date .' 00:00:00';
         $endDate   = $date .' 23:59:59';
 
-        $quantityPackagesHistory = PackageHistory::whereBetween('created_at', [$startEnd, $endDate])->get()->count();
+        $quantityPackagesHistory = PackageHistory::whereBetween('created_at', [$startEnd, $endDate])
+                                                ->where('status', 'Manifest')
+                                                ->get()
+                                                ->count();
 
         $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)

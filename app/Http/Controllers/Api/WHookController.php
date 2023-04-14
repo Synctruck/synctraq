@@ -114,14 +114,14 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
+                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11 || $packageDispatch->idCompany == 15)
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
-                    if($packageDispatch->company != 'Smart Kargo')
+                    /*if($packageDispatch->company != 'Smart Kargo')
                     {
                         Log::info($packageDispatch->company);
 
@@ -133,7 +133,7 @@ class WHookController extends Controller
                     else
                     {
                         Log::info('Does not send status to '. $packageDispatch->company);
-                    }
+                    }*/
                 }
             }
 
