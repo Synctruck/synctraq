@@ -163,7 +163,7 @@ class RangePriceCompanyController extends Controller
                                         ->where('status', 'Manifest')
                                         ->first();
 
-        $date      = date('Y-m-d', strtotime('2023-04-12 10:20:03'));
+        $date      = date('Y-m-d', strtotime($packageHistory->created_at));
         $startDate = $date .' 00:00:00';
         $endDate   = $date .' 23:59:59';
 
@@ -172,6 +172,9 @@ class RangePriceCompanyController extends Controller
                                                 ->get()
                                                 ->count();
 
+        Log::info('GetPriceCompanySmartKargo');
+        Log::info($quantityPackagesHistory);
+        
         $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)
                                 ->where('maxWeight', '>=', $weight)
