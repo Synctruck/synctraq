@@ -114,7 +114,7 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11 || $packageDispatch->idCompany == 15)
+                    if($packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();

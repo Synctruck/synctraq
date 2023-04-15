@@ -409,7 +409,7 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
-        if($package->company == 'INLAND LOGISTICS' || $package->company == 'xxxx')
+        if($package->company == 'INLAND LOGISTICS' || $package->company == 'Smart Kargo')
         {
             $statusCodeCompany = '';
             $key_webhook       = '';

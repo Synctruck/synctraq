@@ -139,7 +139,7 @@ class RangePriceCompanyController extends Controller
     {
         $company = Company::find($idCompany);
 
-        if($company != 'Smart Kargo')
+        if($company->name == 'Smart Kargo')
         {
             $range =  $this->GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1);
         }
