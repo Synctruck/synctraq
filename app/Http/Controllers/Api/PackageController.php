@@ -409,7 +409,9 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
-        if($package->company == 'INLAND LOGISTICS' || $package->company == 'Smart Kargo')
+        Log::info('SendStatusToInland: '. $package->company);
+
+        if($package->company == 'INLAND LOGISTICS')
         {
             Log::info('SendStatusToInland: '. $package->company);
 
