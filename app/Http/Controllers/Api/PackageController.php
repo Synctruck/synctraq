@@ -443,7 +443,7 @@ class PackageController extends Controller
         if($typeServices == 'API')
         {
             Log::info('SendStatusToInland: '. $package->company);
-            
+
             if($status == 'ReturnCompany')
             {
                 $statusCodeCompany = $idPhoto;
@@ -519,6 +519,7 @@ class PackageController extends Controller
 
             Log::info('DATA SEND WEBHOOK- COMPANY');
             Log::info($dataSend);
+            Log::info($urlWebhook);
 
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $urlWebhook,
