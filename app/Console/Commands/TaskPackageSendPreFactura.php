@@ -52,12 +52,14 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        try
+        if($dayName == 'Monday' && $nowHour == 12)
+        {
+            try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-17');
+                $nowDate   = date('Y-m-d');
                 $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
@@ -84,6 +86,7 @@ class TaskPackageSendPreFactura extends Command
             {
                 DB::rollback();
             }
+        }
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
