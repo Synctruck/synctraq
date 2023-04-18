@@ -152,6 +152,15 @@
                 </li>
             @endif
 
+            @if(hasPermission('mms.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-mms') ? 'show' : 'collapsed'}}" href="{{url('/package-mms')}}">
+                        <i class="bx bx-car"></i>
+                        <span>MIDDLE MILE SCAN</span>
+                    </a>
+                </li>
+            @endif
+
             @if(hasPermission('lost.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-lost') ? 'show' : 'collapsed'}}" href="{{url('/package-lost')}}">

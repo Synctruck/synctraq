@@ -78,7 +78,8 @@ class PackageWarehouseController extends Controller
                                                     ->where('idUser', Auth::user()->id);
         }
 
-        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+        $packageListWarehouse = $packageListWarehouse->where('status', 'Warehouse')
+                                                    ->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($idCompany != 0)
         {
@@ -208,32 +209,35 @@ class PackageWarehouseController extends Controller
         //VALIDATION OF PACKAGE IN WAREHOUSE AND UPDATE DATE CREATED
         if($packageWarehouse != null)
         {
-            if(count($stateValidate) > 0)
+            if($packageWarehouse->status == 'Warehouse')
             {
-                if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                if(count($stateValidate) > 0)
                 {
-                    return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                    if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                    {
+                        return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                    }
                 }
-            } 
-            
-            /*$initDate = date('Y-m-d 00:00:00');
-            $endDate  = date('Y-m-d 23:59:59');
+                
+                /*$initDate = date('Y-m-d 00:00:00');
+                $endDate  = date('Y-m-d 23:59:59');
 
-            $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                            ->whereBetween('created_at', [$initDate, $endDate])
-                                            ->where('idUser', Auth::user()->id)
-                                            ->where('status', 'Warehouse')
-                                            ->get()
-                                            ->count();
+                $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                ->whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('idUser', Auth::user()->id)
+                                                ->where('status', 'Warehouse')
+                                                ->get()
+                                                ->count();
 
-            if($countValidations >= 2)
-            {
-                return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
-            }*/
+                if($countValidations >= 2)
+                {
+                    return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
+                }*/
 
-            if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
-            {
-                return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
+                if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
+                {
+                    return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
+                }
             }
 
             try
@@ -270,7 +274,9 @@ class PackageWarehouseController extends Controller
 
                 $packageHistory->save();
 
+
                 // update warehouse
+                $packageWarehouse->status     = 'Warehouse';
                 $packageWarehouse->idUser     = Auth::user()->id;
                 $packageWarehouse->created_at = date('Y-m-d H:i:s');
 
