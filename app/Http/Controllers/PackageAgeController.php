@@ -56,7 +56,7 @@ class PackageAgeController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'LATE DAYS', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
+        $fields = array('DATE', 'LATE DAYS', 'COMPANY', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -65,6 +65,7 @@ class PackageAgeController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($package['created_at'])),
                                 $package['lateDays'],
+                                $package['company'],
                                 $package['Reference_Number_1'],
                                 $package['status'],
                                 $package['statusDate'],
