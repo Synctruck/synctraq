@@ -52,11 +52,11 @@ class TaskGetGeocode extends Command
 
             $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
 
-            if($listPackageManifest->count() >= 250)
+            if($listPackageManifest->count() >= 400)
             {
-                $listPackageManifest = $listPackageManifest->take(250);
+                $listPackageManifest = $listPackageManifest->take(400);
             }
-            else if($listPackageManifest->count() < 250)
+            else if($listPackageManifest->count() < 400)
             {
                 $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
             }
