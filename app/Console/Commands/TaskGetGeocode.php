@@ -52,11 +52,11 @@ class TaskGetGeocode extends Command
 
             $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
 
-            if($listPackageManifest->count() >= 150)
+            if($listPackageManifest->count() >= 180)
             {
-                $listPackageManifest = $listPackageManifest->take(150);
+                $listPackageManifest = $listPackageManifest->take(180);
             }
-            else if($listPackageManifest->count() < 150)
+            else if($listPackageManifest->count() < 180)
             {
                 $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
             }
@@ -90,8 +90,6 @@ class TaskGetGeocode extends Command
                     $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
                     curl_close($curl);
-
-                    Log::info('$http_status:'. $http_status);
 
                     if($http_status == 200)
                     {
