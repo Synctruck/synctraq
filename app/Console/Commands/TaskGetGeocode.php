@@ -139,7 +139,7 @@ class TaskGetGeocode extends Command
 
         $listPackageDispatch = PackageDispatch::where('confidenceAddress', '')
                                                 ->where('status', 'Delivery')
-                                                ->whereBetween('Date_Delivery', ['2023-01-01 00:00:00', '2023-02-28 23:59:59'])
+                                                ->whereBetween('Date_Delivery', ['2023-01-01 00:00:00', '2023-01-31 23:59:59'])
                                                 ->get();
 
         if($listPackageDispatch->count() > 0)
