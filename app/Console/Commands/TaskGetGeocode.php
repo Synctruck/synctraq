@@ -172,7 +172,7 @@ class TaskGetGeocode extends Command
                         if($route4me->confidenceAddress == 'high')
                         {
                             Log::info('Reference_Number_1 route4me: '. $packageDispatch->Reference_Number_1);
-                            
+
                             $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
                             $packageDispatch->confidenceAddress = $route4me->confidenceAddress;
                             $packageDispatch->save();
@@ -193,6 +193,9 @@ class TaskGetGeocode extends Command
                         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
                         curl_close($curl);
+
+                        Log::info('http_status : '. $http_status);
+                        Log::info($output);
 
                         if($http_status == 200)
                         {
