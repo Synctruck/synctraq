@@ -67,13 +67,16 @@ class TaskGetGeocode extends Command
 
                 $route4me = Route4me::where('fullAddress', $fullAddress)->first();
 
-                if($route4me && $route4me->confidenceAddress == 'high')
+                if($route4me)
                 {
-                    $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-                    $packageManifest->confidenceAddress = $route4me->confidenceAddress;
-                    $packageManifest->latitute          = $route4me->latitute;
-                    $packageManifest->longitude         = $route4me->longitude;
-                    $packageManifest->save();
+                    if($route4me->confidenceAddress == 'high')
+                    {
+                        $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                        $packageManifest->confidenceAddress = $route4me->confidenceAddress;
+                        $packageManifest->latitute          = $route4me->latitute;
+                        $packageManifest->longitude         = $route4me->longitude;
+                        $packageManifest->save();
+                    }
                 }
                 else
                 {
