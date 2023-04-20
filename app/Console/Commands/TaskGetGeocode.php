@@ -142,7 +142,6 @@ class TaskGetGeocode extends Command
                                                 ->whereBetween('Date_Delivery', ['2023-01-01 00:00:00', '2023-01-31 23:59:59'])
                                                 ->get();
 
-        Log::info('$listPackageDispatch->count() ='. $listPackageDispatch->count());
         if($listPackageDispatch->count() > 0)
         {
             Log::info("============================================================");
@@ -154,6 +153,7 @@ class TaskGetGeocode extends Command
 
                 if($listPackageDispatch->count() >= 150)
                 {
+                    Log::info('$listPackageDispatch ==> '. $listPackageDispatch->count());
                     $listPackageDispatch = $listPackageDispatch->take(150);
                 }
                 else if($listPackageDispatch->count() < 150)
