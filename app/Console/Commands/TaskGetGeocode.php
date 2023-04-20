@@ -182,6 +182,8 @@ class TaskGetGeocode extends Command
                     {
                         $urlRoute4me = 'https://api.route4me.com/api/address.php?address='. $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code .', USA&format=json&detailed=true&api_key=73D4A484115AEFA26C7E3CB5D2350BA0';
 
+                        Log::info('urlRoute4me: '. $urlRoute4me);
+
                         $urlRoute4me = str_replace(' ', '%20', $urlRoute4me);
 
                         $curl = curl_init($urlRoute4me);
