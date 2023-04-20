@@ -54,8 +54,6 @@ class TaskGetGeocode extends Command
             {
                 DB::beginTransaction();
 
-                
-
                 if($listPackageManifest->count() >= 2500)
                 {
                     $listPackageManifest = $listPackageManifest->take(2500);
