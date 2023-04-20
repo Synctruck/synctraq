@@ -52,11 +52,11 @@ class TaskGetGeocode extends Command
 
             $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
 
-            if($listPackageManifest->count() >= 180)
+            if($listPackageManifest->count() >= 100)
             {
-                $listPackageManifest = $listPackageManifest->take(180);
+                $listPackageManifest = $listPackageManifest->take(100);
             }
-            else if($listPackageManifest->count() < 180)
+            else if($listPackageManifest->count() < 100)
             {
                 $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
             }
@@ -67,12 +67,12 @@ class TaskGetGeocode extends Command
 
                 $route4me = Route4me::where('fullAddress', $fullAddress)->first();
 
-                if($route4me)
+                if($route4me && $route4me->confidenceAddress == 'high')
                 {
                     $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-
                     $packageManifest->confidenceAddress = $route4me->confidenceAddress;
-
+                    $packageManifest->latitute          = $route4me->latitute;
+                    $packageManifest->longitude         = $route4me->longitude;
                     $packageManifest->save();
                 }
                 else
@@ -104,9 +104,14 @@ class TaskGetGeocode extends Command
                             $route4me->longitude         = $dataGeocode['coordinates']['lng'];
                             $route4me->save();
 
-                            $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-                            $packageManifest->confidenceAddress = $dataGeocode['confidence'];
-                            $packageManifest->save();
+                            if($dataGeocode['confidence'] == 'high')
+                            {
+                                $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                                $packageManifest->confidenceAddress = $dataGeocode['confidence'];
+                                $packageManifest->latitute          = $dataGeocode['lat'];
+                                $packageManifest->longitude         = $dataGeocode['lng'];
+                                $packageManifest->save();
+                            }
                         }
                     }
                 }
