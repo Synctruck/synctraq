@@ -163,7 +163,6 @@ class TaskGetGeocode extends Command
 
                 foreach($listPackageDispatch as $packageDispatch)
                 {
-                    Log::info('Reference_Number_1: '. $packageDispatch->Reference_Number_1);
                     $fullAddress = $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code;
 
                     $route4me = Route4me::where('fullAddress', $fullAddress)->first();
@@ -172,6 +171,8 @@ class TaskGetGeocode extends Command
                     {
                         if($route4me->confidenceAddress == 'high')
                         {
+                            Log::info('Reference_Number_1 route4me: '. $packageDispatch->Reference_Number_1);
+                            
                             $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
                             $packageDispatch->confidenceAddress = $route4me->confidenceAddress;
                             $packageDispatch->save();
@@ -197,6 +198,7 @@ class TaskGetGeocode extends Command
                         {
                             if(isset($output[0]))
                             {
+                                Log::info('Reference_Number_1 output: '. $packageDispatch->Reference_Number_1);
                                 $dataGeocode = $output[0];
 
                                 $route4me = new Route4me();
