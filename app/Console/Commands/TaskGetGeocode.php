@@ -43,94 +43,99 @@ class TaskGetGeocode extends Command
      */
     public function handle()
     {
-        Log::info("============================================================");
-        Log::info("========== SCHEDULE TASK GET GEOCODE ==========");
+        $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
 
-        try
+        if($listPackageManifest->count() > 0)
         {
-            DB::beginTransaction();
+            Log::info("============================================================");
+            Log::info("========== SCHEDULE TASK GET GEOCODE ==========");
 
-            $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
-
-            if($listPackageManifest->count() >= 2500)
+            try
             {
-                $listPackageManifest = $listPackageManifest->take(2500);
-            }
-            else if($listPackageManifest->count() < 2500)
-            {
-                $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
-            }
+                DB::beginTransaction();
 
-            foreach($listPackageManifest as $packageManifest)
-            {
-                $fullAddress = $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code;
+                
 
-                $route4me = Route4me::where('fullAddress', $fullAddress)->first();
-
-                if($route4me)
+                if($listPackageManifest->count() >= 2500)
                 {
-                    if($route4me->confidenceAddress == 'high')
-                    {
-                        $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-                        $packageManifest->confidenceAddress = $route4me->confidenceAddress;
-                        $packageManifest->latitute          = $route4me->latitute;
-                        $packageManifest->longitude         = $route4me->longitude;
-                        $packageManifest->save();
-                    }
+                    $listPackageManifest = $listPackageManifest->take(2500);
                 }
-                else
+                else if($listPackageManifest->count() < 2500)
                 {
-                    $urlRoute4me = 'https://api.route4me.com/api/address.php?address='. $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code .', USA&format=json&detailed=true&api_key=73D4A484115AEFA26C7E3CB5D2350BA0';
+                    $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
+                }
 
-                    $urlRoute4me = str_replace(' ', '%20', $urlRoute4me);
+                foreach($listPackageManifest as $packageManifest)
+                {
+                    $fullAddress = $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code;
 
-                    $curl = curl_init($urlRoute4me);
+                    $route4me = Route4me::where('fullAddress', $fullAddress)->first();
 
-                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-                    $output      = json_decode(curl_exec($curl), 1);
-                    $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-                    curl_close($curl);
-
-                    if($http_status == 200)
+                    if($route4me)
                     {
-                        if(isset($output[0]))
+                        if($route4me->confidenceAddress == 'high')
                         {
-                            $dataGeocode = $output[0];
+                            $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                            $packageManifest->confidenceAddress = $route4me->confidenceAddress;
+                            $packageManifest->latitute          = $route4me->latitute;
+                            $packageManifest->longitude         = $route4me->longitude;
+                            $packageManifest->save();
+                        }
+                    }
+                    else
+                    {
+                        $urlRoute4me = 'https://api.route4me.com/api/address.php?address='. $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code .', USA&format=json&detailed=true&api_key=73D4A484115AEFA26C7E3CB5D2350BA0';
 
-                            $route4me = new Route4me();
-                            $route4me->fullAddress       = $fullAddress;
-                            $route4me->confidenceAddress = $dataGeocode['confidence'];
-                            $route4me->latitute          = $dataGeocode['coordinates']['lat'];
-                            $route4me->longitude         = $dataGeocode['coordinates']['lng'];
-                            $route4me->save();
+                        $urlRoute4me = str_replace(' ', '%20', $urlRoute4me);
 
-                            if($dataGeocode['confidence'] == 'high')
+                        $curl = curl_init($urlRoute4me);
+
+                        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+                        $output      = json_decode(curl_exec($curl), 1);
+                        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                        curl_close($curl);
+
+                        if($http_status == 200)
+                        {
+                            if(isset($output[0]))
                             {
-                                $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-                                $packageManifest->confidenceAddress = $dataGeocode['confidence'];
-                                $packageManifest->latitute          = $dataGeocode['lat'];
-                                $packageManifest->longitude         = $dataGeocode['lng'];
-                                $packageManifest->save();
+                                $dataGeocode = $output[0];
+
+                                $route4me = new Route4me();
+                                $route4me->fullAddress       = $fullAddress;
+                                $route4me->confidenceAddress = $dataGeocode['confidence'];
+                                $route4me->latitute          = $dataGeocode['coordinates']['lat'];
+                                $route4me->longitude         = $dataGeocode['coordinates']['lng'];
+                                $route4me->save();
+
+                                if($dataGeocode['confidence'] == 'high')
+                                {
+                                    $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                                    $packageManifest->confidenceAddress = $dataGeocode['confidence'];
+                                    $packageManifest->latitute          = $dataGeocode['lat'];
+                                    $packageManifest->longitude         = $dataGeocode['lng'];
+                                    $packageManifest->save();
+                                }
                             }
                         }
                     }
                 }
+
+                Log::info("==================== CORRECT SCHEDULE TASK GET GEOCODE ");
+                Log::info("============================================================");
+
+                DB::commit();
             }
+            catch(Exception $e)
+            {
+                DB::rollback();
 
-            Log::info("==================== CORRECT SCHEDULE TASK GET GEOCODE ");
-            Log::info("============================================================");
-
-            DB::commit();
-        }
-        catch(Exception $e)
-        {
-            DB::rollback();
-
-            Log::info("==================== ROLLBACK SCHEDULE TASK GET GEOCODE ");
-            Log::info("============================================================");
+                Log::info("==================== ROLLBACK SCHEDULE TASK GET GEOCODE ");
+                Log::info("============================================================");
+            }
         }
     }
 }
