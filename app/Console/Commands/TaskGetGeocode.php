@@ -151,18 +151,19 @@ class TaskGetGeocode extends Command
             {
                 DB::beginTransaction();
 
-                if($listPackageDispatch->count() >= 150)
+                if($listPackageDispatch->count() >= 50)
                 {
                     Log::info('$listPackageDispatch ==> '. $listPackageDispatch->count());
-                    $listPackageDispatch = $listPackageDispatch->take(150);
+                    $listPackageDispatch = $listPackageDispatch->take(50);
                 }
-                else if($listPackageDispatch->count() < 150)
+                else if($listPackageDispatch->count() < 50)
                 {
                     $listPackageDispatch = $listPackageDispatch->take($listPackageDispatch->count());
                 }
 
                 foreach($listPackageDispatch as $packageDispatch)
                 {
+                    Log::info('Reference_Number_1: '. $packageDispatch->Reference_Number_1);
                     $fullAddress = $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code;
 
                     $route4me = Route4me::where('fullAddress', $fullAddress)->first();
