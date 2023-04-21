@@ -161,6 +161,7 @@ class TaskGetGeocode extends Command
                     $listPackageDispatch = $listPackageDispatch->take($listPackageDispatch->count());
                 }
 
+                Log::info($listPackageDispatch);
                 foreach($listPackageDispatch as $packageDispatch)
                 {
                     $fullAddress = $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code;
