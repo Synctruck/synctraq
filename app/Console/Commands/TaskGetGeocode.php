@@ -151,12 +151,12 @@ class TaskGetGeocode extends Command
             {
                 DB::beginTransaction();
 
-                if($listPackageDispatch->count() >= 50)
+                if($listPackageDispatch->count() >= 150)
                 {
                     Log::info('$listPackageDispatch ==> '. $listPackageDispatch->count());
-                    $listPackageDispatch = $listPackageDispatch->take(50);
+                    $listPackageDispatch = $listPackageDispatch->take(150);
                 }
-                else if($listPackageDispatch->count() < 50)
+                else if($listPackageDispatch->count() < 150)
                 {
                     $listPackageDispatch = $listPackageDispatch->take($listPackageDispatch->count());
                 }
