@@ -165,7 +165,8 @@ class TaskGetGeocode extends Command
                 {
                     $fullAddress = $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code;
 
-                    $route4me = Route4me::where('fullAddress', $fullAddress)->first();
+                    $fullAddress = str_replace('#', '', $fullAddress);
+                    $route4me    = Route4me::where('fullAddress', $fullAddress)->first();
 
                     if($route4me)
                     {
@@ -185,6 +186,7 @@ class TaskGetGeocode extends Command
                         Log::info('urlRoute4me: '. $urlRoute4me);
 
                         $urlRoute4me = str_replace(' ', '%20', $urlRoute4me);
+                        $urlRoute4me = str_replace('#', '', $urlRoute4me);
 
                         $curl = curl_init($urlRoute4me);
 
