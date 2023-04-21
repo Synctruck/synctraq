@@ -153,7 +153,6 @@ class TaskGetGeocode extends Command
 
                 if($listPackageDispatch->count() >= 150)
                 {
-                    Log::info('$listPackageDispatch ==> '. $listPackageDispatch->count());
                     $listPackageDispatch = $listPackageDispatch->take(150);
                 }
                 else if($listPackageDispatch->count() < 150)
@@ -161,7 +160,6 @@ class TaskGetGeocode extends Command
                     $listPackageDispatch = $listPackageDispatch->take($listPackageDispatch->count());
                 }
 
-                Log::info($listPackageDispatch);
                 foreach($listPackageDispatch as $packageDispatch)
                 {
                     $fullAddress = $packageDispatch->Dropoff_Address_Line_1 .', '. $packageDispatch->Dropoff_City .', '. $packageDispatch->Dropoff_Province .' '. $packageDispatch->Dropoff_Postal_Code;
@@ -171,14 +169,9 @@ class TaskGetGeocode extends Command
 
                     if($route4me)
                     {
-                        if($route4me->confidenceAddress == 'high')
-                        {
-                            Log::info('Reference_Number_1 route4me: '. $packageDispatch->Reference_Number_1);
-
-                            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
-                            $packageDispatch->confidenceAddress = $route4me->confidenceAddress;
-                            $packageDispatch->save();
-                        }
+                        $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                        $packageDispatch->confidenceAddress = $route4me->confidenceAddress;
+                        $packageDispatch->save();
                     }
                     else
                     {
@@ -199,9 +192,6 @@ class TaskGetGeocode extends Command
 
                         curl_close($curl);
 
-                        Log::info('http_status : '. $http_status);
-                        Log::info($output);
-
                         if($http_status == 200)
                         {
                             if(isset($output[0]))
@@ -216,12 +206,9 @@ class TaskGetGeocode extends Command
                                 $route4me->longitude         = $dataGeocode['coordinates']['lng'];
                                 $route4me->save();
 
-                                if($dataGeocode['confidence'] == 'high')
-                                {
-                                    $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
-                                    $packageDispatch->confidenceAddress = $dataGeocode['confidence'];
-                                    $packageDispatch->save();
-                                }
+                                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                                $packageDispatch->confidenceAddress = $dataGeocode['confidence'];
+                                $packageDispatch->save();
                             }
                         }
                     }
