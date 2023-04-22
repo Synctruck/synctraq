@@ -156,6 +156,12 @@ class IndexController extends Controller
                                                     ->groupBy('Reference_Number_1')
                                                     ->get();
 
+        $packageHistoryMiddleMileScan = PackageWarehouse::select('Reference_Number_1', 'Route', 'status')
+                                                            ->whereBetween('created_at', [$startDate, $endDate])
+                                                            ->where('status', 'Middle Mile Scan')
+                                                            ->groupBy('Reference_Number_1')
+                                                            ->get();
+
         $packageDispatchList = PackageDispatch::whereBetween('created_at', [$startDate, $endDate])
                                                 ->where('status', 'Dispatch')
                                                 ->get();
@@ -218,6 +224,7 @@ class IndexController extends Controller
 
             'packageHistoryInbound' => $packageHistoryInbound,
             'packageHistoryWarehouse' => $packageHistoryWarehouse,
+            'packageHistoryMiddleMileScan' => $packageHistoryMiddleMileScan,
             'packageDispatchList' => $packageDispatchList,
             'packageDeliveryList' => $packageDeliveryList,
             'packageHistoryListProcess' => $packageHistoryListProcess,

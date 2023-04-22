@@ -148,24 +148,26 @@ function Dashboard() {
         .then(res => res.json())
         .then((response) => {
 
-            let totalInboundRoute   = 0;
-            let totalWarehouseRoute = 0;
-            let totalReinboundRoute = 0;
-            let totalReturn         = 0;
-            let totalDispatchRoute  = 0;
-            let totalFailedRoute    = 0;
-            let totalDeliveryRoute  = 0;
+            let totalInboundRoute    = 0;
+            let totalWarehouseRoute  = 0;
+            let totalMiddleMileRoute = 0;
+            let totalReinboundRoute  = 0;
+            let totalReturn          = 0;
+            let totalDispatchRoute   = 0;
+            let totalFailedRoute     = 0;
+            let totalDeliveryRoute   = 0;
 
             let listReportPerRoute = [];
 
             response.packageRouteList.forEach( route => {
 
-                let quantityInboundRoute   = 0;
-                let quantityWarehouseRoute = 0;
-                let quantityReinboundRoute = 0;
-                let quantityDispatchRoute  = 0;
-                let quantityFailedRoute    = 0;
-                let quantityDeliveryRoute  = 0;
+                let quantityInboundRoute    = 0;
+                let quantityWarehouseRoute  = 0;
+                let quantityMiddleMileRoute = 0;
+                let quantityReinboundRoute  = 0;
+                let quantityDispatchRoute   = 0;
+                let quantityFailedRoute     = 0;
+                let quantityDeliveryRoute   = 0;
 
                 response.packageHistoryInbound.forEach( packageHistory => {
 
@@ -180,6 +182,14 @@ function Dashboard() {
                     if(packageHistory.Route == route.Route)
                     {
                         quantityWarehouseRoute++;
+                    }
+                });
+
+                response.packageHistoryMiddleMileScan.forEach( packageHistory => {
+
+                    if(packageHistory.Route == route.Route)
+                    {
+                        quantityMiddleMileRoute++;
                     }
                 });
 
@@ -216,19 +226,21 @@ function Dashboard() {
                     }
                 });
 
-                totalInboundRoute   = parseInt(totalInboundRoute) + parseInt(quantityInboundRoute);
-                totalWarehouseRoute = parseInt(totalWarehouseRoute) + parseInt(quantityWarehouseRoute)
-                totalReinboundRoute = parseInt(totalReinboundRoute) + parseInt(quantityReinboundRoute);
-                totalDispatchRoute  = parseInt(totalDispatchRoute) + parseInt(quantityDispatchRoute);
-                totalFailedRoute    = parseInt(totalFailedRoute) + parseInt(quantityFailedRoute);
-                totalDeliveryRoute  = parseInt(totalDeliveryRoute) + parseInt(quantityDeliveryRoute);
+                totalInboundRoute    = parseInt(totalInboundRoute) + parseInt(quantityInboundRoute);
+                totalWarehouseRoute  = parseInt(totalWarehouseRoute) + parseInt(quantityWarehouseRoute)
+                totalMiddleMileRoute = parseInt(totalMiddleMileRoute) + parseInt(quantityMiddleMileRoute)
+                totalReinboundRoute  = parseInt(totalReinboundRoute) + parseInt(quantityReinboundRoute);
+                totalDispatchRoute   = parseInt(totalDispatchRoute) + parseInt(quantityDispatchRoute);
+                totalFailedRoute     = parseInt(totalFailedRoute) + parseInt(quantityFailedRoute);
+                totalDeliveryRoute   = parseInt(totalDeliveryRoute) + parseInt(quantityDeliveryRoute);
 
                 const data = {
 
                     Route: route.Route,
                     total_inbound: quantityInboundRoute,
                     total_warehouse: quantityWarehouseRoute,
-                    total_pending: quantityInboundRoute + quantityWarehouseRoute,
+                    total_middle: quantityMiddleMileRoute,
+                    total_pending: quantityInboundRoute + quantityWarehouseRoute + quantityMiddleMileRoute,
                     total_dispatch: quantityDispatchRoute,
                     total_failed: quantityFailedRoute,
                     total_delivery: quantityDeliveryRoute,
@@ -358,6 +370,7 @@ function Dashboard() {
                 </td>
                 <td className='text-end'>{ item.total_inbound }</td>
                 <td className='text-end'>{ item.total_warehouse }</td>
+                <td className='text-end'>{ item.total_middle }</td>
                 <td className='text-end'>{ item.total_pending }</td>
                 <td className='text-end'>{ item.total_dispatch }</td>
                 <td className='text-end' style={ {display: 'none'} }>{ item.total_failed }</td>
@@ -673,6 +686,7 @@ function Dashboard() {
                                                             <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
                                                             <th className='bg-success'>INBOUND</th>
                                                             <th className='bg-warning'>WAREHOUSE</th>
+                                                            <th className='bg-warning'>MIDDLE MILE SCAN</th>
                                                             <th style={{backgroundColor: '#38D9A1',color: '#fff' }}>TOTAL PENDING DISPATCH</th>
                                                             <th className='bg-warning'>DISPATCH</th>
                                                             <th className='bg-danger' style={ {display: 'none'} }>FAILED</th>
