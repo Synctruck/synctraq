@@ -687,7 +687,7 @@ function Dashboard() {
                                                             <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
                                                             <th className='bg-success'>INBOUND</th>
                                                             <th className='bg-warning'>WAREHOUSE</th>
-                                                            <th className='bg-warning'>MIDDLE MILE SCAN</th>
+                                                            <th className='bg-info'>MIDDLE MILE SCAN</th>
                                                             <th style={{backgroundColor: '#38D9A1',color: '#fff' }}>TOTAL PENDING DISPATCH</th>
                                                             <th className='bg-warning'>DISPATCH</th>
                                                             <th className='bg-danger' style={ {display: 'none'} }>FAILED</th>
