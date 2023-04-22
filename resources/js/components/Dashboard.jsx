@@ -261,7 +261,7 @@ function Dashboard() {
                 inbound: totalInboundRoute,
                 warehouse: totalWarehouseRoute,
                 middlemilescan: totalMiddleMileRoute,
-                pending: parseInt(totalInboundRoute) + parseInt(totalWarehouseRoute),
+                pending: parseInt(totalInboundRoute) + parseInt(totalWarehouseRoute) + parseInt(totalMiddleMileRoute),
                 dispatch: totalDispatchRoute,
                 failed: totalFailedRoute,
                 delivery: totalDeliveryRoute
@@ -698,7 +698,7 @@ function Dashboard() {
                                                         <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
                                                             <td></td>
                                                             <td><b>   TOTAL:</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>totalMiddleMileRoute
+                                                            <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.warehouse}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.middlemilescan}</b></td>
                                                             <td className='text-end'><b>{listPackageRouteTotal.pending}</b></td>
