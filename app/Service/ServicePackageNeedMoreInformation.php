@@ -98,6 +98,48 @@ class ServicePackageNeedMoreInformation{
         return ['stateAction' => 'notExists'];
     }
 
+    public function Export()
+    {
+        $delimiter = ",";
+        $filename  = "PACKAGES - NEED MORE INFORMATION " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $packageNeedMoreInformationList = PackageNeedMoreInformation::orderBy('created_at', 'desc')->paginate(500);
+
+        foreach($packageNeedMoreInformationList as $packageNeedMoreInformation)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageNeedMoreInformation->created_at)),
+                                date('H:i:s', strtotime($packageNeedMoreInformation->created_at)),
+                                $packageNeedMoreInformation->Reference_Number_1,
+                                $packageNeedMoreInformation->Dropoff_Contact_Name,
+                                $packageNeedMoreInformation->Dropoff_Contact_Phone_Number,
+                                $packageNeedMoreInformation->Dropoff_Address_Line_1,
+                                $packageNeedMoreInformation->Dropoff_City,
+                                $packageNeedMoreInformation->Dropoff_Province,
+                                $packageNeedMoreInformation->Dropoff_Postal_Code,
+                                $packageNeedMoreInformation->Weight,
+                                $packageNeedMoreInformation->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
     public function MoveToWarehouse($Reference_Number_1)
     {
         $packageNeedMoreInformation = $this->Get($Reference_Number_1);

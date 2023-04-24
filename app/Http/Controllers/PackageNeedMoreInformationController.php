@@ -8,7 +8,7 @@ use App\Service\ServicePackageNeedMoreInformation;
 
 use Auth;
 use DB;
-use Log;
+use Log; 
 use Session;
 use DateTime;
  
@@ -45,6 +45,13 @@ class PackageNeedMoreInformationController extends Controller
 
             return false;
         }
+    }
+
+    public function Export()
+    {
+        $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+
+        return $servicePackageNeedMoreInformation->Export();
     }
 
     public function MoveToWarehouse($Reference_Number_1)
