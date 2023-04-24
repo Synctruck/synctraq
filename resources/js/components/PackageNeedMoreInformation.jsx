@@ -32,7 +32,7 @@ function PackageNeedMoreInformation() {
     const [typeMessage, setTypeMessage]         = useState('');
 
     const [listInbound, setListInbound] = useState([]);
-
+ 
     const [file, setFile]             = useState('');
 
     const [displayButton, setDisplayButton] = useState('none');
@@ -123,7 +123,7 @@ function PackageNeedMoreInformation() {
 
     const exportAllPackageInbound = (route, state) => {
 
-        location.href = url_general +'package-inbound/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        location.href = url_general +'package-nmi/export';
     }
 
     const handlerExport = () => {
