@@ -977,8 +977,9 @@ class PackageDispatchController extends Controller
                                 $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                             }
 
-                            $packageDispatch = new PackageDispatch();
+                            $created_at = date('Y-m-d H:i:s');
 
+                            $packageDispatch = new PackageDispatch();
                             $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                             $packageDispatch->idCompany                    = $package->idCompany;
                             $packageDispatch->company                      = $package->company;
@@ -1002,13 +1003,11 @@ class PackageDispatchController extends Controller
                             $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                             $packageDispatch->quantity                     = $package->quantity;
                             $packageDispatch->status                       = 'Dispatch';
-                            $packageDispatch->created_at                   = date('Y-m-d H:i:s');
-                            $packageDispatch->updated_at                   = date('Y-m-d H:i:s');
-
+                            $packageDispatch->created_at                   = $created_at;
+                            $packageDispatch->updated_at                   = $created_at;
                             $packageDispatch->save();
 
                             $packageHistory = new PackageHistory();
-
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                             $packageHistory->idCompany                    = $package->idCompany;
@@ -1035,10 +1034,14 @@ class PackageDispatchController extends Controller
                             $packageHistory->Description                  = $description;
                             $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Dispatch';
-                            $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                            $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-
+                            $packageHistory->created_at                   = $created_at;
+                            $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
+
+                            //data for INLAND
+                            $packageController = new PackageController();
+                            $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
+                            //end data for inland
 
                             $package->delete();
                         }
