@@ -48,7 +48,7 @@ class TaskSendAgeOfPackages extends Command
 
     public function handle()
     {
-        if($dayName == 'Monday' && $nowHour == 8)
+        if(date('l') == 'Monday' && $nowHour == 8)
         {
             $this->ExportAgeOfPackages();
             $this->SendAgeOfPackages();
