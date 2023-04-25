@@ -204,10 +204,21 @@ class PackageMiddleMileScanController extends Controller
 
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 
+        $stateValidate = $request->get('StateValidate');
+        $stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
+
         if($packageWarehouse)
         {
             if($packageWarehouse->status == 'Warehouse')
             {
+                if(count($stateValidate) > 0)
+                {
+                    if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                    {
+                        return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                    }
+                }
+
                 try
                 {
                     DB::beginTransaction();
@@ -269,6 +280,14 @@ class PackageMiddleMileScanController extends Controller
 
         if($packageInbound)
         {
+            if(count($stateValidate) > 0)
+            {
+                if(!in_array($packageInbound->Dropoff_Province, $stateValidate))
+                {
+                    return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageInbound];
+                }
+            }
+                
             try
             {
                 DB::beginTransaction();
