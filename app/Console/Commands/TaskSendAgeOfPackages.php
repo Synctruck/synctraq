@@ -54,8 +54,12 @@ class TaskSendAgeOfPackages extends Command
             $this->SendAgeOfPackages();
         }
 
+        Log::info('send age of package');
+
         $this->ExportAgeOfPackages();
         $this->SendAgeOfPackages();
+
+        Log::info('end package');
     }
 
     public function ExportAgeOfPackages()
