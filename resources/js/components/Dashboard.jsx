@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { Modal } from 'react'
 
@@ -14,7 +14,7 @@ import moment from 'moment';
 import { Grid } from '@mui/material'
 import { CalendarPicker } from '@mui/x-date-pickers'
 import ReactLoading from 'react-loading';
-
+import { DownloadTableExcel } from 'react-export-table-to-excel';
 // moment().format();
 
 function Dashboard() {
@@ -30,6 +30,7 @@ function Dashboard() {
     const [quantityWarehouse, setQuantityWarehouse] = useState(0);
     const [quantityFailed, setQuantityFailed]       = useState(0);
 
+    const tableRef = useRef(null);
 
     const [listDataPie, setListDataPie] = useState([]);
 
@@ -594,7 +595,22 @@ function Dashboard() {
                     <div className='card'>
                         <div className='card-body'>
                             <div className='card-title'>
-                                REPORT PER DATE <span>{valueCalendar.format('LL')}</span>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        REPORT PER DATE <span>{valueCalendar.format('LL')}</span>
+                                    </div>
+                                    <div className="col-lg-2 form-group">
+                                        <DownloadTableExcel
+                                            filename="Report Mass Query"
+                                            sheet="users"
+                                            currentTableRef={tableRef.current}
+                                        >
+                                            <button className="btn btn-success btn-sm form-control">
+                                                <i className="ri-file-excel-fill"></i> EXPORT
+                                            </button>
+                                        </DownloadTableExcel>
+                                    </div>
+                                </div>
                             </div>
                             <div className='row justify-content-center '>
                                 <div className='col-lg-12 col-sm-12'>
@@ -651,27 +667,27 @@ function Dashboard() {
                                     <div className="row form-group table-responsive">
                                         <div className="col-lg-12">
                                             <table className="table table-hover table-condensed table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
-                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
-                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'} }>RE-INBOUND</th>
-                                                            <th className='bg-warning'>DISPATCH</th>
-                                                            <th className='bg-danger'>FAILED</th>
-                                                            <th className='bg-info'>DELIVERY</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
-                                                            <td></td>
-                                                            <td><b>   TOTAL:</b></td>
-                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageTeamTotal.reinbound}</b></td>
-                                                            <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
-                                                            <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
-                                                            <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
-                                                        </tr>
-                                                        { listDataTablePerTeam }
-                                                    </tbody>
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
+                                                        <th style={{backgroundColor: '#fff',color: '#000'}}>TEAM</th>
+                                                        <th style={{backgroundColor: '#38D9A1',color: '#fff', display: 'none'} }>RE-INBOUND</th>
+                                                        <th className='bg-warning'>DISPATCH</th>
+                                                        <th className='bg-danger'>FAILED</th>
+                                                        <th className='bg-info'>DELIVERY</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
+                                                        <td></td>
+                                                        <td><b>   TOTAL:</b></td>
+                                                        <td className='text-end' style={ {display: 'none'} }><b>{listPackageTeamTotal.reinbound}</b></td>
+                                                        <td className='text-end'><b>{listPackageTeamTotal.dispatch}</b></td>
+                                                        <td className='text-end'><b>{listPackageTeamTotal.failed}</b></td>
+                                                        <td className='text-end'><b>{listPackageTeamTotal.delivery}</b></td>
+                                                    </tr>
+                                                    { listDataTablePerTeam }
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -680,34 +696,34 @@ function Dashboard() {
                                     <h6 className="card-title "> <span>DATA TABLE PER DAY - ROUTE</span></h6>
                                     <div className="row form-group table-responsive">
                                         <div className="col-lg-12">
-                                            <table className="table table-hover table-condensed table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
-                                                            <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
-                                                            <th className='bg-success'>INBOUND</th>
-                                                            <th className='bg-warning'>WAREHOUSE</th>
-                                                            <th className='bg-info'>MIDDLE MILE SCAN</th>
-                                                            <th style={{backgroundColor: '#38D9A1',color: '#fff' }}>TOTAL PENDING DISPATCH</th>
-                                                            <th className='bg-warning'>DISPATCH</th>
-                                                            <th className='bg-danger' style={ {display: 'none'} }>FAILED</th>
-                                                            <th className='bg-info' style={ {display: 'none'} }>DELIVERY</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
-                                                            <td></td>
-                                                            <td><b>   TOTAL:</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.warehouse}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.middlemilescan}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.pending}</b></td>
-                                                            <td className='text-end'><b>{listPackageRouteTotal.dispatch}</b></td>
-                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.failed}</b></td>
-                                                            <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.delivery}</b></td>
-                                                        </tr>
-                                                        { listDataTablePerRoute }
-                                                    </tbody>
+                                            <table ref={ tableRef } className="table table-hover table-condensed table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{backgroundColor: '#fff',color: '#000'}}>#</th>
+                                                        <th style={{backgroundColor: '#fff',color: '#000'}}>ROUTE</th>
+                                                        <th className='bg-success'>INBOUND</th>
+                                                        <th className='bg-warning'>WAREHOUSE</th>
+                                                        <th className='bg-info'>MIDDLE MILE SCAN</th>
+                                                        <th style={{backgroundColor: '#38D9A1',color: '#fff' }}>TOTAL PENDING DISPATCH</th>
+                                                        <th className='bg-warning'>DISPATCH</th>
+                                                        <th className='bg-danger' style={ {display: 'none'} }>FAILED</th>
+                                                        <th className='bg-info' style={ {display: 'none'} }>DELIVERY</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style={{backgroundColor: '#D3F7E2',color: '#000'}}>
+                                                        <td></td>
+                                                        <td><b>   TOTAL:</b></td>
+                                                        <td className='text-end'><b>{listPackageRouteTotal.inbound}</b></td>
+                                                        <td className='text-end'><b>{listPackageRouteTotal.warehouse}</b></td>
+                                                        <td className='text-end'><b>{listPackageRouteTotal.middlemilescan}</b></td>
+                                                        <td className='text-end'><b>{listPackageRouteTotal.pending}</b></td>
+                                                        <td className='text-end'><b>{listPackageRouteTotal.dispatch}</b></td>
+                                                        <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.failed}</b></td>
+                                                        <td className='text-end' style={ {display: 'none'} }><b>{listPackageRouteTotal.delivery}</b></td>
+                                                    </tr>
+                                                    { listDataTablePerRoute }
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
