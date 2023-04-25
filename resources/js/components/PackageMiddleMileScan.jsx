@@ -513,7 +513,7 @@ function PackageMiddleMileScan() {
                     }
                     else if(response.stateAction == 'nonValidatedState')
                     {
-                        setTextMessage("#"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
+                        setTextMessage("The packet does not belong to the filtered STATE #"+ Reference_Number_1 +' / '+ response.packageWarehouse.Dropoff_Province +' / '+ response.packageWarehouse.Route);
                         setTypeMessage('error');
                         setNumberPackage('');
 
