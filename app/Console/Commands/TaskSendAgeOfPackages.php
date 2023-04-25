@@ -50,16 +50,13 @@ class TaskSendAgeOfPackages extends Command
     {
         if(date('l') == 'Monday' && $nowHour == 8)
         {
+            Log::info('send age of package');
+
             $this->ExportAgeOfPackages();
             $this->SendAgeOfPackages();
+
+            Log::info('end package');
         }
-
-        Log::info('send age of package');
-
-        $this->ExportAgeOfPackages();
-        $this->SendAgeOfPackages();
-
-        Log::info('end package');
     }
 
     public function ExportAgeOfPackages()
@@ -220,6 +217,17 @@ class TaskSendAgeOfPackages extends Command
         Mail::send('mail.ageofpackages', ['data' => $data ], function($message) use($date, $files) {
 
             $message->to('wilcm123@gmail.com', 'AGE OF PACKAGES')
+            ->subject('AGE OF PACKAGE ('. $date . ')');
+
+            foreach ($files as $file)
+            {
+                $message->attach($file);
+            }
+        });
+
+        Mail::send('mail.ageofpackages', ['data' => $data ], function($message) use($date, $files) {
+
+            $message->to('connect@synctruck.com', 'AGE OF PACKAGES')
             ->subject('AGE OF PACKAGE ('. $date . ')');
 
             foreach ($files as $file)
