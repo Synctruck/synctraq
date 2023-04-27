@@ -47,11 +47,11 @@ class PackageNeedMoreInformationController extends Controller
         }
     }
 
-    public function Export()
+    public function Export($type)
     {
         $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
 
-        return $servicePackageNeedMoreInformation->Export();
+        return $servicePackageNeedMoreInformation->Export($type);
     }
 
     public function MoveToWarehouse($Reference_Number_1)

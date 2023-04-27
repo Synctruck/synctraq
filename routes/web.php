@@ -83,7 +83,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-manifest', [PackageManifestController::class, 'Index'])->middleware('permission:manifest.index');
 	Route::get('/package-manifest/search/{PACKAGE_ID}', [PackageController::class, 'Search']);
 	Route::get('/package-manifest/list/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'List']);
-	Route::get('/package-manifest/export/{status}/{idCompany}/{routes}/{states}', [PackageManifestController::class, 'Export']);
+	Route::get('/package-manifest/export/{status}/{idCompany}/{routes}/{states}/{type}', [PackageManifestController::class, 'Export']);
 	Route::post('/package-manifest/insert', [PackageManifestController::class, 'Insert']);
 	Route::get('/package-manifest/get/{PACKAGE_ID}', [PackageManifestController::class, 'Get']);
 	Route::post('/package-manifest/update', [PackageManifestController::class, 'Update']);
@@ -95,14 +95,14 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Validation lost
 	Route::get('/package-lost', [PackageLostController::class, 'Index'])->middleware('permission:lost.index');
 	Route::get('/package-lost/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'List']);
-	Route::get('/package-lost/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'Export']);
+	Route::get('/package-lost/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageLostController::class, 'Export']);
 	Route::post('/package-lost/insert', [PackageLostController::class, 'Insert']);
 	Route::post('/package-lost/import', [PackageLostController::class, 'Import']);
 
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index'])->middleware('permission:inbound.index');
 	Route::get('/package-inbound/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'List']);
-	Route::get('/package-inbound/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageInboundController::class, 'Export']);
+	Route::get('/package-inbound/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageInboundController::class, 'Export']);
 	Route::post('/package-inbound/insert', [PackageInboundController::class, 'Insert']);
 	Route::get('/package-inbound/get/{PACKAGE_ID}', [PackageInboundController::class, 'Get']);
 	Route::post('/package-inbound/update', [PackageInboundController::class, 'Update']);
@@ -113,13 +113,13 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index'])->middleware('permission:nmi.index');
 	Route::get('/package-nmi/list', [PackageNeedMoreInformationController::class, 'List']);
 	Route::post('/package-nmi/insert', [PackageNeedMoreInformationController::class, 'Insert']);
-	Route::get('/package-nmi/export', [PackageNeedMoreInformationController::class, 'Export']);
+	Route::get('/package-nmi/export/{type}', [PackageNeedMoreInformationController::class, 'Export']);
 	Route::get('/package-nmi/move-to-warehouse/{PACKAGE_ID}', [PackageNeedMoreInformationController::class, 'MoveToWarehouse']);
 
 	//============ Dispatch package
 	Route::get('/package-dispatch', [PackageDispatchController::class, 'Index'])->middleware('permission:dispatch.index');
 	Route::get('/package-dispatch/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'List']);
-	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'Export']);
+	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{type}', [PackageDispatchController::class, 'Export']);
 	Route::get('/package-dispatch/getAll', [PackageDispatchController::class, 'GetAll']);
 	Route::post('/package-dispatch/insert', [PackageDispatchController::class, 'Insert']);
 	Route::get('/package-dispatch/get/{PACKAGE_ID}', [PackageDispatchController::class, 'Get']);
@@ -199,7 +199,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/package-high-priority', [PackageHighPriorityController::class, 'Index'])->middleware('permission:highPriority.index');
 	Route::get('/package-high-priority/list/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'List']);
-	Route::get('/package-high-priority/export/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'Export']);
+	Route::get('/package-high-priority/export/{idCompany}/{routes}/{states}/{type}', [PackageHighPriorityController::class, 'Export']);
 
 	//============ Validation package not exists
 	Route::get('/package-not-exists', [PackageNotExistsController::class, 'Index']);
@@ -208,7 +208,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/package/return', [PackageController::class, 'IndexReturn'])->middleware('permission:reinbound.index');
 	Route::get('/package/list/return/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturn']);
-	Route::get('/package/list/return/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PackageController::class, 'ListReturnExport']);
+	Route::get('/package/list/return/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{type}', [PackageController::class, 'ListReturnExport']);
 	Route::post('/package/return/dispatch', [PackageDispatchController::class, 'Return']);
 	Route::get('/package/download/roadwarrior/{idCompany}/{idTeam}/{idDriver}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageController::class, 'DownloadRoadWarrior']);
 
@@ -218,13 +218,13 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index'])->middleware('permission:warehouse.index');
 	Route::get('/package-warehouse/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'List']);
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
-	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'Export']);
+	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageWarehouseController::class, 'Export']);
 
 	//============ Validation warehouse
 	Route::get('/package-mms', [PackageMiddleMileScanController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/package-mms/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageMiddleMileScanController::class, 'List']);
 	Route::post('/package-mms/insert', [PackageMiddleMileScanController::class, 'Insert']);
-	Route::get('/package-mms/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageMiddleMileScanController::class, 'Export']);
+	Route::get('/package-mms/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageMiddleMileScanController::class, 'Export']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
@@ -352,23 +352,23 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/manifest', [ReportController::class, 'IndexManifest'])->middleware('permission:reportManifest.index');
 	Route::get('/report/list/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
-	Route::get('/report/export/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ExportManifest']);
+	Route::get('/report/export/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{type}', [ReportController::class, 'ExportManifest']);
 
 	Route::get('/report/inbound', [ReportController::class, 'IndexInbound'])->middleware('permission:reportInbound.index');
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
-	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ExportInbound']);
+	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportInbound']);
 
 	Route::get('/report/delivery', [ReportController::class, 'IndexDelivery'])->middleware('permission:reportDelivery.index');
 	Route::get('/report/list/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDelivery']);
-	Route::get('/report/export/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDelivery']);
+	Route::get('/report/export/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{type}', [ReportController::class, 'ExportDelivery']);
 
 	Route::get('/report/dispatch', [ReportController::class, 'IndexDispatch'])->middleware('permission:reportDispatch.index');
 	Route::get('/report/list/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDispatch']);
-	Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ExportDispatch']);
+	Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{type}', [ReportController::class, 'ExportDispatch']);
 
 	Route::get('/report/failed', [ReportController::class, 'IndexFailed'])->middleware('permission:reportFailed.index');
 	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ListFailed']);
-	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ExportFailed']);
+	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}/{type}', [ReportController::class, 'ExportFailed']);
 
 	Route::get('/report/notExists', [ReportController::class, 'IndexNotExists'])->middleware('permission:reportNotexists.index');
 	Route::get('/report/list/notexists/{dateInit}/{dateEnd}', [ReportController::class, 'ListNotExists']);
@@ -382,7 +382,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/return-company/list/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'List']);
 	Route::post('/report/return-company/insert', [PackageReturnCompanyController::class, 'Insert']);
 	Route::post('/report/return-company/import', [PackageReturnCompanyController::class, 'Import']);
-	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::get('/report/return-company/export/{dateInit}/{dateEnd}/{idCompany}/{routes}/{states}/{type}', [PackageReturnCompanyController::class, 'Export']);
 	Route::get('/report/return-company/update-created-at', [PackageReturnCompanyController::class, 'UpdateCreatedAt']);
 
 	Route::get('/report/mass-query', [PackageMassQueryController::class, 'Index'])->middleware('permission:reportMassquery.index');
@@ -390,7 +390,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('/report/all-pending', [ReportController::class, 'IndexAllPending'])->middleware('permission:reportAllPending.index');
 	Route::get('/report/all-pending/list/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ListAllPending']);
-	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}', [ReportController::class, 'ExportAllPending']);
+	Route::get('/report/all-pending/export/{idCompany}/{dateInit}/{dateEnd}/{states}/{status}/{type}', [ReportController::class, 'ExportAllPending']);
 
     Route::get('/configurations', [ConfigurationController::class, 'index'])->middleware('permission:configuration.index');
 

@@ -564,25 +564,45 @@ function PackageReturn() {
             },
         );
     }
-    const exportAllPackageReturn = (  route, state) => {
+    const exportAllPackageReturn = (route, state, type) => {
 
-        location.href = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
+        let url = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'/'+type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
+    const handlerExport = (type) => {
 
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
-
-        // }
-
-        exportAllPackageReturn(RouteSearch, StateSearch);
+        exportAllPackageReturn(RouteSearch, StateSearch, type);
     }
     const clearForm = () => {
 
@@ -631,10 +651,15 @@ function PackageReturn() {
                                 <div className="row form-group">
                                     <div className="col-lg-2 mb-2">
                                         <div className="form-group">
-                                            <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                 <i className="ri-file-excel-fill"></i> EXPORT
                                             </button>
                                         </div>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
                                     </div>
                                     <div className="col-lg-12 mb-2">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">

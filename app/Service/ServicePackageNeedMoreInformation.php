@@ -98,20 +98,18 @@ class ServicePackageNeedMoreInformation{
         return ['stateAction' => 'notExists'];
     }
 
-    public function Export()
+    public function Export($typeExport)
     {
         $delimiter = ",";
-        $filename  = "PACKAGES - NEED MORE INFORMATION " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - NEED MORE INFORMATION " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - NEED MORE INFORMATION.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageNeedMoreInformationList = PackageNeedMoreInformation::orderBy('created_at', 'desc')->paginate(500);
+        $packageNeedMoreInformationList = PackageNeedMoreInformation::orderBy('created_at', 'desc')->get();
 
         foreach($packageNeedMoreInformationList as $packageNeedMoreInformation)
         {
@@ -132,12 +130,24 @@ class ServicePackageNeedMoreInformation{
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Need More Information', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function MoveToWarehouse($Reference_Number_1)

@@ -1188,13 +1188,11 @@ class PackageController extends Controller
     }
 
 
-    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - RETURN " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - REINBOUND " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - REINBOUND.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION RETURN', 'DESCRIPTION ONFLEET', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
@@ -1303,12 +1301,24 @@ class PackageController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Re-Inbound', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function ReturnDispatch(Request $request)

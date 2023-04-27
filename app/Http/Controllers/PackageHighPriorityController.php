@@ -35,19 +35,17 @@ class PackageHighPriorityController extends Controller
         ];
     }
 
-    public function Export($idCompany, $states, $routes)
+    public function Export($idCompany, $states, $routes, $typeExport)
     {
-        $data           = $this->GetData($idCompany, $states, $routes, 'all');
-        $packageListOld = $data['listAll'];
-
         $delimiter = ",";
-        $filename  = "PACKAGE - HIGH - PRIORITY " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGE - HIGH - PRIORITY " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGE - HIGH - PRIORITY.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'LATE DAYS', 'PACKAGE ID', 'ACTUAL STATUS', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
+        $fields = array('DATE', 'LATE DAYS', 'COMPANY', 'PACKAGE ID', 'ACTUAL STATUS', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
+
+        $data           = $this->GetData($idCompany, $states, $routes, 'all');
+        $packageListOld = $data['listAll'];
 
         fputcsv($file, $fields, $delimiter);
 
@@ -56,6 +54,7 @@ class PackageHighPriorityController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($package['created_at'])),
                                 $package['lateDays'],
+                                $package['company'],
                                 $package['Reference_Number_1'],
                                 $package['status'],
                                 $package['Dropoff_Contact_Name'],
@@ -70,12 +69,24 @@ class PackageHighPriorityController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages High - Priority', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function GetData($idCompany, $states, $routes, $typeData)

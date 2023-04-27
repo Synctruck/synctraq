@@ -16,8 +16,9 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Session;
+use Mail;
 
 class PackageManifestController extends Controller
 {
@@ -155,13 +156,11 @@ class PackageManifestController extends Controller
         return ['stateAction' => 'exists'];
     } 
 
-    public function Export($status, $idCompany, $route, $state)
+    public function Export($status, $idCompany, $route, $state, $type)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $type == 'download' ? "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - MANIFEST.csv";
+        $file      = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
@@ -190,13 +189,25 @@ class PackageManifestController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
+    
+        if($type == 'download')
+        {
+            fseek($file, 0);
 
-        fseek($file, 0);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
 
-        fpassthru($file);
+            SendGeneralExport('Packages Manifest', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function GetData($status, $idCompany, $route, $state, $type)

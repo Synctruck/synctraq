@@ -77,13 +77,11 @@ class PackageLostController extends Controller
         return $packageListLost;
     }
 
-    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state)
+    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - LOST " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - LOST " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - LOST.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
@@ -112,12 +110,24 @@ class PackageLostController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Lost', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function Insert(Request $request)

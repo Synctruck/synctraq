@@ -32,3 +32,22 @@ function getPermissions()
 
     return $permissions;
 }
+
+function SendGeneralExport($title, $filename)
+{
+    $filename  = $filename;
+    $files     = [public_path($filename)];
+    $date      = date('Y-m-d H:i:s');
+    $data      = ['title' => $title, 'date' => $date];
+
+    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
+
+        $message->to('wilcm123@gmail.com', 'Syntruck helpes')
+        ->subject($data['title']  .'('. $date . ')');
+
+        foreach ($files as $file)
+        {
+            $message->attach($file);
+        }
+    });
+}
