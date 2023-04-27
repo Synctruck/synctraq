@@ -490,7 +490,7 @@ class WHookController extends Controller
                 $nowDate    = date('Y-m-d H:i:s');
                 $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
 
-                /*if(date('H:i:s') > date('20:00:00'))
+                if(date('H:i:s') > date('16:00:00'))
                 {
                     $created_at = date('Y-m-d 04:00:15', strtotime($nowDate .'+1 day'));
                 }
@@ -501,7 +501,7 @@ class WHookController extends Controller
                 else
                 {
                     $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
-                }*/
+                }
 
                 $packageHistory = new PackageHistory();
 
