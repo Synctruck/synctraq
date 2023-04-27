@@ -405,11 +405,11 @@ class PackageDispatchController extends Controller
 
                         if(date('H:i:s') > date('16:00:00'))
                         {
-                            $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
+                            $created_at = date('Y-m-d 03:00:00', strtotime($nowDate .'+1 day'));
                         }
-                        elseif(date('H:i:s') < date('04:00:00'))
+                        elseif(date('H:i:s') < date('03:00:00'))
                         {
-                            $created_at = date('Y-m-d 04:00:00');
+                            $created_at = date('Y-m-d 03:00:00');
                         }
                         else
                         {
@@ -606,11 +606,11 @@ class PackageDispatchController extends Controller
 
                     if(date('H:i:s') > date('16:00:00'))
                     {
-                        $created_at = date('Y-m-d 04:00:00', strtotime($nowDate .'+1 day'));
+                        $created_at = date('Y-m-d 03:00:00', strtotime($nowDate .'+1 day'));
                     }
-                    elseif(date('H:i:s') < date('04:00:00'))
+                    elseif(date('H:i:s') < date('03:00:00'))
                     {
-                        $created_at = date('Y-m-d 04:00:00');
+                        $created_at = date('Y-m-d 03:00:00');
                     }
                     else
                     {
@@ -1165,13 +1165,13 @@ class PackageDispatchController extends Controller
 
                     if(date('H:i:s') > date('16:00:00'))
                     {
-                        $created_at_ReInbound = date('Y-m-d 04:00:10', strtotime($nowDate .'+1 day'));
-                        $created_at_Warehouse = date('Y-m-d 04:00:20', strtotime($nowDate .'+1 day'));
+                        $created_at_ReInbound = date('Y-m-d 03:00:10', strtotime($nowDate .'+1 day'));
+                        $created_at_Warehouse = date('Y-m-d 03:00:20', strtotime($nowDate .'+1 day'));
                     }
-                    elseif(date('H:i:s') < date('04:00:00'))
+                    elseif(date('H:i:s') < date('03:00:00'))
                     {
-                        $created_at_ReInbound = date('Y-m-d 04:00:10');
-                        $created_at_Warehouse = date('Y-m-d 04:00:20');
+                        $created_at_ReInbound = date('Y-m-d 03:00:10');
+                        $created_at_Warehouse = date('Y-m-d 03:00:20');
                     }
                     else
                     {
