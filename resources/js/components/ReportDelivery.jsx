@@ -196,18 +196,53 @@ function ReportDelivery() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+
+        }
+        else
+        {
+            let url = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -694,7 +729,12 @@ function ReportDelivery() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
                                     </div>
                                     <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>

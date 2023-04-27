@@ -427,13 +427,11 @@ class PackageReturnCompanyController extends Controller
         }
     }
 
-    public function Export($dateInit, $dateEnd, $idCompany, $route, $state)
+    public function Export($dateInit, $dateEnd, $idCompany, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "Report Return Company " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "Report Return Company " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Return Company.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'DESCRIPTION RETURN', 'CLIENT', 'WEIGHT', 'MEASURES');
@@ -465,12 +463,24 @@ class PackageReturnCompanyController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Return Company', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function IndexPreRts()

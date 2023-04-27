@@ -208,18 +208,53 @@ function ReportReturnCompany() {
         listReturnCompany(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch;
+
+        }
+        else
+        {
+            let url = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -605,6 +640,34 @@ function ReportReturnCompany() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-lg-3">
+                                        <button className="btn btn-success form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
@@ -665,27 +728,6 @@ function ReportReturnCompany() {
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>RETURN COMPANY: { quantityDispatch }</b>
                                             )
                                         }
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                                 <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
