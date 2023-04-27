@@ -42,7 +42,7 @@ function SendGeneralExport($title, $filename)
 
     Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
 
-        $message->to('wilcm123@gmail.com', 'Syntruck helpes')
+        $message->to(Auth::user()->email, 'Syntruck')
         ->subject($data['title']  .'('. $date . ')');
 
         foreach ($files as $file)
