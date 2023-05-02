@@ -162,6 +162,32 @@ class UserController extends Controller
 
     public function Login()
     {
+        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get();
+        $address             = '';
+        $todayDate           = date('m/d/Y');
+
+        foreach($listPackageManifest as $packageManifest) 
+        {
+            $newAddress =   '{
+                                "address": "'. $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code .', USA",
+                                "lat": '. $packageManifest->latitude .',
+                                "lng": '. $packageManifest->longitude .',
+                                "time": 120,
+                                "custom_fields":
+                                {
+                                    "DATE": "'. $todayDate .'",
+                                    "COMPANY": "'. $packageManifest->company .'",
+                                    "PACKAGE ID": "'. $packageManifest->Reference_Number_1 .'",
+                                    "CLIENT": "'. $packageManifest->Dropoff_Contact_Name .'",
+                                    "CONTACT": "'. $packageManifest->Dropoff_Contact_Phone_Number .'"
+                                },
+                                "weight": "'. $packageManifest->Weight .'"
+                            }';
+
+            $address = $address == '' ? $newAddress : $address .','. $newAddress;
+        }
+
+        dd($address);
         return view('user.login');
     }
 
