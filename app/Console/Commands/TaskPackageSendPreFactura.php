@@ -54,40 +54,38 @@ class TaskPackageSendPreFactura extends Command
 
         if($dayName == 'Monday' && $nowHour == 12)
         {
-            
-        }
-
-        try
-        {
-            DB::beginTransaction();
-
-            $files     = [];
-            $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -9 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
-
-            $companyList = Company::all();
-
-            foreach($companyList as $company)
+            try
             {
-                if($company->id == 10 || $company->id == 11 || $company->id == 13)
+                DB::beginTransaction();
+
+                $files     = [];
+                $nowDate   = date('Y-m-d');
+                $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+
+                $companyList = Company::all();
+
+                foreach($companyList as $company)
                 {
-                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                    $contents  = public_path($filename);
+                    if($company->id == 10 || $company->id == 11 || $company->id == 13)
+                    {
+                        $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                        $contents  = public_path($filename);
 
-                    array_push($files, $contents);
-                
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                        array_push($files, $contents);
+                    
+                        $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    }
                 }
+
+                $this->SendPreFactura($startDate, $endDate, $files);
+
+                DB::commit();
             }
-
-            $this->SendPreFactura($startDate, $endDate, $files);
-
-            DB::commit();
-        }
-        catch(Exception $e)
-        {
-            DB::rollback();
+            catch(Exception $e)
+            {
+                DB::rollback();
+            }
         }
     }
 
