@@ -162,32 +162,75 @@ class UserController extends Controller
 
     public function Login()
     {
-        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get();
-        $address             = '';
-        $todayDate           = date('m/d/Y');
+        $optimization =  \App\Models\Optimization::where('status', 'Open')->first();
 
-        foreach($listPackageManifest as $packageManifest) 
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.route4me.com/api.v4/optimization_problem.php?api_key=73D4A484115AEFA26C7E3CB5D2350BA0&optimization_problem_id='. $optimization->optimization_problem_id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $output      = json_decode(curl_exec($curl), 1);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
         {
-            $newAddress =   '{
-                                "address": "'. $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code .', USA",
-                                "lat": '. $packageManifest->latitude .',
-                                "lng": '. $packageManifest->longitude .',
-                                "time": 120,
-                                "custom_fields":
-                                {
-                                    "DATE": "'. $todayDate .'",
-                                    "COMPANY": "'. $packageManifest->company .'",
-                                    "PACKAGE ID": "'. $packageManifest->Reference_Number_1 .'",
-                                    "CLIENT": "'. $packageManifest->Dropoff_Contact_Name .'",
-                                    "CONTACT": "'. $packageManifest->Dropoff_Contact_Phone_Number .'"
-                                },
-                                "weight": "'. $packageManifest->Weight .'"
-                            }';
+            if($output['state'] == 4)
+            {
+                $routesList =  $output['routes'];
 
-            $address = $address == '' ? $newAddress : $address .','. $newAddress;
+                foreach($routesList as $route)
+                {
+                    $curl = curl_init();
+
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.route4me.com/api.v4/route.php?api_key=73D4A484115AEFA26C7E3CB5D2350BA0&route_id='. $route['route_id'],
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'GET',
+                    ));
+
+                    $output      = json_decode(curl_exec($curl), 1);
+                    $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                    curl_close($curl);
+
+                    if($http_status == 200)
+                    {
+                        $addressesList = $output['addresses'];
+
+                        foreach($addressesList as $address)
+                        {
+                            $alias              = $address['alias'];
+                            $custom_fields      = $address['custom_fields'];
+                            $Reference_Number_1 = '';
+                            
+                            dd($custom_fields);
+                            if(count($custom_fields) > 0)
+                            {
+                                $Reference_Number_1 = $custom_fields['PACKAGE ID'];
+                            }
+
+                            $sequence_no = $address['sequence_no'];
+                        }
+                    }
+                }
+            }
         }
 
-        dd($address);
         return view('user.login');
     }
 

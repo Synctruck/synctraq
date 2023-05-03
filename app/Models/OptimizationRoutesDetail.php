@@ -4,10 +4,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Optimization extends Model{
+class OptimizationRoutesDetail extends Model{
 
-    protected $table      = 'optimization';
-    protected $primaryKey = 'optimization_problem_id';
+    protected $table      = 'optimization_routes_detail';
+    protected $primaryKey = 'id';
     protected $keyType    = 'string';
     
     public $timestamps   = false;

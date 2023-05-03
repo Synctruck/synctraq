@@ -14,21 +14,21 @@ use DateTime;
 use Log;
 use Mail;
 
-class TaskSendOptimization extends Command
+class TaskOptimizationSend extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'task:send-optimization';
+    protected $signature = 'task:optimization-send';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Enviar por correo los packages antiguos';
+    protected $description = 'Se envía packages para crear una nueva optimización de routes';
 
     /**
      * Create a new command instance.
@@ -115,10 +115,10 @@ class TaskSendOptimization extends Command
                                     {
                                         "depot_address":
                                         {
-                                            "alias": "DEPOT PA",
+                                            "alias": "DEPOT DE",
                                             "address": "4200 Governor Printz Blvd, Wilmington, DE 19802, USA",
-                                            "lat": 40.58851891,
-                                            "lng": -75.44639736,
+                                            "lat": 39.7523966,
+                                            "lng": -75.5166413,
                                             "time": 0
                                         },
                                         "max_cargo_weight": 1900,
@@ -186,7 +186,6 @@ class TaskSendOptimization extends Command
         foreach($listPackageManifest as $packageManifest) 
         {
             $newAddress =   '{
-                                "alias: "'. $packageManifest->Reference_Number_1 .'",
                                 "address": "'. $packageManifest->Dropoff_Address_Line_1 .', '. $packageManifest->Dropoff_City .', '. $packageManifest->Dropoff_Province .' '. $packageManifest->Dropoff_Postal_Code .', USA",
                                 "lat": '. $packageManifest->latitude .',
                                 "lng": '. $packageManifest->longitude .',
