@@ -1119,7 +1119,7 @@ class PackageDispatchController extends Controller
                     $idOnfleet           = $packageDispatch->idOnfleet;
                     $taskOnfleet         = $packageDispatch->taskOnfleet;
                     $teamName            = $team->name;
-                    $workerName          = $driver->name .' '. $driver->nameOfOwner;
+                    $workerName          = ($driver ? $driver->name .' '. $driver->nameOfOwner : '');
                     $photoUrl            = '';
                     $statusOnfleet       = '';
                     $Date_Return         = date('Y-m-d H:i:s');
