@@ -57,9 +57,26 @@ class TaskOptimizationGetRoutes extends Command
             {
                 DB::beginTransaction();
 
-                $routesList = $this->GetRoutes($optimization);
+                $dataGetRoute = $this->GetRoutes($optimization);
                 
                 DB::commit();
+
+                $http_status = $dataGetRoute['http_status'];
+                $output      = $dataGetRoute['output'];
+
+                if($http_status == 200)
+                {
+                    if($output['state'] == 4)
+                    {
+                        $output['quantityPackage'] = $optimization->quantityPackage;
+                        $output['date']            = date('m/d/Y H:i:s');
+
+                        Mail::send('mail.optimizationgetroutes', ['data' => $output ], function($message) use($output) {
+
+                            $message->to('wilcm123@gmail.com', 'Optimization Get Routes')->subject('Optimization Get Routes Date ('. $output['date'] .')');
+                        });
+                    }
+                }
 
                 Log::info('Optimization - CORRECT');
             }
@@ -96,7 +113,6 @@ class TaskOptimizationGetRoutes extends Command
         {
             if($output['state'] == 4)
             {
-                
                 $this->SaveOptimization($optimization);
                 $this->SaveRoutes($output['routes']);
             }
@@ -105,6 +121,8 @@ class TaskOptimizationGetRoutes extends Command
                 Log::info('$output->state: '. $output['state']);
             }
         }
+
+        return ['http_status' => $http_status, 'output' => $output];
     }
 
     public function SaveOptimization($optimization)
@@ -115,6 +133,8 @@ class TaskOptimizationGetRoutes extends Command
 
     public function SaveRoutes($routesList)
     {
+        $status = false;
+
         foreach($routesList as $route)
         {
             $optimizationRoutes = new OptimizationRoutes();
@@ -125,8 +145,10 @@ class TaskOptimizationGetRoutes extends Command
             $optimizationRoutes->route_duration_sec      = $route['route_duration_sec'];
             $optimizationRoutes->save();
 
-            $this->SaveRoutesDetail($route['route_id']);
+            $status = $this->SaveRoutesDetail($route['route_id']);
         }
+
+        return $status;
     }
 
     public function SaveRoutesDetail($route_id)
@@ -153,17 +175,28 @@ class TaskOptimizationGetRoutes extends Command
         {
             $addressesList = $output['addresses'];
 
+            $is_depot = false;
+            $alias    = '';
+
             foreach($addressesList as $address)
             {
+                if($address['is_depot'] == true)
+                {
+                    $alias = $address['alias'];
+                }
+
                 $optimizationRoutesDetail = new OptimizationRoutesDetail();
                 $optimizationRoutesDetail->id                 = uniqid();
                 $optimizationRoutesDetail->route_id           = $route_id;
-                $optimizationRoutesDetail->alias              = $address['alias'];
+                $optimizationRoutesDetail->alias              = $alias;
                 $optimizationRoutesDetail->Reference_Number_1 = count($address['custom_fields']) > 0 ? $address['custom_fields']['PACKAGE ID'] : '';
-                $optimizationRoutesDetail->alias              = $address['alias'];
                 $optimizationRoutesDetail->sequence_no        = $address['sequence_no'];
                 $optimizationRoutesDetail->save();
             }
+
+            return true;
         }
+
+        return false;
     }
 }

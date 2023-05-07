@@ -174,12 +174,20 @@ class TaskOptimizationSend extends Command
             $optimization->quantityPackage         = $data['quantityPackage'];
             $optimization->status                  = 'Open';
             $optimization->save();
+
+            $output['quantityPackage'] = $data['quantityPackage'];
+            $output['date']            = date('m/d/Y H:i:s');
+
+            Mail::send('mail.optimizationsend', ['data' => $output ], function($message) use($output) {
+
+                $message->to('wilcm123@gmail.com', 'Optimization')->subject('Optimization Date ('. $output['date'] .')');
+            });
         }
     }
 
     public function GetDataToSend()
     {
-        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get()->take(900);
+        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get()->take(100);
         $address             = '';
         $todayDate           = date('m/d/Y');
 
