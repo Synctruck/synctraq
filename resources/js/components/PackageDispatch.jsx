@@ -929,7 +929,7 @@ function PackageDispatch() {
         });*/
     }
 
-    const listPackageDispatchTable = listPackageDispatch.map( (packageDispatch, i) => {
+    const listPackageDispatchDriverTable = listPackageDispatch.map( (packageDispatch, i) => {
 
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
@@ -975,9 +975,6 @@ function PackageDispatch() {
                 <td>{ packageDispatch.taskOnfleet }</td>
                 <td style={ {display: 'none'} }>
                     { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(packageDispatch.Reference_Number_1) }>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
                 </td>
             </tr>
         );
@@ -2090,7 +2087,7 @@ function PackageDispatch() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { listPackageDispatchTable }
+                                            { listPackageDispatchDriverTable }
                                         </tbody>
                                     </table>
                                 </div>
