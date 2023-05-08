@@ -1334,6 +1334,8 @@ class PackageDispatchController extends Controller
                         $packageHistory->updated_at                   = $created_at_Warehouse;
 
                         $packageHistory->save();
+
+                        $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+1 second'));
                     }
                     else if($comment && $comment->category == 'Terminal')
                     {
@@ -1378,6 +1380,8 @@ class PackageDispatchController extends Controller
 
                     $packageHistory->save();
 
+                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+1 second'));
+                    
                     $deleteDispatch = true;
 
                     if($onfleet)
