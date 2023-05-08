@@ -1179,7 +1179,7 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
-                        $created_at_ReInbound = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
+                        $created_at_ReInbound = date('Y-m-d H:i:s');
                         $created_at_Warehouse = date('Y-m-d H:i:s', strtotime('+6 second', strtotime(date('Y-m-d H:i:s'))));
                     }
 
@@ -1231,7 +1231,7 @@ class PackageDispatchController extends Controller
 
                     $packageHistory->save();
 
-                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+3 second'));
+                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+6 second'));
 
                     $deleteDispatch = true;
 
