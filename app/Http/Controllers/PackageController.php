@@ -260,7 +260,7 @@ class PackageController extends Controller
                                                 }
                                             ])
                                             ->where('Reference_Number_1', $Reference_Number_1)
-                                            ->orderBy('created_at', 'asc')
+                                            ->orderBy('actualDate', 'asc')
                                             ->get();
 
         $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
