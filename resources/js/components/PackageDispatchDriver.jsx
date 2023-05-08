@@ -7,52 +7,73 @@ import Select from 'react-select'
 import moment from 'moment';
 import ReactLoading from 'react-loading';
 
+let count = 1;
+
 function PackageDispatchDriver() {
 
-    const [listPackageInbound, setListPackageInbound] = useState([]);
-    const [listPackageTotal, setListPackageTotal]     = useState([]);
-    const [listState , setListState]                  = useState([]);
-    const [listCompany , setListCompany]              = useState([]);
+    const [listPackageDispatch, setListPackageDispatch] = useState([]);
+    const [listTeam, setListTeam]                       = useState([]);
+    const [listDriver, setListDriver]                   = useState([]);
+    const [roleUser, setRoleUser]                       = useState([]);
+    const [listRoute, setListRoute]                     = useState([]);
+    const [listRole, setListRole]                       = useState([]);
+    const [listState , setListState]                    = useState([]);
+    const [listCompany , setListCompany]                = useState([]);
 
-    const [listRoute, setListRoute]     = useState([]);
+    const [id, setId]                                 = useState(0);
+    const [idRole, setIdRole]                         = useState(0);
+    const [name, setName]                             = useState('');
+    const [nameOfOwner, setNameOfOwner]               = useState('');
+    const [address, setAddress]                       = useState('');
+    const [phone, setPhone]                           = useState('');
+    const [email, setEmail]                           = useState('');
+    const [idsRoutes, setIdsRoutes]                   = useState('');
+    const [permissionDispatch, setPermissionDispatch] = useState(0);
+    const [dayNight, setDayNight]                     = useState('');
 
-    const [quantityInbound, setQuantityInbound] = useState(0);
+    const [readOnly, setReadOnly] = useState(false);
+    const [checkAll, setCheckAll] = useState(0);
 
-    const [Reference_Number_1, setNumberPackage] = useState('');
-    const [Reference_Search, setReferenceSearch] = useState('');
-    const [Truck, setTruck]                      = useState('');
-    const [Client, setClient]                    = useState('');
-    const [idCompany, setCompany]                = useState(0);
-    const [latitude, setLatitude]                = useState(0);
-    const [longitude, setLongitude]              = useState(0);
+    const [quantityDispatch, setQuantityDispatch]         = useState(0);
+    const [quantityDispatchAll, setQuantityDispatchAll]   = useState(0);
+    const [quantityFailed, setQuantityFailed]             = useState(0);
+    const [quantityHighPriority, setQuantityHighPriority] = useState(0);
 
-    const [textMessage, setTextMessage]         = useState('');
-    const [textMessage2, setTextMessage2]       = useState('');
-    const [textMessageDate, setTextMessageDate] = useState('');
-    const [typeMessage, setTypeMessage]         = useState('');
-
-    const [listInbound, setListInbound] = useState([]);
- 
-    const [file, setFile]             = useState('');
-
-    const [displayButton, setDisplayButton] = useState('none');
-
-    const [disabledInput, setDisabledInput] = useState(false);
-
-    const [readInput, setReadInput] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    // const [dataView, setDataView] = useState('today');
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
+    const [Reference_Number_1, setNumberPackage] = useState('');
+    const [idTeam, setIdTeam] = useState(0);
+    const [idDriver, setIdDriver] = useState(0);
+    const [idDriverAsing, setIdDriverAsing] = useState(0);
+    const [autorizationDispatch, setAutorizationDispatch] = useState(false);
+    
+    const [latitude, setLatitude]   = useState(0);
+    const [longitude, setLongitude] = useState(0);
+
+    const [textMessage, setTextMessage]                 = useState('');
+    const [textMessageDate, setTextMessageDate]         = useState('');
+    const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
+
+    const [typeMessage, setTypeMessage] = useState('');
+
+    const [file, setFile]             = useState('');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
 
-    const inputFileRef  = React.useRef();
+    const [RouteSearchList, setRouteSearchList] = useState('all');
+    const [StateSearch, setStateSearch]         = useState('all');
+    const [idCompany, setCompany]               = useState(0);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const inputFileRef = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
-    document.getElementById('bodyAdmin').style.backgroundColor = '#fff3cd';
+    document.getElementById('bodyAdmin').style.backgroundColor = '#d1e7dd';
 
     useEffect(() => {
 
@@ -65,30 +86,33 @@ function PackageDispatchDriver() {
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
 
-                console.log("Latitude is :", position.coords.latitude);
+                console.log("Latitude is:", position.coords.latitude);
                 console.log("Longitude is :", position.coords.longitude);
             });
         }
         else
         {
-            swal('Error', 'The browser does not support sharing your location, please use another browser.', 'error');
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
         }
 
-        listAllRoute();
         listAllCompany();
+        listAllRoute();
+
         document.getElementById('Reference_Number_1').focus();
 
     }, []);
 
     useEffect(() => {
 
-        listAllPackageInbound(page, RouteSearch, StateSearch);
-
-    }, [idCompany, dateStart,dateEnd]);
+    }, [Reference_Number_1])
 
     useEffect(() => {
 
-    }, [Reference_Number_1])
+        setPage(1);
+
+        listAllPackageDispatch(1, StateSearch, RouteSearchList);
+
+    }, [idCompany, idTeam, idDriver, dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -103,27 +127,55 @@ function PackageDispatchDriver() {
 
     }, [file]);
 
-    const listAllPackageInbound = () => {
+    const listAllPackageDispatch = (pageNumber, StateSearch, RouteSearchList) => {
 
         setIsLoading(true);
-        setListPackageInbound([]);
 
-        fetch(url_general +'package-nmi/list?Reference_Number_1='+ Reference_Search)
+        fetch(url_general +'package-dispatch-driver/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
             setIsLoading(false);
-            setListPackageInbound(response.packageList.data);
-            setTotalPackage(response.packageList.total);
-            setTotalPage(response.packageList.per_page);
-            setPage(response.packageList.current_page);
-            setQuantityInbound(response.quantityInbound);
+            setListPackageDispatch(response.packageDispatchList.data);
+            setTotalPackage(response.packageDispatchList.total);
+            setTotalPage(response.packageDispatchList.per_page);
+            setPage(response.packageDispatchList.current_page);
+            setQuantityDispatch(response.quantityDispatch);
+            setQuantityDispatchAll(response.quantityDispatchAll);
+            setQuantityFailed(response.quantityFailed);
+            setQuantityHighPriority(response.quantityHighPriority);
+            setRoleUser(response.roleUser);
+            setListState(response.listState);
+
+            if(listState.length == 0)
+            {
+                listOptionState(response.listState);
+            }
+
+            if(response.roleUser == 'Administrador')
+            {
+                listAllTeam();
+            }
+            else
+            {
+                listAllDriverByTeam(idUserGeneral);
+                setIdTeam(idUserGeneral);
+            }
+
+            if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
+            {
+                setAutorizationDispatch(false);
+            }
+            else
+            {
+                setAutorizationDispatch(true);
+            }
         });
     }
 
-    const exportAllPackageInbound = (type) => {
-
-        let url = url_general +'package-nmi/export/'+ type;
+    const exportAllPackageDispatch = ( StateSearch, RouteSearchList, type) => {
+        
+        let url = url_general +'package-dispatch-driver/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+type;
 
         if(type == 'download')
         {
@@ -157,30 +209,14 @@ function PackageDispatchDriver() {
         }
     }
 
-    const handlerExport = (type) => { 
+    const handlerExport = (type) => {
 
-        exportAllPackageInbound(type);
+        exportAllPackageDispatch(StateSearch, RouteSearchList, type);
     }
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
-    }
-
-    const listAllRoute = () => {
-
-        setListRoute([]);
-
-        fetch(url_general +'routes/filter/list')
-        .then(res => res.json())
-        .then((response) => {
-
-            setListState(response.listState);
-            listOptionState(response.listState);
-
-            setListRoute(response.listRoute);
-            listOptionRoute(response.listRoute);
-        });
+        listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
     }
 
     const listAllCompany = () => {
@@ -195,6 +231,19 @@ function PackageDispatchDriver() {
         });
     }
 
+    const listAllRoute = (pageNumber) => {
+
+        setListRoute([]);
+
+        fetch(url_general +'routes/getAll')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRoute(response.routeList);
+            listOptionRoute(response.routeList);
+        });
+    }
+
     const [Reference_Number_1_Edit, setReference_Number_1] = useState('');
     const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
     const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
@@ -205,8 +254,6 @@ function PackageDispatchDriver() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
     const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
@@ -221,9 +268,14 @@ function PackageDispatchDriver() {
         );
     });
 
-    const handlerOpenModal = (PACKAGE_ID) => {
+    const optionCompany = listCompany.map( (company, i) => {
 
-        fetch(url_general +'package-inbound/get/'+ PACKAGE_ID)
+        return <option value={company.id}>{company.name}</option>
+    })
+
+    const handlerOpenModalEditPackage = (PACKAGE_ID) => {
+
+        fetch(url_general +'package-dispatch-driver/get/'+ PACKAGE_ID)
         .then(res => res.json())
         .then((response) => {
 
@@ -269,14 +321,14 @@ function PackageDispatchDriver() {
         formData.append('Route', Route);
         formData.append('status', true);
 
-        clearValidation();
+        clearValidationEdit();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         setDisabledButton(true);
         setTextButtonSave('Loading...');
 
-        let url = 'package-inbound/update'
+        let url = 'package-dispatch-driver/update'
 
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
@@ -296,7 +348,7 @@ function PackageDispatchDriver() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, RouteSearch, StateSearch);
+                    listAllPackageDispatch(page, StateSearch, RouteSearchList);
                 }
                 else(response.status == 422)
                 {
@@ -310,7 +362,7 @@ function PackageDispatchDriver() {
         );
     }
 
-    const clearValidation = () => {
+    const clearValidationEdit = () => {
 
         document.getElementById('Reference_Number_1_Edit').style.display = 'none';
         document.getElementById('Reference_Number_1_Edit').innerHTML     = '';
@@ -340,20 +392,6 @@ function PackageDispatchDriver() {
         document.getElementById('Route').innerHTML     = '';
     }
 
-    const clearForm = () => {
-
-        setReference_Number_1('');
-        setDropoff_Contact_Name('');
-        setDropoff_Contact_Phone_Number('');
-        setDropoff_Address_Line_1('');
-        setDropoff_Address_Line_2('');
-        setDropoff_City('');
-        setDropoff_Province('');
-        setDropoff_Postal_Code('');
-        setWeight('');
-        setRoute(0);
-    }
-
     const modalPackageEdit = <React.Fragment>
                                     <div className="modal fade" id="modalPackageEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -369,7 +407,7 @@ function PackageDispatchDriver() {
                                                                 <div className="form-group">
                                                                     <label>PACKAGE ID</label>
                                                                     <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
+                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="24" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -399,7 +437,7 @@ function PackageDispatchDriver() {
                                                                 <div className="form-group">
                                                                     <label>ADDRESS 2</label>
                                                                     <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) } required/>
+                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -458,127 +496,140 @@ function PackageDispatchDriver() {
                                     </div>
                                 </React.Fragment>;
 
-    const [sendInbound, setSendInbound] = useState(1);
+    const listAllTeam = () => {
 
-    const handlerInsert = (e) => {
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listAllDriverByTeam = (idTeam) => {
+
+        if(idTeam)
+        {
+            setIdTeam(idTeam);
+            setIdDriver(0);
+            setListDriver([]);
+
+            fetch(url_general +'driver/team/list/'+ idTeam)
+            .then(res => res.json())
+            .then((response) => {
+
+                setListDriver(response.listDriver);
+            });
+        }
+        else
+        {
+            setIdTeam(0);
+            setListDriver([]);
+        }
+    }
+
+    const [sendDispatch, setSendDispatch] = useState(1);
+
+    const handlerValidation = (e) => {
 
         e.preventDefault();
 
-        console.log(sendInbound);
+        console.log(sendDispatch);
 
-        if(sendInbound)
+        if(sendDispatch)
         {
+            setIsLoading(true);
+            setReadOnly(true);
+            setSendDispatch(0);
+
             const formData = new FormData();
 
             formData.append('Reference_Number_1', Reference_Number_1);
+            formData.append('idTeam', idTeam);
+            formData.append('idDriver', idDriver);
+            formData.append('RouteSearch', RouteSearch);
+            formData.append('autorizationDispatch', autorizationDispatch);
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
 
-            if(latitude !=0 && longitude != 0)
+            if(latitude == 0 || longitude == 0)
             {
-                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
 
-                setReadInput(true);
-                setSendInbound(0);
+                return 0;
+            }
 
-                fetch(url_general +'package-nmi/insert', {
-                    headers: { "X-CSRF-TOKEN": token },
-                    method: 'post',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then((response) => {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                        setTextMessageDate('');
-                        setTextMessage2('');
+            fetch(url_general +'package-dispatch-driver/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
 
-                        if(response.stateAction == 'validatedReturnCompany')
+                    setIsLoading(false);
+
+                    if(response.stateAction == 'notAutorization')
+                    {
+                        setTextMessage('This driver has packages pending return. You must mark the authorization to make the dispatch #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+                    }
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageTerminal')
+                    {
+                        setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageNMI')
+                    {
+                        setTextMessage('The package is in NMI STATUS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedLost')
+                    {
+                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedFilterPackage')
+                    {
+                        let packageBlocked  = response.packageBlocked;
+                        let packageManifest = response.packageManifest;
+
+                        if(packageBlocked)
                         {
-                            setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                text: packageBlocked.comment,
+                                showConfirmButton: false,
+                                timer: 2000,
+                            });
                         }
-                        else if(response.stateAction == 'validatedLost')
+
+                        if(packageManifest)
                         {
-                            setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                            setTypeMessage('warning'); 
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedFilterPackage')
-                        {
-                            let packageBlocked  = response.packageBlocked;
-                            let packageManifest = response.packageManifest;
-
-                            if(packageBlocked)
-                            {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                    text: packageBlocked.comment,
-                                    showConfirmButton: false,
-                                    timer: 2000,
-                                });
-                            }
-                            
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                            setTextMessage('');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoBlocked').play();
-                        }
-                        else if(response.stateAction == 'packageInPreDispatch')
-                        {
-                            setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'packageTerminal')
-                        {
-                            setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'notExists')
-                        {
-                            setTextMessage("The package does not exist in INBOUND or WAREHOUSE #"+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'existsNMI')
-                        {
-                            let packageNMI = response.packageNMI;
-
-                            setTextMessage("VALIDATED IN NMI:  #"+ Reference_Number_1 +' / '+ packageNMI.Route);
-                            setTextMessageDate(packageNMI.created_at);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedWarehouse')
-                        {
-                            let packageWarehouse = response.packageWarehouse;
-
-                            setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                            setTextMessageDate(packageWarehouse.created_at);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedFilterPackage')
-                        {
-                            let packageManifest = response.packageManifest;
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
                             Swal.fire({
                                 icon: 'error',
                                 title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
@@ -586,81 +637,618 @@ function PackageDispatchDriver() {
                                 showConfirmButton: false,
                                 timer: 2000,
                             })
-
-                            setTypeMessage('primary');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoBlocked').play();
                         }
-                        else if(response.stateAction == 'validatedFilterState')
-                        {
-                            setTextMessage("OTHER STATE "+ Reference_Number_1);
-                            setTypeMessage('primary');
-                            setNumberPackage('');
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validated')
-                        {
-                            setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
+                        //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == true)
-                        {
-                            setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.package.Route);
-                            setTypeMessage('success');
-                            setNumberPackage('');
 
-                            setWeightLabel(response.package.Weight);
-                            setStateLabel(response.package.Dropoff_Province);
-                            setRouteLabel(response.package.Route);
-                            setReferenceLabel(response.package.Reference_Number_1);
+                        setTypeMessage('primary');
+                        setNumberPackage('');
 
-                            listAllPackageInbound();
+                        document.getElementById('soundPitidoBlocked').play();
+                    }
+                    else if(response.stateAction == 'notInbound')
+                    {
+                        setTextMessage("NOT VALIDATED INBOUND #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                            document.getElementById('Reference_Number_1').focus();
-                            document.getElementById('soundPitidoSuccess').play();
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notRoute')
+                    {
+                        setTextMessage("NOT VALIDATED ROUTES #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                            //handlerPrint('labelPrint');
-                        }
-                        else
-                        {
-                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                            setTypeMessage('error');
-                            setNumberPackage('');
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notDimensions')
+                    {
+                        setTextMessage("PACKAGE HAS NO RECORDED DIMENSIONS #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
 
-                            document.getElementById('Reference_Number_1').focus();
-                            document.getElementById('soundPitidoError').play();
-                        }
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'repairPackage')
+                    {
+                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
 
-                        setReadInput(false);
-                        setSendInbound(1);
-                    },
-                );
-            }
-            else
-            {
-                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
-            }
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notSelectTeamDriver')
+                    {
+                        setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
+                        setTextMessageDate("SELECT A TEAM AND A DRIVER");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notInland')
+                    {
+                        setTextMessage("NOT INLAND o 67660 #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'notExists')
+                    {
+                        setTextMessage("NO EXISTS #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notValidatedRoute')
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'validated')
+                    {
+                        let packageDispatch = response.packageDispatch;
+
+                        let team   = packageDispatch.driver.nameTeam ? packageDispatch.driver.nameTeam : packageDispatch.driver.name;
+                        let driver = packageDispatch.driver.nameTeam ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  : '';
+
+                        let textDate =  packageDispatch.Date_Dispatch.substring(5, 7) +'-'+ packageDispatch.Date_Dispatch.substring(8, 10) +'-'+
+                                        packageDispatch.Date_Dispatch.substring(0, 4) +'-'+ packageDispatch.Date_Dispatch.substring(11, 19) +' / '+
+                                        team +' / '+ driver;
+
+                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageDispatch.Route);
+                        setTextMessageDate(textDate);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'returCompany')
+                    {
+                        setTextMessage("The package N°"+ Reference_Number_1 +" was returned to the company!");
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageExist')
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" existe, pero no pasó la validación Inbound!");
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'delivery')
+                    {
+                        setTextMessage("PACKAGE WAS MARKED AS DELIVERED #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'errorXcelerator')
+                    {
+                        setTextMessage(response.response.Message +" #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'assigned')
+                    {
+                        setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction)
+                    {
+                        setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
+                        setTextMessageDate('');
+                        setTypeMessageDispatch('success');
+                        setNumberPackage('');
+
+                        listAllPackageDispatch(1, StateSearch, RouteSearchList);
+
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
+                    }
+                    else
+                    {
+                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+
+                    setReadOnly(false);
+                    setSendDispatch(1);
+                },
+            );
         }
+        /*if(autorizationDispatch == true)
+        {
+            
+        }
+        else
+        {
+            swal("You must mark the authorization to carry out the dispatch!", {
+
+                icon: "warning",
+            });
+        }*/
     }
 
     const handlerImport = (e) => {
 
         e.preventDefault();
 
+        if(idTeam != 0 || idDriver != 0)
+        {
+            const formData = new FormData();
+
+            formData.append('idDriver', idDriver);
+            formData.append('idTeam', idTeam);
+            formData.append('file', file);
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShow();
+
+            fetch(url_general +'package-dispatch-driver/import', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Se importó el archivo!", {
+
+                            icon: "success",
+                        });
+
+                        document.getElementById('fileImport').value = '';
+
+                        listAllPackageDispatch(1, StateSearch, RouteSearchList);
+
+                        setViewButtonSave('none');
+                    }
+
+                    LoadingHide();
+                },
+            );
+        }
+        else
+        {
+            swal('Atención!', 'Debe seleccionar mínimo un Team para importar', 'warning');
+        }
+    }
+
+    const changeReference = (e) => {
+
+        e.preventDefault();
+
+        /*if(idDriverAsing == 0)
+        {
+            swal('Atención!', 'Debe seleccionar un Driver para asignar el paquete', 'warning');
+
+            return 0;
+        }*/
+
+        let formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idTeam', idTeam);
+        formData.append('idDriver', idDriverAsing);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let url = 'package-dispatch-driver/change'
+
+        fetch(url_general + url, {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    setTextMessage("RE-ASSIGN PACKAGE DISPATCHED #"+ Reference_Number_1);
+                    setTypeMessageDispatch('success');
+                    setNumberPackage('');
+
+                    listAllPackageDispatch(1, StateSearch, RouteSearchList);
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    setTextButtonSave('Guardar');
+                    setDisabledButton(false);
+                }
+
+            },
+        );
+
+        /*swal({
+            title: "Esta seguro?",
+            text: "Se asignará el paquete al Driver!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+
+            }
+        });*/
+    }
+
+    const listPackageDispatchTable = listPackageDispatch.map( (packageDispatch, i) => {
+
+        let team   = (packageDispatch.team ? packageDispatch.team.name : '');
+        let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+
+        return (
+
+            <tr key={i}>
+                <td style={ { width: '100px'} }>
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
+                </td>
+                <td>
+                    { packageDispatch.created_at.substring(11, 19) }
+                </td>
+                <td><b>{ packageDispatch.company }</b></td>
+                {
+                    roleUser == 'Administrador'
+                    ?
+                        <>
+                            <td><b>{ team }</b></td>
+                            <td><b>{ driver }</b></td>
+                        </>
+
+
+                    :
+                        ''
+                }
+                {
+                    roleUser == 'Team'
+                    ?
+                        <td><b>{ driver }</b></td>
+                    :
+                        ''
+                }
+                <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
+                <td>{ packageDispatch.Dropoff_Contact_Name }</td>
+                <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
+                <td>{ packageDispatch.Dropoff_Address_Line_1 }</td>
+                <td>{ packageDispatch.Dropoff_City }</td>
+                <td>{ packageDispatch.Dropoff_Province }</td>
+                <td>{ packageDispatch.Dropoff_Postal_Code }</td>
+                <td>{ packageDispatch.Weight }</td>
+                <td>{ packageDispatch.Route }</td>
+                <td>{ packageDispatch.taskOnfleet }</td>
+                <td style={ {display: 'none'} }>
+                    { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
+                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModalEditPackage(packageDispatch.Reference_Number_1) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
+    const handlerReturn = (idPackage) => {
+
         const formData = new FormData();
 
-        formData.append('file', file);
+        formData.append('Reference_Number_1', idPackage);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setReadOnly(true);
+
+        fetch(url_general +'package/return/dispatch', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == 'notUser')
+                {
+                    setTextMessage("El paquete N° "+ idPackage +" fue validado por otro Driver!");
+                    setTypeMessage('error');
+                    setReturnNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'notDispatch')
+                {
+                    setTextMessage("El paquete N° "+ idPackage +" no fue validado como Dispatch!");
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+                }
+                else if(response.stateAction)
+                {
+                    setTextMessage("Paquete N° "+ idPackage +" fue retornado!");
+                    setTypeMessage('success');
+                    setNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    listAllPackageDispatch();
+                }
+                else
+                {
+                    setTextMessage("Hubo un problema, intente nuevamente realizar la misma acción.");
+                    setTypeMessage('error');
+                    setNumberPackage('');
+
+                    document.getElementById('return_Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+
+                setReadOnly(false);
+            },
+        );
+    }
+
+    const handlerDownloadOnFleet = () => {
+
+        if(dayNight)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            let countCheck = 0;
+
+            let valuesCheck = '';
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                if(checkboxes[i].checked)
+                {
+                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
+
+                    countCheck++;
+                }
+            }
+
+            let type = 'all';
+
+            if(countCheck)
+            {
+                type = 'check'
+            }
+
+            if(valuesCheck == '')
+            {
+                valuesCheck = 'all';
+            }
+
+            location.href = url_general +'package/download/onfleet/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
+        }
+        else
+        {
+            swal('Attention!', 'Select a time', 'warning')
+        }
+    }
+
+    const handlerDownloadRoadWarrior = () => {
+
+        if(dayNight)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            let countCheck = 0;
+
+            let valuesCheck = '';
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                if(checkboxes[i].checked)
+                {
+                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
+
+                    countCheck++;
+                }
+            }
+
+            let type = 'all';
+
+            if(countCheck)
+            {
+                type = 'check'
+            }
+
+            if(valuesCheck == '')
+            {
+                valuesCheck = 'all';
+            }
+
+            location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
+        }
+        else
+        {
+            swal('Attention!', 'Select a time', 'warning');
+        }
+    }
+
+    const clearForm = () => {
+
+        setReturnNumberPackage('');
+        setDescriptionReturn('');
+    }
+
+    const clearValidation = () => {
+
+        document.getElementById('returnReference_Number_1').style.display = 'none';
+        document.getElementById('returnReference_Number_1').innerHTML     = '';
+
+        document.getElementById('descriptionReturn').style.display = 'none';
+        document.getElementById('descriptionReturn').innerHTML     = '';
+    }
+
+    const onBtnClickFile = () => {
+
+        setViewButtonSave('none');
+
+        inputFileRef.current.click();
+    }
+
+    const hanldlerCheckAll = () => {
+
+        if(checkAll == 0)
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                checkboxes[i].checked = 1;
+            }
+
+            setCheckAll(1);
+        }
+        else
+        {
+            var checkboxes = document.getElementsByName('checkDispatch');
+
+            for(var i = 0; i < checkboxes.length ; i++)
+            {
+                checkboxes[i].checked = 0;
+            }
+
+            setCheckAll(0);
+        }
+    }
+
+    const handlerRedirectReturns = () => {
+
+        location.href = 'package/return';
+    }
+
+
+    const listAllRole = () => {
+
+        fetch(url_general +'role/list')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListRole(response.roleList);
+        });
+    }
+
+    const handlerOpenModalTeam = (id) => {
+
+        //clearValidationTeam();
+
+        /*if(id)
+        {
+            setTitleModal('Update Team')
+            setTextButtonSave('Update');
+        }
+        else
+        {
+            listAllRole();
+            listAllRoute();
+
+            //clearForm();
+            setTitleModal('Add Team');
+            setTextButtonSave('Save');
+        }*/
+
+        listAllRole();
+        clearFormTeam();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalTeamInsert'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const handlerSaveTeam = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idRole', idRole);
+        formData.append('name', name);
+        formData.append('nameOfOwner', nameOfOwner);
+        formData.append('address', address);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        formData.append('idsRoutes', idsRoutes);
+        formData.append('permissionDispatch', permissionDispatch);
+
+        //clearValidationTeam();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         LoadingShow();
 
-        fetch(url_general +'package-inbound/import', {
+        fetch(url_general +'team/insert', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
@@ -670,16 +1258,22 @@ function PackageDispatchDriver() {
 
                 if(response.stateAction)
                 {
-                    swal("Se importó el archivo!", {
+                    swal("Team was registered!", {
 
                         icon: "success",
                     });
 
-                    document.getElementById('fileImport').value = '';
-
-                    listAllPackageInbound(page, RouteSearch, StateSearch);
-
-                    setViewButtonSave('none');
+                    listAllTeam();
+                    clearFormTeam();
+                    listAllRoute();
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
                 }
 
                 LoadingHide();
@@ -687,75 +1281,363 @@ function PackageDispatchDriver() {
         );
     }
 
-    const handlerMoveToWarehouse = (Reference_Number) => {
-
-        setIsLoading(true);
-
-        fetch(url_general +'package-nmi/move-to-warehouse/'+ Reference_Number)
-        .then(res => res.json())
-        .then((response) => {
-
-            if(response.stateAction == true)
-            {
-                swal("The package has been moved to WAREHOUSE!", {
-
-                    icon: "success",
-                });
-
-                listAllPackageInbound();
-            }
-            else if(response.stateAction == false)
-            {
-                swal("The package does not exists in NMI!", {
-
-                    icon: "warning",
-                });
-            }
-            else
-            {
-                swal("A problem has occurred, please try again.!", {
-
-                    icon: "error",
-                });
-            }
-
-            setIsLoading(false);
-        });
-
-    }
-
-    const listPackageTable = listPackageInbound.map( (pack, i) => {
+    const listRoleSelect = listRole.map( (role, i) => {
 
         return (
 
-            <tr key={i} className="alert-success">
-                <td>
-                    <b>{ pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }</b><br/>
-                    { pack.created_at.substring(11, 19) }
-                </td>
-                <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.Reference_Number_1 }</b></td>
-                <td>{ pack.Dropoff_Contact_Name }</td>
-                <td>{ pack.Dropoff_Contact_Phone_Number }</td>
-                <td>{ pack.Dropoff_Address_Line_1 }</td>
-                <td>{ pack.Dropoff_City }</td>
-                <td>{ pack.Dropoff_Province }</td>
-                <td>{ pack.Dropoff_Postal_Code }</td>
-                <td>{ pack.Weight }</td>
-                <td>{ pack.Route }</td>
-                <td>{ pack.Weight }</td>
-                <td >
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px', display: 'none'}}>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
+            (
+                role.name == 'Team'
+                ?
+                    <option value={ role.id }>{ role.name }</option>
 
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
-                        Move to Warehouse
-                    </button>
-                </td>
-            </tr>
+                :
+                    ''
+            )
         );
     });
+
+    const optionsCheckRoute = listRoute.map( (route, i) => {
+
+        return (
+
+            <div className="col-lg-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id={ 'idCheck'+ route.id } value={ route.id } onChange={ () => handleChange() }/>
+                    <label class="form-check-label" for="gridCheck1">
+                        { route.name }
+                    </label>
+                </div>
+            </div>
+        );
+    });
+
+    const handleChange = () => {
+
+        let routesIds = '';
+
+        listRoute.forEach( route => {
+
+            if(document.getElementById('idCheck'+ route.id).checked)
+            {
+                routesIds = (routesIds == '' ? route.id : route.id +','+ routesIds);
+            }
+        });
+
+        setIdsRoutes(routesIds);
+    };
+
+    const clearValidationTeam = () => {
+
+        document.getElementById('idRole').style.display = 'none';
+        document.getElementById('idRole').innerHTML     = '';
+
+        document.getElementById('name').style.display = 'none';
+        document.getElementById('name').innerHTML     = '';
+
+        document.getElementById('nameOfOwner').style.display = 'none';
+        document.getElementById('nameOfOwner').innerHTML     = '';
+
+        document.getElementById('address').style.display = 'none';
+        document.getElementById('address').innerHTML     = '';
+
+        document.getElementById('phone').style.display = 'none';
+        document.getElementById('phone').innerHTML     = '';
+
+        document.getElementById('email').style.display = 'none';
+        document.getElementById('email').innerHTML     = '';
+    }
+
+    const clearFormTeam = () => {
+
+        setId(0);
+        setIdRole(0);
+        setName('');
+        setNameOfOwner('');
+        setAddress('');
+        setPhone('');
+        setEmail('');
+    }
+
+    const modalTeamInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalTeamInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerSaveTeam }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Team</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Role</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
+                                                                        { listRoleSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Team Name</label>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Name of owner</label>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Phone</label>
+                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Email</label>
+                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Permission Dispatch</label>
+                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
+                                                                        <option value="0">No</option>
+                                                                        <option value="1">Yes</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Routes</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                </div>
+                                                                <div className="row form-group">
+                                                                    { optionsCheckRoute }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">{ textButtonSave }</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
+    const handlerOpenModalDriver = (id) => {
+
+        listAllRole();
+        clearFormTeam();
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalDriverInsert'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const handlerSaveUser = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idRole', idRole);
+        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('name', name);
+        formData.append('nameOfOwner', nameOfOwner);
+        formData.append('address', address);
+        formData.append('phone', phone);
+        formData.append('email', email);
+
+        //clearValidation();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShow();
+
+        fetch(url_general +'driver/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction)
+                {
+                    swal("Driver was registered!", {
+
+                        icon: "success",
+                    });
+
+                    listAllUser(1);
+                    clearForm();
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index).style.display = 'block';
+                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const listRoleDriverSelect = listRole.map( (role, i) => {
+
+        return (
+
+            (
+                role.name == 'Driver'
+                ?
+                    <option value={ role.id }>{ role.name }</option>
+                :
+                    ''
+            )
+
+        );
+    });
+
+    const modalDriverInsert = <React.Fragment>
+                                    <div className="modal fade" id="modalDriverInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerSaveUser }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Driver</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Role</label>
+                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
+                                                                        { listRoleDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {
+                                                            roleUser == 'Administrador'
+                                                            ?
+                                                                <>
+                                                                    <div className="col-lg-12">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="">TEAM</label>
+                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                                <option value="">All</option>
+                                                                                { listTeamSelect }
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            :
+                                                                ''
+                                                        }
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>First Name</label>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Last Name</label>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>Address</label>
+                                                                    <div id="address" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ address } className="form-control" onChange={ (e) => setAddress(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Phone</label>
+                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>Email</label>
+                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">{ textButtonSave }</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
+    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
+
+    const listOptionRoute = (listRoutes) => {
+
+        setOptionsRoleSearch([]);
+
+        listRoutes.map( (route, i) => {
+
+            optionsRoleSearch.push({ value: route.name, label: route.name });
+
+            setOptionsRoleSearch(optionsRoleSearch);
+        });
+    }
+
+    const [RouteSearch, setRouteSearch] = useState('');
 
     const handlerChangeRoute = (routes) => {
 
@@ -770,32 +1652,56 @@ function PackageDispatchDriver() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, routesSearch, StateSearch);
+            //listAllPackageInbound(page, dataView, routesSearch, StateSearch);
         }
         else
         {
-            setRouteSearch('all');
+            //setRouteSearch('all');
 
-            listAllPackageInbound(page, 'all', StateSearch);
+            //listAllPackageInbound(page, dataView, 'all', StateSearch);
         }
     };
 
-    const [optionsRouteSearch, setOptionsRouteSearch] = useState([]);
+    const handlerChangeRouteList = (routes) => {
 
-    const listOptionRoute = (listRoutes) => {
+        if(routes.length != 0)
+        {
+            let routesSearch = '';
 
-        setOptionsRouteSearch([]);
+            routes.map( (route) => {
 
-        console.log(listRoutes);
-        listRoutes.map( (route, i) => {
+                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
+            });
 
-            optionsRouteSearch.push({ value: route.name, label: route.name });
+            setRouteSearchList(routesSearch);
 
-            setOptionsRouteSearch(optionsRouteSearch);
+            listAllPackageDispatch(1, StateSearch, routesSearch);
+        }
+        else
+        {
+            setRouteSearchList('all');
+
+            listAllPackageDispatch(1, StateSearch, 'all');
+        }
+    };
+
+    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
+
+    const listOptionState = (listState) => {
+
+        setOptionsStateSearch([]);
+
+        listState.map( (state, i) => {
+
+            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
+
+            setOptionsStateSearch(optionsStateSearch);
         });
     }
 
     const handlerChangeState = (states) => {
+
+        setPage(1);
 
         if(states.length != 0)
         {
@@ -808,101 +1714,36 @@ function PackageDispatchDriver() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, RouteSearch, statesSearch);
+            listAllPackageDispatch(1, statesSearch, RouteSearchList);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, RouteSearch, 'all');
+            listAllPackageDispatch(1, 'all', RouteSearchList);
         }
-    };
-
-    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
-
-    const listOptionState = (listState) => {
-
-        setOptionsStateSearch([]);
-
-        listState.map( (state, i) => {
-
-            optionsStateSearch.push({ value: state.state, label: state.state });
-
-            setOptionsStateSearch(optionsStateSearch);
-        });
     }
 
-    const optionCompany = listCompany.map( (company, i) => {
+    const handlerRedirectFailed = () => {
 
-        return <option value={company.id}>{company.name}</option>
-    })
-
-    const onBtnClickFile = () => {
-
-        setViewButtonSave('none');
-
-        inputFileRef.current.click();
+        location.href = url_general +'package-failed';
     }
 
-    const [EWR1, setEWR1]                     = useState('EWR1');
-    const [WeightLabel, setWeightLabel]       = useState('12');
-    const [StateLabel, setStateLabel]         = useState('CR');
-    const [ReferenceLabel, setReferenceLabel] = useState('');
-    const [RouteLabel, setRouteLabel]         = useState('QWE');
+    const handlerRedirectHighPriority = () => {
 
-    const handlerPrint = (nombreDiv) => {
-
-        JsBarcode("#imgBarcode", Reference_Number_1, {
-
-            textMargin: 0,
-            fontSize: 27,
-        });
-
-        var content = document.getElementById('labelPrint');
-        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
-
-        pri.document.open();
-        pri.document.write(content.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
-
-        document.getElementById('Reference_Number_1').focus();
+        location.href = url_general +'package-high-priority';
     }
 
-    const handlerPrintSecondary = (printText) => {
+    const handlerAutorization = () => {
 
-        JsBarcode("#imgBarcode", printText, {
-
-            textMargin: 0,
-            fontSize: 27,
-        });
-
-        var content = document.getElementById('labelPrint');
-        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
-
-        pri.document.open();
-        pri.document.write(content.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
-
-        document.getElementById('Reference_Number_1').focus();
-    }
-
-    const handlerSearch = (e) => {
-
-        e.preventDefault();
-
-        setTextMessage('');
-        setTextMessageDate('');
-
-        listAllPackageInbound();
+        setAutorizationDispatch(!autorizationDispatch);
     }
 
     return (
 
         <section className="section">
+            { modalTeamInsert }
+            { modalDriverInsert }
             { modalPackageEdit }
             <div className="row">
                 <div className="col-lg-12">
@@ -910,12 +1751,51 @@ function PackageDispatchDriver() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-12 mb-4">
-                                        <div className="row">
-                                            <div className="col-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
-                                                    <i className="ri-file-excel-fill"></i> EXPORT
-                                                </button>
+                                    <div className="col-lg-12 form-group">
+                                        <div className="row form-group">
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
+                                                <div className="form-group">
+                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-1" style={ {display: 'none'} }>
+                                                <div className="form-group">
+                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2" style={ {display: 'none'} }>
+                                                <div className="row">
+                                                    <div className="col-lg-4" style={ {display: 'none'} }>
+                                                        <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
+                                                    </div>
+                                                    <div className="col-lg-4" style={ {display: 'none'} }>
+                                                        <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <label class="form-check-label text-dark" for="gridRadios1">D</label>&nbsp;
+                                                                <input class="form-check-input form-check-input-success border-success" type="radio" name="gridRadios" value="Day" checked={ dayNight == 'Day' } onChange={ (e) => setDayNight(e.target.value) }/>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <label class="form-check-label text-dark" for="gridRadios1">N</label>&nbsp;
+                                                                <input class="form-check-input form-check-input-dark border-dark" type="radio" name="gridRadios" value="Night" checked={ dayNight == 'Night' } onChange={ (e) => setDayNight(e.target.value) }/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-warning btn-sm form-control" onClick={ () => handlerRedirectReturns() }>RETURNS</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
+                                                        <i className="ri-file-excel-fill"></i> EXPORT
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div className="col-3">
                                                 <div className="form-group">
@@ -924,114 +1804,185 @@ function PackageDispatchDriver() {
                                                     </button>
                                                 </div>
                                             </div>
+
+                                            {
+                                                roleUser == 'Administrador'
+                                                ?
+                                                    <div className="col-lg-2">
+                                                        <form onSubmit={ handlerImport }>
+                                                            <div className="form-group">
+                                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                                    IMPORT CSV
+                                                                </button>
+                                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                                            </div>
+                                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                                <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerImport() }>
+                                                                    <i className="bx  bxs-save"></i> Save
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                :
+                                                    ''
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-lg-10">
+                                        <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
+                                            <div className="row form-group">
+                                                <div className={ roleUser == 'Administrador' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
+                                                    <div className="form-group">
+                                                        <label htmlFor="">PACKAGE ID</label>
+                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                    </div>
+                                                </div>
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">TEAM</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                                        <option value="0">All</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
+
+                                                {
+                                                    roleUser == 'Team'
+                                                    ?
+                                                        <>
+                                                            <div className="col-lg-2">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="">DRIVER</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) } required>
+                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-lg-12 text-center">
+                                                    {
+                                                        typeMessageDispatch == 'success'
+                                                        ?
+                                                            <h2 className="text-success">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        typeMessageDispatch == 'error'
+                                                        ?
+                                                            <h2 className="text-danger">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        typeMessageDispatch == 'warning'
+                                                        ?
+                                                            <h2 className="text-warning">{ textMessage }</h2>
+                                                        :
+                                                            ''
+                                                    }
+
+                                                    {
+                                                        textMessageDate != ''
+                                                        ?
+                                                            <h2 className="text-warning">{ textMessageDate }</h2>
+                                                        :
+                                                            ''
+                                                    }
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div className="col-lg-2 form-group">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <label htmlFor="">ROUTES</label>
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-12 form-group text-center">
-                                        {
-                                            typeMessage == 'success'
-                                            ?
-                                                <h2 className="text-success">{ textMessage }</h2>
+                                    <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>
+                                        <div className="row">
+                                            <div className="col-sm-12" style={ {display: 'none'} }>
+                                                <div className="form-check">
+                                                    <input className="form-check-input" type="checkbox" id="gridCheck1" checked={ autorizationDispatch } onChange={ () => handlerAutorization() }/>
+                                                    <label className="form-check-label text-danger" for="gridCheck1" >
+                                                        DISPATCH VERIFICATION
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-12 form-group">
+                                        <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                        <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
+                                    </div>
+                                </div>
 
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'error'
-                                            ?
-                                                <h2 className="text-danger">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'primary'
-                                            ?
-                                                <h2 className="text-primary">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'warning'
-                                            ?
-                                                <h2 className="text-warning">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
 
+                                <hr/><br/>
+
+                                <div className="row">
+                                    <div className="col-lg-3 mb-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
                                         {
-                                            textMessageDate != ''
-                                            ?
-                                                <h2 className="text-warning">{ textMessageDate.substring(5, 7) }-{ textMessageDate.substring(8, 10) }-{ textMessageDate.substring(0, 4) } { textMessageDate.substring(11, 19) }</h2>
-                                            :
-                                                ''
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>
+                                            )
                                         }
                                     </div>
-
-                                    <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
-                                    <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
-                                    <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
-                                    <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
-
-                                    <div className="col-lg-6 form-group">
-                                        <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="">PACKAGE ID - INSERT</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
-                                            </div>
-                                            
-                                        </form>
+                                    <div className="col-lg-3 mb-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} }> UNDELIVERED: { quantityDispatchAll }</b>
+                                        </div><br/>
                                     </div>
-                                    <div className="col-lg-6 form-group">
-                                        <form onSubmit={ handlerSearch } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="" className="text-success">PACKAGE ID - SEARCH</label>
-                                                <input type="text" className="form-control" value={ Reference_Search } onChange={ (e) => setReferenceSearch(e.target.value) } readOnly={ readInput } maxLength="24"/>
-                                            </div>
-                                        </form>
+                                    <div className="col-lg-3 mb-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectFailed()  } style={ {borderRadius: '10px', padding: '10px'} }> FAILED TASKS: { quantityFailed }</b>
+                                        </div>
                                     </div>
-                                    <div className="col-lg-2" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
+                                    <div className="col-lg-3 mb-2">
+                                        <div className="form-group">
+                                            <b className="alert alert-danger pointer" onClick={ () => handlerRedirectHighPriority()  } style={ {borderRadius: '10px', padding: '10px'} }> HIGH PRIORITY: { quantityHighPriority }</b>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
-                                        {
-                                            (
-                                                isLoading
-                                                ? 
-                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
-                                                :
-                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>NMI: { totalPackage }</b>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-
-                                <div className="row" style={ {display: 'none'} }>
-                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
-                                        {
-                                            (
-                                                isLoading
-                                                ? 
-                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
-                                                :
-                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>NMI: { totalPackage }</b>
-                                            )
-                                        }
-                                    </div>
-
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
@@ -1075,7 +2026,7 @@ function PackageDispatchDriver() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    State :
+                                                    States :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
@@ -1087,62 +2038,13 @@ function PackageDispatchDriver() {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
-                                                    Route :
+                                                    Routes :
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
+                                                <Select isMulti onChange={ (e) => handlerChangeRouteList(e) } options={ optionsRoleSearch } />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <iframe id="ifmcontentstoprint" style={{
-                                            height: '0px',
-                                            width: '100%',
-                                            position: 'absolute',
-                                            fontFamily: 'Arial, Helvetica, sans-serif',
-                                        }}>
-                                            <div id="labelPrint">
-                                                <table>
-                                                    <tr>
-                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)'} }>
-                                                            <h1 style={ {fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px'} }><b>{ EWR1 }</b></h1>
-                                                        </td>
-                                                        <td>
-                                                            <table>
-                                                                <tr>
-                                                                    <td className="text-center">
-                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                            <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ WeightLabel }</b></h1>
-                                                                        </div>
-                                                                        <div style={ {float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center'} }>
-                                                                            <img src={ 'https://synctrucknj.com/img/logo.PNG' } style={ {width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px'} }/>
-                                                                        </div>
-                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                            <h1 style={ {textAlign: 'right', paddingRight: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ StateLabel }</b></h1>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td style={ {textAlign: 'center'} }>
-                                                                        <svg id="imgBarcode" style={ {width: '400', height: '250', margin: '0px'} }></svg>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className="text-center" style={ {textAlign: 'center', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                            <h1 style={ {fontSize: '3.2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '-40px'} }><b>{ RouteLabel }</b></h1>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </iframe>
                                     </div>
                                 </div>
                             </h5>
@@ -1152,7 +2054,23 @@ function PackageDispatchDriver() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
+                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <th><b>TEAM</b></th>
+                                                    :
+                                                        ''
+                                                }
+                                                {
+                                                    roleUser == 'Administrador'
+                                                    ?
+                                                        <th><b>DRIVER</b></th>
+                                                    :
+
+                                                        roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
+                                                }
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
@@ -1162,12 +2080,12 @@ function PackageDispatchDriver() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>WEIGHT</th>
-                                                <th>ACTION</th>
+                                                <th>TASK ONFLEET</th>
+                                                <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { listPackageTable }
+                                            { listPackageDispatchTable }
                                         </tbody>
                                     </table>
                                 </div>

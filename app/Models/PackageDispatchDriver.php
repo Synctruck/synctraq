@@ -8,7 +8,7 @@ class PackageDispatchDriver extends Model
 {
     // use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'packagedispatch';
+    protected $table      = 'packagedispatchdriver';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 

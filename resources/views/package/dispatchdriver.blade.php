@@ -1,5 +1,5 @@
 @extends('layout.admin')
-@section('title', 'Packages - Need More Information')
+@section('title', 'DISPATCH DRIVER | SYNCTRUCK')
 @section('content')
 <div class="pagetitle">
   	<h1><b>DISPATCH - DRIVER</b></h1>

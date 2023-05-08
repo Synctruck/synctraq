@@ -45,7 +45,7 @@ class PackageDispatchDriverController extends Controller
 
         $roleUser = Auth::user()->role->name;
 
-        $listState = PackageDispatch::select('Dropoff_Province')
+        $listState = PackageDispatchDriver::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
