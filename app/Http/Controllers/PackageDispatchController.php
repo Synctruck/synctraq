@@ -1231,7 +1231,7 @@ class PackageDispatchController extends Controller
 
                     $packageHistory->save();
 
-                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+3 second'));
+                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+4 second'));
 
                     $deleteDispatch = true;
 

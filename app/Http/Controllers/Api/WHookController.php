@@ -491,7 +491,7 @@ class WHookController extends Controller
 
                 $descriptionHistory = 'For: Onfleet[ '. $userCreatorOnfleet .' ]';
 
-                $nowDate    = date('Y-m-d H:i:s');
+                $nowDate    = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
                 $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
 
                 if(date('H:i:s') > date('20:00:00'))
