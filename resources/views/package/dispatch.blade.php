@@ -24,9 +24,13 @@
     	@endif
   	</nav>
 </div><!-- End Page Title -->
+
 <script>
+	let userGeneral       = '{{Auth::user()}}';
 	let idUserGeneral     = '{{Auth::user()->id}}';
+	let idTeamGeneral     = '{{Auth::user()->idTeam}}';
 	let routesTeamGeneral = '{{$routesTeamGeneral}}';
+	let roleGeneral 	  = '{{ Auth::user()->role->name }}';
 </script>
 <script>
 	let auxDateInit = '{{date('Y-m-d')}}';
