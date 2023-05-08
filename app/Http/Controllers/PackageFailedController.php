@@ -214,6 +214,7 @@ class PackageFailedController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Failed';
+                    $packageHistory->actualDate                   = $packagePreFailed->created_at;
                     $packageHistory->created_at                   = $packagePreFailed->created_at;
                     $packageHistory->updated_at                   = $packagePreFailed->created_at;
 

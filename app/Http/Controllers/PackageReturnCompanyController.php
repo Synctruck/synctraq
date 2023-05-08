@@ -227,6 +227,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 
@@ -395,6 +396,7 @@ class PackageReturnCompanyController extends Controller
                                 $packageHistory->Description                  = 'Return Company - Import - for: user ('. Auth::user()->email .')';
                                 $packageHistory->Description_Return           = $description;
                                 $packageHistory->status                       = 'ReturnCompany';
+                                $packageHistory->actualDate                   = $created_at;
                                 $packageHistory->created_at                   = $created_at;
                                 $packageHistory->updated_at                   = $created_at;
                                 
@@ -639,6 +641,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'PreRts';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -718,6 +721,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $packagePreRts->Description_Return;
                 $packageHistory->status                       = 'ReturnCompany';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 

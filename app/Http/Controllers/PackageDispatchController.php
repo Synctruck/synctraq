@@ -466,6 +466,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->inbound                      = 1;
                             $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Inbound';
+                            $packageHistory->actualDate                   = $nowDate;
                             $packageHistory->created_at                   = $nowDate;
                             $packageHistory->updated_at                   = $nowDate;
  
@@ -532,6 +533,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->Description                  = $description;
                         $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
 
@@ -645,6 +647,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description                  = $description;
                     $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Dispatch';
+                    $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     
@@ -1045,6 +1048,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Description                  = $description;
                             $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Dispatch';
+                            $packageHistory->actualDate                   = $created_at;
                             $packageHistory->created_at                   = $created_at;
                             $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
@@ -1179,6 +1183,67 @@ class PackageDispatchController extends Controller
                         $created_at_Warehouse = date('Y-m-d H:i:s', strtotime('+6 second', strtotime(date('Y-m-d H:i:s'))));
                     }
 
+                    $comment = Comment::where('description', $Description_Return)
+                                        ->where('category', $Category_Return)
+                                        ->first();
+
+                    if($comment && $comment->category == 'Retry')
+                    {
+                        $statusReturn = 'ReInbound';
+                    }
+                    else
+                    {
+                        $statusReturn = 'Terminal';
+                    }
+                    
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                    $packageHistory->company                      = $packageDispatch->company;
+                    $packageHistory->idStore                      = $packageDispatch->idStore;
+                    $packageHistory->store                        = $packageDispatch->store;
+                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packageDispatch->Notes;
+                    $packageHistory->Weight                       = $packageDispatch->Weight;
+                    $packageHistory->Route                        = $packageDispatch->Route;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
+                    $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                    $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                    $packageHistory->Description_Return           = $Description_Return;
+                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
+                    $packageHistory->inbound                      = 1;
+                    $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->status                       = $statusReturn;
+                    $packageHistory->actualDate                   = $nowDate;
+                    $packageHistory->created_at                   = $created_at_ReInbound;
+                    $packageHistory->updated_at                   = $created_at_ReInbound;
+
+                    $packageHistory->save();
+
+                    $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+3 second'));
+
+                    $deleteDispatch = true;
+
+                    if($onfleet)
+                    {
+                        if($onfleet['state'] == 1)
+                        {
+                            $deleteOnfleet  = $this->DeleteOnfleet($packageDispatch->idOnfleet);
+                            $deleteDispatch = $deleteOnfleet ? true : false;
+                        }
+                    }
+
                     $packageReturn = new PackageReturn();
 
                     $packageReturn->id                           = uniqid();
@@ -1261,7 +1326,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
 
-                    $statusReturn = 'ReInbound';
+                    
 
                     $packageWarehouse = PackageWarehouse::find($packageDispatch->Reference_Number_1);
 
@@ -1325,62 +1390,16 @@ class PackageDispatchController extends Controller
                         $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                         $packageHistory->quantity                     = $packageDispatch->quantity;
                         $packageHistory->status                       = 'Warehouse';
+                        $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at_Warehouse;
                         $packageHistory->updated_at                   = $created_at_Warehouse;
 
                         $packageHistory->save();
                     }
                     else if($comment && $comment->category == 'Terminal')
-                    {
-                        $statusReturn = 'Terminal';
-                        
+                    {                        
                         $servicePackageTerminal = new ServicePackageTerminal();
                         $servicePackageTerminal->Insert($packageDispatch);
-                    }
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                    $packageHistory->company                      = $packageDispatch->company;
-                    $packageHistory->idStore                      = $packageDispatch->idStore;
-                    $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                    $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->idUser                       = Auth::user()->id;
-                    $packageHistory->idUserInbound                = Auth::user()->id;
-                    $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                    $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
-                    $packageHistory->Description_Return           = $Description_Return;
-                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
-                    $packageHistory->inbound                      = 1;
-                    $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->status                       = $statusReturn;
-                    $packageHistory->created_at                   = $created_at_ReInbound;
-                    $packageHistory->updated_at                   = $created_at_ReInbound;
-
-                    $packageHistory->save();
-
-                    $deleteDispatch = true;
-
-                    if($onfleet)
-                    {
-                        if($onfleet['state'] == 1)
-                        {
-                            $deleteOnfleet  = $this->DeleteOnfleet($packageDispatch->idOnfleet);
-                            $deleteDispatch = $deleteOnfleet ? true : false;
-                        }
                     }
 
                     $packageDispatch['Description_Return'] = $Description_Return;
@@ -1388,19 +1407,6 @@ class PackageDispatchController extends Controller
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
-                    //end data for inland
-
-                    /*if($comment->finalStatus == 0)
-                    {
-                        
-                    }
-                    else
-                    {
-                        //data for INLAND
-                        $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageDispatch, 'Return', $comment->statusCode);
-                        //end data for inland
-                    }*/
 
                     if($deleteDispatch)
                     {

@@ -265,6 +265,7 @@ class PackageController extends Controller
                     $packageHistory->insured_value                 = $data['insured_value'];
                     $packageHistory->service_code                  = $data['service_code'];
                     $packageHistory->Description                   = 'Not yet received: '. $company->name;
+                    $packageHistory->actualDate                    = date('Y-m-d H:i:s');
                     $packageHistory->created_at                    = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                    = date('Y-m-d H:i:s');
 

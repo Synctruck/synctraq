@@ -84,6 +84,7 @@ class TaskPackageNeverReceived extends Command
                     $packageHistory->status                       = 'NeverReceived';
                     $packageHistory->Description                  = 'For: Schedule Taks';
                     $packageHistory->Route                        = $packageManifest->route;
+                    $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $nowDate;
                     $packageHistory->updated_at                   = $nowDate;
 

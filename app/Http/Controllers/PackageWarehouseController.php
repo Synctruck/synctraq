@@ -280,6 +280,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->quantity                     = $packageWarehouse->quantity;
                 $packageHistory->status                       = 'Warehouse';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
@@ -379,6 +380,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Inbound';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -515,6 +517,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Return';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -580,6 +583,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->quantity                     = $package->quantity;
                 $packageHistory->status                       = 'Warehouse';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
