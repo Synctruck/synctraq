@@ -782,7 +782,7 @@
                             let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
 
                             tr =    '<tr>'+
-                                        '<td colspan="5"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                        '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                     '</tr>';
 
                             tableHistoryPackage.insertRow(-1).innerHTML = tr;
@@ -797,7 +797,7 @@
                             if(url)
                             {
                                 tr =    '<tr>'+
-                                            '<td colspan="5"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                            '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
                                         '</tr>';
 
                                 tableHistoryPackage.insertRow(-1).innerHTML = tr;
