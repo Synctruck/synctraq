@@ -316,6 +316,7 @@ class PackageInboundController extends Controller
                 $packageHistory->inbound                      = 1;
                 $packageHistory->quantity                     = $packageManifest->quantity;
                 $packageHistory->status                       = 'Inbound';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -565,6 +566,7 @@ class PackageInboundController extends Controller
                                     $packageHistory->inbound                      = 1;
                                     $packageHistory->quantity                     = $packageManifest->quantity;
                                     $packageHistory->status                       = 'Inbound';
+                                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 

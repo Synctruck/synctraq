@@ -88,6 +88,7 @@ class WHookController extends Controller
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Delivery';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -238,6 +239,7 @@ class WHookController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Failed';
+                    $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
 
@@ -340,6 +342,7 @@ class WHookController extends Controller
                             $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] ';
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
+                            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -405,6 +408,7 @@ class WHookController extends Controller
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] '. $descriptionDispatch;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                         $packageHistory->created_at                   = date('Y-m-d H:i:s');
                         $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -525,6 +529,7 @@ class WHookController extends Controller
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
+                $packageHistory->actualDate                   = $nowDate;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 

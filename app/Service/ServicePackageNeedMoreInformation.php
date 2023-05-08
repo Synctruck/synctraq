@@ -85,6 +85,7 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->quantity                     = $package->quantity;
             $packageHistory->status                       = 'NMI';
+            $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
 
@@ -213,6 +214,7 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->Description                  = '( NMI REMOVAL) For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->quantity                     = $packageNeedMoreInformation->quantity;
             $packageHistory->status                       = 'Warehouse';
+            $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
 

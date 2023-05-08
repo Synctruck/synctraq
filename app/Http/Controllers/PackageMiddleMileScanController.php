@@ -266,6 +266,7 @@ class PackageMiddleMileScanController extends Controller
                     $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->quantity                     = $packageWarehouse->quantity;
                     $packageHistory->status                       = 'Middle Mile Scan';
+                    $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
 
@@ -353,6 +354,7 @@ class PackageMiddleMileScanController extends Controller
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->quantity                     = $packageInbound->quantity;
                 $packageHistory->status                       = 'Middle Mile Scan';
+                $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 

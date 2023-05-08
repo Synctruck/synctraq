@@ -11,7 +11,7 @@ import '../../css/rsuit.css';
 function Track() {
 
     const [packageId, setPackageId]         = useState('');
-    const [packageClient, setPackageClient] = useState('');
+    const [packageZipCode, setPackageZipCode] = useState('');
 
     const [listDetails, setListDetails] = useState([]);
     const [step, setStep] = useState(null);
@@ -46,7 +46,7 @@ function Track() {
 
                 console.log(response.data);
                 setListDetails(response.data.details);
-                setPackageClient(response.data.details[0].Dropoff_Contact_Name);
+                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
             })
             .catch(function(error) {
                alert('Error:',error);
@@ -75,7 +75,7 @@ function Track() {
 
             console.log(response.data);
             setListDetails(response.data.details);
-            setPackageClient(response.data.details[0].Dropoff_Contact_Name);
+            setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
         })
         .catch(function(error) {
            alert('Error:',error);
@@ -200,7 +200,7 @@ function Track() {
 
                         <h6 className="pt-4">Tracking details </h6><hr />
                         <div className='row'>
-                            <h5 className='text-center'>PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: { packageClient }</h5>
+                            <h5 className='text-center'>PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: { packageZipCode }</h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
                                     <Steps.Item title="In Fulfillment" description={onholdDesc} />

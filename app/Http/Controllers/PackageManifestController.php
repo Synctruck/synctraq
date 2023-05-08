@@ -128,6 +128,7 @@ class PackageManifestController extends Controller
                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Manifest - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Manifest';
+                $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 
@@ -503,6 +504,7 @@ class PackageManifestController extends Controller
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                             $packageHistory->Description                  = 'Manifest: Not yet received: '. $company->name;
                             $packageHistory->status                       = 'Manifest';
+                            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 

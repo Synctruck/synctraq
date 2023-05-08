@@ -435,6 +435,7 @@
                                     <table id="tableHistoryPackage" class="table table-condensed table-bordered">
                                         <thead>
                                             <tr>
+                                                <th>DATE SYNTRUCK</th>
                                                 <th>DATE</th>
                                                 <th>USER</th>
                                                 <th>STATUS</th>
@@ -699,6 +700,7 @@
                 if(packageBlocked)
                 {
                     tr =    '<tr>'+
+                                '<td></td>'+
                                 '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
                                 '<td>PACKAGE BLOCKED</td>'+
                                 '<td>'+ packageBlocked.comment +'</td>'+
@@ -755,7 +757,10 @@
                         Description = package.Description;
                     }
 
+                    let actualDate = (package.actualDate != null ? package.actualDate :  package.created_at);
+
                     tr =    '<tr>'+
+                                '<td><b>'+ actualDate.substring(5, 7) +'-'+ actualDate.substring(8, 10) +'-'+ actualDate.substring(0, 4) +'</b><br>'+ actualDate.substring(11, 19) +
                                 '<td><b>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</b><br>'+ package.created_at.substring(11, 19) +
                                 '</td>'+
                                 '<td>'+ user +'</td>'+

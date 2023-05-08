@@ -97,6 +97,7 @@ class ServicePackageTerminal{
             $packageHistory->Description                  = '( TERMINAL REMOVAL) For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->quantity                     = $packageTerminal->quantity;
             $packageHistory->status                       = 'Warehouse';
+            $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
 

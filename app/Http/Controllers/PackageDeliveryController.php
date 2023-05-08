@@ -406,6 +406,7 @@ class PackageDeliveryController extends Controller
                             $packageHistory->Date_Delivery                = $created_at;
                             $packageHistory->Description                  = $description;
                             $packageHistory->status                       = 'Delivery';
+                            $packageHistory->actualDate                   = $created_at;
                             $packageHistory->created_at                   = $created_at;
                             $packageHistory->updated_at                   = $created_at;
 
@@ -579,6 +580,7 @@ class PackageDeliveryController extends Controller
             $packageHistory->Date_Delivery                = $created_at;
             $packageHistory->Description                  = $description;
             $packageHistory->status                       = 'Delivery';
+            $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
 
@@ -668,6 +670,7 @@ class PackageDeliveryController extends Controller
                 $packageHistory->Date_Delivery                = $created_at;
                 $packageHistory->Description                  = $description;
                 $packageHistory->status                       = 'Delivery';
+                $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 

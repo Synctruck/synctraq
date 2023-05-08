@@ -128,6 +128,7 @@ class TaskAmericanManifest extends Command
                                     $packageHistory->Date_manifest                = $created_at;
                                     $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
                                     $packageHistory->Route                        = $route ? $route->name : '';
+                                    $packageHistory->actualDate                   = $created_at;
                                     $packageHistory->created_at                   = $created_at;
                                     $packageHistory->updated_at                   = $created_at;
 

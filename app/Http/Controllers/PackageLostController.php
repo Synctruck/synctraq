@@ -243,6 +243,7 @@ class PackageLostController extends Controller
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
                 $packageHistory->status                       = 'Lost';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 
@@ -432,6 +433,7 @@ class PackageLostController extends Controller
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                         $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
                         $packageHistory->status                       = 'Lost';
+                        $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                         $packageHistory->created_at                   = date('Y-m-d H:i:s');
                         $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                         

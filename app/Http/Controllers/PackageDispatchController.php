@@ -466,6 +466,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->inbound                      = 1;
                             $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Inbound';
+                            $packageHistory->actualDate                   = $nowDate;
                             $packageHistory->created_at                   = $nowDate;
                             $packageHistory->updated_at                   = $nowDate;
  
@@ -532,6 +533,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->Description                  = $description;
                         $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
 
@@ -645,6 +647,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Description                  = $description;
                     $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Dispatch';
+                    $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     
@@ -1045,6 +1048,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Description                  = $description;
                             $packageHistory->quantity                     = $package->quantity;
                             $packageHistory->status                       = 'Dispatch';
+                            $packageHistory->actualDate                   = $created_at;
                             $packageHistory->created_at                   = $created_at;
                             $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
@@ -1325,6 +1329,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                         $packageHistory->quantity                     = $packageDispatch->quantity;
                         $packageHistory->status                       = 'Warehouse';
+                        $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at_Warehouse;
                         $packageHistory->updated_at                   = $created_at_Warehouse;
 
@@ -1367,6 +1372,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = $statusReturn;
+                    $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $created_at_ReInbound;
                     $packageHistory->updated_at                   = $created_at_ReInbound;
 
