@@ -14,6 +14,7 @@ require('./components/Package');
 require('./components/PackageCheck');
 require('./components/PackageInbound');
 require('./components/PackageDispatch');
+require('./components/PackageDispatchDriver');
 require('./components/PackageFailed');
 require('./components/PackageMassQuery');
 require('./components/PackageNeedMoreInformation');
