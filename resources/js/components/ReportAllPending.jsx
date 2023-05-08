@@ -350,6 +350,7 @@ function ReportAllPending() {
                                                     <option value="Manifest">Manifest</option>
                                                     <option value="Inbound">Inbound</option>
                                                     <option value="Warehouse">Warehouse</option>
+                                                    <option value="Middle Mile Scan">Middle Mile Scan</option>    
                                                 </select>
                                             </div>
                                         </div>

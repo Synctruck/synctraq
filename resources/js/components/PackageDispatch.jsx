@@ -156,10 +156,15 @@ function PackageDispatch() {
             {
                 listAllTeam();
             }
-            else
+            else if(response.roleUser == 'Team')
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
+            }
+            else if(response.roleUser == 'Driver')
+            {
+                setIdDriver(idUserGeneral);
+                setIdTeam(idTeamGeneral);
             }
 
             if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
