@@ -170,29 +170,37 @@ function Track() {
             <div className="card mb-3">
                 <div className="card-body">
                     <div className=" pb-2">
-                        <h5 className="card-title text-center pb-0 fs-4">Order tracking</h5>
-                        <p className="text-center"><span> NOTE: Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p><br></br>
-                        <div className="col-lg-12">
-                            <form id="formSearch" onSubmit={getDetail}>
+                        <div className="row">
+                            <div className="col-lg-12 text-center">
                                 <div className="form-group">
-                                    <input
-                                        type="text"
-                                        id="textSearch"
-                                        className="form-control"
-                                        placeholder="Package ID"
-                                        required
-                                        value={packageId}
-                                        onChange={(e) => setPackageId(e.target.value)}
-                                        /><br />
-                                    <button className='btn btn-warning text-white' type='submit'> Search</button>
+                                    <img src="./img/logo.png" alt="" width="220"/>
                                 </div>
-                            </form>
+                            </div>
+                            <div className="col-lg-12">
+                                <h5 className="card-title text-center pb-0 fs-4">Track Your Package</h5>
+                                <p className="text-center"><span> <b>NOTE:</b> Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p><br></br>
+                            </div>
+                            <div className="col-lg-12">
+                                <form id="formSearch" onSubmit={getDetail}>
+                                    <div className="form-group">
+                                        <input
+                                            type="text"
+                                            id="textSearch"
+                                            className="form-control"
+                                            placeholder="Package ID"
+                                            required
+                                            value={packageId}
+                                            onChange={(e) => setPackageId(e.target.value)}
+                                            /><br />
+                                        <button className='btn btn-warning text-white' type='submit'> Search</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-
 
                         <h6 className="pt-4">Tracking details </h6><hr />
                         <div className='row'>
-                             <h5 className='text-center'>PACKAGE ID: {packageId}  / CLIENT: { packageClient }</h5>
+                            <h5 className='text-center'>PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: { packageClient }</h5>
                             <div className='col-12 mt-2'>
                                 <Steps current={step}>
                                     <Steps.Item title="In Fulfillment" description={onholdDesc} />
@@ -202,20 +210,50 @@ function Track() {
                                 </Steps>
                             </div>
                         </div>
-                        {/* <div className="col-lg-6">
-
-                            <table className='table'>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    { detailsListTable }
-                                </tbody>
-                            </table>
-                        </div> */}
+                    </div>
+                </div>
+            </div>
+            <div className="card mb-3" >
+                <div className="card-body">
+                    <div className=" pb-2">
+                        <div className="row">
+                            <div className="col-lg-6">
+                                <div className="col-lg-12">
+                                    <div className="form-group">
+                                        <h5 className="card-title text-center pb-0 fs-4">Need More Help</h5>
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 text-center">
+                                    <div className="form-group">
+                                        <h5 className='text-center'>Customer Support</h5>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>(551) 225-0007</p>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>connect@synctruck.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-lg-6">
+                                <div className="col-lg-12">
+                                    <div className="form-group">
+                                        <h5 className="card-title text-center pb-0 fs-4">Office Hours</h5>
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 text-center">
+                                    <div className="form-group">
+                                        <h5 className='text-center'>Mon – Fri</h5>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>09:00 am – 05:00 pm</p>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>Sat – Sun | Closed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
