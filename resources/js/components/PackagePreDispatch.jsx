@@ -935,6 +935,7 @@ function PackagePreDispatch() {
 
             setListPackage(response.packagePreDispatchList);
             setFilterDispatch(response.palletDispatch.status);
+            setStatusPallet(response.palletDispatch.status);
         });
     }
 
