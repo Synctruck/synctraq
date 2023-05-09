@@ -739,12 +739,12 @@ class PackageController extends Controller
                         {
                             "name": "ADL",
                             "date": "'. $created_at_adl .'",
-                            "comment": "'. ( $packageReturn ? $packageReturn->Description_Return : 'ReInbound' ) .'"
+                            "comment": "'. ( isset($packageReturn) ? $packageReturn->Description_Return : 'ReInbound' ) .'"
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
-                            "comment": "'. (isset($package['Description_Return']) ? $package['Description_Return'] : $status) .'"
+                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
                         }
                     ],
                     "Pods":[
@@ -761,6 +761,7 @@ class PackageController extends Controller
                 }
             }';
         }
+
 
         return $dataStructure;
     }
