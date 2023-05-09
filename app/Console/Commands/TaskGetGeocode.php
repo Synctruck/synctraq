@@ -43,7 +43,7 @@ class TaskGetGeocode extends Command
      */
     public function handle()
     {
-        /*$listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
+        $listPackageManifest = PackageManifest::where('confidenceAddress', '')->get();
 
         if($listPackageManifest->count() > 0)
         {
@@ -54,11 +54,11 @@ class TaskGetGeocode extends Command
             {
                 DB::beginTransaction();
 
-                if($listPackageManifest->count() >= 2500)
+                if($listPackageManifest->count() >= 800)
                 {
-                    $listPackageManifest = $listPackageManifest->take(2500);
+                    $listPackageManifest = $listPackageManifest->take(800);
                 }
-                else if($listPackageManifest->count() < 2500)
+                else if($listPackageManifest->count() < 800)
                 {
                     $listPackageManifest = $listPackageManifest->take($listPackageManifest->count());
                 }
@@ -75,7 +75,7 @@ class TaskGetGeocode extends Command
                         {
                             $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
                             $packageManifest->confidenceAddress = $route4me->confidenceAddress;
-                            $packageManifest->latitute          = $route4me->latitute;
+                            $packageManifest->latitude          = $route4me->latitude;
                             $packageManifest->longitude         = $route4me->longitude;
                             $packageManifest->save();
                         }
@@ -105,7 +105,7 @@ class TaskGetGeocode extends Command
                                 $route4me = new Route4me();
                                 $route4me->fullAddress       = $fullAddress;
                                 $route4me->confidenceAddress = $dataGeocode['confidence'];
-                                $route4me->latitute          = $dataGeocode['coordinates']['lat'];
+                                $route4me->latitude          = $dataGeocode['coordinates']['lat'];
                                 $route4me->longitude         = $dataGeocode['coordinates']['lng'];
                                 $route4me->save();
 
@@ -113,8 +113,8 @@ class TaskGetGeocode extends Command
                                 {
                                     $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
                                     $packageManifest->confidenceAddress = $dataGeocode['confidence'];
-                                    $packageManifest->latitute          = $dataGeocode['lat'];
-                                    $packageManifest->longitude         = $dataGeocode['lng'];
+                                    $packageManifest->latitude          = $dataGeocode['coordinates']['lat'];
+                                    $packageManifest->longitude         = $dataGeocode['coordinates']['lng'];
                                     $packageManifest->save();
                                 }
                             }
@@ -135,9 +135,12 @@ class TaskGetGeocode extends Command
                 Log::info("============================================================");
             }
         }
-        */
+        
 
-        $listPackageDispatch = PackageDispatch::where('confidenceAddress', '')
+
+
+
+        /*$listPackageDispatch = PackageDispatch::where('confidenceAddress', '')
                                                 ->where('status', 'Delivery')
                                                 ->whereBetween('Date_Delivery', ['2023-04-01 00:00:00', '2023-04-30 23:59:59'])
                                                 ->get();
@@ -202,7 +205,7 @@ class TaskGetGeocode extends Command
                                 $route4me = new Route4me();
                                 $route4me->fullAddress       = $fullAddress;
                                 $route4me->confidenceAddress = $dataGeocode['confidence'];
-                                $route4me->latitute          = $dataGeocode['coordinates']['lat'];
+                                $route4me->latitude          = $dataGeocode['coordinates']['lat'];
                                 $route4me->longitude         = $dataGeocode['coordinates']['lng'];
                                 $route4me->save();
 
@@ -227,5 +230,6 @@ class TaskGetGeocode extends Command
                 Log::info("============================================================");
             }
         }
+        */
     }
 }

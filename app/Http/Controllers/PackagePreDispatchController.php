@@ -122,6 +122,11 @@ class PackagePreDispatchController extends Controller
         {
             $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
 
+            if($package->Route == '')
+            {
+                return ['stateAction' => 'notRoutePackage'];
+            }
+
             if(strpos($palletDispatch->Route, $package->Route) === false)
             {
                 return ['stateAction' => 'notRoute'];
@@ -255,186 +260,141 @@ class PackagePreDispatchController extends Controller
 
     public function ChangeToDispatch(Request $request)
     {
-        try
+        $user = User::where('passwordDispatch', $request->get('passwordDispatch'))
+                    ->select('id', 'name', 'nameOfOwner', 'passwordDispatch')
+                    ->first();
+
+        if($user)
         {
-            DB::beginTransaction();
-
-            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
-
-            foreach($packagePreDispatchList as $packagePreDispatch)
+            try
             {
-                $packagePreDispatch      = PackagePreDispatch::find($packagePreDispatch->Reference_Number_1);
-                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packagePreDispatch->Reference_Number_1)->first();
+                DB::beginTransaction();
 
-                $weight = 0;//$packagePriceCompanyTeam->weight;
-                $cuIn   = 0;//$packagePriceCompanyTeam->cuIn;
+                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
 
-                $dimFactorTeam = DimFactorTeam::first();
-                $dimFactorTeam = $dimFactorTeam->factor;
-
-                $dimWeightTeam      = number_format($cuIn / $dimFactorTeam, 2);
-                $dimWeightTeamRound = ceil($dimWeightTeam);
-
-                $weightTeam = $packagePreDispatch->Weight;
-                //$weightTeam = $weight > $dimWeightTeamRound ? $weight : $dimWeightTeamRound;
-
-                $priceTeam = new RangePriceTeamRouteCompanyController();
-                $priceTeam = $priceTeam->GetPriceTeam($request->get('idTeam'), $packagePreDispatch->idCompany, $weightTeam, $packagePreDispatch->Route);
-
-                //precio peakeseason
-                $teamController       = new TeamController(); 
-                $peakeSeasonPriceTeam = $teamController->GetPeakeSeason($request->get('idTeam'), $weightTeam);
-                
-                //precio base
-                $priceBaseTeam = number_format($priceTeam + $peakeSeasonPriceTeam, 2);
-
-                $dieselPrice = Configuration::first()->diesel_price;
-
-                $surchargePercentageTeam = $teamController->GetPercentage($request->get('idTeam'), $dieselPrice);
-                $surchargePriceTeam      = number_format(($priceBaseTeam * $surchargePercentageTeam) / 100, 4);
-                //$totalPriceTeam          = number_format($priceBaseTeam + $surchargePriceTeam, 4);
-                $totalPriceTeam          = number_format($priceTeam, 4);
-                ///////// END TEAM
-
-                if($packagePriceCompanyTeam == null)
+                foreach($packagePreDispatchList as $packagePreDispatch)
                 {
-                    $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
+                    $packagePreDispatch      = PackagePreDispatch::find($packagePreDispatch->Reference_Number_1);
 
-                    $packagePriceCompanyTeam->id = uniqid();
+                    $created_at  = date('Y-m-d H:i:s');
+                    $team        = User::find($request->get('idTeam'));
+                    $driver      = User::find($request->get('idDriver'));
+                    $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+
+                    $packageDispatch = new PackageDispatch();
+
+                    $packageDispatch->Reference_Number_1           = $packagePreDispatch->Reference_Number_1;
+                    $packageDispatch->idCompany                    = $packagePreDispatch->idCompany;
+                    $packageDispatch->company                      = $packagePreDispatch->company;
+                    $packageDispatch->idStore                      = $packagePreDispatch->idStore;
+                    $packageDispatch->store                        = $packagePreDispatch->store;
+                    $packageDispatch->Dropoff_Contact_Name         = $packagePreDispatch->Dropoff_Contact_Name;
+                    $packageDispatch->Dropoff_Company              = $packagePreDispatch->Dropoff_Company;
+                    $packageDispatch->Dropoff_Contact_Phone_Number = $packagePreDispatch->Dropoff_Contact_Phone_Number;
+                    $packageDispatch->Dropoff_Contact_Email        = $packagePreDispatch->Dropoff_Contact_Email;
+                    $packageDispatch->Dropoff_Address_Line_1       = $packagePreDispatch->Dropoff_Address_Line_1;
+                    $packageDispatch->Dropoff_Address_Line_2       = $packagePreDispatch->Dropoff_Address_Line_2;
+                    $packageDispatch->Dropoff_City                 = $packagePreDispatch->Dropoff_City;
+                    $packageDispatch->Dropoff_Province             = $packagePreDispatch->Dropoff_Province;
+                    $packageDispatch->Dropoff_Postal_Code          = $packagePreDispatch->Dropoff_Postal_Code;
+                    $packageDispatch->Notes                        = $packagePreDispatch->Notes;
+                    $packageDispatch->Weight                       = $packagePreDispatch->Weight;
+                    $packageDispatch->Route                        = $packagePreDispatch->Route;
+                    $packageDispatch->idUser                       = Auth::user()->id;
+                    $packageDispatch->idTeam                       = $request->get('idTeam');
+                    $packageDispatch->idUserDispatch               = $request->get('idDriver');
+                    $packageDispatch->Date_Dispatch                = $created_at; 
+                    $packageDispatch->quantity                     = $packagePreDispatch->quantity;
+                    $packageDispatch->idPaymentTeam                = '';
+                    $packageDispatch->status                       = 'Dispatch';
+                    $packageDispatch->created_at                   = $created_at;
+                    $packageDispatch->updated_at                   = $created_at;
+
+                    $packageHistory = new PackageHistory();
+
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packagePreDispatch->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packagePreDispatch->idCompany;
+                    $packageHistory->company                      = $packagePreDispatch->company;
+                    $packageHistory->idStore                      = $packagePreDispatch->idStore;
+                    $packageHistory->store                        = $packagePreDispatch->store;
+                    $packageHistory->Dropoff_Contact_Name         = $packagePreDispatch->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packagePreDispatch->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packagePreDispatch->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packagePreDispatch->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packagePreDispatch->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packagePreDispatch->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packagePreDispatch->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packagePreDispatch->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packagePreDispatch->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packagePreDispatch->Notes;
+                    $packageHistory->Weight                       = $packagePreDispatch->Weight;
+                    $packageHistory->Route                        = $packagePreDispatch->Route;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idTeam                       = $request->get('idTeam');
+                    $packageHistory->idUserDispatch               = $request->get('idDriver');
+                    $packageHistory->Date_Dispatch                = $created_at;
+                    $packageHistory->dispatch                     = 1;
+                    $packageHistory->autorizationDispatch         = 1;
+                    $packageHistory->Description                  = $description;
+                    $packageHistory->quantity                     = $packagePreDispatch->quantity;
+                    $packageHistory->numberPallet                 = $request->get('numberPallet');
+                    $packageHistory->status                       = 'Dispatch';
+                    $packageHistory->actualDate                   = $created_at;
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
+
+                    $registerTask = new PackageDispatchController();
+                    $registerTask = $registerTask->RegisterOnfleet($packagePreDispatch, $team, $driver);
+
+                    if($registerTask['status'] == 200)
+                    {
+                        $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                        $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packagePreDispatch, 'Dispatch', null, $created_at);
+                        //end data for inland
+
+                        $packageDispatch->idOnfleet   = $idOnfleet;
+                        $packageDispatch->taskOnfleet = $taskOnfleet;
+
+                        $packageDispatch->save();
+                        $packageHistory->save();
+                        $packagePreDispatch->delete();
+                    }
                 }
-                
-                //update PACKAGE prices team
-                $packagePriceCompanyTeam->Reference_Number_1      = $packagePreDispatch->Reference_Number_1;
-                $packagePriceCompanyTeam->dieselPriceTeam         = $dieselPrice;
-                $packagePriceCompanyTeam->dimFactorTeam           = $dimFactorTeam;
-                $packagePriceCompanyTeam->dimWeightTeam           = $dimWeightTeam;
-                $packagePriceCompanyTeam->dimWeightTeamRound      = $dimWeightTeamRound;
-                $packagePriceCompanyTeam->priceWeightTeam         = $priceTeam;
-                $packagePriceCompanyTeam->peakeSeasonPriceTeam    = $peakeSeasonPriceTeam;
-                $packagePriceCompanyTeam->priceBaseTeam           = $priceBaseTeam;
-                $packagePriceCompanyTeam->surchargePercentageTeam = $surchargePercentageTeam;
-                $packagePriceCompanyTeam->surchargePriceTeam      = $surchargePriceTeam;
-                $packagePriceCompanyTeam->totalPriceTeam          = $totalPriceTeam;
-                
-                $packagePriceCompanyTeam->save();
 
-                $created_at  = date('Y-m-d H:i:s');
-                $team        = User::find($request->get('idTeam'));
-                $driver      = User::find($request->get('idDriver'));
-                $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
 
-                $packageDispatch = new PackageDispatch();
-
-                $packageDispatch->Reference_Number_1           = $packagePreDispatch->Reference_Number_1;
-                $packageDispatch->idCompany                    = $packagePreDispatch->idCompany;
-                $packageDispatch->company                      = $packagePreDispatch->company;
-                $packageDispatch->idStore                      = $packagePreDispatch->idStore;
-                $packageDispatch->store                        = $packagePreDispatch->store;
-                $packageDispatch->Dropoff_Contact_Name         = $packagePreDispatch->Dropoff_Contact_Name;
-                $packageDispatch->Dropoff_Company              = $packagePreDispatch->Dropoff_Company;
-                $packageDispatch->Dropoff_Contact_Phone_Number = $packagePreDispatch->Dropoff_Contact_Phone_Number;
-                $packageDispatch->Dropoff_Contact_Email        = $packagePreDispatch->Dropoff_Contact_Email;
-                $packageDispatch->Dropoff_Address_Line_1       = $packagePreDispatch->Dropoff_Address_Line_1;
-                $packageDispatch->Dropoff_Address_Line_2       = $packagePreDispatch->Dropoff_Address_Line_2;
-                $packageDispatch->Dropoff_City                 = $packagePreDispatch->Dropoff_City;
-                $packageDispatch->Dropoff_Province             = $packagePreDispatch->Dropoff_Province;
-                $packageDispatch->Dropoff_Postal_Code          = $packagePreDispatch->Dropoff_Postal_Code;
-                $packageDispatch->Notes                        = $packagePreDispatch->Notes;
-                $packageDispatch->Weight                       = $packagePreDispatch->Weight;
-                $packageDispatch->Route                        = $packagePreDispatch->Route;
-                $packageDispatch->idUser                       = Auth::user()->id;
-                $packageDispatch->idTeam                       = $request->get('idTeam');
-                $packageDispatch->idUserDispatch               = $request->get('idDriver');
-                $packageDispatch->Date_Dispatch                = $created_at; 
-                $packageDispatch->quantity                     = $packagePreDispatch->quantity;
-                $packageDispatch->pricePaymentCompany          = $packagePriceCompanyTeam->totalPriceCompany;
-                $packageDispatch->pricePaymentTeam             = $packagePriceCompanyTeam->totalPriceTeam;
-                $packageDispatch->idPaymentTeam                = '';
-                $packageDispatch->status                       = 'Dispatch';
-                $packageDispatch->created_at                   = $created_at;
-                $packageDispatch->updated_at                   = $created_at;
-
-                $packageHistory = new PackageHistory();
-
-                $packageHistory->id                           = uniqid();
-                $packageHistory->Reference_Number_1           = $packagePreDispatch->Reference_Number_1;
-                $packageHistory->idCompany                    = $packagePreDispatch->idCompany;
-                $packageHistory->company                      = $packagePreDispatch->company;
-                $packageHistory->idStore                      = $packagePreDispatch->idStore;
-                $packageHistory->store                        = $packagePreDispatch->store;
-                $packageHistory->Dropoff_Contact_Name         = $packagePreDispatch->Dropoff_Contact_Name;
-                $packageHistory->Dropoff_Company              = $packagePreDispatch->Dropoff_Company;
-                $packageHistory->Dropoff_Contact_Phone_Number = $packagePreDispatch->Dropoff_Contact_Phone_Number;
-                $packageHistory->Dropoff_Contact_Email        = $packagePreDispatch->Dropoff_Contact_Email;
-                $packageHistory->Dropoff_Address_Line_1       = $packagePreDispatch->Dropoff_Address_Line_1;
-                $packageHistory->Dropoff_Address_Line_2       = $packagePreDispatch->Dropoff_Address_Line_2;
-                $packageHistory->Dropoff_City                 = $packagePreDispatch->Dropoff_City;
-                $packageHistory->Dropoff_Province             = $packagePreDispatch->Dropoff_Province;
-                $packageHistory->Dropoff_Postal_Code          = $packagePreDispatch->Dropoff_Postal_Code;
-                $packageHistory->Notes                        = $packagePreDispatch->Notes;
-                $packageHistory->Weight                       = $packagePreDispatch->Weight;
-                $packageHistory->Route                        = $packagePreDispatch->Route;
-                $packageHistory->idUser                       = Auth::user()->id;
-                $packageHistory->idTeam                       = $request->get('idTeam');
-                $packageHistory->idUserDispatch               = $request->get('idDriver');
-                $packageHistory->Date_Dispatch                = $created_at;
-                $packageHistory->dispatch                     = 1;
-                $packageHistory->autorizationDispatch         = 1;
-                $packageHistory->Description                  = $description;
-                $packageHistory->quantity                     = $packagePreDispatch->quantity;
-                $packageHistory->numberPallet                 = $request->get('numberPallet');
-                $packageHistory->status                       = 'Dispatch';
-                $packageHistory->actualDate                   = $created_at;
-                $packageHistory->created_at                   = $created_at;
-                $packageHistory->updated_at                   = $created_at;
-
-                $registerTask = new PackageDispatchController();
-                $registerTask = $registerTask->RegisterOnfleet($packagePreDispatch, $team, $driver);
-
-                if($registerTask['status'] == 200)
-                {
-                    $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                    $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
-
-                    //data for INLAND
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packagePreDispatch, 'Dispatch', null, $created_at);
-                    //end data for inland
-
-                    $packageDispatch->idOnfleet   = $idOnfleet;
-                    $packageDispatch->taskOnfleet = $taskOnfleet;
-
-                    $packageDispatch->save();
-                    $packageHistory->save();
-                    $packagePreDispatch->delete();
-                }
-            }
-
-            DB::commit();
-
-            $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
-
-            $closePallet = 0;
-
-            if(count($packagePreDispatchList) == 0)
-            {
-                $closePallet = 1;
+                $closePallet = 0;
 
                 $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
+                $palletDispatch->idUserDispatch = $user->id;
+                $palletDispatch->dispatcher     = $user->name .' '. $user->nameOfOwner;
 
-                $palletDispatch->status = 'Closed';
+                if(count($packagePreDispatchList) == 0)
+                {
+                    $closePallet            = 1;
+                    $palletDispatch->status = 'Closed';
+                }
 
                 $palletDispatch->save();
+
+                DB::commit();
+
+                return ['stateAction' => true, 'closePallet' => $closePallet];
             }
+            catch (Exception $e)
+            {
+                DB::rollback();
 
-            return ['stateAction' => true, 'closePallet' => $closePallet];
+                return ['stateAction' => false];
+            }
         }
-        catch (Exception $e)
-        {
-            DB::rollback();
-
-            return ['stateAction' => false];
-        }  
+        
+        return ['stateAction' => 'userNotExists'];
     }
 
     public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
