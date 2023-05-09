@@ -122,6 +122,11 @@ class PackagePreDispatchController extends Controller
         {
             $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
 
+            if($package->Route == '')
+            {
+                return ['stateAction' => 'notRoutePackage'];
+            }
+
             if(strpos($palletDispatch->Route, $package->Route) === false)
             {
                 return ['stateAction' => 'notRoute'];
