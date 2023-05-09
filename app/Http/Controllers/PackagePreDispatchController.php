@@ -305,8 +305,6 @@ class PackagePreDispatchController extends Controller
                     $packageDispatch->idUserDispatch               = $request->get('idDriver');
                     $packageDispatch->Date_Dispatch                = $created_at; 
                     $packageDispatch->quantity                     = $packagePreDispatch->quantity;
-                    $packageDispatch->pricePaymentCompany          = $packagePriceCompanyTeam->totalPriceCompany;
-                    $packageDispatch->pricePaymentTeam             = $packagePriceCompanyTeam->totalPriceTeam;
                     $packageDispatch->idPaymentTeam                = '';
                     $packageDispatch->status                       = 'Dispatch';
                     $packageDispatch->created_at                   = $created_at;
