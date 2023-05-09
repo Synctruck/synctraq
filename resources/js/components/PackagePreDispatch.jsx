@@ -782,7 +782,7 @@ function PackagePreDispatch() {
                     }
                     else if(response.stateAction == 'notRoutePackage')
                     {
-                        setTextMessage("THE PACKAGE N° "+ Reference_Number_1 +" HAS NO ROUTE!");
+                        setTextMessage("THE PACKAGE #"+ Reference_Number_1 +" HAS NO ROUTE!");
                         setTypeMessageDispatch('error');
                         setNumberPackage('');
 
