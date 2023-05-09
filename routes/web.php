@@ -129,17 +129,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
 	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
 
-	//============ PACKAGE DISPATCH DRIVERS
-	Route::get('/package-dispatch-driver', [PackageDispatchDriverController::class, 'Index'])->middleware('permission:dispatch.index');
-	Route::get('/package-dispatch-driver/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchDriverController::class, 'List']);
-	Route::get('/package-dispatch-driver/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{type}', [PackageDispatchDriverController::class, 'Export']);
-	Route::get('/package-dispatch-driver/getAll', [PackageDispatchDriverController::class, 'GetAll']);
-	Route::post('/package-dispatch-driver/insert', [PackageDispatchDriverController::class, 'Insert']);
-	Route::post('/package-dispatch-driver/update', [PackageDispatchDriverController::class, 'Update']);
-	Route::post('/package-dispatch-driver/import', [PackageDispatchDriverController::class, 'Import']);
-	Route::get('/package-dispatch-driver/getCoordinates/{taskOnfleet}', [PackageDispatchDriverController::class, 'GetOnfleetShorId']);
-	Route::get('/package-dispatch-driver/update/prices-teams/{startDate}/{endDate}', [PackageDispatchDriverController::class, 'UpdatePriceTeams']);
-
 	//============ PALET RTS 
 	Route::get('/pallet-rts/list/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'List']);
 	Route::get('/pallet-rts/export/{idCompany}/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'Export']);

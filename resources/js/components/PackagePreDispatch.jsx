@@ -31,6 +31,7 @@ function PackagePreDispatch() {
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
     const [dayNight, setDayNight]                     = useState('');
+    const [passwordDispatch, setPasswordDispatch]     = useState('');
 
     const [readOnlyPalet, setReadOnlyPalet] = useState(false);
     const [readOnly, setReadOnly]           = useState(false);
@@ -321,13 +322,14 @@ function PackagePreDispatch() {
 
     const handlerClosePallete = () => {
 
-        if(idTeam != 0 && idDriver != 0)
+        if(idTeam != 0 && idDriver != 0 && passwordDispatch != '')
         {
             const formData = new FormData();
 
             formData.append('numberPallet', PalletNumberForm);
             formData.append('idTeam', idTeam);
             formData.append('idDriver', idDriver);
+            formData.append('passwordDispatch', passwordDispatch);
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -343,13 +345,31 @@ function PackagePreDispatch() {
 
                 if(response.stateAction == true)
                 {
-                    swal("The palette was dispatched correctly!", {
+                    if(response.closePallet == 1)
+                    {
+                        swal("The palette was dispatched correctly!", {
 
-                        icon: "success",
+                            icon: "success",
+                        });
+
+                        listAllPalet(page, RouteSearchList);
+                    }
+                    else
+                    {
+                        swal("The palette is still open, some packages could not be moved to dispatch, check the information of the packages!", {
+
+                            icon: "warning",
+                        });
+
+                        listPackagePreDispatch(PalletNumberForm);
+                    }
+                }
+                else if(response.stateAction == 'userNotExists')
+                {
+                    swal("The dispatch confirmation password does not exist!", {
+
+                        icon: "warning",
                     });
-
-                    listAllPalet(page);
-                    listPackagePreDispatch(PalletNumberForm);
                 }
                 else
                 {
@@ -534,7 +554,7 @@ function PackagePreDispatch() {
                                                 </div>
                                                 <div className="modal-footer" style={ {display: (filterDispatch == 'Closed' ? 'none' : 'block')} }>
                                                     <div className="row" style={ {width: '100%'} }>
-                                                        <div className="col-lg-4">
+                                                        <div className="col-lg-3">
                                                             <div className="form-group">
                                                                 <label className="form">TEAM</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
@@ -543,7 +563,7 @@ function PackagePreDispatch() {
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div className="col-lg-4">
+                                                        <div className="col-lg-3">
                                                             <div className="form-group">
                                                                 <label className="form">DRIVER</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
@@ -552,7 +572,13 @@ function PackagePreDispatch() {
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div className="col-lg-4">
+                                                        <div className="col-lg-3">
+                                                            <div className="form-group">
+                                                                <label className="form">PASSWORD DISPATCH</label>
+                                                                <input type="text" value={ passwordDispatch } onChange={ (e) => setPasswordDispatch(e.target.value) } className="form-control" maxLength="20"/>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-lg-3">
                                                             <div className="form-group">
                                                                 <label className="text-white">---</label>
                                                                 <button type="button" className="btn btn-success form-control" onClick={ () => handlerClosePallete () }>
@@ -953,12 +979,11 @@ function PackagePreDispatch() {
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { pallet.created_at.substring(5, 7) }-{ pallet.created_at.substring(8, 10) }-{ pallet.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ pallet.created_at.substring(5, 7) }-{ pallet.created_at.substring(8, 10) }-{ pallet.created_at.substring(0, 4) }</b> <br/>
                     { pallet.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pallet.number }</b></td>
+                <td>{ pallet.dispatcher}</td>
                 <td><b>{ pallet.Route }</b></td>
                 <td><b>{ pallet.quantityPackage }</b></td>
                 <td>
@@ -1501,8 +1526,8 @@ function PackagePreDispatch() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>PALET ID</th>
+                                                <th>DISPATCHER</th>
                                                 <th>ROUTE</th>
                                                 <th>QUANTITY</th>
                                                 <th>STATUS</th>
