@@ -949,7 +949,15 @@ function PackagePreDispatch() {
     const handlerViewPackage = (palletNumber, Routes, status) => {
 
         setTextMessage('');
-        
+        setPasswordDispatch('');
+        setIdTeam(0);
+        setIdDriver(0);
+
+        setListTeam([]);
+        setListDriver([]);
+
+        listAllTeam();
+
         setRoutesPallet(Routes);
         setStatusPallet(status);
         setPalletNumberForm(palletNumber);
