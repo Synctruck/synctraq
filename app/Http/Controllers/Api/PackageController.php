@@ -744,7 +744,7 @@ class PackageController extends Controller
                         {
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
-                            "comment": "'. $package->Description_Return .'"
+                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
                         }
                     ],
                     "Pods":[
