@@ -722,6 +722,7 @@ class PackageController extends Controller
                 $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
             }
 
+            dd($package);
             $dataStructure = '{
                 "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
