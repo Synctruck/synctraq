@@ -1082,6 +1082,9 @@ class PackageDispatchController extends Controller
 
     public function Return(Request $request)
     {
+        Log::info('========== RE-INBOUND');
+        Log::info('Reference_Number_1: '. $request->get('Reference_Number_1'));
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -1109,6 +1112,8 @@ class PackageDispatchController extends Controller
         {
             $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
+
+        Log::info('package: '. $packageDispatch);
 
         if($packageDispatch)
         {
