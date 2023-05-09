@@ -360,9 +360,9 @@ function PackagePreDispatch() {
 
                             icon: "warning",
                         });
-
-                        listPackagePreDispatch(PalletNumberForm);
                     }
+
+                    listPackagePreDispatch(PalletNumberForm);
                 }
                 else if(response.stateAction == 'userNotExists')
                 {
