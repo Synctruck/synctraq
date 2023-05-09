@@ -773,8 +773,17 @@ function PackagePreDispatch() {
                     }
                     else if(response.stateAction == 'notValidatedRoute')
                     {
-                        alert(response.stateAction);
                         setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notRoutePackage')
+                    {
+                        alert(response.stateAction);
+                        setTextMessage("THE PACKAGE N° "+ Reference_Number_1 +" HAS NO ROUTE!");
                         setTypeMessageDispatch('error');
                         setNumberPackage('');
 
