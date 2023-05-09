@@ -773,6 +773,7 @@ function PackagePreDispatch() {
                     }
                     else if(response.stateAction == 'notValidatedRoute')
                     {
+                        alert(response.stateAction);
                         setTextMessage("El paquete N° "+ Reference_Number_1 +" no corresponde a su ruta asignada!");
                         setTypeMessageDispatch('error');
                         setNumberPackage('');
