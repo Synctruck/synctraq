@@ -722,7 +722,7 @@ class PackageController extends Controller
                 $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
             }
 
-            Log::info($package);
+            Log::info($package['Description_Return']);
             $dataStructure = '{
                 "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
