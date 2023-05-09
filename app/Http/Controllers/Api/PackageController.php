@@ -722,7 +722,6 @@ class PackageController extends Controller
                 $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
             }
 
-            Log::info($package['Description_Return']);
             $dataStructure = '{
                 "shipment_number": "'. $package->Reference_Number_1 .'",
                 "tracking": {
@@ -745,7 +744,7 @@ class PackageController extends Controller
                         {
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
-                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
+                            "comment": "'. (isset($package['Description_Return']) ? $package['Description_Return'] : $status) .'"
                         }
                     ],
                     "Pods":[
@@ -762,7 +761,6 @@ class PackageController extends Controller
                 }
             }';
         }
-
 
         return $dataStructure;
     }
