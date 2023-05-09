@@ -143,8 +143,9 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ PALET DISPACTH 
 	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
-	Route::get('/pallet-dispatch/export/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'Export']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
+	Route::get('/pallet-dispatch/delete/{numberPallet}', [PalletDispatchController::class, 'Delete']);
+	Route::get('/pallet-dispatch/export/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'Export']);
 	Route::get('/pallet-dispatch/print/{numberPallet}', [PalletDispatchController::class, 'Print']);
 
 	//============ Dispatch package

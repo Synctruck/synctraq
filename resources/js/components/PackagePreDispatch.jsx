@@ -846,6 +846,7 @@ function PackagePreDispatch() {
                         setTypeMessageDispatch('success');
                         setNumberPackage(''); 
 
+                        listAllPalet(1, RouteSearchList);
                         listPackagePreDispatch(PalletNumberForm);
 
                         document.getElementById('Reference_Number_1').focus();
@@ -993,6 +994,17 @@ function PackagePreDispatch() {
 
     const palletListTable = palletList.map( (pallet, i) => {
 
+        let buttonDelete ='';
+
+        if(pallet.quantityPackage == 0 && pallet.status == 'Opened')
+        {
+            buttonDelete =  <>
+                                <button className="btn btn-danger btn-sm mt-2" title="Delete Pallet" onClick={ () => deletePallet(pallet.number) }>
+                                    <i className="bx bxs-trash-alt"></i> Delete Pallet
+                                </button><br/>
+                            </>
+        }
+
         return (
 
             <tr key={i}>
@@ -1016,7 +1028,10 @@ function PackagePreDispatch() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.Route, pallet.status) }>View package</button><br/>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.Route, pallet.status) }>
+                        <i className="ri-eye-fill"></i> View Pallet
+                    </button><br/>
+                    { buttonDelete }
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
                         <i className="bx bxs-printer"></i> View package
                     </button>
@@ -1411,6 +1426,49 @@ function PackagePreDispatch() {
 
             listAllPackageDispatch(1, 'all', RouteSearchList);
         }
+    }
+
+    const deletePallet = (id) => {
+
+        let url = url_general +'pallet-dispatch/delete/'+ id;
+        let method = 'GET'
+
+        swal({
+            title: "",
+            text: 'Are you sure you want to delete this pallet ? : '+name,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            
+            if(willDelete)
+            {
+                axios({
+                    method: method,
+                    url: url,
+                    data: {idRole:id}
+                })
+                .then((response) => {
+
+                    swal("Pallet deleted!", {
+                        icon: "success",
+                    });
+
+                    listAllPalet(page, RouteSearchList);
+                })
+                .catch(function(error) {
+
+                    if(error.response.status == 409)
+                    {
+                        swal("There are users related to this role,it is not possible to delete the role", {
+                            icon: "warning",
+                        });
+                    }
+                })
+                .finally(() => LoadingHide());
+            }
+         });
     }
 
     return (
