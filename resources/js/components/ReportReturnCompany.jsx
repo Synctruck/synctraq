@@ -586,7 +586,7 @@ function ReportReturnCompany() {
                                                                 <div className="form-group">
                                                                     <label className="form">CLIENT</label>
                                                                     <div id="client" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) } required/>
+                                                                    <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                         </div>
