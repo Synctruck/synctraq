@@ -708,7 +708,6 @@ class PackageController extends Controller
                 $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
             }
 
-
             if(count($packageDispatch) > 0)
             {
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->last()->created_at);
@@ -720,6 +719,10 @@ class PackageController extends Controller
                 $packageReturn   = $packageReturn->last();
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->created_at);
                 $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
+            }
+            else
+            {
+                $packageReturn = null;
             }
 
             $dataStructure = '{
@@ -739,12 +742,12 @@ class PackageController extends Controller
                         {
                             "name": "ADL",
                             "date": "'. $created_at_adl .'",
-                            "comment": "'. ( $packageReturn ? $packageReturn->Description_Return : 'ReInbound' ) .'"
+                            "comment": "'. ( $packageReturn > 0 ? $packageReturn->Description_Return : 'ReInbound' ) .'"
                         },
                         {
                             "name": "'. $statusCodeCompany .'",
                             "date": "'. $created_at_now .'",
-                            "comment": "'. $package->Description_Return .'"
+                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
                         }
                     ],
                     "Pods":[

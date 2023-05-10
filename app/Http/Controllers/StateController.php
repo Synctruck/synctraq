@@ -25,12 +25,13 @@ class StateController extends Controller
 
             if(!$state)
             {
-                $state = new States();
-
-                $state->name = $history->Dropoff_Province;
-                $state->filter = 0;
-
-                $state->save();
+                if($history->Dropoff_Province)
+                {
+                    $state = new States();
+                    $state->name = $history->Dropoff_Province;
+                    $state->filter = 0;
+                    $state->save();
+                }
             }
         }
 
