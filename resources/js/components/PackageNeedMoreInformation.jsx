@@ -82,7 +82,7 @@ function PackageNeedMoreInformation() {
 
     useEffect(() => {
 
-        listAllPackageInbound(page, RouteSearch, StateSearch);
+        listAllPackageNMI(page, RouteSearch, StateSearch);
 
     }, [idCompany, dateStart,dateEnd]);
 
@@ -103,12 +103,12 @@ function PackageNeedMoreInformation() {
 
     }, [file]);
 
-    const listAllPackageInbound = () => {
+    const listAllPackageNMI = (pageNumber, route, state) => {
 
         setIsLoading(true);
         setListPackageInbound([]);
 
-        fetch(url_general +'package-nmi/list?Reference_Number_1='+ Reference_Search)
+        fetch(url_general +'package-nmi/list/'+ idCompany +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'?page='+ pageNumber +'&Reference_Number_1='+ Reference_Search)
         .then(res => res.json())
         .then((response) => {
 
@@ -121,9 +121,9 @@ function PackageNeedMoreInformation() {
         });
     }
 
-    const exportAllPackageInbound = (type) => {
+    const exportAllPackageNMI = (route, state, type) => {
 
-        let url = url_general +'package-nmi/export/'+ type;
+        let url = url_general +'package-nmi/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+ type;
 
         if(type == 'download')
         {
@@ -159,12 +159,12 @@ function PackageNeedMoreInformation() {
 
     const handlerExport = (type) => { 
 
-        exportAllPackageInbound(type);
+        exportAllPackageNMI(RouteSearch, StateSearch, type);
     }
 
     const handlerChangePage = (pageNumber) => {
 
-        listAllPackageInbound(pageNumber, RouteSearch, StateSearch);
+        listAllPackageNMI(pageNumber, RouteSearch, StateSearch);
     }
 
     const listAllRoute = () => {
@@ -296,7 +296,7 @@ function PackageNeedMoreInformation() {
                         icon: "success",
                     });
 
-                    listAllPackageInbound(1, RouteSearch, StateSearch);
+                    listAllPackageNMI(1, RouteSearch, StateSearch);
                 }
                 else(response.status == 422)
                 {
@@ -619,7 +619,7 @@ function PackageNeedMoreInformation() {
                             setRouteLabel(response.package.Route);
                             setReferenceLabel(response.package.Reference_Number_1);
 
-                            listAllPackageInbound();
+                            listAllPackageNMI(page, RouteSearch, StateSearch);
 
                             document.getElementById('Reference_Number_1').focus();
                             document.getElementById('soundPitidoSuccess').play();
@@ -677,7 +677,7 @@ function PackageNeedMoreInformation() {
 
                     document.getElementById('fileImport').value = '';
 
-                    listAllPackageInbound(page, RouteSearch, StateSearch);
+                    listAllPackageNMI(page, RouteSearch, StateSearch);
 
                     setViewButtonSave('none');
                 }
@@ -702,7 +702,7 @@ function PackageNeedMoreInformation() {
                     icon: "success",
                 });
 
-                listAllPackageInbound();
+                listAllPackageNMI();
             }
             else if(response.stateAction == false)
             {
@@ -770,13 +770,13 @@ function PackageNeedMoreInformation() {
 
             setRouteSearch(routesSearch);
 
-            listAllPackageInbound(page, routesSearch, StateSearch);
+            listAllPackageNMI(page, routesSearch, StateSearch);
         }
         else
         {
             setRouteSearch('all');
 
-            listAllPackageInbound(page, 'all', StateSearch);
+            listAllPackageNMI(page, 'all', StateSearch);
         }
     };
 
@@ -808,13 +808,13 @@ function PackageNeedMoreInformation() {
 
             setStateSearch(statesSearch);
 
-            listAllPackageInbound(page, RouteSearch, statesSearch);
+            listAllPackageNMI(page, RouteSearch, statesSearch);
         }
         else
         {
             setStateSearch('all');
 
-            listAllPackageInbound(page, RouteSearch, 'all');
+            listAllPackageNMI(page, RouteSearch, 'all');
         }
     };
 
@@ -897,7 +897,7 @@ function PackageNeedMoreInformation() {
         setTextMessage('');
         setTextMessageDate('');
 
-        listAllPackageInbound();
+        listAllPackageNMI(page, RouteSearch, StateSearch);
     }
 
     return (
@@ -988,38 +988,9 @@ function PackageNeedMoreInformation() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-2" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
-                                        {
-                                            (
-                                                isLoading
-                                                ? 
-                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
-                                                :
-                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>NMI: { totalPackage }</b>
-                                            )
-                                        }
-                                    </div>
                                 </div>
 
-                                <div className="row" style={ {display: 'none'} }>
+                                <div className="row">
                                     <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
                                         {
                                             (

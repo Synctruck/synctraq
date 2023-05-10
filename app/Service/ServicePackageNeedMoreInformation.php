@@ -13,13 +13,11 @@ use DateTime;
 
 class ServicePackageNeedMoreInformation{
 
-    public function List($request)
+    public function List($request, $idCompany, $dateStart,$dateEnd, $route, $state)
     {
-        return PackageNeedMoreInformation::where('Reference_Number_1', 'like', '%'. $request->get('Reference_Number_1') .'%')
-                                        ->orderBy('created_at', 'desc')
-                                        ->paginate(500);
+        return $this->GetData($idCompany, $dateStart,$dateEnd, $route, $state);
     }
-
+    
     public function Insert($request)
     {
         $packageNeedMoreInformation = $this->Get($request->get('Reference_Number_1'));
@@ -99,24 +97,25 @@ class ServicePackageNeedMoreInformation{
         return ['stateAction' => 'notExists'];
     }
 
-    public function Export($typeExport)
+    public function Export($idCompany, $dateStart, $dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - NEED MORE INFORMATION " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - NEED MORE INFORMATION.csv";
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageNeedMoreInformationList = PackageNeedMoreInformation::orderBy('created_at', 'desc')->get();
+        $packageNeedMoreInformationList = $this->GetData($idCompany, $dateStart,$dateEnd, $route, $state, 'export');
 
         foreach($packageNeedMoreInformationList as $packageNeedMoreInformation)
         {
             $lineData = array(
                                 date('m-d-Y', strtotime($packageNeedMoreInformation->created_at)),
                                 date('H:i:s', strtotime($packageNeedMoreInformation->created_at)),
+                                $packageNeedMoreInformation->company,
                                 $packageNeedMoreInformation->Reference_Number_1,
                                 $packageNeedMoreInformation->Dropoff_Contact_Name,
                                 $packageNeedMoreInformation->Dropoff_Contact_Phone_Number,
@@ -130,6 +129,7 @@ class ServicePackageNeedMoreInformation{
 
             fputcsv($file, $lineData, $delimiter);
         }
+
 
         if($typeExport == 'download')
         {
@@ -149,6 +149,50 @@ class ServicePackageNeedMoreInformation{
 
             return ['stateAction' => true];
         }
+    }
+
+    private function GetData($idCompany, $dateStart,$dateEnd, $route, $state, $type = 'list')
+    {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd   = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $packageListNMI = PackageNeedMoreInformation::whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if(Auth::user()->role->name != 'Administrador')
+        {
+            $packageListNMI = $packageListNMI->where('idUser', Auth::user()->id);
+        }
+
+        if($route != 'all')
+        {
+            $packageListNMI = $packageListNMI->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $packageListNMI = $packageListNMI->whereIn('Dropoff_Province', $states);
+        }
+
+        if($idCompany)
+        {
+            $packageListNMI = $packageListNMI->where('idCompany', $idCompany);
+        }
+
+        if($type =='list')
+        {
+            $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')
+                                            ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                            ->paginate(50);
+        }
+        else
+        {
+            $packageListNMI = $packageListNMI->where('reInbound', 0)->orderBy('created_at', 'desc')->get(); 
+        }
+
+        return $packageListNMI;
     }
 
     public function MoveToWarehouse($Reference_Number_1)
