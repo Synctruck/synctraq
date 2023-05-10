@@ -131,7 +131,7 @@ class PackageInboundController extends Controller
         return $packageListInbound;
     }
 
-    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state, $typeExport)
+    public function Export(Request $request, $idCompany, $dateStart, $dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - INBOUND.csv";
@@ -142,7 +142,7 @@ class PackageInboundController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state,$type='export');
+        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state, $typeExport = 'export');
 
         foreach($packageListInbound as $packageInbound)
         {

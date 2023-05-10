@@ -19,11 +19,11 @@ class PackageNeedMoreInformationController extends Controller
         return view('package.needmoreinformation');
     }
 
-    public function List(Request $request)
+    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $route, $state)
     {
         $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
     
-        return ['packageList' => $servicePackageNeedMoreInformation->List($request)];
+        return ['packageList' => $servicePackageNeedMoreInformation->List($request, $idCompany, $dateStart,$dateEnd, $route, $state)];
     }
 
     public function Insert(Request $request)
@@ -47,11 +47,11 @@ class PackageNeedMoreInformationController extends Controller
         }
     }
 
-    public function Export($type)
+    public function Export($idCompany, $dateStart,$dateEnd, $route, $state, $type)
     {
         $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
 
-        return $servicePackageNeedMoreInformation->Export($type);
+        return $servicePackageNeedMoreInformation->Export($idCompany, $dateStart,$dateEnd, $route, $state, $type);
     }
 
     public function MoveToWarehouse($Reference_Number_1)
