@@ -234,11 +234,16 @@ class ServicePackageNeedMoreInformation{
             $packageWarehouse->idUser                       = Auth::user()->id;
             $packageWarehouse->quantity                     = $packageNeedMoreInformation->quantity;
             $packageWarehouse->status                       = 'Warehouse';
-
             $packageWarehouse->save();
 
-            $packageHistory = new PackageHistory();
+            $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
+            $packageHistoryNeeMoreInformation->id                 = uniqid();
+            $packageHistoryNeeMoreInformation->idUser             = Auth::user()->id;
+            $packageHistoryNeeMoreInformation->Reference_Number_1 = $package->Reference_Number_1;
+            $packageHistoryNeeMoreInformation->status             = 'Corrected';
+            $packageHistoryNeeMoreInformation->save();
 
+            $packageHistory = new PackageHistory();
             $packageHistory->id                           = uniqid();
             $packageHistory->Reference_Number_1           = $packageNeedMoreInformation->Reference_Number_1;
             $packageHistory->idCompany                    = $packageNeedMoreInformation->idCompany;
@@ -264,7 +269,6 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
-
             $packageHistory->save();
 
             $packageNeedMoreInformation->delete();
