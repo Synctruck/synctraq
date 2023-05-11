@@ -2,18 +2,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
         Configuration, Driver, Package, PackageBlocked,
         PackageDelivery, PackageDispatch, PackagePreDispatch, 
-        PackageFailed, PackagePreFailed, PackageHistory, 
+        PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, 
         PackageWarehouse, TeamRoute, User
     };
-
-use Illuminate\Support\Facades\Validator;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,8 +23,7 @@ use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
-use DB;
-use Illuminate\Support\Facades\Auth;
+use DB; 
 use Session;
 
 class PackageController extends Controller
@@ -288,10 +288,15 @@ class PackageController extends Controller
 
         $actualStatus = $this->GetStatus($Reference_Number_1);
 
+        $packageHistoryNeeMoreInformation = PackageHistoryNeeMoreInformation::where('Reference_Number_1', $Reference_Number_1)
+                                                                            ->orderBy('created_at', 'desc')
+                                                                            ->get();
+                                                                            
         return [
 
             'packageBlocked' => $packageBlocked,
             'packageHistoryList' => $packageHistoryList,
+            'packageHistoryNeeMoreInformation' => $packageHistoryNeeMoreInformation,
             'packageDelivery' => $packageDelivery,
             'packageDispatch' => $packageDispatch,
             'actualStatus' => $actualStatus['status'],
