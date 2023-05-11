@@ -47,11 +47,11 @@ class PackageNeedMoreInformationController extends Controller
         }
     }
 
-    public function Export($idCompany, $dateStart,$dateEnd, $route, $state, $type)
+    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $route, $state, $type)
     {
         $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
 
-        return $servicePackageNeedMoreInformation->Export($idCompany, $dateStart,$dateEnd, $route, $state, $type);
+        return $servicePackageNeedMoreInformation->Export($request, $idCompany, $dateStart,$dateEnd, $route, $state, $type);
     }
 
     public function MoveToWarehouse($Reference_Number_1)

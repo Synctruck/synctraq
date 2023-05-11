@@ -15,7 +15,7 @@ class ServicePackageNeedMoreInformation{
 
     public function List($request, $idCompany, $dateStart,$dateEnd, $route, $state)
     {
-        return $this->GetData($idCompany, $dateStart,$dateEnd, $route, $state);
+        return $this->GetData($request, $idCompany, $dateStart,$dateEnd, $route, $state);
     }
     
     public function Insert($request)
@@ -97,7 +97,7 @@ class ServicePackageNeedMoreInformation{
         return ['stateAction' => 'notExists'];
     }
 
-    public function Export($idCompany, $dateStart, $dateEnd, $route, $state, $typeExport)
+    public function Export($request, $idCompany, $dateStart, $dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - NEED MORE INFORMATION " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - NEED MORE INFORMATION.csv";
@@ -108,7 +108,7 @@ class ServicePackageNeedMoreInformation{
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageNeedMoreInformationList = $this->GetData($idCompany, $dateStart,$dateEnd, $route, $state, 'export');
+        $packageNeedMoreInformationList = $this->GetData($request, $idCompany, $dateStart,$dateEnd, $route, $state, 'export');
 
         foreach($packageNeedMoreInformationList as $packageNeedMoreInformation)
         {
@@ -151,45 +151,54 @@ class ServicePackageNeedMoreInformation{
         }
     }
 
-    private function GetData($idCompany, $dateStart,$dateEnd, $route, $state, $type = 'list')
+    private function GetData($request, $idCompany, $dateStart,$dateEnd, $route, $state, $type = 'list')
     {
-        $dateStart = $dateStart .' 00:00:00';
-        $dateEnd   = $dateEnd .' 23:59:59';
-
-        $routes = explode(',', $route);
-        $states = explode(',', $state);
-
-        $packageListNMI = PackageNeedMoreInformation::whereBetween('created_at', [$dateStart, $dateEnd]);
-
-        if(Auth::user()->role->name != 'Administrador')
+        if($request->get('Reference_Number_1') && $type == 'list')
         {
-            $packageListNMI = $packageListNMI->where('idUser', Auth::user()->id);
-        }
-
-        if($route != 'all')
-        {
-            $packageListNMI = $packageListNMI->whereIn('Route', $routes);
-        }
-
-        if($state != 'all')
-        {
-            $packageListNMI = $packageListNMI->whereIn('Dropoff_Province', $states);
-        }
-
-        if($idCompany)
-        {
-            $packageListNMI = $packageListNMI->where('idCompany', $idCompany);
-        }
-
-        if($type =='list')
-        {
-            $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')
-                                            ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
-                                            ->paginate(50);
+            $packageListNMI = PackageNeedMoreInformation::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                        ->orderBy('created_at', 'desc')
+                                                        ->paginate(20);
         }
         else
         {
-            $packageListNMI = $packageListNMI->where('reInbound', 0)->orderBy('created_at', 'desc')->get(); 
+            $dateStart = $dateStart .' 00:00:00';
+            $dateEnd   = $dateEnd .' 23:59:59';
+
+            $routes = explode(',', $route);
+            $states = explode(',', $state);
+
+            $packageListNMI = PackageNeedMoreInformation::whereBetween('created_at', [$dateStart, $dateEnd]);
+
+            if(Auth::user()->role->name != 'Administrador')
+            {
+                $packageListNMI = $packageListNMI->where('idUser', Auth::user()->id);
+            }
+
+            if($route != 'all')
+            {
+                $packageListNMI = $packageListNMI->whereIn('Route', $routes);
+            }
+
+            if($state != 'all')
+            {
+                $packageListNMI = $packageListNMI->whereIn('Dropoff_Province', $states);
+            }
+
+            if($idCompany)
+            {
+                $packageListNMI = $packageListNMI->where('idCompany', $idCompany);
+            }
+
+            if($type == 'list')
+            {
+                $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')
+                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->paginate(50);
+            }
+            else
+            {
+                $packageListNMI = $packageListNMI->where('reInbound', 0)->orderBy('created_at', 'desc')->get();
+            }
         }
 
         return $packageListNMI;
