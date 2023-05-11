@@ -239,7 +239,7 @@ class ServicePackageNeedMoreInformation{
             $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
             $packageHistoryNeeMoreInformation->id                 = uniqid();
             $packageHistoryNeeMoreInformation->idUser             = Auth::user()->id;
-            $packageHistoryNeeMoreInformation->Reference_Number_1 = $package->Reference_Number_1;
+            $packageHistoryNeeMoreInformation->Reference_Number_1 = $packageNeedMoreInformation->Reference_Number_1;
             $packageHistoryNeeMoreInformation->status             = 'Corrected';
             $packageHistoryNeeMoreInformation->save();
 
