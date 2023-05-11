@@ -187,7 +187,7 @@ class TaskOptimizationSend extends Command
 
     public function GetDataToSend()
     {
-        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get()->take(100);
+        $listPackageManifest = PackageManifest::where('confidenceAddress', 'high')->get();
         $address             = '';
         $todayDate           = date('m/d/Y');
 

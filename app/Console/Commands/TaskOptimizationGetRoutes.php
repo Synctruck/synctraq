@@ -143,6 +143,7 @@ class TaskOptimizationGetRoutes extends Command
             $optimizationRoutes->route_pieces            = $route['route_pieces'];
             $optimizationRoutes->trip_distance           = $route['trip_distance'];
             $optimizationRoutes->route_duration_sec      = $route['route_duration_sec'];
+            $optimizationRoutes->is_unrouted             = $route['is_unrouted'];
             $optimizationRoutes->save();
 
             $status = $this->SaveRoutesDetail($route['route_id']);
