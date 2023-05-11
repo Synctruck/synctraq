@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageInbound };
+use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound };
 
 use Illuminate\Support\Facades\Auth;
 
@@ -35,7 +35,6 @@ class ServicePackageNeedMoreInformation{
             $created_at = date('Y-m-d H:i:s');
 
             $packageNeedMoreInformation = new PackageNeedMoreInformation();
-
             $packageNeedMoreInformation->Reference_Number_1           = $package->Reference_Number_1;
             $packageNeedMoreInformation->idCompany                    = $package->idCompany;
             $packageNeedMoreInformation->company                      = $package->company;
@@ -56,11 +55,16 @@ class ServicePackageNeedMoreInformation{
             $packageNeedMoreInformation->idUser                       = Auth::user()->id;
             $packageNeedMoreInformation->quantity                     = $package->quantity;
             $packageNeedMoreInformation->status                       = 'NMI';
-
             $packageNeedMoreInformation->save();
 
-            $packageHistory = new PackageHistory();
+            $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
+            $packageHistoryNeeMoreInformation->id                 = uniqid();
+            $packageHistoryNeeMoreInformation->idUser             = Auth::user()->id;
+            $packageHistoryNeeMoreInformation->Reference_Number_1 = $package->Reference_Number_1;
+            $packageHistoryNeeMoreInformation->status             = 'ToCorrect';
+            $packageHistoryNeeMoreInformation->save();
 
+            $packageHistory = new PackageHistory();
             $packageHistory->id                           = uniqid();
             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
             $packageHistory->idCompany                    = $package->idCompany;
@@ -86,7 +90,6 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
-
             $packageHistory->save();
 
             $package->delete(); 

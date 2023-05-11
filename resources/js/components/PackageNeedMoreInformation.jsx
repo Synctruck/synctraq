@@ -702,7 +702,7 @@ function PackageNeedMoreInformation() {
                     icon: "success",
                 });
 
-                listAllPackageNMI();
+                listAllPackageNMI(page, RouteSearch, StateSearch);
             }
             else if(response.stateAction == false)
             {
