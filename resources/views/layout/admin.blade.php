@@ -424,13 +424,38 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-3 form-group">
                                     <label for="" class="form">Actual Status</label>
                                     <input type="text" id="actualStatus" class="form-control">
+                                </div>
+                                <div id="divBtnHistoryNMI" class="col-lg-3 form-group" style="display: none;">
+                                    <label for="" class="text-white">--</label>
+                                    <button type="button" id="btnHistoryNMI" class="btn btn-success form-control" onclick="ShowHistoryNMI();">Show History NMI</button>
+                                </div>
+                            </div>
+                            <div id="divTableHistoryNMI" class="row" style="display: none;">
+                                <div class="col-lg-12">
+                                    <h3 class="text-primary text-center">PROCESS HISTORY - NMI</h3>
+                                </div>
+                                <div class="col-lg-12">
+                                    <table id="tableHistoryPackage" class="table table-condensed table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>USER</th>
+                                                <th>PACKAGE ID</th>
+                                                <th>STATUS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableHistoryNMITbody"></tbody>
+                                    </table>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 class="text-success text-center">PROCESS HISTORY</h3>
+                                </div>
                                 <div class="col-lg-12">
                                     <table id="tableHistoryPackage" class="table table-condensed table-bordered">
                                         <thead>
@@ -666,21 +691,71 @@
             SearchPackageReferenceId();
         }
 
+        function ShowHistoryNMI()
+        {
+            document.getElementById('divTableHistoryNMI').style.display = 'block';
+            document.getElementById('btnHistoryNMI').innerHTML          = 'Hide History NMI';
+
+            document.getElementById('btnHistoryNMI').setAttribute('onclick', 'HideHistoryNMI()');
+            document.getElementById('btnHistoryNMI').setAttribute('class', 'btn btn-danger form-control');
+        }
+
+        function HideHistoryNMI()
+        {
+            document.getElementById('divTableHistoryNMI').style.display = 'none';
+            document.getElementById('btnHistoryNMI').innerHTML          = 'Show History NMI';
+
+            document.getElementById('btnHistoryNMI').setAttribute('onclick', 'ShowHistoryNMI()');
+            document.getElementById('btnHistoryNMI').setAttribute('class', 'btn btn-success form-control');
+        }
+
+        function ListHistoryNMI(packageHistoryNMIList)
+        {
+            let tableHistoryNMITbody       = document.getElementById('tableHistoryNMITbody');
+
+            tableHistoryNMITbody.innerHTML = '';
+
+            let tr = '';
+
+            packageHistoryNMIList.forEach( historyNMI =>  {
+
+                tr =    '<tr>'+
+                            '<td><b>'+ historyNMI.created_at.substring(5, 7) +'-'+ historyNMI.created_at.substring(8, 10) +'-'+ historyNMI.created_at.substring(0, 4) +'</b><br>'+ historyNMI.created_at.substring(11, 19) +
+                            '</td>'+
+                            '<td><b>'+ historyNMI.user.name +' '+ historyNMI.user.nameOfOwner +'</b><br>'+ historyNMI.user.email +'</td>'+
+                            '<td><b>'+ historyNMI.Reference_Number_1 +'</b></td>'+
+                            '<td>'+ historyNMI.status +'</td>'+
+                        '</tr>';
+
+                tableHistoryNMITbody.insertRow(-1).innerHTML = tr;
+            });
+        }
+
         function SearchPackageReferenceId()
         {
+            document.getElementById('divBtnHistoryNMI').style.display = 'none';
+
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
             fetch(url_general +'package-history/search/'+ PACKAGE_ID)
             .then(response => response.json())
             .then(response => {
 
-                let packageBlocked     = response.packageBlocked;
-                let packageHistoryList = response.packageHistoryList;
-                let packageDelivery    = response.packageDelivery;
-                let packageDispatch    = response.packageDispatch;
-                let notesOnfleet       = response.notesOnfleet;
-                let latitudeLongitude  = response.latitudeLongitude;
-                let actualStatus       = response.actualStatus;
+                let packageBlocked        = response.packageBlocked;
+                let packageHistoryList    = response.packageHistoryList;
+                let packageHistoryNMIList = response.packageHistoryNeeMoreInformation;
+                let packageDelivery       = response.packageDelivery;
+                let packageDispatch       = response.packageDispatch;
+                let notesOnfleet          = response.notesOnfleet;
+                let latitudeLongitude     = response.latitudeLongitude;
+                let actualStatus          = response.actualStatus;
+
+                if(packageHistoryNMIList.length > 0)
+                {
+                    document.getElementById('divBtnHistoryNMI').style.display   = 'block';
+
+                    ListHistoryNMI(packageHistoryNMIList);
+                }
 
                 document.getElementById('taskOnfleetHistory').value           = '';
                 document.getElementById('notesOnfleetHistory').value          = notesOnfleet;

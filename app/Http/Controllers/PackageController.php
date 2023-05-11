@@ -288,7 +288,11 @@ class PackageController extends Controller
 
         $actualStatus = $this->GetStatus($Reference_Number_1);
 
-        $packageHistoryNeeMoreInformation = PackageHistoryNeeMoreInformation::where('Reference_Number_1', $Reference_Number_1)
+        $packageHistoryNeeMoreInformation = PackageHistoryNeeMoreInformation::with(['user' => function($query){
+
+                                                                                $query->select('id', 'name', 'nameOfOwner', 'email');
+                                                                            }])
+                                                                            ->where('Reference_Number_1', $Reference_Number_1)
                                                                             ->orderBy('created_at', 'desc')
                                                                             ->get();
                                                                             
