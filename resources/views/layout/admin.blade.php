@@ -733,7 +733,8 @@
 
         function SearchPackageReferenceId()
         {
-            document.getElementById('divBtnHistoryNMI').style.display = 'none';
+            document.getElementById('divTableHistoryNMI').style.display = 'none';
+            document.getElementById('divBtnHistoryNMI').style.display   = 'none';
 
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
@@ -753,9 +754,9 @@
                 if(packageHistoryNMIList.length > 0)
                 {
                     document.getElementById('divBtnHistoryNMI').style.display   = 'block';
-
-                    ListHistoryNMI(packageHistoryNMIList);
                 }
+
+                ListHistoryNMI(packageHistoryNMIList);
 
                 document.getElementById('taskOnfleetHistory').value           = '';
                 document.getElementById('notesOnfleetHistory').value          = notesOnfleet;
