@@ -99,7 +99,7 @@ class WHookController extends Controller
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
                     $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                    $photoUrl = ''; 
+                    $photoUrl = '';
 
                     foreach($photoUploadIds as $idPhoto)
                     {
