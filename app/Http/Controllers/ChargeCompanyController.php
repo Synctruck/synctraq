@@ -57,6 +57,80 @@ class ChargeCompanyController extends Controller
         return ['stateAction' => true];
     }
 
+    public function Import(Request $request)
+    {
+        $handle     = fopen(public_path('file-import/HISTORY INVOICE 2023.csv'), "r");
+        $lineNumber = 1;
+        $countSave  = 0;
+
+        try
+        {
+            DB::beginTransaction();
+
+            $packages_inland = [];
+            $package_ae      = [];
+            $package_eight   = [];
+            $package_chip    = [];
+            $package_sm      = [];
+
+            while (($raw_string = fgets($handle)) !== false)
+            {
+                if($lineNumber > 1)
+                {
+                    $row      = str_getcsv($raw_string);
+                    $dateInit = '2023-01-01 00:00:00';
+                    $dateEnd  = '2023-01-31 23:59:59';
+
+                    $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
+                                                        ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                                        ->first();
+
+                    if($packageDispatch)
+                    {
+                        //$packageDispatch->invoiced = 1;
+                        //$packageDispatch->save();
+                        $countSave++;
+                        /*if($packageDispatch->company == 'INLAND LOGISTICS')
+                        {
+                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
+                        }
+                        else if($packageDispatch->company == 'AMERICAN EAGLE')
+                        {
+                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
+                        }
+                        else if($packageDispatch->company == 'EIGHTCIG')
+                        {
+                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
+                        }
+                        else if($packageDispatch->company == 'CHIP CITY COOKIES')
+                        {
+                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
+                        }
+                        else if($packageDispatch->company == 'Smart Kargo')
+                        {
+                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
+                        }*/
+                    }
+                }
+
+                $lineNumber++;
+            }
+
+            fclose($handle);
+
+            dd($countSave);
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
+    }
+
     public function Export($idCharge)
     {
         $delimiter = ",";
