@@ -30,6 +30,7 @@ require('./components/ReportInbound');
 require('./components/ReportManifest');
 require('./components/ReportNotExists');
 require('./components/ReportAssigns');
+require('./components/ReportDelete');
 require('./components/ReportFailed');
 require('./components/ReportReturnCompany');
 require('./components/ReportAllPending');
