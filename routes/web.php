@@ -367,6 +367,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/list/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDispatch']);
 	Route::get('/report/export/dispatch/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{type}', [ReportController::class, 'ExportDispatch']);
 
+	Route::get('/report/delete', [ReportController::class, 'IndexDelete'])->middleware('permission:reportDelete.index');
+	Route::get('/report/list/delete/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ListDelete']);
+	Route::get('/report/export/delete/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}/{type}', [ReportController::class, 'ExportDelete']);
+
 	Route::get('/report/failed', [ReportController::class, 'IndexFailed'])->middleware('permission:reportFailed.index');
 	Route::get('/report/list/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}', [ReportController::class, 'ListFailed']);
 	Route::get('/report/export/failed/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{statusDescription}/{type}', [ReportController::class, 'ExportFailed']);

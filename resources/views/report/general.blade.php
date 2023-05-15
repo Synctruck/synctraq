@@ -1,5 +1,5 @@
 @extends('layout.admin')
-@section('title', 'Configurations')
+@section('title', 'REPORTS')
 @section('content')
 <div class="pagetitle">
   	<h1><b>REPORTS GENERAL</b></h1>
@@ -124,6 +124,29 @@
             </a>
         </div><!-- End Sales Card -->
         @endif
+
+        @if(hasPermission('reportDelete.index'))
+            <div class="col-xxl-3 col-md-6">
+                <a href="{{url('/report/delete')}}" style="text-decoration: none">
+                <div class="card info-card ">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #943126; background: #F1948A ">
+                            <i class="bx bxs-report"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>Delete</h6>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="{{url('/report/delete')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
+                    </div>
+                </div>
+                </a>
+            </div><!-- End Sales Card -->
+        @endif
+
         <!-- Revenue Card -->
         @if(hasPermission('reportNotexists.index'))
         <div class="col-xxl-3 col-md-6">

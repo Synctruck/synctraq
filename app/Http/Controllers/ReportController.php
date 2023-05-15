@@ -535,6 +535,142 @@ class ReportController extends Controller
         ];
     }
 
+    public function IndexDelete()
+    {
+        return view('report.indexdelete');
+    }
+
+    public function ListDelete($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription)
+    {
+        $data                  = $this->getDataDelete($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
+
+        $roleUser = Auth::user()->role->name;
+        $idUser   = Auth::user()->id;
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('status', 'Failed')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'reportList' => $packageHistoryListNew,
+            'listState' => $listState,
+            'roleUser' => $roleUser,
+            'idUser' => $idUser
+        ];
+    }
+
+    private function getDataDelete($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'list')
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $listPackageFailed = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Delete');
+
+        if($idTeam && $idDriver)
+        {
+            $listPackageFailed = $listPackageFailed->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);
+        }
+        elseif($idTeam)
+        {
+            $listPackageFailed = $listPackageFailed->where('idTeam', $idTeam);
+        }
+        elseif($idDriver)
+        {
+            $listPackageFailed = $listPackageFailed->where('idUserDispatch', $idDriver);
+        }
+
+        if($route != 'all')
+        {
+            $listPackageFailed = $listPackageFailed->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listPackageFailed = $listPackageFailed->whereIn('Dropoff_Province', $states);
+        }
+
+        if($idCompany && $idCompany !=0)
+        {
+            $listPackageFailed = $listPackageFailed->where('idCompany', $idCompany);
+        }
+
+        if($statusDescription != 'all')
+        {
+            $listPackageFailed = $listPackageFailed->where('Description_Onfleet', 'like', '%'. $statusDescription .':%');
+        }
+
+        if($type == 'list')
+        {
+            $listPackageFailed = $listPackageFailed->with(['team', 'driver'])
+                                                    ->select(
+                                                        'created_at',
+                                                        'idTeam',
+                                                        'idUserDispatch',
+                                                        'company',
+                                                        'Reference_Number_1',
+                                                        'Dropoff_Contact_Name',
+                                                        'Dropoff_Contact_Phone_Number',
+                                                        'Dropoff_Address_Line_1',
+                                                        'Dropoff_City',
+                                                        'Dropoff_Province',
+                                                        'Dropoff_Postal_Code',
+                                                        'Description_Onfleet',
+                                                        'Weight',
+                                                        'Route'
+                                                    )
+                                                    ->orderBy('created_at', 'desc')
+                                                    ->paginate(50);
+        }
+        else
+        {
+            $listPackageFailed = $listPackageFailed->with(['team', 'driver'])
+                                                        ->orderBy('created_at', 'desc')
+                                                        ->get();
+        }
+        
+        $packageHistoryListNew = []; 
+
+        foreach($listPackageFailed as $packageFailed)
+        {
+            $status = $this->GetStatus($packageFailed->Reference_Number_1);
+                
+            $package = [ 
+                "created_at" => $packageFailed->created_at,
+                "description" => $status['description'],
+                "status" => $status['status'],
+                "statusDate" => $status['statusDate'],
+                "statusDescription" => $status['statusDescription'],
+                "company" => $packageFailed->company,
+                "team" => $packageFailed->team,
+                "driver" => $packageFailed->driver,
+                "Reference_Number_1" => $packageFailed->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageFailed->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageFailed->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageFailed->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageFailed->Dropoff_City,
+                "Dropoff_Province" => $packageFailed->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageFailed->Dropoff_Postal_Code,
+                "Weight" => $packageFailed->Weight,
+                "Route" => $packageFailed->Route
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return [
+
+            'packageHistoryList' => $listPackageFailed,
+            'listAll' => $packageHistoryListNew,
+        ];
+    }
+
     public function IndexFailed()
     {
         return view('report.indexfailed');
@@ -971,6 +1107,69 @@ class ReportController extends Controller
             fclose($file);
 
             SendGeneralExport('Report Delivery', $filename);
+
+            return ['stateAction' => true];
+        }
+    }
+
+    public function ExportDelete($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $typeExport)
+    {
+        $delimiter = ",";
+        $filename  = $typeExport == 'download' ? "Report Delete " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Delete.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION ONFLEET', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+ 
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageFailed = $this->getDataDelete($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'export');
+        $listPackageFailed = $listPackageFailed['listAll'];
+
+        foreach($listPackageFailed as $packageFailed)
+        {
+            $team   = isset($packageFailed['team']) ? $packageFailed['team']->name : '';
+            $driver = isset($packageFailed['driver']) ? $packageFailed['driver']->name .' '. $packageFailed['driver']->nameOfOwner : '';
+
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageFailed['created_at'])),
+                                date('H:i:s', strtotime($packageFailed['created_at'])),
+                                $packageFailed['company'],
+                                $team,
+                                $driver,
+                                $packageFailed['Reference_Number_1'],
+                                $packageFailed['description'],
+                                $packageFailed['status'],
+                                $packageFailed['statusDate'],
+                                $packageFailed['statusDescription'],
+                                $packageFailed['Dropoff_Contact_Name'],
+                                $packageFailed['Dropoff_Contact_Phone_Number'],
+                                $packageFailed['Dropoff_Address_Line_1'],
+                                $packageFailed['Dropoff_City'],
+                                $packageFailed['Dropoff_Province'],
+                                $packageFailed['Dropoff_Postal_Code'],
+                                $packageFailed['Weight'],
+                                $packageFailed['Route']
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
+
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Delete', $filename);
 
             return ['stateAction' => true];
         }

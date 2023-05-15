@@ -99,7 +99,7 @@ class WHookController extends Controller
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
                     $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                    $photoUrl = ''; 
+                    $photoUrl = '';
 
                     foreach($photoUploadIds as $idPhoto)
                     {
@@ -115,7 +115,7 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
+                    if($packageDispatch->company == 'INLAND LOGISTICS' || $packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
