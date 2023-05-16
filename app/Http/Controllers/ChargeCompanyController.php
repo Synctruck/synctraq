@@ -82,7 +82,9 @@ class ChargeCompanyController extends Controller
                     $dateInit = '2022-12-01 00:00:00';
                     $dateEnd  = '2022-12-31 23:59:59';
 
-                    $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])->first();
+                    $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
+                                                    ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                                    ->first();
 
                     if($packageDispatch)
                     {
@@ -111,10 +113,10 @@ class ChargeCompanyController extends Controller
                             array_push($packages_inland, $packageDispatch->Reference_Number_1);
                         }*/
                     }
-                    else
+                    /*else
                     {
                         array_push($package_notexist, $row[0]);
-                    }
+                    }*/
                 }
 
                 $lineNumber++;
