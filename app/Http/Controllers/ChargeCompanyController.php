@@ -83,6 +83,7 @@ class ChargeCompanyController extends Controller
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
                                                         ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                                        ->where('invoiced', 0)
                                                         ->first();
 
                     if($packageDispatch)
