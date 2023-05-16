@@ -84,13 +84,12 @@ class ChargeCompanyController extends Controller
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])->first();
 
-                    $countSave++;
                     if($packageDispatch)
                     {
                         //$packageDispatch->invoiced = 1;
                         //$packageDispatch->save();
 
-                        
+                        $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
                         {
                             array_push($packages_inland, $packageDispatch->Reference_Number_1);
