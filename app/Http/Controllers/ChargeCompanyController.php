@@ -121,7 +121,7 @@ class ChargeCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true, 'countSave' => $countSave];
+            return ['stateAction' => true, 'month' => 'febrero', 'countSave' => $countSave];
         }
         catch(Exception $e)
         {
