@@ -67,7 +67,7 @@ class ChargeCompanyController extends Controller
         {
             DB::beginTransaction();
 
-            $package_notexist= [];
+            $package_dispatch= [];
             $packages_inland = [];
             $package_ae      = [];
             $package_eight   = [];
@@ -79,7 +79,7 @@ class ChargeCompanyController extends Controller
                 if($lineNumber > 1)
                 {
                     $row      = str_getcsv($raw_string);
-                    $dateInit = '2022-12-01 00:00:00';
+                    $dateInit = '2022-01-01 00:00:00';
                     $dateEnd  = '2022-12-31 23:59:59';
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
@@ -91,6 +91,7 @@ class ChargeCompanyController extends Controller
                         //$packageDispatch->invoiced = 1;
                         //$packageDispatch->save();
 
+                        array_push($package_dispatch, $packageDispatch->Reference_Number_1);
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
                         {
@@ -126,7 +127,7 @@ class ChargeCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_notexist' => count($package_notexist)];
+            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_dispatch' => $package_dispatch];
         }
         catch(Exception $e)
         {
