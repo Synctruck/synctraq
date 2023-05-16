@@ -87,8 +87,8 @@ class ChargeCompanyController extends Controller
 
                     if($packageDispatch)
                     {
-                        //$packageDispatch->invoiced = 1;
-                        //$packageDispatch->save();
+                        $packageDispatch->invoiced = 1;
+                        $packageDispatch->save();
 
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
