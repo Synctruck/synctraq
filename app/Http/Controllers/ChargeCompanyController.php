@@ -67,6 +67,7 @@ class ChargeCompanyController extends Controller
         {
             DB::beginTransaction();
 
+            $package_notexist= [];
             $packages_inland = [];
             $package_ae      = [];
             $package_eight   = [];
@@ -78,18 +79,15 @@ class ChargeCompanyController extends Controller
                 if($lineNumber > 1)
                 {
                     $row      = str_getcsv($raw_string);
-                    $dateInit = '2023-05-01 00:00:00';
+                    $dateInit = '2023-01-01 00:00:00';
                     $dateEnd  = '2023-05-31 23:59:59';
 
-                    $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
-                                                        ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                                        ->where('invoiced', 0)
-                                                        ->first();
+                    $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])->first();
 
                     if($packageDispatch)
                     {
-                        $packageDispatch->invoiced = 1;
-                        $packageDispatch->save();
+                        //$packageDispatch->invoiced = 1;
+                        //$packageDispatch->save();
 
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
@@ -113,6 +111,10 @@ class ChargeCompanyController extends Controller
                             array_push($packages_inland, $packageDispatch->Reference_Number_1);
                         }*/
                     }
+                    else
+                    {
+                        array_push($package_notexist, $row[0]);
+                    }
                 }
 
                 $lineNumber++;
@@ -120,6 +122,7 @@ class ChargeCompanyController extends Controller
 
             fclose($handle);
 
+            dd($package_notexist);
             DB::commit();
 
             return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave];
