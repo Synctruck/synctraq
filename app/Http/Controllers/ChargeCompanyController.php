@@ -78,8 +78,8 @@ class ChargeCompanyController extends Controller
                 if($lineNumber > 1)
                 {
                     $row      = str_getcsv($raw_string);
-                    $dateInit = '2023-02-01 00:00:00';
-                    $dateEnd  = '2023-02-28 23:59:59';
+                    $dateInit = '2023-03-01 00:00:00';
+                    $dateEnd  = '2023-03-31 23:59:59';
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
                                                         ->whereBetween('Date_Delivery', [$dateInit, $dateEnd])
@@ -87,8 +87,8 @@ class ChargeCompanyController extends Controller
 
                     if($packageDispatch)
                     {
-                        $packageDispatch->invoiced = 1;
-                        $packageDispatch->save();
+                        //$packageDispatch->invoiced = 1;
+                        //$packageDispatch->save();
 
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
@@ -121,7 +121,7 @@ class ChargeCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true, 'month' => 'febrero', 'countSave' => $countSave];
+            return ['stateAction' => true, 'month' => 'marzo', 'countSave' => $countSave];
         }
         catch(Exception $e)
         {
