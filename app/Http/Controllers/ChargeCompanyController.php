@@ -122,10 +122,9 @@ class ChargeCompanyController extends Controller
 
             fclose($handle);
 
-            dd($package_notexist);
             DB::commit();
 
-            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave];
+            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_notexist' => $package_notexist];
         }
         catch(Exception $e)
         {
