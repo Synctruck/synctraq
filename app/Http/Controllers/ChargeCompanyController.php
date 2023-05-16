@@ -67,7 +67,7 @@ class ChargeCompanyController extends Controller
         {
             DB::beginTransaction();
 
-            $package_dispatch= [];
+            $package_notexist= [];
             $packages_inland = [];
             $package_ae      = [];
             $package_eight   = [];
@@ -83,15 +83,14 @@ class ChargeCompanyController extends Controller
                     $dateEnd  = '2023-05-31 23:59:59';
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])
-                                                    ->where('invoiced', 0)
                                                     ->first();
 
                     if($packageDispatch)
                     {
-                        $packageDispatch->invoiced = 1;
-                        $packageDispatch->save();
+                        //$packageDispatch->invoiced = 1;
+                        //$packageDispatch->save();
 
-                        //array_push($package_dispatch, $packageDispatch->Reference_Number_1);
+                        //
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
                         {
@@ -114,10 +113,10 @@ class ChargeCompanyController extends Controller
                             array_push($packages_inland, $packageDispatch->Reference_Number_1);
                         }*/
                     }
-                    /*else
+                    else
                     {
                         array_push($package_notexist, $row[0]);
-                    }*/
+                    }
                 }
 
                 $lineNumber++;
@@ -127,7 +126,7 @@ class ChargeCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_dispatch' => $package_dispatch];
+            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_notexist' => $package_notexist];
         }
         catch(Exception $e)
         {
