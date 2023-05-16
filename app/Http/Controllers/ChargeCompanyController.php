@@ -79,8 +79,8 @@ class ChargeCompanyController extends Controller
                 if($lineNumber > 1)
                 {
                     $row      = str_getcsv($raw_string);
-                    $dateInit = '2023-01-01 00:00:00';
-                    $dateEnd  = '2023-05-31 23:59:59';
+                    $dateInit = '2022-12-01 00:00:00';
+                    $dateEnd  = '2022-12-31 23:59:59';
 
                     $packageDispatch = PackageDispatch::where('Reference_Number_1', $row[0])->first();
 
