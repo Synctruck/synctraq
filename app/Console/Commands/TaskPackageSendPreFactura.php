@@ -58,7 +58,7 @@ class TaskPackageSendPreFactura extends Command
 
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = '2022-01-01 00:00:00';
+            $startDate = '2023-01-01 00:00:00';
             $endDate   = '2023-01-31 23:59:59';
             
             $companyList = Company::all();
