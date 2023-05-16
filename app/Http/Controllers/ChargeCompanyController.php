@@ -62,7 +62,8 @@ class ChargeCompanyController extends Controller
         /*$handle     = fopen(public_path('file-import/HISTORY INVOICE 2023.csv'), "r");
         $lineNumber = 1;*/
         $countSave  = 0;
-
+        $package_notexist= []
+        
         try
         {
             DB::beginTransaction();
