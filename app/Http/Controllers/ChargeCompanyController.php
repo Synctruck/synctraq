@@ -87,8 +87,9 @@ class ChargeCompanyController extends Controller
 
                     if($packageDispatch)
                     {
-                        //$packageDispatch->invoiced = 1;
-                        //$packageDispatch->save();
+                        $packageDispatch->invoiced = 1;
+                        $packageDispatch->save();
+
                         $countSave++;
                         /*if($packageDispatch->company == 'INLAND LOGISTICS')
                         {
@@ -118,10 +119,9 @@ class ChargeCompanyController extends Controller
 
             fclose($handle);
 
-            dd($countSave);
             DB::commit();
 
-            return ['stateAction' => true];
+            return ['stateAction' => true, 'countSave' => $countSave];
         }
         catch(Exception $e)
         {
