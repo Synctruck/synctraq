@@ -75,15 +75,17 @@ class ChargeCompanyController extends Controller
 
             foreach($chargeCompanyDetailList as $chargeDetail)
             {
-                $packageDispatch = PackageDispatch::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
+                $packageDispatch = PackageDispatch::where('Reference_Number_1', $chargeDetail->Reference_Number_1)
+                                                    ->where('invoiced', 0)
+                                                    ->where('status', 'Delivery')
+                                                    ->first();
 
                 if($packageDispatch)
                 {
+                    $packageDispatch->invoiced = 1
+                    $packageDispatch->save();
+
                     $countSave++;
-                }
-                else
-                {
-                    array_push($package_notexist, $chargeDetail->Reference_Number_1);
                 }
             }
             
