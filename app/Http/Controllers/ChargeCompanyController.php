@@ -59,15 +59,34 @@ class ChargeCompanyController extends Controller
 
     public function Import(Request $request)
     {
-        $handle     = fopen(public_path('file-import/HISTORY INVOICE 2023.csv'), "r");
+        /*$handle     = fopen(public_path('file-import/HISTORY INVOICE 2023.csv'), "r");
         $lineNumber = 1;
-        $countSave  = 0;
+        $countSave  = 0;*/
 
         try
         {
             DB::beginTransaction();
 
-            $package_notexist= [];
+            $dateInit = '2022-01-01 00:00:00';
+            $dateEnd  = '2023-05-15 23:59:59';
+
+            $chargeCompanyDetailList = ChargeCompanyDetail::whereBetween('created_at', [$dateInit, $dateEnd])->get();
+
+            foreach($chargeCompanyDetailList as $chargeDetail)
+            {
+                $packageDispatch = PackageDispatch::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
+
+                if($packageDispatch)
+                {
+                    $countSave++;
+                }
+                else
+                {
+                    array_push($package_notexist, $chargeDetail->Reference_Number_1);
+                }
+            }
+            
+            /*$package_notexist= [];
             $packages_inland = [];
             $package_ae      = [];
             $package_eight   = [];
@@ -87,31 +106,7 @@ class ChargeCompanyController extends Controller
 
                     if($packageDispatch)
                     {
-                        //$packageDispatch->invoiced = 1;
-                        //$packageDispatch->save();
-
-                        //
                         $countSave++;
-                        /*if($packageDispatch->company == 'INLAND LOGISTICS')
-                        {
-                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
-                        }
-                        else if($packageDispatch->company == 'AMERICAN EAGLE')
-                        {
-                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
-                        }
-                        else if($packageDispatch->company == 'EIGHTCIG')
-                        {
-                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
-                        }
-                        else if($packageDispatch->company == 'CHIP CITY COOKIES')
-                        {
-                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
-                        }
-                        else if($packageDispatch->company == 'Smart Kargo')
-                        {
-                            array_push($packages_inland, $packageDispatch->Reference_Number_1);
-                        }*/
                     }
                     else
                     {
@@ -122,7 +117,7 @@ class ChargeCompanyController extends Controller
                 $lineNumber++;
             }
 
-            fclose($handle);
+            fclose($handle);*/
 
             DB::commit();
 
