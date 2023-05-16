@@ -124,7 +124,7 @@ class ChargeCompanyController extends Controller
 
             DB::commit();
 
-            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_notexist' => $package_notexist];
+            return ['stateAction' => true, 'month' => 'mayo', 'countSave' => $countSave, 'package_notexist' => count($package_notexist)];
         }
         catch(Exception $e)
         {
