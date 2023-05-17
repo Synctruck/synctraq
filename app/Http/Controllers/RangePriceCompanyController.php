@@ -177,6 +177,7 @@ class RangePriceCompanyController extends Controller
 
         Log::info('QuantityPackage SM');
         Log::info($quantityPackagesHistory);
+        Log::info($Reference_Number_1);
         
         $range = RangePriceCompany::where('idCompany', $idCompany)
                                 ->where('minWeight', '<=', $weight)
