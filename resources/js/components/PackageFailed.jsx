@@ -59,8 +59,8 @@ function PackageFailed() {
 
         setListReport([]);
 
-        const responseData = await fetch(url_general +'package-failed/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
-        .then(res =>  res.json())
+        const responseData = await fetch(url_general +'package-failed/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
+        .then(res =>  res.json()) 
         .then((response) => {
             setListReport(response.packageFailedList.data);
 

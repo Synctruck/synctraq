@@ -18,9 +18,9 @@ class PackageFailedController extends Controller
         return view('package.failed');
     }
 
-    public function List(Request $request, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
+    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
     {
-        $packageFailedList = $this->getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $packageFailedList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
         $quantityFailed    = $packageFailedList->total();
 
         $roleUser = Auth::user()->role->name;
@@ -28,7 +28,7 @@ class PackageFailedController extends Controller
         return ['packageFailedList' => $packageFailedList, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser]; 
     }
 
-    private function getDataDispatch($dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
+    private function getDataDispatch($idCompany, $dateStart, $dateEnd, $idTeam, $idDriver, $state, $routes, $type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -47,6 +47,11 @@ class PackageFailedController extends Controller
         elseif($idDriver)
         {
             $packageDispatchList = $packageDispatchList->where('idUserDispatch', $idDriver);
+        }
+
+        if($idCompany != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idCompany', $idCompany);
         }
 
         if($state != 'all')
