@@ -110,6 +110,11 @@ class User extends Authenticatable  implements Auditable
         return $this->hasMany('App\Models\Assigned', 'idTeam');
     }
 
+    public function blockeds()
+    {
+        return $this->hasMany('App\Models\PackageBlocked', 'idUser');
+    }
+
     public function payments_team()
     {
         return $this->hasMany('App\Models\PaymentTeamReturn', 'idTeam');

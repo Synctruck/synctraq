@@ -20,9 +20,9 @@ class PackageBlocked extends Model implements Auditable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    public function manifest()
+    public function user()
     {
-        return $this->belongsTo('App\Models\PackageManifest', 'Reference_Number_1');
+        return $this->belongsTo('App\Models\User', 'idUser', 'id');
     }
 
     //observers
