@@ -231,6 +231,7 @@ function PackageBlocked() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead> 
                                             <tr>
+                                                <th>DATE</th>
                                                 <th>PACKAGE #</th>
                                                 <th>COMMENT</th>
                                                 <th>USER</th>
