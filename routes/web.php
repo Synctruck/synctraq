@@ -158,9 +158,9 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ Failed package
 	Route::get('/package-failed', [PackageFailedController::class, 'Index'])->middleware('permission:failed.index');
-	Route::get('/package-failed/list/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'List']);
+	Route::get('/package-failed/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'List']);
 	Route::get('/package-failed/move/prefailed-to-failed', [PackageFailedController::class, 'MovePreFailedToFailed']);
-	Route::get('/package-failed/export/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'Export']);
+	Route::get('/package-failed/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageFailedController::class, 'Export']);
 
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index'])->middleware('permission:delivery.index');
