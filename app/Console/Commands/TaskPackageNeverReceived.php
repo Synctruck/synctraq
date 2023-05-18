@@ -24,7 +24,7 @@ class TaskPackageNeverReceived extends Command
      *
      * @var string
      */
-    protected $description = 'Mover paquetes con 15 días de antiguedad de manifest a never_received';
+    protected $description = 'Eliminar packages pasado 7 días de Inland y del resto Mover paquetes con 15 días de antiguedad de manifest a never_received';
 
     /**
      * Create a new command instance.
