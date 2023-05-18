@@ -257,7 +257,6 @@ function ReportDispatch() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td>{ packageDispatch.taskOnfleet }</td>
             </tr>
         );
     });
@@ -557,7 +556,6 @@ function ReportDispatch() {
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>TASK ONFLEET</th>
                                             </tr>
                                         </thead>
                                         <tbody>

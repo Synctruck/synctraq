@@ -288,9 +288,10 @@ class ReportController extends Controller
         $dateEnd  = $dateEnd .' 23:59:59';
 
         $routes = explode(',', $route);
-        $states = explode(',', $state);
+        $states = explode(',', $state); 
 
-        $listPackageDispatch = PackageDispatch::whereBetween('created_at', [$dateInit, $dateEnd]);
+        $listPackageDispatch = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
+                                            ->where('status', 'Dispatch');
 
         if($idTeam && $idDriver)
         {
@@ -339,7 +340,6 @@ class ReportController extends Controller
                                                             'Dropoff_Postal_Code',
                                                             'Weight',
                                                             'Route',
-                                                            'taskOnfleet'
                                                         )
                                                         ->orderBy('created_at', 'desc')
                                                         ->paginate(50);
@@ -360,7 +360,6 @@ class ReportController extends Controller
                                                 ->first();
                 
             $package = [
-                "taskOnfleet" => $packageDispatch->taskOnfleet,
                 "created_at" => $packageDispatch->created_at,
                 "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
                 "company" => $packageDispatch->company,
