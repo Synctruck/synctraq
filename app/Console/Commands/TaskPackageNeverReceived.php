@@ -50,47 +50,8 @@ class TaskPackageNeverReceived extends Command
         {
             DB::beginTransaction();
 
-            $listPackageManifest = PackageManifest::where('status', 'Manifest')->get();
-
-            $nowDate = date('Y-m-d H:i:s');
-
-            foreach($listPackageManifest as $packageManifest)
-            {
-                $days = (strtotime($nowDate) - strtotime($packageManifest->created_at)) / 86400;
-
-                if($days >= 15)
-                {
-                    $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
-
-                    $packageManifest->status     = 'NeverReceived';
-                    $packageManifest->updated_at = $nowDate;
-
-                    $packageManifest->save();
-
-                    $packageHistory = new PackageHistory();
-
-                    $packageHistory->id = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
-                    $packageHistory->idCompany                    = $packageManifest->idCompany;
-                    $packageHistory->company                      = $packageManifest->company;
-                    $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                    $packageHistory->Weight                       = $packageManifest->Weight;
-                    $packageHistory->status                       = 'NeverReceived';
-                    $packageHistory->Description                  = 'For: Schedule Taks';
-                    $packageHistory->Route                        = $packageManifest->route;
-                    $packageHistory->actualDate                   = $nowDate;
-                    $packageHistory->created_at                   = $nowDate;
-                    $packageHistory->updated_at                   = $nowDate;
-
-                    $packageHistory->save();
-                }
-            }
+            $this->ManifestInland();
+            $this->ManifestOtherCompany();
 
             Log::info("==================== CORRECT SCHEDULE TASK NEVER - RECEIVED ");
             Log::info("============================================================");
@@ -103,6 +64,65 @@ class TaskPackageNeverReceived extends Command
 
             Log::info("==================== ROLLBACK SCHEDULE TASK NEVER - RECEIVED ");
             Log::info("============================================================");
+        }
+    }
+
+    public function ManifestInland()
+    {
+        $listPackageManifest = PackageManifest::where('company', 'INLAND LOGISTICS')->get();
+        $nowDate             = date('Y-m-d H:i:s');
+
+        foreach($listPackageManifest as $packageManifest)
+        {
+            $days = (strtotime($nowDate) - strtotime($packageManifest->created_at)) / 86400;
+
+            if($days >= 7)
+            {
+                $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                $packageManifest->delete();
+            }
+        }
+    }
+
+    public function ManifestOtherCompany()
+    {
+        $listPackageManifest = PackageManifest::where('status', 'Manifest')
+                                            ->where('company', '!=', 'INLAND LOGISTICS')
+                                            ->get();
+        $nowDate             = date('Y-m-d H:i:s');
+
+        foreach($listPackageManifest as $packageManifest)
+        {
+            $days = (strtotime($nowDate) - strtotime($packageManifest->created_at)) / 86400;
+
+            if($days >= 15)
+            {
+                $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+                $packageManifest->status     = 'NeverReceived';
+                $packageManifest->updated_at = $nowDate;
+                $packageManifest->save();
+
+                $packageHistory = new PackageHistory();
+                $packageHistory->id = uniqid();
+                $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageManifest->idCompany;
+                $packageHistory->company                      = $packageManifest->company;
+                $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                $packageHistory->Weight                       = $packageManifest->Weight;
+                $packageHistory->status                       = 'NeverReceived';
+                $packageHistory->Description                  = 'For: Schedule Taks';
+                $packageHistory->Route                        = $packageManifest->route;
+                $packageHistory->actualDate                   = $nowDate;
+                $packageHistory->created_at                   = $nowDate;
+                $packageHistory->updated_at                   = $nowDate;
+                $packageHistory->save();
+            }
         }
     }
 }
