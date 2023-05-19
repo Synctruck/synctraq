@@ -43,7 +43,7 @@ class TaskAmericanManifest extends Command
      */
     public function handle()
     {
-        $allFilesTrackingIn = Storage::disk('sftp')->allFiles('/manifest_out');
+        $allFilesTrackingIn = Storage::disk('sftp')->allFiles('/outbox/manifest');
 
         foreach($allFilesTrackingIn as $fileTracking)
         {
@@ -56,7 +56,7 @@ class TaskAmericanManifest extends Command
                 $handle = fopen(public_path('storage/'. $fileTracking), "r");
 
                 $lineNumber = 1;
-
+ 
                 Log::info('================');
                 Log::info('Upload Manifest');
                 Log::info($fileTracking);
