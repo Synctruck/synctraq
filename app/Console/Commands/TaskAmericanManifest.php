@@ -71,9 +71,10 @@ class TaskAmericanManifest extends Command
                         {
                             $row = str_getcsv($raw_string);
 
-                            $packageHistory = PackageHistory::where('Reference_Number_1', $row[0])->get();
+                            $packageHistory  = PackageHistory::where('Reference_Number_1', $row[0])->get();
+                            $packageManifest = PackageManifest::find();
 
-                            if(count($packageHistory) == 0)
+                            if(count($packageHistory) == 0 && !$packageManifest)
                             {
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
