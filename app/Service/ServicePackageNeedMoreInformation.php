@@ -195,7 +195,7 @@ class ServicePackageNeedMoreInformation{
             if($type == 'list')
             {
                 $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')
-                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'updated', 'created_at')
                                                 ->paginate(50);
             }
             else
@@ -296,5 +296,31 @@ class ServicePackageNeedMoreInformation{
     public function Get($Reference_Number_1)
     {
         return PackageNeedMoreInformation::find($Reference_Number_1);
+    }
+
+    public function Update($request)
+    {
+        $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+        $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+        $packageHistory->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+        $packageHistory->Dropoff_City                 = $request->get('Dropoff_City');
+        $packageHistory->Dropoff_Province             = $request->get('Dropoff_Province');
+        $packageHistory->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+        $packageHistory->Weight                       = $request->get('Weight');
+        $packageHistory->Route                        = $request->get('Route');
+        $packageHistory->save();
+
+        $packageNMI = PackageNeedMoreInformation::find($request->get('Reference_Number_1'));
+        $packageNMI->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
+        $packageNMI->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
+        $packageNMI->Dropoff_Address_Line_1       = $request->get('Dropoff_Address_Line_1');
+        $packageNMI->Dropoff_City                 = $request->get('Dropoff_City');
+        $packageNMI->Dropoff_Province             = $request->get('Dropoff_Province');
+        $packageNMI->Dropoff_Postal_Code          = $request->get('Dropoff_Postal_Code');
+        $packageNMI->Weight                       = $request->get('Weight');
+        $packageNMI->Route                        = $request->get('Route');
+        $packageNMI->updated                      = 1;
+        $packageNMI->save();
     }
 }

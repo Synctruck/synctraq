@@ -113,6 +113,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index'])->middleware('permission:nmi.index');
 	Route::get('/package-nmi/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageNeedMoreInformationController::class, 'List']);
 	Route::post('/package-nmi/insert', [PackageNeedMoreInformationController::class, 'Insert']);
+	Route::get('/package-nmi/get/{PACKAGE_ID}', [PackageNeedMoreInformationController::class, 'Get']);
+	Route::post('/package-nmi/update', [PackageNeedMoreInformationController::class, 'Update']);
 	Route::get('/package-nmi/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageNeedMoreInformationController::class, 'Export']);
 	Route::get('/package-nmi/move-to-warehouse/{PACKAGE_ID}', [PackageNeedMoreInformationController::class, 'MoveToWarehouse']);
 

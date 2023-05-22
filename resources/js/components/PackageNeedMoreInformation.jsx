@@ -48,7 +48,8 @@ function PackageNeedMoreInformation() {
     const [totalPage, setTotalPage]       = useState(0);
     const [totalPackage, setTotalPackage] = useState(0);
 
-    const inputFileRef  = React.useRef();
+    const buttonCloseModalRef  = React.useRef();
+    const inputFileRef         = React.useRef();
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
 
@@ -205,6 +206,7 @@ function PackageNeedMoreInformation() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
     const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
+    const [passwordUpdate, setPasswordUpdate] = useState('');
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
 
@@ -223,7 +225,7 @@ function PackageNeedMoreInformation() {
 
     const handlerOpenModal = (PACKAGE_ID) => {
 
-        fetch(url_general +'package-inbound/get/'+ PACKAGE_ID)
+        fetch(url_general +'package-nmi/get/'+ PACKAGE_ID)
         .then(res => res.json())
         .then((response) => {
 
@@ -261,12 +263,12 @@ function PackageNeedMoreInformation() {
         formData.append('Dropoff_Contact_Name', Dropoff_Contact_Name);
         formData.append('Dropoff_Contact_Phone_Number', Dropoff_Contact_Phone_Number);
         formData.append('Dropoff_Address_Line_1', Dropoff_Address_Line_1);
-        formData.append('Dropoff_Address_Line_2', Dropoff_Address_Line_2);
         formData.append('Dropoff_City', Dropoff_City);
         formData.append('Dropoff_Province', Dropoff_Province);
         formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
         formData.append('Weight', Weight);
         formData.append('Route', Route);
+        formData.append('passwordUpdate', passwordUpdate);
         formData.append('status', true);
 
         clearValidation();
@@ -276,7 +278,7 @@ function PackageNeedMoreInformation() {
         setDisabledButton(true);
         setTextButtonSave('Loading...');
 
-        let url = 'package-inbound/update'
+        let url = 'package-nmi/update'
 
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
@@ -286,17 +288,33 @@ function PackageNeedMoreInformation() {
         .then(res => res.json()).
         then((response) => {
 
-                setTextButtonSave('Guardar');
                 setDisabledButton(false);
+                setTextButtonSave('Update');
 
-                if(response.stateAction)
+                if(response.statusAction == 'passwordIncorrect')
                 {
-                    swal('Se actualizó el Package!', {
+                    swal('Enter the correct password to update!', {
+
+                        icon: "warning",
+                    });
+                }
+                else if(response.statusAction == true)
+                {
+                    swal('The package was updated!', {
 
                         icon: "success",
                     });
 
+                    buttonCloseModalRef.current.click();
+                    
                     listAllPackageNMI(1, RouteSearch, StateSearch);
+                }
+                else if(response.statusAction == false)
+                {
+                    swal('There was a problem updating the package, please try again!', {
+
+                        icon: "error",
+                    });
                 }
                 else(response.status == 422)
                 {
@@ -388,18 +406,11 @@ function PackageNeedMoreInformation() {
                                                                     <input type="text" value={ Dropoff_Contact_Phone_Number } className="form-control" onChange={ (e) => setDropoff_Contact_Phone_Number(e.target.value) } required/>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label>ADDRESS 1</label>
                                                                     <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Dropoff_Address_Line_1 } className="form-control" onChange={ (e) => setDropoff_Address_Line_1(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ADDRESS 2</label>
-                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -440,17 +451,21 @@ function PackageNeedMoreInformation() {
                                                                 <div className="form-group">
                                                                     <label>ROUTE</label>
                                                                     <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setRoute(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
-                                                                        { optionsRole }
-                                                                    </select>
+                                                                    <input type="text" value={ Route } className="form-control" onChange={ (e) => setRoute(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label>PASSWORD UPDATE</label>
+                                                                    <div id="passwordUpdate" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="password" value={ passwordUpdate } className="form-control" minLength="10" maxLength="10" onChange={ (e) => setPasswordUpdate(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                        <button className="btn btn-primary" disabled={ disabledButton }>Actualizar</button>
+                                                        <button type="button" id="buttonCloseModalRef" ref={ buttonCloseModalRef } className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary" disabled={ disabledButton }>Update</button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -463,8 +478,6 @@ function PackageNeedMoreInformation() {
     const handlerInsert = (e) => {
 
         e.preventDefault();
-
-        console.log(sendInbound);
 
         if(sendInbound)
         {
@@ -745,13 +758,19 @@ function PackageNeedMoreInformation() {
                 <td>{ pack.Route }</td>
                 <td>{ pack.Weight }</td>
                 <td >
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px', display: 'none'}}>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
-
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
-                        Move to Warehouse
-                    </button>
+                    {
+                        (
+                            pack.updated == 0
+                            ?
+                                <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } >
+                                    <i className="bx bx-edit-alt"></i>
+                                </button>
+                            :
+                                <button className="btn btn-success btn-sm" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
+                                    Move to Warehouse
+                                </button>
+                        )
+                    }
                 </td>
             </tr>
         );
@@ -786,7 +805,6 @@ function PackageNeedMoreInformation() {
 
         setOptionsRouteSearch([]);
 
-        console.log(listRoutes);
         listRoutes.map( (route, i) => {
 
             optionsRouteSearch.push({ value: route.name, label: route.name });

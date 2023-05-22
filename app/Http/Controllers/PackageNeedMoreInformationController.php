@@ -47,6 +47,39 @@ class PackageNeedMoreInformationController extends Controller
         }
     }
 
+    public function Get($Reference_Number_1)
+    {
+        $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+        
+        return ['package' => $servicePackageNeedMoreInformation->Get($Reference_Number_1)];
+    }
+
+    public function Update(Request $request)
+    {
+        if($request->get('passwordUpdate') != ENV('PASSWORD_UPDATE_PACKAGE'))
+        {
+            return ['statusAction' => 'passwordIncorrect'];
+        }
+
+        try
+        {
+            DB::beginTransaction();
+
+            $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
+            $servicePackageNeedMoreInformation = $servicePackageNeedMoreInformation->Update($request);    
+        
+            DB::commit();
+
+            return ['statusAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['statusAction' => false];
+        }
+    }
+
     public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $route, $state, $type)
     {
         $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
