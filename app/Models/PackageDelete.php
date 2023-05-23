@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class PackageDelete extends Model
 {
     protected $table      = 'packagedelete';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
