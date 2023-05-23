@@ -97,6 +97,8 @@ class PackageMassQueryController extends Controller
 
     public function GetStatus($Reference_Number_1)
     {
+        Log::info('Reference_Number_1': $Reference_Number_1);
+        
         $package = PackageManifest::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
