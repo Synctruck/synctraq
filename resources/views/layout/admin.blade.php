@@ -427,6 +427,9 @@
                                 <div class="col-lg-3 form-group">
                                     <label for="" class="form">Actual Status</label>
                                     <input type="text" id="actualStatus" class="form-control">
+                                    <div id="divActualStatus" class="alert alert-danger">
+                                        <b>This package was delete of the manifest</b>
+                                    </div>
                                 </div>
                                 <div id="divBtnHistoryNMI" class="col-lg-3 form-group" style="display: none;">
                                     <label for="" class="text-white">--</label>
@@ -736,6 +739,9 @@
             document.getElementById('divTableHistoryNMI').style.display = 'none';
             document.getElementById('divBtnHistoryNMI').style.display   = 'none';
 
+            document.getElementById('actualStatus').style.display    = 'none';
+            document.getElementById('divActualStatus').style.display = 'none';
+
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
             fetch(url_general +'package-history/search/'+ PACKAGE_ID)
@@ -743,6 +749,7 @@
             .then(response => {
 
                 let packageBlocked        = response.packageBlocked;
+                let packageDelete         = response.packageDelete;
                 let packageHistoryList    = response.packageHistoryList;
                 let packageHistoryNMIList = response.packageHistoryNeeMoreInformation;
                 let packageDelivery       = response.packageDelivery;
@@ -763,6 +770,15 @@
                 document.getElementById('latitudeLongitude').value            = latitudeLongitude[1] +', '+ latitudeLongitude[0];
                 document.getElementById('tableHistoryPackageTbody').innerHTML = '';
                 document.getElementById('actualStatus').value                 = actualStatus;
+
+                if(packageDelete)
+                {
+                    document.getElementById('divActualStatus').style.display = 'block';
+                }
+                else
+                {
+                    document.getElementById('actualStatus').style.display = 'block';
+                }
 
                 if(packageDispatch)
                 {

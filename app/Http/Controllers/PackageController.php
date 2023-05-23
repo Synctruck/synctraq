@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
         Configuration, Driver, Package, PackageBlocked,
-        PackageDelivery, PackageDispatch, PackagePreDispatch, 
+        PackageDelete, PackageDelivery, PackageDispatch, PackagePreDispatch, 
         PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, 
@@ -250,8 +250,8 @@ class PackageController extends Controller
 
     public function Search($Reference_Number_1)
     {
-
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+        $packageDelete  = PackageDelete::find($Reference_Number_1);
 
         $packageHistoryList = PackageHistory::with([
                                                 'driver',
@@ -299,6 +299,7 @@ class PackageController extends Controller
         return [
 
             'packageBlocked' => $packageBlocked,
+            'packageDelete' => $packageDelete,
             'packageHistoryList' => $packageHistoryList,
             'packageHistoryNeeMoreInformation' => $packageHistoryNeeMoreInformation,
             'packageDelivery' => $packageDelivery,
