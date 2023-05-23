@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ PackageHistory, PackageManifest };
+use App\Models\{ PackageDelete, PackageHistory, PackageManifest };
 
 use Log;
 
@@ -78,6 +78,17 @@ class TaskPackageNeverReceived extends Command
 
             if($days >= 7)
             {
+                $packageDelete = PackageDelete::find($packageManifest->Reference_Number_1);
+
+                if(!$packageDelete)
+                {
+                    $packageDelete = new PackageDelete();
+                    $packageDelete->Reference_Number_1 = $packageManifest->Reference_Number_1;
+                    $packageDelete->idCompany          = $packageManifest->idCompany;
+                    $packageDelete->company            = $packageManifest->company;
+                    $packageDelete->save();
+                }
+
                 $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
                 $packageManifest->delete();
             }
