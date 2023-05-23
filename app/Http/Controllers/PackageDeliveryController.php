@@ -381,9 +381,30 @@ class PackageDeliveryController extends Controller
 
                         if($packageDispatch)
                         {
-                            $packageHistory = new PackageHistory();
+                            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                            ->orderBy('created_at', 'asc')
+                                                            ->get();
 
-                            $packageHistory->id                           = uniqid();
+                            if(count($packageHistory) > 0)
+                            {
+                                $packageHistory = $packageHistory->last();
+
+                                if($packageHistory->status == 'Delivery')
+                                {
+                                    $packageHistory = PackageHistory::find($packageHistory->id);
+                                }
+                                else
+                                {
+                                    $packageHistory = new PackageHistory();
+                                    $packageHistory->id = uniqid();
+                                }
+                            }
+                            else
+                            {
+                                $packageHistory = new PackageHistory();
+                                $packageHistory->id = uniqid();
+                            }
+                            
                             $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                             $packageHistory->idCompany                    = $packageDispatch->idCompany;
                             $packageHistory->company                      = $packageDispatch->company;
