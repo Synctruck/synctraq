@@ -989,11 +989,7 @@ class PackageDispatchController extends Controller
                                 $idUserDispatch = $request->get('idTeam');
                                 $user           = User::find($idUserDispatch);
                                 $team           = $user;
-                                
-
-                                
-
-                                $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
+                                $description    = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                             }
 
                             $register     = true;
