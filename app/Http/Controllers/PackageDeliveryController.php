@@ -364,6 +364,7 @@ class PackageDeliveryController extends Controller
                         $description   = '';
                         $idTeam        = 0;
                         $arrivalLonLat = $row[3];
+                        $actualDate    = date('Y-m-d H:i:s');
                         $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
 
                         if(isset($row[4]) && $row[4] != '')
@@ -427,7 +428,7 @@ class PackageDeliveryController extends Controller
                             $packageHistory->Date_Delivery                = $created_at;
                             $packageHistory->Description                  = $description;
                             $packageHistory->status                       = 'Delivery';
-                            $packageHistory->actualDate                   = $created_at;
+                            $packageHistory->actualDate                   = $actualDate;
                             $packageHistory->created_at                   = $created_at;
                             $packageHistory->updated_at                   = $created_at;
 
