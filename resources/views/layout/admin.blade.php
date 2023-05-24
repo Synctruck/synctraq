@@ -447,6 +447,7 @@
                                                 <th>DATE</th>
                                                 <th>USER</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>INTERNAL COMMENT</th>
                                                 <th>STATUS</th>
                                             </tr>
                                         </thead>
@@ -727,6 +728,7 @@
                             '</td>'+
                             '<td><b>'+ historyNMI.user.name +' '+ historyNMI.user.nameOfOwner +'</b><br>'+ historyNMI.user.email +'</td>'+
                             '<td><b>'+ historyNMI.Reference_Number_1 +'</b></td>'+
+                            '<td><b>'+ historyNMI.internalComment +'</b></td>'+
                             '<td>'+ historyNMI.status +'</td>'+
                         '</tr>';
 

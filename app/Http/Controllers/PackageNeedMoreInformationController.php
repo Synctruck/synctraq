@@ -55,7 +55,7 @@ class PackageNeedMoreInformationController extends Controller
     }
 
     public function Update(Request $request)
-    {
+    {        
         if($request->get('passwordUpdate') != ENV('PASSWORD_UPDATE_PACKAGE'))
         {
             return ['statusAction' => 'passwordIncorrect'];

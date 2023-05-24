@@ -4,7 +4,6 @@ namespace App\Service;
 use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound };
 
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\DB;
 
 use Log;
@@ -300,6 +299,15 @@ class ServicePackageNeedMoreInformation{
 
     public function Update($request)
     {
+        $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
+
+        foreach($packageHistoryList as $packageHistory)
+        {
+            $packageHistory = PackageHistory::find($packageHistory->id);
+            $packageHistory->internal_comment = $request->get('internalComment');
+            $packageHistory->save();
+        }
+
         $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         $packageHistory->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
         $packageHistory->Dropoff_Contact_Phone_Number = $request->get('Dropoff_Contact_Phone_Number');
@@ -322,5 +330,13 @@ class ServicePackageNeedMoreInformation{
         $packageNMI->Route                        = $request->get('Route');
         $packageNMI->updated                      = 1;
         $packageNMI->save();
+
+        $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
+        $packageHistoryNeeMoreInformation->id                 = uniqid();
+        $packageHistoryNeeMoreInformation->idUser             = Auth::user()->id;
+        $packageHistoryNeeMoreInformation->Reference_Number_1 = $request->get('Reference_Number_1');
+        $packageHistoryNeeMoreInformation->internalComment    = $request->get('internalComment');
+        $packageHistoryNeeMoreInformation->status             = 'Updated';
+        $packageHistoryNeeMoreInformation->save();
     }
 }
