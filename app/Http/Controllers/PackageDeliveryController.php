@@ -383,7 +383,7 @@ class PackageDeliveryController extends Controller
                         if($packageDispatch)
                         {
                             $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
-                                                            ->orderBy('created_at', 'asc')
+                                                            ->orderBy('actualDate', 'asc')
                                                             ->get();
 
                             if(count($packageHistory) > 0)
