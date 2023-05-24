@@ -206,6 +206,7 @@ function PackageNeedMoreInformation() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
     const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
+    const [internalComment, setInternalComment] = useState('');
     const [passwordUpdate, setPasswordUpdate] = useState('');
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -269,6 +270,7 @@ function PackageNeedMoreInformation() {
         formData.append('Weight', Weight);
         formData.append('Route', Route);
         formData.append('passwordUpdate', passwordUpdate);
+        formData.append('internalComment', internalComment);
         formData.append('status', true);
 
         clearValidation();
@@ -459,6 +461,15 @@ function PackageNeedMoreInformation() {
                                                                     <label>PASSWORD UPDATE</label>
                                                                     <div id="passwordUpdate" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="password" value={ passwordUpdate } className="form-control" minLength="10" maxLength="10" onChange={ (e) => setPasswordUpdate(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label>INTERNAL COMMENT</label>
+                                                                    <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ internalComment } className="form-control" onChange={ (e) => setInternalComment(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                         </div>
