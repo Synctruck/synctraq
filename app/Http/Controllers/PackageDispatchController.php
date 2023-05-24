@@ -993,24 +993,28 @@ class PackageDispatchController extends Controller
                                 $description = 'Dispatch - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
                             }
 
+                            $register     = true;
+                            $idOnfleet    = '';
+                            $taskOnfleet  = '';
                             $created_at   = date('Y-m-d H:i:s');
-                            $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
-                            if($registerTask['status'] == 200)
+                            if($team->name != 'Brooks Courier')
                             {
-                                $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                                $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                                $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
-                                $package->Date_Dispatch = date('Y-m-d H:i:s');
-                                $package->status        = 'Dispatch';
-                                $package->idOnfleet     = $idOnfleet;
-                                $package->taskOnfleet   = $taskOnfleet;
-                                $package->created_at    = $created_at;
-                                $package->updated_at    = $created_at;
+                                if($team->name != 'Brooks Courier' && $registerTask['status'] == 200)
+                                {
+                                    $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                                    $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                                }
+                                else
+                                {
+                                    $register = false;
+                                }
+                            }
 
-                                $package->save();
-                                $packageHistory->save();
-
+                            if($register)
+                            {
                                 $packageDispatch = new PackageDispatch();
                                 $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                                 $packageDispatch->idCompany                    = $package->idCompany;
@@ -1034,6 +1038,8 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->idUserDispatch               = $idUserDispatch;
                                 $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                                 $packageDispatch->quantity                     = $package->quantity;
+                                $packageDispatch->idOnfleet                    = $idOnfleet;
+                                $packageDispatch->taskOnfleet                  = $taskOnfleet;
                                 $packageDispatch->status                       = 'Dispatch';
                                 $packageDispatch->created_at                   = $created_at;
                                 $packageDispatch->updated_at                   = $created_at;
@@ -1078,8 +1084,6 @@ class PackageDispatchController extends Controller
 
                                 $package->delete();
                             }
-
-                            
                         }
                     }
                 }
