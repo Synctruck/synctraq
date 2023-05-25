@@ -334,7 +334,7 @@ class PackageController extends Controller
             }
             else
             {
-                $idOnfleet = $output['container']['worker'];
+                $idOnfleet = isset($output['container']['worker']) ? $output['container']['worker'] : '';
             }
 
             $driverUser = User::where('idOnfleet', $idOnfleet)->first();
