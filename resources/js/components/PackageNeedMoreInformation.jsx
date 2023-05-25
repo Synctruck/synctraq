@@ -469,7 +469,7 @@ function PackageNeedMoreInformation() {
                                                                 <div className="form-group">
                                                                     <label>INTERNAL COMMENT</label>
                                                                     <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ internalComment } className="form-control" onChange={ (e) => setInternalComment(e.target.value) } required/>
+                                                                    <input type="text" value={ internalComment } className="form-control" onChange={ (e) => setInternalComment(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                         </div>
