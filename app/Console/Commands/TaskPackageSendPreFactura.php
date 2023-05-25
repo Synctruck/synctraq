@@ -157,6 +157,10 @@ class TaskPackageSendPreFactura extends Command
         {
             foreach($listPackageDelivery as $packageDelivery)
             {
+                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                $packageDelivery->invoiced = 1;
+                $packageDelivery->save();
+
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
 
