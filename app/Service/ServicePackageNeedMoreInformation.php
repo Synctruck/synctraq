@@ -199,7 +199,7 @@ class ServicePackageNeedMoreInformation{
             }
             else
             {
-                $packageListNMI = $packageListNMI->where('reInbound', 0)->orderBy('created_at', 'desc')->get();
+                $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')->get();
             }
         }
 
