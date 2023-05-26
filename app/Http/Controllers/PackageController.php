@@ -16,12 +16,7 @@ use App\Models\{
         PackageWarehouse, TeamRoute, User
     };
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
+use App\External\ExternalServiceInland;
 
 use DB; 
 use Session;
@@ -234,6 +229,17 @@ class PackageController extends Controller
                 $packageHistory->highPriority                 = $request->get('highPriority');
 
                 $packageHistory->save();
+            }
+
+            if($package->company == 'INLAND LOGISTICS')
+            {
+                $externalServiceInland = new ExternalServiceInland();
+                $externalServiceInland = $externalServiceInland->PackageUpdate($request);
+
+                if($externalServiceInland['status'] != 200)
+                {
+                    return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
+                }
             }
 
             DB::commit();
