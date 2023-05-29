@@ -311,6 +311,26 @@ function PackageNeedMoreInformation() {
                     
                     listAllPackageNMI(1, RouteSearch, StateSearch);
                 }
+                else if(response.stateAction == 'notUpdated')
+                {
+                    if(response.response)
+                    {
+                        swal({
+                            title: "Package not updated!",
+                            text: response.response.error +"!",
+                            icon: "error",
+                            button: "Ok!",
+                        });
+                    }
+                    else
+                    {
+                        swal({
+                            title: "The package not exists in INLAND!",
+                            icon: "warning",
+                            button: "Ok!",
+                        });
+                    }
+                }
                 else if(response.statusAction == false)
                 {
                     swal('There was a problem updating the package, please try again!', {

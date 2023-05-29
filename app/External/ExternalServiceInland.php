@@ -20,7 +20,7 @@ class ExternalServiceInland{
                         'Content-Type: application/json',
                         'authorization: SHZX2ER-4YCM907-MM958YS-11GT162'
                     ];
-
+ 
         $curl = curl_init();
 
         $curl = curl_init();
