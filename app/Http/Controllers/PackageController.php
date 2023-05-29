@@ -190,7 +190,6 @@ class PackageController extends Controller
                 $package->save();
             }
 
-            dd($package);
             if($package && $package->company == 'INLAND LOGISTICS')
             {
                 $externalServiceInland = new ExternalServiceInland();
