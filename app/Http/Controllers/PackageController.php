@@ -190,12 +190,13 @@ class PackageController extends Controller
                 $package->save();
             }
 
+            $externalServiceInland = [];
+
             if($package && $package->company == 'INLAND LOGISTICS')
             {
                 $externalServiceInland = new ExternalServiceInland();
                 $externalServiceInland = $externalServiceInland->PackageUpdate($request);
 
-                dd($externalServiceInland);
                 if($externalServiceInland['status'] != 200)
                 {
                     return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
@@ -245,7 +246,7 @@ class PackageController extends Controller
 
             DB::commit();
 
-            return response()->json(["stateAction" => true], 200);
+            return response()->json(["stateAction" => true, 'externalServiceInland' => $externalServiceInland], 200);
         }
         catch(Exception $e)
         {

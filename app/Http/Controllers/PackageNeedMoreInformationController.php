@@ -62,6 +62,8 @@ class PackageNeedMoreInformationController extends Controller
             return ['statusAction' => 'passwordIncorrect'];
         }
 
+        $externalServiceInland = [];
+        
         if($request->get('company') == 'INLAND LOGISTICS')
         {
             $externalServiceInland = new ExternalServiceInland();
@@ -82,7 +84,7 @@ class PackageNeedMoreInformationController extends Controller
             
             DB::commit();
 
-            return ['statusAction' => true];
+            return ['statusAction' => true, 'externalServiceInland' => $externalServiceInland];
         }
         catch(Exception $e)
         {
