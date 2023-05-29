@@ -38,7 +38,6 @@ class ExternalServiceInland{
 
         curl_close($curl);
 
-        dd($http_status);
         if($http_status == 200)
         {
             return ['status' => $http_status, 'response' => $output];
