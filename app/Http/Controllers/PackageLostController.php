@@ -32,10 +32,38 @@ class PackageLostController extends Controller
 
     public function List($idCompany, $dateStart,$dateEnd, $route, $state)
     {
-        $packageListInbound = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state);
-        $quantityInbound = $packageListInbound->total();
+        $packageListInbound    = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state);
+        $quantityInbound       = $packageListInbound->total();
 
-        return ['packageList' => $packageListInbound, 'quantityInbound' => $quantityInbound];
+        $packageHistoryListNew = [];
+
+        foreach($packageListInbound as $packageLost)
+        {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
+                                            ->orderBy('created_at', 'desc')
+                                            ->get();
+
+            $package = [
+
+                "created_at" => $packageLost->created_at,
+                "company" => $packageLost->company,
+                "Reference_Number_1" => $packageLost->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageLost->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageLost->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageLost->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageLost->Dropoff_City,
+                "Dropoff_Province" => $packageLost->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageLost->Dropoff_Postal_Code,
+                "Route" => $packageLost->Route,
+                "Weight" => $packageLost->Weight,
+                "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status) ,
+                "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return ['packageList' => $packageHistoryListNew, 'quantityInbound' => $quantityInbound];
     }
 
     private function getDataLost($idCompany, $dateStart,$dateEnd, $route, $state,$type='list'){

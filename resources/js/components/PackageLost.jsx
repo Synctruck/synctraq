@@ -91,8 +91,8 @@ function PackageLost() {
         .then((response) => {
 
             setIsLoading(false);
-            setListPackageInbound(response.packageList.data);
-            setTotalPackage(response.packageList.total);
+            setListPackageInbound(response.packageList);
+            setTotalPackage(response.quantityInbound);
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setQuantityInbound(response.quantityInbound);
@@ -671,13 +671,13 @@ function PackageLost() {
 
             <tr key={i} className="alert-danger">
                 <td>
-                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }</b><br/>
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.Last_Status }</td>
+                <td>{ pack.Last_Description }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
                 <td>{ pack.Dropoff_Address_Line_1 }</td>
@@ -1059,9 +1059,10 @@ function PackageLost() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>LAST STATUS</th>
+                                                <th>LAST DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDRESS</th>
