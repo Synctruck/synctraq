@@ -195,6 +195,7 @@ class PackageController extends Controller
                 $externalServiceInland = new ExternalServiceInland();
                 $externalServiceInland = $externalServiceInland->PackageUpdate($request);
 
+                dd($externalServiceInland);
                 if($externalServiceInland['status'] != 200)
                 {
                     return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
