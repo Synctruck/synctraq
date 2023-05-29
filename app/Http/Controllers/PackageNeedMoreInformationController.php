@@ -62,7 +62,7 @@ class PackageNeedMoreInformationController extends Controller
             return ['statusAction' => 'passwordIncorrect'];
         }
 
-        if($package->company == 'INLAND LOGISTICS')
+        if($request->get('company') == 'INLAND LOGISTICS')
         {
             $externalServiceInland = new ExternalServiceInland();
             $externalServiceInland = $externalServiceInland->PackageUpdate($request);
@@ -72,7 +72,7 @@ class PackageNeedMoreInformationController extends Controller
                 return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
             }
         }
-            
+             
         try
         {
             DB::beginTransaction();
