@@ -26,7 +26,7 @@ class ExternalServiceInland{
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/84670528900/update-details',
+            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $request->Reference_Number_1 .'/update-details',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
