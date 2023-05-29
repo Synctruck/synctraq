@@ -9,7 +9,6 @@ class ExternalServiceInland{
 
     public function PackageUpdate($request)
     {
-        dd($request);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -38,6 +37,7 @@ class ExternalServiceInland{
 
         curl_close($curl);
 
+        dd($http_status);
         if($http_status == 200)
         {
             return ['status' => $http_status, 'response' => $output];
