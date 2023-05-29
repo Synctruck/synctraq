@@ -9,20 +9,6 @@ class ExternalServiceInland{
 
     public function PackageUpdate($request)
     {
-        $data = '{
-                    "address_line1": "address test",
-                    "city_locality": "new city",
-                    "state_province": "new state",
-                    "postal_code": "17321"
-                }';
-
-        $headers = [
-                        'Content-Type: application/json',
-                        'authorization: SHZX2ER-4YCM907-MM958YS-11GT162'
-                    ];
- 
-        $curl = curl_init();
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
