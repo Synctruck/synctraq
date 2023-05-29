@@ -150,6 +150,17 @@ class PackageController extends Controller
 
     public function Update(Request $request)
     {
+        if($package->company == 'INLAND LOGISTICS')
+        {
+            $externalServiceInland = new ExternalServiceInland();
+            $externalServiceInland = $externalServiceInland->PackageUpdate($request);
+
+            if($externalServiceInland['status'] != 200)
+            {
+                return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
+            }
+        }
+            
         try
         {
             DB::beginTransaction();
@@ -229,17 +240,6 @@ class PackageController extends Controller
                 $packageHistory->highPriority                 = $request->get('highPriority');
 
                 $packageHistory->save();
-            }
-
-            if($package->company == 'INLAND LOGISTICS')
-            {
-                $externalServiceInland = new ExternalServiceInland();
-                $externalServiceInland = $externalServiceInland->PackageUpdate($request);
-
-                if($externalServiceInland['status'] != 200)
-                {
-                    return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
-                }
             }
 
             DB::commit();
