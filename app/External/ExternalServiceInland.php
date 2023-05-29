@@ -9,6 +9,7 @@ class ExternalServiceInland{
 
     public function PackageUpdate($request)
     {
+        dd($request);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
