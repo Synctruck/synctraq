@@ -1,5 +1,5 @@
 <?php
-namespace App\Service;
+namespace App\External;
 
 use App\Models\{ PackageBlocked };
 
@@ -7,23 +7,44 @@ use Auth;
 
 class ExternalServiceInland{
 
-    public function List()
+    public function PackageUpdate($request)
     {
-        return PackageBlocked::with('user')->orderBy('created_at', 'desc')->paginate(500);
-    }
+        $curl = curl_init();
 
-	public function Insert($request)
-    {
-        $package = new PackageBlocked();
-        $package->id                 = uniqid();
-        $package->idUser             = Auth::user()->id;
-        $package->Reference_Number_1 = $request->get('Reference_Number_1');
-        $package->comment            = $request->get('comment');
-        $package->save();
-    }
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/'. $request->Reference_Number_1 .'/update-details',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_POSTFIELDS => '{
+                "address_line1": "'. $request->Dropoff_Address_Line_1 .'",
+                "address_line2": "",
+                "city_locality": "'. $request->Dropoff_City .'",
+                "state_province": "'. $request->Dropoff_Province .'",
+                "postal_code": "'. $request->Dropoff_Postal_Code .'"
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'authorization: SHZX2ER-4YCM907-MM958YS-11GT162'
+            ),
+        ));
 
-    public function Delete($Reference_Number_1)
-    {    
-        return PackageBlocked::find($Reference_Number_1)->delete();
+        $output      = json_decode(curl_exec($curl), 1);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
+        {
+            return ['status' => $http_status, 'response' => $output];
+        }
+        else
+        {
+            return ['status' => $http_status, 'response' => $output];
+        }
     }
 }

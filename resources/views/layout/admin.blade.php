@@ -1039,6 +1039,26 @@
                 {
                     swal('Correct!', 'The package was updated', 'success');
                 }
+                else if(response.stateAction == 'notUpdated')
+                {
+                    if(response.response)
+                    {
+                        swal({
+                            title: "Package not updated!",
+                            text: response.response.error +"!",
+                            icon: "error",
+                            button: "Ok!",
+                        });
+                    }
+                    else
+                    {
+                        swal({
+                            title: "The package not exists in INLAND!",
+                            icon: "warning",
+                            button: "Ok!",
+                        });
+                    }
+                }
                 else
                 {
                     swal('Error!', 'The package was not updated', 'success');

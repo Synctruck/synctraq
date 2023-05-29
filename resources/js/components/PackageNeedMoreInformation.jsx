@@ -197,6 +197,7 @@ function PackageNeedMoreInformation() {
     }
 
     const [Reference_Number_1_Edit, setReference_Number_1] = useState('');
+    const [CompanyName, setCompanyName] = useState('');
     const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
     const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
     const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
@@ -224,13 +225,14 @@ function PackageNeedMoreInformation() {
         );
     });
 
-    const handlerOpenModal = (PACKAGE_ID) => {
+    const handlerOpenModal = (PACKAGE_ID, company) => {
 
         fetch(url_general +'package-nmi/get/'+ PACKAGE_ID)
         .then(res => res.json())
         .then((response) => {
 
             setReference_Number_1(PACKAGE_ID);
+            setCompanyName(company);
             setDropoff_Contact_Name(response.package.Dropoff_Contact_Name);
             setDropoff_Contact_Phone_Number(response.package.Dropoff_Contact_Phone_Number);
             setDropoff_Address_Line_1(response.package.Dropoff_Address_Line_1);
@@ -261,6 +263,7 @@ function PackageNeedMoreInformation() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1_Edit);
+        formData.append('company', CompanyName);
         formData.append('Dropoff_Contact_Name', Dropoff_Contact_Name);
         formData.append('Dropoff_Contact_Phone_Number', Dropoff_Contact_Phone_Number);
         formData.append('Dropoff_Address_Line_1', Dropoff_Address_Line_1);
@@ -310,6 +313,26 @@ function PackageNeedMoreInformation() {
                     buttonCloseModalRef.current.click();
                     
                     listAllPackageNMI(1, RouteSearch, StateSearch);
+                }
+                else if(response.stateAction == 'notUpdated')
+                {
+                    if(response.response)
+                    {
+                        swal({
+                            title: "Package not updated!",
+                            text: response.response.error +"!",
+                            icon: "error",
+                            button: "Ok!",
+                        });
+                    }
+                    else
+                    {
+                        swal({
+                            title: "The package not exists in INLAND!",
+                            icon: "warning",
+                            button: "Ok!",
+                        });
+                    }
                 }
                 else if(response.statusAction == false)
                 {
@@ -773,7 +796,7 @@ function PackageNeedMoreInformation() {
                         (
                             pack.updated == 0
                             ?
-                                <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } >
+                                <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1, pack.company) } >
                                     <i className="bx bx-edit-alt"></i>
                                 </button>
                             :

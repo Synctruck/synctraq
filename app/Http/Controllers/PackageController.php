@@ -16,12 +16,7 @@ use App\Models\{
         PackageWarehouse, TeamRoute, User
     };
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
+use App\External\ExternalServiceInland;
 
 use DB; 
 use Session;
@@ -193,6 +188,17 @@ class PackageController extends Controller
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
                 $package->save();
+            }
+
+            if($package && $package->company == 'INLAND LOGISTICS')
+            {
+                $externalServiceInland = new ExternalServiceInland();
+                $externalServiceInland = $externalServiceInland->PackageUpdate($request);
+
+                if($externalServiceInland['status'] != 200)
+                {
+                    return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
+                }
             }
 
             $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();

@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Service\ServicePackageNeedMoreInformation;
+use App\External\ExternalServiceInland;
 
 use Auth;
 use DB;
@@ -61,13 +62,24 @@ class PackageNeedMoreInformationController extends Controller
             return ['statusAction' => 'passwordIncorrect'];
         }
 
+        if($request->get('company') == 'INLAND LOGISTICS')
+        {
+            $externalServiceInland = new ExternalServiceInland();
+            $externalServiceInland = $externalServiceInland->PackageUpdate($request);
+
+            if($externalServiceInland['status'] != 200)
+            {
+                return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
+            }
+        }
+             
         try
         {
             DB::beginTransaction();
 
             $servicePackageNeedMoreInformation = new ServicePackageNeedMoreInformation();
             $servicePackageNeedMoreInformation = $servicePackageNeedMoreInformation->Update($request);    
-        
+            
             DB::commit();
 
             return ['statusAction' => true];
