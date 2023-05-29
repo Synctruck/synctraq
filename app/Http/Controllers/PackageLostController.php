@@ -56,7 +56,7 @@ class PackageLostController extends Controller
                 "Dropoff_Postal_Code" => $packageLost->Dropoff_Postal_Code,
                 "Route" => $packageLost->Route,
                 "Weight" => $packageLost->Weight,
-                "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status) ,
+                "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
                 "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
             ];
 
@@ -112,27 +112,33 @@ class PackageLostController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'LAST STATUS', 'LAST DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
         $packageListInbound = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state,$type='export');
 
-        foreach($packageListInbound as $packageInbound)
+        foreach($packageListInbound as $packageLost)
         {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
+                                            ->orderBy('created_at', 'desc')
+                                            ->get();
+
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound->created_at)),
-                                date('H:i:s', strtotime($packageInbound->created_at)),
-                                $packageInbound->company,
-                                $packageInbound->Reference_Number_1,
-                                $packageInbound->Dropoff_Contact_Name,
-                                $packageInbound->Dropoff_Contact_Phone_Number,
-                                $packageInbound->Dropoff_Address_Line_1,
-                                $packageInbound->Dropoff_City,
-                                $packageInbound->Dropoff_Province,
-                                $packageInbound->Dropoff_Postal_Code,
-                                $packageInbound->Weight,
-                                $packageInbound->Route
+                                date('m-d-Y', strtotime($packageLost->created_at)),
+                                date('H:i:s', strtotime($packageLost->created_at)),
+                                $packageLost->company,
+                                $packageLost->Reference_Number_1,
+                                (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
+                                (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description),
+                                $packageLost->Dropoff_Contact_Name,
+                                $packageLost->Dropoff_Contact_Phone_Number,
+                                $packageLost->Dropoff_Address_Line_1,
+                                $packageLost->Dropoff_City,
+                                $packageLost->Dropoff_Province,
+                                $packageLost->Dropoff_Postal_Code,
+                                $packageLost->Weight,
+                                $packageLost->Route
                             );
 
             fputcsv($file, $lineData, $delimiter);
