@@ -19,6 +19,7 @@ function ReportDelivery() {
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
+    const [idTeamDelivery, setIdTeamDelivery]         = useState(0);
     const [Photo1, setPhoto1]                         = useState('');
     const [Photo2, setPhoto2]                         = useState('');
     const [DateDelivery, setDateDelivery]             = useState('');
@@ -776,13 +777,14 @@ function ReportDelivery() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idTeam', idTeamDelivery);
         formData.append('filePhoto1', filePhoto1);
         formData.append('filePhoto2', filePhoto2);
         formData.append('DateDelivery', DateDelivery);
         formData.append('HourDelivery', HourDelivery);
         formData.append('arrivalLonLat', arrivalLonLat);
 
-        LoadingShow();
+        LoadingShowMap();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -796,7 +798,7 @@ function ReportDelivery() {
 
                 if(response.stateAction == true)
                 {
-                    swal("Se importó el archivo!", {
+                    swal("The package was closed!", {
 
                         icon: "success",
                     });
@@ -806,9 +808,12 @@ function ReportDelivery() {
                     setFilePhoto2('');
                     setDateDelivery('');
                     setHourDelivery('');
+                    setArrivalLonLat('');
 
                     document.getElementById('fileImportPhoto1').value = '';
                     document.getElementById('fileImportPhoto2').value = '';
+
+                    listReportDispatch(1, RouteSearch, StateSearch);
                 }
                 else if(response.stateAction == 'notExists')
                 {
@@ -818,7 +823,7 @@ function ReportDelivery() {
                     });
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }
@@ -853,6 +858,15 @@ function ReportDelivery() {
                                                                     <label className="form">PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">TEAM</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdTeamDelivery(e.target.value) } required>
+                                                                       <option value="0">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6 mb-2">
