@@ -410,25 +410,25 @@ function ReportDelivery() {
             if(packageDelivery.filePhoto1 != '' && packageDelivery.filePhoto2 != '')
             {
                 imgs =  <>
-                            <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
                         </>
 
-                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 + 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2
+                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1 + url_general +'img/deliveries/'+ packageDelivery.filePhoto2
 
                 
             }
             else if(packageDelivery.filePhoto1 != '')
             {
-                imgs = <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
+                imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
 
-                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1;
+                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1;
             }
             else if(packageDelivery.filePhoto2 != '')
             {
-                imgs = <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
+                imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
 
-                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2;
+                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto2;
             }
         }
 
