@@ -385,7 +385,7 @@ function ReportDelivery() {
                     urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
                 }
             }
-            else if(packageDelivery.photoUrl != '')
+            else if(packageDelivery.photoUrl != '' && packageDelivery.photoUrl != null)
             {
                 alert(packageDelivery.photoUrl);
                 let idsImages = packageDelivery.photoUrl.split(',');
