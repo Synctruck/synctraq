@@ -91,6 +91,16 @@ class PackageDeliveryController extends Controller
             $actualDate    = date('Y-m-d H:i:s');
             $created_at    = $request->get('DateDelivery') .' '. $request->get('HourDelivery');
             $arrivalLonLat = $request->get('arrivalLonLat');
+            $team          = User::find($request->get('idTeam'));
+
+            if($team)
+            {
+                $idTeam = $team->id;
+            }
+            else
+            {
+                $idTeam = isset($package->idTeam) ? $package->idTeam : 0;
+            }
 
             $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                                             ->orderBy('actualDate', 'asc')
@@ -131,7 +141,7 @@ class PackageDeliveryController extends Controller
             $packageHistory->Notes                        = $package->Notes;
             $packageHistory->Weight                       = $package->Weight;
             $packageHistory->Route                        = $package->Route;
-            $packageHistory->idTeam                       = isset($package->idTeam) ? $package->idTeam : 0;
+            $packageHistory->idTeam                       = $idTeam;
             $packageHistory->idUserDispatch               = isset($package->idUserDispatch) ? $package->idUserDispatch : 0;
             $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->idUserDelivery               = isset($package->idUserDispatch) ? $package->idUserDispatch : 0;
@@ -182,6 +192,7 @@ class PackageDeliveryController extends Controller
                 $packageDispatch->Route                        = $package->Route;
                 $packageDispatch->arrivalLonLat                = $arrivalLonLat;
                 $packageDispatch->idUser                       = Auth::user()->id;
+                $packageDispatch->idTeam                       = $idTeam;
                 $packageDispatch->Date_Dispatch                = $created_at;
                 $packageDispatch->Date_Delivery                = $created_at;
                 $packageDispatch->quantity                     = 0;
@@ -198,6 +209,7 @@ class PackageDeliveryController extends Controller
             }
             else if($package->status == 'Dispatch' || $package->status == 'Delivery' || $package->status == 'Delete')
             {
+                $package->idTeam        = $idTeam;
                 $package->arrivalLonLat = $arrivalLonLat;
                 $package->Date_Delivery = $created_at;
                 $package->filePhoto1    = $filePhoto1;
