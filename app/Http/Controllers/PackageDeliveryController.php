@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{Configuration, PackageHistory, PackageDelivery, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageReturnCompany, TeamRoute, User};
+use App\Models\{
+        Configuration, PackageHistory, PackageDelivery, PackageDispatch, 
+        PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, 
+        PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, TeamRoute, User};
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -61,6 +64,156 @@ class PackageDeliveryController extends Controller
         $quantityDelivery = $packageListDelivery->total();
 
         return ['packageListDelivery' => $packageListDelivery, 'listDeliveries' => $listDeliveries, 'quantityDelivery' => $quantityDelivery];
+    }
+
+    public function Insert(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $Reference_Number_1 = $request->get('Reference_Number_1');
+
+            $package = PackageManifest::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+            $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+            $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+
+            if(!$package)
+            {
+                return ['stateAction' => 'notExists'];
+            }
+
+            $actualDate = date('Y-m-d H:i:s');
+            $created_at = $request->get('DateDelivery') .' '. $request->get('HourDelivery');
+
+            $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                                            ->orderBy('actualDate', 'asc')
+                                                            ->get();
+
+            if(count($packageHistory) > 0)
+            {
+                $packageHistory = $packageHistory->last();
+
+                if($packageHistory->status == 'Delivery')
+                {
+                    $packageHistory = PackageHistory::find($packageHistory->id);
+                }
+                else
+                {
+                    $packageHistory = new PackageHistory();
+                    $packageHistory->id = uniqid();
+                }
+            }
+            else
+            {
+                $packageHistory = new PackageHistory();
+                $packageHistory->id = uniqid();
+            }
+
+            $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+            $packageHistory->idCompany                    = $package->idCompany;
+            $packageHistory->company                      = $package->company;
+            $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $package->Notes;
+            $packageHistory->Weight                       = $package->Weight;
+            $packageHistory->Route                        = $package->Route;
+            $packageHistory->idTeam                       = isset($package->idTeam) ? $package->idTeam : 0;
+            $packageHistory->idUserDispatch               = isset($package->idUserDispatch) ? $package->idUserDispatch : 0;
+            $packageHistory->idUser                       = Auth::user()->id;
+            $packageHistory->idUserDelivery               = isset($package->idUserDispatch) ? $package->idUserDispatch : 0;
+            $packageHistory->Date_Delivery                = $created_at;
+            $packageHistory->Description                  = 'For: '. Auth::user()->name .' (Register Forced Delivery)';
+            $packageHistory->status                       = 'Delivery';
+            $packageHistory->actualDate                   = $actualDate;
+            $packageHistory->created_at                   = $created_at;
+            $packageHistory->updated_at                   = $created_at;
+            $packageHistory->save();
+
+            $filePhoto1 = '';
+            $filePhoto2 = '';
+
+            if($request->hasFile('filePhoto1'))
+            {
+                $filePhoto1 = $Reference_Number_1 .'-photo1.'. $request->file('filePhoto1')->getClientOriginalExtension();
+
+                $request->file('filePhoto1')->move(public_path('img/deliveries'), $filePhoto1);
+            }
+
+            if($request->hasFile('filePhoto2'))
+            {
+                $filePhoto2 = $Reference_Number_1 .'-photo2.'. $request->file('filePhoto2')->getClientOriginalExtension();
+                
+                $request->file('filePhoto2')->move(public_path('img/deliveries'), $filePhoto2);
+            }
+
+            if($package->status != 'Dispatch' && $package->status != 'Delivery' && $package->status != 'Delete')
+            {
+                $packageDispatch = new PackageDispatch();
+                $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                $packageDispatch->idCompany                    = $package->idCompany;
+                $packageDispatch->company                      = $package->company;
+                $packageDispatch->idStore                      = $package->idStore;
+                $packageDispatch->store                        = $package->store;
+                $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                $packageDispatch->Notes                        = $package->Notes;
+                $packageDispatch->Weight                       = $package->Weight;
+                $packageDispatch->Route                        = $package->Route;
+                $packageDispatch->idUser                       = Auth::user()->id;
+                $packageDispatch->Date_Dispatch                = $created_at;
+                $packageDispatch->Date_Delivery                = $created_at;
+                $packageDispatch->quantity                     = 0;
+                $packageDispatch->filePhoto1                   = $filePhoto1;
+                $packageDispatch->filePhoto2                   = $filePhoto2;
+                $packageDispatch->send_csv                     = 1;
+                $packageDispatch->status                       = 'Delivery';
+                $packageDispatch->created_at                   = $actualDate;
+                $packageDispatch->updated_at                   = $actualDate;
+
+                $packageDispatch->save();
+
+                $package->delete();
+            }
+            else if($package->status == 'Dispatch' || $package->status == 'Delivery' || $package->status == 'Delete')
+            {
+                $package->Date_Delivery = $created_at;
+                $package->filePhoto1    = $filePhoto1;
+                $package->filePhoto2    = $filePhoto2;
+                $package->send_csv      = 1;
+                $package->status        = 'Delivery';
+                $package->save();
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch (Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => true];
+        }
     }
 
     public function IndexForCheck()

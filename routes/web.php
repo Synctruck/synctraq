@@ -167,6 +167,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Validation delivery
 	Route::get('/package-delivery', [PackageDeliveryController::class, 'Index'])->middleware('permission:delivery.index');
 	Route::get('/package-delivery/list', [PackageDeliveryController::class, 'List']);
+	Route::post('/package-delivery/insert', [PackageDeliveryController::class, 'Insert']);
 	Route::post('/package-delivery/import', [PackageDeliveryController::class, 'Import']);
 	Route::post('/package-delivery/import-photo', [PackageDeliveryController::class, 'ImportPhoto']);
 	Route::get('/package-delivery/updatedTeamOrDriverFailed', [PackageDeliveryController::class, 'UpdatedTeamOrDriverFailed']);

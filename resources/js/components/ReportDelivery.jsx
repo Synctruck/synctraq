@@ -18,6 +18,15 @@ function ReportDelivery() {
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
+    const [Reference_Number_1, setReference_Number_1] = useState('');
+    const [Photo1, setPhoto1]                         = useState('');
+    const [Photo2, setPhoto2]                         = useState('');
+    const [DateDelivery, setDateDelivery]             = useState('');
+    const [HourDelivery, setHourDelivery]             = useState(false);
+    const [filePhoto1, setFilePhoto1]                 = useState('');
+    const [filePhoto2, setFilePhoto2]                 = useState('');
+    const [disabledButton, setDisabledButton]         = useState(false);
+
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
 
@@ -45,6 +54,8 @@ function ReportDelivery() {
 
     const inputFileRef       = React.useRef();
     const inputFileRefPhotos = React.useRef();
+    const inputFilePhoto1    = React.useRef();
+    const inputFilePhoto2    = React.useRef();
 
     useEffect(() => {
 
@@ -717,9 +728,170 @@ function ReportDelivery() {
                                     </div>
                                 </React.Fragment>;
 
+    const handlerOpenModalInsertDelivery = (PACKAGE_ID) => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalInsertDelivery'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const handlerInsertDelivery = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('filePhoto1', filePhoto1);
+        formData.append('filePhoto2', filePhoto2);
+        formData.append('DateDelivery', DateDelivery);
+        formData.append('HourDelivery', HourDelivery);
+
+        LoadingShow();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'package-delivery/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("Se importó el archivo!", {
+
+                        icon: "success",
+                    });
+
+                    setReference_Number_1('');
+                    setFilePhoto1('');
+                    setFilePhoto2('');
+                    setDateDelivery('');
+                    setHourDelivery('');
+
+                    document.getElementById('fileImportPhoto1').value = '';
+                    document.getElementById('fileImportPhoto2').value = '';
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    swal("The package does not exist!", {
+
+                        icon: "warning",
+                    });
+                }
+
+                LoadingHide();
+            },
+        );
+    }
+
+    const removeFilePhoto1 = () => {
+
+        setFilePhoto1();
+    };
+
+    const removeFilePhoto2 = () => {
+
+        setFilePhoto2();
+    };
+
+    const modalInsertDelivery = <React.Fragment>
+                                    <div className="modal fade" id="modalInsertDelivery" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-md">
+                                            <form onSubmit={ handlerInsertDelivery }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Register Forced Delivery</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">PACKAGE ID</label>
+                                                                    <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">PHOTO 1</label>
+                                                                    <div id="Photo1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept="image/*" required/>
+                                                                    {
+                                                                        filePhoto1 && (
+                                                                            <div style={styles.preview}>
+                                                                                <img
+                                                                                  src={URL.createObjectURL(filePhoto1)}
+                                                                                  style={styles.image}
+                                                                                  alt="Thumb"
+                                                                                />
+                                                                                <button onClick={removeFilePhoto1} style={styles.delete}>
+                                                                                    Remove This Image
+                                                                                </button>
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </div> 
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">PHOTO 2</label>
+                                                                    <div id="Photo2" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept="image/*" required/>
+                                                                    {
+                                                                        filePhoto2 && (
+                                                                            <div style={styles.preview}>
+                                                                                <img
+                                                                                  src={URL.createObjectURL(filePhoto2)}
+                                                                                  style={styles.image}
+                                                                                  alt="Thumb"
+                                                                                />
+                                                                                <button onClick={removeFilePhoto2} style={styles.delete}>
+                                                                                    Remove This Image
+                                                                                </button>
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">DATE</label>
+                                                                    <div id="DateDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="date" value={ DateDelivery } className="form-control" onChange={ (e) => setDateDelivery(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">HOUR</label>
+                                                                    <div id="HourDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="time" value={ HourDelivery } className="form-control" onChange={ (e) => setHourDelivery(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button className="btn btn-primary" disabled={ disabledButton }>Register Return</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
+            { modalInsertDelivery }
             { modalViewImages }
             { modalViewMap }
             <div className="row">
@@ -729,7 +901,7 @@ function ReportDelivery() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
                                     </div>
                                     <div className="col-3 form-group">
                                         <button className="btn btn-warning btn-sm form-control text-white" onClick={ () => handlerExport('send') }>
@@ -754,7 +926,7 @@ function ReportDelivery() {
                                     <div className="col-lg-2 mb-3">
                                         <form onSubmit={ handlerImportPhotos }>
                                             <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFilePhotos() }>
+                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFilePhotos() }>
                                                     <i className="bx bxs-file"></i> Import
                                                 </button>
                                                 <input type="file" id="fileImportPhoto" className="form-control" ref={ inputFileRefPhotos } style={ {display: 'none'} } onChange={ (e) => setFilePhoto(e.target.files[0]) } accept=".csv" required/>
@@ -765,6 +937,9 @@ function ReportDelivery() {
                                                 </button>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div className="col-lg-3 mb-3">
+                                        <button className="btn btn-info btn-sm form-control text-white" onClick={ () => handlerOpenModalInsertDelivery() }>REGISTER DELIVERY</button>
                                     </div>
                                     <div className="col-lg-2 mb-3 text-warning">
                                         { messageUpdateOnfleet }
@@ -932,3 +1107,27 @@ if (document.getElementById('reportDelivery'))
 {
     ReactDOM.render(<ReportDelivery />, document.getElementById('reportDelivery'));
 }
+
+// Just some styles
+const styles = {
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: 20,
+    },
+    preview: {
+        marginTop: 20,
+        display: "flex",
+        flexDirection: "column",
+    },
+    image: { maxWidth: "100%", maxHeight: 320 },
+        delete: {
+        cursor: "pointer",
+        padding: 15,
+        background: "red",
+        color: "white",
+        border: "none",
+    },
+};
