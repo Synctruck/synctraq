@@ -482,7 +482,9 @@ class ReportController extends Controller
                                     'Route',
                                     'taskOnfleet',
                                     'arrivalLonLat',
-                                    'Date_Delivery'
+                                    'Date_Delivery',
+                                    'filePhoto1',
+                                    'filePhoto2'
                                 )
                                 ->orderBy('Date_Delivery', 'desc')
                                 ->paginate(50);
@@ -521,7 +523,9 @@ class ReportController extends Controller
                 "Route" => $packageDelivery->Route,
                 "pricePaymentTeam" => $packageDelivery->pricePaymentTeam,
                 "pieces" => $packageDelivery->pieces,
-                "taskOnfleet" => $packageDelivery->taskOnfleet
+                "taskOnfleet" => $packageDelivery->taskOnfleet,
+                "filePhoto1" => $packageDelivery->filePhoto1,
+                "filePhoto2" => $packageDelivery->filePhoto2,
             ];
 
             array_push($packageHistoryListNew, $package);

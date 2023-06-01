@@ -25,6 +25,7 @@ function ReportDelivery() {
     const [HourDelivery, setHourDelivery]             = useState(false);
     const [filePhoto1, setFilePhoto1]                 = useState('');
     const [filePhoto2, setFilePhoto2]                 = useState('');
+    const [arrivalLonLat, setArrivalLonLat]           = useState('');
     const [disabledButton, setDisabledButton]         = useState(false);
 
     const [listRoute, setListRoute]  = useState([]);
@@ -304,101 +305,130 @@ function ReportDelivery() {
 
         let photoHttp = false;
 
-        if(packageDelivery.photoUrl == '')
+        if(packageDelivery.filePhoto1 == '' && packageDelivery.filePhoto2 == '')
         {
-            if(!packageDelivery.idOnfleet)
+            if(packageDelivery.photoUrl == '')
             {
-                photoHttp = true;
-            }
-            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
-            {
-                photoHttp = true;
-            }
-        }
-
-        if(photoHttp)
-        {
-            let team     = ''
-            let driver   = '';
-
-            listDeliveries.forEach( delivery => {
-
-                if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
+                if(!packageDelivery.idOnfleet)
                 {
-                    urlImage = delivery.photoUrl;
+                    photoHttp = true;
+                }
+                else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+                {
+                    photoHttp = true;
+                }
+            }
 
-                    if(urlImage)
+            if(photoHttp)
+            {
+                let team     = ''
+                let driver   = '';
+
+                listDeliveries.forEach( delivery => {
+
+                    if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
                     {
-                        urlImage = urlImage.split('https');
+                        urlImage = delivery.photoUrl;
 
-                        if(urlImage.length == 2)
+                        if(urlImage)
                         {
-                            imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                            urlImage = urlImage.split('https');
+
+                            if(urlImage.length == 2)
+                            {
+                                imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                            }
+                            else if(urlImage.length >= 3)
+                            {
+                                imgs =  <>
+                                            <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
+                                            <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
+                                        </>
+                            }
                         }
-                        else if(urlImage.length >= 3)
-                        {
-                            imgs =  <>
-                                        <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
-                                        <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
-                                    </>
-                        }
+
+                        urlImage = delivery.photoUrl;
                     }
+                });
 
-                    urlImage = delivery.photoUrl;
+                if(packageDelivery.driver)
+                {
+                    if(packageDelivery.driver.nameTeam)
+                    {
+                        team   = packageDelivery.driver.nameTeam;
+                        driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
+                    }
+                    else
+                    {
+                        team   = packageDelivery.driver.name;
+                    }
                 }
-            });
-
-            if(packageDelivery.driver)
+            }
+            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
             {
-                if(packageDelivery.driver.nameTeam)
+                let idsImages = packageDelivery.photoUrl.split(',');
+
+                if(idsImages.length == 1)
                 {
-                    team   = packageDelivery.driver.nameTeam;
-                    driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
+                    imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
                 }
-                else
+                else if(idsImages.length >= 2)
                 {
-                    team   = packageDelivery.driver.name;
+                    imgs =  <>
+                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            </>
+
+                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                }
+            }
+            else if(packageDelivery.photoUrl != '')
+            {
+                let idsImages = packageDelivery.photoUrl.split(',');
+
+                if(idsImages.length == 1)
+                {
+                    imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                }
+                else if(idsImages.length >= 2)
+                {
+                    imgs =  <>
+                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            </>
+
+                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
                 }
             }
         }
-        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
+        else
         {
-            let idsImages = packageDelivery.photoUrl.split(',');
-
-            if(idsImages.length == 1)
-            {
-                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
-
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-            }
-            else if(idsImages.length >= 2)
+            if(packageDelivery.filePhoto1 != '' && packageDelivery.filePhoto2 != '')
             {
                 imgs =  <>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
                         </>
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 + 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2
+
+                
             }
-        }
-        else if(packageDelivery.photoUrl != '')
-        {
-            let idsImages = packageDelivery.photoUrl.split(',');
-
-            if(idsImages.length == 1)
+            else if(packageDelivery.filePhoto1 != '')
             {
-                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+                imgs = <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto1;
             }
-            else if(idsImages.length >= 2)
+            else if(packageDelivery.filePhoto2 != '')
             {
-                imgs =  <>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                        </>
+                imgs = <img src={ 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                urlImage = 'http://127.0.0.1:8000/img/deliveries/'+ packageDelivery.filePhoto2;
             }
         }
 
@@ -750,6 +780,7 @@ function ReportDelivery() {
         formData.append('filePhoto2', filePhoto2);
         formData.append('DateDelivery', DateDelivery);
         formData.append('HourDelivery', HourDelivery);
+        formData.append('arrivalLonLat', arrivalLonLat);
 
         LoadingShow();
 
@@ -794,10 +825,14 @@ function ReportDelivery() {
 
     const removeFilePhoto1 = () => {
 
+        document.getElementById('fileImportPhoto1').value = '';
+
         setFilePhoto1();
     };
 
     const removeFilePhoto2 = () => {
+
+        document.getElementById('fileImportPhoto2').value = '';
 
         setFilePhoto2();
     };
@@ -813,18 +848,18 @@ function ReportDelivery() {
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
-                                                            <div className="col-lg-12">
+                                                            <div className="col-lg-12 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-6 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">PHOTO 1</label>
                                                                     <div id="Photo1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept="image/*" required/>
+                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept="image/*"/>
                                                                     {
                                                                         filePhoto1 && (
                                                                             <div style={styles.preview}>
@@ -834,18 +869,18 @@ function ReportDelivery() {
                                                                                   alt="Thumb"
                                                                                 />
                                                                                 <button onClick={removeFilePhoto1} style={styles.delete}>
-                                                                                    Remove This Image
+                                                                                    Remove this image
                                                                                 </button>
                                                                             </div>
                                                                         )
                                                                     }
                                                                 </div>
                                                             </div> 
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-6 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">PHOTO 2</label>
                                                                     <div id="Photo2" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept="image/*" required/>
+                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept="image/*"/>
                                                                     {
                                                                         filePhoto2 && (
                                                                             <div style={styles.preview}>
@@ -854,26 +889,33 @@ function ReportDelivery() {
                                                                                   style={styles.image}
                                                                                   alt="Thumb"
                                                                                 />
-                                                                                <button onClick={removeFilePhoto2} style={styles.delete}>
-                                                                                    Remove This Image
+                                                                                <button onClick={ removeFilePhoto2 } style={ styles.delete }>
+                                                                                    Remove this image
                                                                                 </button>
                                                                             </div>
                                                                         )
                                                                     }
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-6 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">DATE</label>
                                                                     <div id="DateDelivery" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="date" value={ DateDelivery } className="form-control" onChange={ (e) => setDateDelivery(e.target.value) } required/>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-6 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">HOUR</label>
                                                                     <div id="HourDelivery" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="time" value={ HourDelivery } className="form-control" onChange={ (e) => setHourDelivery(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">LATITUDE, LONGITUDE: <span className="text-success">-73.69878851,40.732870984</span></label>
+                                                                    <div id="HourDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ arrivalLonLat } className="form-control" onChange={ (e) => setArrivalLonLat(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                         </div>

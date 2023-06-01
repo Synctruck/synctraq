@@ -88,8 +88,9 @@ class PackageDeliveryController extends Controller
                 return ['stateAction' => 'notExists'];
             }
 
-            $actualDate = date('Y-m-d H:i:s');
-            $created_at = $request->get('DateDelivery') .' '. $request->get('HourDelivery');
+            $actualDate    = date('Y-m-d H:i:s');
+            $created_at    = $request->get('DateDelivery') .' '. $request->get('HourDelivery');
+            $arrivalLonLat = $request->get('arrivalLonLat');
 
             $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                                             ->orderBy('actualDate', 'asc')
@@ -179,6 +180,7 @@ class PackageDeliveryController extends Controller
                 $packageDispatch->Notes                        = $package->Notes;
                 $packageDispatch->Weight                       = $package->Weight;
                 $packageDispatch->Route                        = $package->Route;
+                $packageDispatch->arrivalLonLat                = $arrivalLonLat;
                 $packageDispatch->idUser                       = Auth::user()->id;
                 $packageDispatch->Date_Dispatch                = $created_at;
                 $packageDispatch->Date_Delivery                = $created_at;
@@ -196,6 +198,7 @@ class PackageDeliveryController extends Controller
             }
             else if($package->status == 'Dispatch' || $package->status == 'Delivery' || $package->status == 'Delete')
             {
+                $package->arrivalLonLat = $arrivalLonLat;
                 $package->Date_Delivery = $created_at;
                 $package->filePhoto1    = $filePhoto1;
                 $package->filePhoto2    = $filePhoto2;

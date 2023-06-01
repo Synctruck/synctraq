@@ -286,7 +286,7 @@ class PackageController extends Controller
         }
         else if($packageDispatch && $packageDispatch->arrivalLonLat != '')
         {
-            $localization       = explode(',', $packageDispatch->arrivalLonLat);
+            $localization = explode(',', $packageDispatch->arrivalLonLat);
 
             if(count($localization) > 1)
             {
