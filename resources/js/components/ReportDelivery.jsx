@@ -387,7 +387,7 @@ function ReportDelivery() {
             }
             else if(packageDelivery.photoUrl != '')
             {
-                alert(packageDelivery.Reference_Number_1);
+                alert(packageDelivery.photoUrl);
                 let idsImages = packageDelivery.photoUrl.split(',');
 
                 if(idsImages.length == 1)
