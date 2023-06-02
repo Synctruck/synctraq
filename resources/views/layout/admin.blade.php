@@ -760,6 +760,7 @@
                 let latitudeLongitude     = response.latitudeLongitude;
                 let actualStatus          = response.actualStatus;
 
+                console.log(packageDispatch);
                 if(packageHistoryNMIList.length > 0)
                 {
                     document.getElementById('divBtnHistoryNMI').style.display   = 'block';
@@ -867,37 +868,60 @@
 
                 if(packageDispatch)
                 {
-                    if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                    if(packageDispatch.filePhoto1 == '' && packageDispatch.filePhoto2 == '')
                     {
-                        let urlsPhoto = packageDispatch.photoUrl.split(',')
+                        if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                        {
+                            let urlsPhoto = packageDispatch.photoUrl.split(',')
 
-                        urlsPhoto.forEach( photoCode => {
+                            urlsPhoto.forEach( photoCode => {
 
-                            let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+                                let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
 
-                            tr =    '<tr>'+
-                                        '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
-                                    '</tr>';
-
-                            tableHistoryPackage.insertRow(-1).innerHTML = tr;
-                        });
-                    }
-                    else if(packageDelivery)
-                    {
-                        let urlsPhoto = packageDelivery.photoUrl.split('https:')
-
-                        urlsPhoto.forEach( url => {
-
-                            if(url)
-                            {
                                 tr =    '<tr>'+
-                                            '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                            '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
                                         '</tr>';
 
                                 tableHistoryPackage.insertRow(-1).innerHTML = tr;
-                            }
+                            });
+                        }
+                        else if(packageDelivery)
+                        {
+                            let urlsPhoto = packageDelivery.photoUrl.split('https:')
 
-                        });
+                            urlsPhoto.forEach( url => {
+
+                                if(url)
+                                {
+                                    tr =    '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                }
+
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if(packageDispatch.filePhoto1 != '')
+                        {
+                            let trPhoto1 =  '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url_general +'img/deliveries/'+ packageDispatch.filePhoto1 +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                            tableHistoryPackage.insertRow(-1).innerHTML = trPhoto1;
+                        }
+
+                        if(packageDispatch.filePhoto2 != '')
+                        {
+                            let trPhoto2 =  '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url_general +'img/deliveries/'+ packageDispatch.filePhoto2 +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                            tableHistoryPackage.insertRow(-1).innerHTML = trPhoto2;
+                        }
                     }
                 }
 
