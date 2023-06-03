@@ -911,7 +911,7 @@ function PackageLost() {
                                                 ''
                                         }
                                     </div>
-                                    <div className="col-lg-12 form-group">
+                                    <div className="col-lg-6 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -924,6 +924,12 @@ function PackageLost() {
                                                 <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div className="col-lg-6 form-group">
+                                        <div className="form-group">
+                                            <label htmlFor="">COMMENT</label>
+                                            <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
