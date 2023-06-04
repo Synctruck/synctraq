@@ -162,7 +162,7 @@ class UserController extends Controller
 
     public function Login()
     {
-        $packageManifest = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')->first();
+        /*$packageManifest = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')->first();
         $company         = Company::where('name', 'INLAND LOGISTICS')->first();
         $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
         $created_at      = $created_at_temp->format(DateTime::ATOM);
@@ -254,7 +254,7 @@ class UserController extends Controller
         }
 
         Log::info('output');
-        Log::info($output);
+        Log::info($output);*/
 
         return view('user.login');
     }

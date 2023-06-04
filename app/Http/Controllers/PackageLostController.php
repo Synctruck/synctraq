@@ -56,6 +56,7 @@ class PackageLostController extends Controller
                 "Dropoff_Postal_Code" => $packageLost->Dropoff_Postal_Code,
                 "Route" => $packageLost->Route,
                 "Weight" => $packageLost->Weight,
+                "comment" => $packageLost->comment,
                 "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
                 "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
             ];
@@ -94,7 +95,7 @@ class PackageLostController extends Controller
         if($type =='list')
         {
             $packageListLost = $packageListLost->orderBy('created_at', 'desc')
-                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'comment', 'created_at')
                                                 ->paginate(50);
         }
         else{
@@ -247,6 +248,7 @@ class PackageLostController extends Controller
                 $packageLost->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageLost->Notes                        = $packageInbound->Notes;
                 $packageLost->Route                        = $packageInbound->Route;
+                $packageLost->comment                      = $request->get('comment') ? $request->get('comment') : '';
                 $packageLost->Weight                       = $packageInbound->Weight;
                 $packageLost->idUser                       = Auth::user()->id;
                 $packageLost->status                       = 'Lost';
@@ -275,7 +277,7 @@ class PackageLostController extends Controller
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
+                $packageHistory->Description                  = $request->get('comment') ? $request->get('comment') : '';
                 $packageHistory->status                       = 'Lost';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');

@@ -19,6 +19,7 @@ function PackageLost() {
     const [quantityInbound, setQuantityInbound] = useState(0);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [Comment, setComment] = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
 
@@ -446,177 +447,204 @@ function PackageLost() {
 
         if(sendInbound)
         {
-            const formData = new FormData();
+            if(Comment == '')
+            {
+                swal({
+                    title: "Register the package?",
+                    text: "The package will be registered without comment!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
 
-            formData.append('Reference_Number_1', Reference_Number_1);
-
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            setReadInput(true);
-            setSendInbound(0);
-
-            fetch(url_general +'package-lost/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
-
-                    setTextMessageDate('');
-                    setTextMessage2('');
-
-                    if(response.stateAction == 'validatedLost')
+                    if(willDelete)
                     {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
+                        handlerRegister();
                     }
-                    else if(response.stateAction == 'validatedPreDispatch')
+                });
+            }
+            else
+            {
+                handlerRegister();
+            }
+        }
+    }
+
+    const handlerRegister = () => {
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('comment', Comment);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setReadInput(true);
+        setSendInbound(0);
+
+        fetch(url_general +'package-lost/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+                setTextMessageDate('');
+                setTextMessage2('');
+
+                if(response.stateAction == 'validatedLost')
+                {
+                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedPreDispatch')
+                {
+                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS PRE-DISPATCH #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedReturnCompany')
+                {
+                    setTextMessage("THE PACKAGE WAS REGISTERED AS A RETURN COMPANY #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+                    let packageManifest = response.packageManifest;
+
+                    if(packageBlocked)
                     {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS PRE-DISPATCH #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedReturnCompany')
-                    {
-                        setTextMessage("THE PACKAGE WAS REGISTERED AS A RETURN COMPANY #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
-                                showConfirmButton: false,
-                                timer: 2000,
-                            });
-                        }
-                        
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        setTextMessage('');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'packageInPreDispatch')
-                    {
-                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                        setTypeMessage('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validatedInbound')
-                    {
-                        let packageInbound = response.packageInbound;
-
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                        setTextMessageDate(packageInbound.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedWarehouse')
-                    {
-                        let packageWarehouse = response.packageWarehouse;
-
-                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                        setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageManifest = response.packageManifest;
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
                         Swal.fire({
                             icon: 'error',
                             title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                            text: packageBlocked.comment,
                             showConfirmButton: false,
                             timer: 2000,
-                        })
-
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
+                        });
                     }
-                    else if(response.stateAction == 'validatedFilterState')
-                    {
-                        setTextMessage("OTHER STATE "+ Reference_Number_1);
-                        setTypeMessage('primary');
-                        setNumberPackage('');
+                    
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction)
-                    {
-                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route +' / '+ response.packageInbound.status);
-                        setTypeMessage('success');
-                        setNumberPackage('');
+                    setTextMessage('');
+                    setNumberPackage('');
 
-                        setWeightLabel(response.packageInbound.Weight);
-                        setStateLabel(response.packageInbound.Dropoff_Province);
-                        setRouteLabel(response.packageInbound.Route);
-                        setReferenceLabel(response.packageInbound.Reference_Number_1);
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'packageInPreDispatch')
+                {
+                    setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
 
-                        listAllPackageInbound(1, RouteSearch, StateSearch);
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                    setTypeMessage('error');
+                    setNumberPackage('');
 
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'validatedInbound')
+                {
+                    let packageInbound = response.packageInbound;
 
-                        //handlerPrint('labelPrint');
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessage('error');
-                        setNumberPackage('');
+                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
+                    setTextMessageDate(packageInbound.created_at);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
 
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedWarehouse')
+                {
+                    let packageWarehouse = response.packageWarehouse;
 
-                    setReadInput(false);
-                    setSendInbound(1);
-                },
-            );
-        }
+                    setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                    setTextMessageDate(packageWarehouse.created_at);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageManifest = response.packageManifest;
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                        showConfirmButton: false,
+                        timer: 2000,
+                    })
+
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'validatedFilterState')
+                {
+                    setTextMessage("OTHER STATE "+ Reference_Number_1);
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validated')
+                {
+                    setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction)
+                {
+                    setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route +' / '+ response.packageInbound.status);
+                    setTypeMessage('success');
+                    setNumberPackage('');
+                    setComment('');
+
+                    setWeightLabel(response.packageInbound.Weight);
+                    setStateLabel(response.packageInbound.Dropoff_Province);
+                    setRouteLabel(response.packageInbound.Route);
+                    setReferenceLabel(response.packageInbound.Reference_Number_1);
+
+                    listAllPackageInbound(1, RouteSearch, StateSearch);
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    //handlerPrint('labelPrint');
+                }
+                else
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                    setTypeMessage('error');
+                    setNumberPackage('');
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+
+                setReadInput(false);
+                setSendInbound(1);
+            },
+        );
     }
 
     const handlerImport = (e) => {
@@ -676,6 +704,7 @@ function PackageLost() {
                 </td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.comment }</td>
                 <td>{ pack.Last_Status }</td>
                 <td>{ pack.Last_Description }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
@@ -912,6 +941,12 @@ function PackageLost() {
                                         }
                                     </div>
                                     <div className="col-lg-6 form-group">
+                                        <div className="form-group">
+                                            <label htmlFor="">COMMENT</label>
+                                            <input id="Comment" type="text" className="form-control" value={ Comment } onChange={ (e) => setComment(e.target.value) } maxLength="250"/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -924,12 +959,6 @@ function PackageLost() {
                                                 <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                             </div>
                                         </form>
-                                    </div>
-                                    <div className="col-lg-6 form-group">
-                                        <div className="form-group">
-                                            <label htmlFor="">COMMENT</label>
-                                            <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
-                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -1067,6 +1096,7 @@ function PackageLost() {
                                                 <th>DATE</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>COMMENT</th>
                                                 <th>LAST STATUS</th>
                                                 <th>LAST DESCRIPTION</th>
                                                 <th>CLIENT</th>
