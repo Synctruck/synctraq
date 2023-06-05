@@ -145,12 +145,10 @@ class TaskCreatePackageInland extends Command
             {
                 $packageManifest->sendToInland = 3;
             }
-            else if($http_status == 500)
+            else if($http_status >= 500)
             {
                 $packageManifest->sendToInland = 4;
             }
-
-            Log::info($output);
 
             $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
             $packageManifest->save();
