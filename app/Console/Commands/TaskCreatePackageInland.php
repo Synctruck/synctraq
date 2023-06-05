@@ -143,7 +143,7 @@ class TaskCreatePackageInland extends Command
 
                 $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
 
-                if($http_status >= 200 || $http_status <= 399)
+                if($http_status >= 200 || $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
                 }
