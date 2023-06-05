@@ -56,7 +56,7 @@ class TaskCreatePackageInland extends Command
             $packageManifestList = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')
                                             ->where('sendToInland', 0)
                                             ->get()
-                                            ->take(10);
+                                            ->take(15);
 
             foreach($packageManifestList as $packageManifest)
             {
@@ -93,7 +93,7 @@ class TaskCreatePackageInland extends Command
                                     "address_line3": "",
                                     "city_locality": "'. $packageManifest->Dropoff_City .'",
                                     "state_province": "'. $packageManifest->Dropoff_Province .'",
-                                    "postal_code": "07676",
+                                    "postal_code": "'. $packageManifest->Dropoff_Postal_Code .'",
                                     "address_residential_indicator": true
                                 },
                                 "shipment_details": { 
