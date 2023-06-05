@@ -112,8 +112,6 @@ class TaskCreatePackageInland extends Command
                         }
                     }';
 
-            Log::info('Reference_Number_1: '. $packageManifest->Reference_Number_1);
-
             $curl = curl_init();
             
             curl_setopt_array($curl, array(
@@ -139,8 +137,10 @@ class TaskCreatePackageInland extends Command
 
             $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
 
-            if($http_status >= 200 || $http_status <= 299)
+            if($http_status >= 200 && $http_status <= 299)
             {
+                Log::info('Reference_Number_1: '. $packageManifest->Reference_Number_1);
+
                 $packageManifest->sendToInland = 1;
             }
             else
