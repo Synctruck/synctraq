@@ -166,7 +166,7 @@ class ChargeCompanyController extends Controller
             $lineData = array(
 
                 $date,
-                $packageDelivery->company,
+                ($packageDelivery ? $packageDelivery->company : ''),
                 $team,
                 $chargeDetail->Reference_Number_1,
                 $packagePriceCompanyTeam->dieselPriceCompany,
