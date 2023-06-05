@@ -85,7 +85,9 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        try
+        if($dayName == 'Monday' && $nowHour == 9)
+        {
+            try
             {
                 DB::beginTransaction();
 
@@ -117,10 +119,6 @@ class TaskPackageSendPreFactura extends Command
             {
                 DB::rollback();
             }
-            
-        if($dayName == 'Monday' && $nowHour == 9)
-        {
-            
         }
     }
 
