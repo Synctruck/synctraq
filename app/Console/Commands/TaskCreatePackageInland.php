@@ -52,7 +52,7 @@ class TaskCreatePackageInland extends Command
         $packageManifestList = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')
                                             ->where('sendToInland', 0)
                                             ->get()
-                                            ->take(300);
+                                            ->take(30);
 
         foreach($packageManifestList as $packageManifest)
         {
@@ -139,14 +139,14 @@ class TaskCreatePackageInland extends Command
 
             if($http_status >= 200 && $http_status <= 299)
             {
-                Log::info('Reference_Number_1: '. $packageManifest->Reference_Number_1);
-
                 $packageManifest->sendToInland = 1;
             }
             else
             {
                 $packageManifest->sendToInland = 3;
             }
+
+            Log::info($output);
 
             $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
             $packageManifest->save();
