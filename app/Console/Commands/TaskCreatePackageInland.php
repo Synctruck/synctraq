@@ -141,11 +141,11 @@ class TaskCreatePackageInland extends Command
             {
                 $packageManifest->sendToInland = 1;
             }
-            else($http_status >= 400 && $http_status <= 499)
+            else if($http_status >= 400 && $http_status <= 499)
             {
                 $packageManifest->sendToInland = 3;
             }
-            else($http_status == 500)
+            else if($http_status == 500)
             {
                 $packageManifest->sendToInland = 4;
             }
