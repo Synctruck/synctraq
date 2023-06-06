@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes };
+use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackagePreManifest, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes };
 
 use DateTime;
 use DB;
@@ -196,7 +196,16 @@ class PackageController extends Controller
 
                     $routeName = $route ? $route->name : $data['Route'];
 
-                    $package = new PackageManifest();
+                    $packagePreManifest = PackagePreManifest::find($data['Reference_Number_1']);
+
+                    if($data['Reference_Number_1'])
+                    {
+                        $packagePreManifest->returnInland = 1;
+                        $packagePreManifest->returnDate   = date('Y-m-d H:i:s');
+                        $packagePreManifest->save();
+                    }
+
+                    $package = new PackagePreManifest();
 
                     $package->idCompany                     = $company->id;
                     $package->company                       = $company->name;
