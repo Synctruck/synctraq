@@ -205,7 +205,7 @@ class PackageController extends Controller
                         $packagePreManifest->save();
                     }
 
-                    $package = new PackagePreManifest();
+                    $package = new PackageManifest();
 
                     $package->idCompany                     = $company->id;
                     $package->company                       = $company->name;

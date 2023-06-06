@@ -54,7 +54,7 @@ class TaskCreatePackageInland extends Command
                                                 ->get()
                                                 ->take(300);
 
-        foreach($packageManifestList as $packageManifest)
+        foreach($packageManifestList as $packagePreManifest)
         {
             $company         = Company::where('name', 'INLAND LOGISTICS')->first();
             $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
@@ -65,7 +65,7 @@ class TaskCreatePackageInland extends Command
                         "created_at": "",
                         "ship_date": "2021-10-14T16:46:53-0600",
                         "shipment": {
-                            "shipper_package_id": "'. $packageManifest->Reference_Number_1 .'",
+                            "shipper_package_id": "'. $packagePreManifest->Reference_Number_1 .'",
                             "ship_from": {
                                 "facility_shortcode": "SMEWRD1",
                                 "address_type": "ship_from",
@@ -81,20 +81,20 @@ class TaskCreatePackageInland extends Command
                             },
                             "ship_to": {
                                 "address_type": "",
-                                "name": "'. $packageManifest->Dropoff_Contact_Name .'",
+                                "name": "'. $packagePreManifest->Dropoff_Contact_Name .'",
                                 "company": "",
-                                "phone": "'. $packageManifest->Dropoff_Contact_Phone_Number .'",
-                                "address_line1": "'. $packageManifest->Dropoff_Address_Line_1 .'",
+                                "phone": "'. $packagePreManifest->Dropoff_Contact_Phone_Number .'",
+                                "address_line1": "'. $packagePreManifest->Dropoff_Address_Line_1 .'",
                                 "address_line2": "", 
                                 "address_line3": "",
-                                "city_locality": "'. $packageManifest->Dropoff_City .'",
-                                "state_province": "'. $packageManifest->Dropoff_Province .'",
-                                "postal_code": "'. $packageManifest->Dropoff_Postal_Code .'",
+                                "city_locality": "'. $packagePreManifest->Dropoff_City .'",
+                                "state_province": "'. $packagePreManifest->Dropoff_Province .'",
+                                "postal_code": "'. $packagePreManifest->Dropoff_Postal_Code .'",
                                 "address_residential_indicator": true
                             },
                             "shipment_details": { 
                                 "ship_date": "'. $created_at .'",
-                                "weight": '. $packageManifest->Weight .',
+                                "weight": '. $packagePreManifest->Weight .',
                                 "weight_unit": "lb",
                                 "length": 0,
                                 "shipper_notes_1": "Notes",
@@ -135,23 +135,23 @@ class TaskCreatePackageInland extends Command
 
             curl_close($curl);
 
-            $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
+            $packagePreManifest = PackagePreManifest::find($packagePreManifest->Reference_Number_1);
 
             if($http_status >= 200 && $http_status <= 299)
             {
-                $packageManifest->sendToInland = 1;
+                $packagePreManifest->sendToInland = 1;
             }
             else if($http_status >= 400 && $http_status <= 499)
             {
-                $packageManifest->sendToInland = 3;
+                $packagePreManifest->sendToInland = 3;
             }
             else if($http_status >= 500)
             {
-                $packageManifest->sendToInland = 4;
+                $packagePreManifest->sendToInland = 4;
             }
 
-            $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
-            $packageManifest->save();
+            $packagePreManifest->sendToInlandDate = date('Y-m-d H:i:s');
+            $packagePreManifest->save();
         }
     }
 }
