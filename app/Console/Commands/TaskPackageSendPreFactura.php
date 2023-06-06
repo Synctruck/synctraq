@@ -85,7 +85,8 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        
+        if($dayName == 'Monday' && $nowHour == 9)
+        {
             try
             {
                 DB::beginTransaction();
@@ -93,7 +94,7 @@ class TaskPackageSendPreFactura extends Command
                 $files     = [];
                 $nowDate   = date('Y-m-d');
                 $startDate = date('Y-01-01');
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
 
@@ -118,6 +119,7 @@ class TaskPackageSendPreFactura extends Command
             {
                 DB::rollback();
             }
+        }
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
