@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, PackageManifest };
+use App\Models\{ Company, PackagePreManifest };
 
 use DateTime;
 use Log;
