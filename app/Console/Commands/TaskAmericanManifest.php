@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ FileImport, PackagePreManifest, PackageHistory, Routes };
+use App\Models\{ FileImport, PackageManifest, PackagePreManifest, PackageHistory, Routes, ZipCodeInland };
 
 use Log;
 
@@ -72,15 +72,32 @@ class TaskAmericanManifest extends Command
                             $row = str_getcsv($raw_string);
 
                             $packageHistory  = PackageHistory::where('Reference_Number_1', $row[0])->get();
-                            $packagePreManifest = PackagePreManifest::find($row[0]);
 
-                            if(count($packageHistory) == 0 && !$packagePreManifest)
+                            $zipCodeInland = ZipCodeInland::where('zipCode', $row[20])->first();
+
+                            if($zipCodeInland)
+                            {
+                                $package = PackagePreManifest::find($row[0]);
+                            }
+                            else
+                            {
+                                $package = PackageManifest::find($row[0]);
+                            }
+
+                            if(count($packageHistory) == 0 && !$package)
                             {
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
                                     $created_at = date('Y-m-d H:i:s');
 
-                                    $package = new PackagePreManifest();
+                                    if($zipCodeInland)
+                                    {
+                                        $package = new PackagePreManifest();
+                                    }
+                                    else
+                                    {
+                                        $package = new PackageManifest();
+                                    }
 
                                     $package->Reference_Number_1           = $row[0];
                                     $package->idCompany                    = 10;

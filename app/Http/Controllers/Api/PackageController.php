@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackagePreManifest, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes };
+use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackagePreManifest, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, ZipCodeInland };
 
 use DateTime;
 use DB;
@@ -192,20 +192,31 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    $route         = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    $routeName     = $route ? $route->name : $data['Route'];
+                    $zipCodeInland = ZipCodeInland::where('zipCode', $data['Dropoff_Postal_Code'])->first();
 
-                    $routeName = $route ? $route->name : $data['Route'];
-
-                    $packagePreManifest = PackagePreManifest::find($data['Reference_Number_1']);
-
-                    if($data['Reference_Number_1'])
+                    if($company->name != 'INLAND LOGISTICS' && $zipCodeInland)
                     {
-                        $packagePreManifest->returnInland = 1;
-                        $packagePreManifest->returnDate   = date('Y-m-d H:i:s');
-                        $packagePreManifest->save();
-                    }
+                        $packagePreManifest = PackagePreManifest::find($data['Reference_Number_1']);
 
-                    $package = new PackageManifest();
+                        if($packagePreManifest)
+                        {
+                            $packagePreManifest->returnInland = 2;
+                            $packagePreManifest->returnDate   = date('Y-m-d H:i:s');
+                            $packagePreManifest->save();
+
+                            $package = new PackageManifest();
+                        }
+                        else
+                        {
+                            $package = new PackagePreManifest();
+                        }
+                    }
+                    else
+                    {
+                        $package = new PackageManifest();
+                    }
 
                     $package->idCompany                     = $company->id;
                     $package->company                       = $company->name;
