@@ -52,7 +52,7 @@ class TaskCreatePackageInland extends Command
         $packageManifestList = PackagePreManifest::where('company', '!=', 'INLAND LOGISTICS')
                                                 ->where('sendToInland', 0)
                                                 ->get()
-                                                ->take(300);
+                                                ->take(50);
 
         foreach($packageManifestList as $packagePreManifest)
         {
