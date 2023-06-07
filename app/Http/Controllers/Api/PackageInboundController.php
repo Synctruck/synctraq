@@ -153,7 +153,7 @@ class PackageInboundController extends Controller
 
         if(!$company)
         {
-            return response()->json(['message' => "Authentication Failed"], 400);
+            return response()->json(['message' => "Authentication Failed"], 401);
         }
 
         $Reference_Number_1 = $request['package_id'];
@@ -237,7 +237,7 @@ class PackageInboundController extends Controller
                 $packageHistory->inbound                      = 1;
                 $packageHistory->quantity                     = $package->quantity;
                 $packageHistory->status                       = $status;
-                $packageHistory->actualDate                   = $created_at;
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
