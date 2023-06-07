@@ -514,7 +514,7 @@ class PackageController extends Controller
 
                 Log::info('companyStatus');
                 Log::info($companyStatus);
-                
+
                 $statusCodeCompany = $companyStatus->statusCodeCompany;
                 $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
                 $urlWebhook        = $url_webhook;
@@ -537,14 +537,16 @@ class PackageController extends Controller
                 CURLOPT_HTTPHEADER => $header_curl,
             ));
 
-            $response = curl_exec($curl);
-            $response = json_decode($response, true);
+            $response    = curl_exec($curl);
+            $response    = json_decode($response, true);
+            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
 
             Log::info($response);
 
             Log::info('===========  INLAND - STATUS UPDATE');
+            Log:::info($http_status);
             Log::info('PACKAGE ID: '. $package->Reference_Number_1);
             Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
             Log::info('REPONSE STATUS: '. $response['status']);
