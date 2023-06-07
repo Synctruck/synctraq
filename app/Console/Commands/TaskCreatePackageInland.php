@@ -140,7 +140,8 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
 
-
+                Log::info($output);
+                
                 if($http_status >= 200 && $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
