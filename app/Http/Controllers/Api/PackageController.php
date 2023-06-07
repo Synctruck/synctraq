@@ -512,7 +512,9 @@ class PackageController extends Controller
                                                 ->where('status', $status)
                                                 ->first();
 
-
+                Log::info('companyStatus');
+                Log::info($companyStatus);
+                
                 $statusCodeCompany = $companyStatus->statusCodeCompany;
                 $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
                 $urlWebhook        = $url_webhook;
