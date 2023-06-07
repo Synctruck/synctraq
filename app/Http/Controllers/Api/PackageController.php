@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackagePreManifest, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, ZipCodeInland };
+use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes };
 
 use DateTime;
 use DB;
@@ -192,31 +192,11 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $route         = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
-                    $routeName     = $route ? $route->name : $data['Route'];
-                    $zipCodeInland = ZipCodeInland::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
 
-                    if($company->name != 'INLAND LOGISTICS' && $zipCodeInland)
-                    {
-                        $packagePreManifest = PackagePreManifest::find($data['Reference_Number_1']);
+                    $routeName = $route ? $route->name : $data['Route'];
 
-                        if($packagePreManifest)
-                        {
-                            $packagePreManifest->returnInland = 2;
-                            $packagePreManifest->returnDate   = date('Y-m-d H:i:s');
-                            $packagePreManifest->save();
-
-                            $package = new PackageManifest();
-                        }
-                        else
-                        {
-                            $package = new PackagePreManifest();
-                        }
-                    }
-                    else
-                    {
-                        $package = new PackageManifest();
-                    }
+                    $package = new PackageManifest();
 
                     $package->idCompany                     = $company->id;
                     $package->company                       = $company->name;
@@ -532,6 +512,8 @@ class PackageController extends Controller
                                                 ->where('status', $status)
                                                 ->first();
 
+                Log::info('companyStatus');
+                Log::info($companyStatus);
 
                 $statusCodeCompany = $companyStatus->statusCodeCompany;
                 $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
@@ -555,14 +537,16 @@ class PackageController extends Controller
                 CURLOPT_HTTPHEADER => $header_curl,
             ));
 
-            $response = curl_exec($curl);
-            $response = json_decode($response, true);
+            $response    = curl_exec($curl);
+            $response    = json_decode($response, true);
+            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
 
             Log::info($response);
 
             Log::info('===========  INLAND - STATUS UPDATE');
+            Log::info('http_status: '. $http_status);
             Log::info('PACKAGE ID: '. $package->Reference_Number_1);
             Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
             Log::info('REPONSE STATUS: '. $response['status']);
@@ -708,7 +692,7 @@ class PackageController extends Controller
                     "status": {
                         "to": "'. $statusCodeCompany .'",
                         "latitude": "'. $package->latitude .'",
-                        "longitude": "'. $package->longitude .'",
+                        "longitude": "'. $package->longitude .'"
                     }
                 }
             }';
