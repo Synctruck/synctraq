@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, Configuration, DimFactorCompany, DimFactorTeam, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PeakeSeasonCompany, RangePriceCompany, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -156,42 +156,56 @@ class PackageInboundController extends Controller
         $description        = $request['description'];
 
         Log::info($request);
-        
+
         $package = PackageManifest::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
-        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
 
         try
         {
             DB::beginTransaction();
 
-            if($status == 'Inbound')
+            if($package)
             {
-                $packageInbound = new PackageInbound();
+                if($status == 'Inbound')
+                {
+                    $packageCreate = new PackageInbound();
+                }
+                else if($status == 'Dispatch')
+                {
+                    $packageCreate = new PackageDispatch();
+                }
+                else if($status == 'ReInbound')
+                {
+                    $packageCreate = new PackageWarehouse();
+                }
+                else if($status == 'ReturnCompany')
+                {
+                    $packageCreate = new PackageReturnCompany();
+                }
 
-                $packageInbound->Reference_Number_1           = $package->Reference_Number_1;
-                $packageInbound->idCompany                    = $package->idCompany;
-                $packageInbound->company                      = $package->company;
-                $packageInbound->idStore                      = $package->idStore;
-                $packageInbound->store                        = $package->store;
-                $packageInbound->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                $packageInbound->Dropoff_Company              = $package->Dropoff_Company;
-                $packageInbound->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                $packageInbound->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                $packageInbound->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                $packageInbound->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                $packageInbound->Dropoff_City                 = $package->Dropoff_City;
-                $packageInbound->Dropoff_Province             = $package->Dropoff_Province;
-                $packageInbound->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                $packageInbound->Notes                        = $dimensions;
-                $packageInbound->Weight                       = $weight;
-                $packageInbound->Route                        = $package->Route;
-                $packageInbound->quantity                     = $package->quantity;
-                $packageInbound->status                       = 'Inbound';
-                $packageInbound->save();
+                $packageCreate->Reference_Number_1           = $package->Reference_Number_1;
+                $packageCreate->idCompany                    = $package->idCompany;
+                $packageCreate->company                      = $package->company;
+                $packageCreate->idStore                      = $package->idStore;
+                $packageCreate->store                        = $package->store;
+                $packageCreate->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                $packageCreate->Dropoff_Company              = $package->Dropoff_Company;
+                $packageCreate->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                $packageCreate->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                $packageCreate->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                $packageCreate->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                $packageCreate->Dropoff_City                 = $package->Dropoff_City;
+                $packageCreate->Dropoff_Province             = $package->Dropoff_Province;
+                $packageCreate->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                $packageCreate->Weight                       = $package->Weight;
+                $packageCreate->Route                        = $package->Route;
+                $packageCreate->quantity                     = $package->quantity;
+                $packageCreate->status                       = $status;
+                $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
                 $packageHistory->id                           = uniqid();
@@ -209,14 +223,13 @@ class PackageInboundController extends Controller
                 $packageHistory->Dropoff_City                 = $package->Dropoff_City;
                 $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                $packageHistory->Notes                        = $dimensions;
-                $packageHistory->Weight                       = $weight;
+                $packageHistory->Weight                       = $package->Weight;
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Date_Inbound                 = $created_at;
                 $packageHistory->Description                  = 'INLAND: '. $description;
                 $packageHistory->inbound                      = 1;
                 $packageHistory->quantity                     = $package->quantity;
-                $packageHistory->status                       = 'Inbound';
+                $packageHistory->status                       = $status;
                 $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
