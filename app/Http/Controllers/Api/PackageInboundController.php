@@ -241,11 +241,11 @@ class PackageInboundController extends Controller
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
+
+                $package->delete();
             }
 
-            $package->delete();
-
-            DB::commit()
+            DB::commit();
 
             return response()->json(['message' => "Shipment has been received"], 200);
         }
