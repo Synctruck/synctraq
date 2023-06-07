@@ -149,6 +149,13 @@ class PackageInboundController extends Controller
 
     public function ShipmentInland(Request $request, $keyApi)
     {
+        $company = Company::where('key_api', $keyApi)->first();
+
+        if(!$company)
+        {
+            return response()->json(['message' => "Authentication Failed"], 400);
+        }
+
         $Reference_Number_1 = $request['package_id'];
         $status             = $request['status'];
         $created_at         = $request['datetime'];
@@ -239,10 +246,14 @@ class PackageInboundController extends Controller
             $package->delete();
 
             DB::commit()
+
+            return response()->json(['message' => "Shipment has been received"], 200);
         }
         catch (Exception $e)
         {
             DB::rollback();
+
+            return response()->json(['message' => "Unhandled error, try again"], 500);
         }
     }
 }
