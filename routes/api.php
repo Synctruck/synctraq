@@ -44,4 +44,4 @@ Route::get('packages-inbound/updated-route', [PackageController::class, 'UpdateI
 Route::get('packages-warehouse/updated-route', [PackageController::class, 'UpdateWarehouseRouteByZipCode']);
 
 Route::post('package-inbound/insert', [PackageInboundController::class, 'Insert']);
-Route::post('package-inbound/insert-for-inland/{keyApi}', [PackageInboundController::class, 'InsertForInland']);
+Route::post('package/shipments/inland/{keyApi}', [PackageInboundController::class, 'ShipmentInland']);
