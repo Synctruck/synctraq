@@ -179,11 +179,54 @@ class PackageInboundController extends Controller
             {
                 if($status == 'Inbound')
                 {
-                    $packageCreate = new PackageInbound();
+                    if($package->status == 'Inbound')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Inbound.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageInbound();
+                    }
+                    
                 }
                 else if($status == 'Dispatch')
                 {
-                    $packageCreate = new PackageDispatch();
+                    if($package->status == 'Dispatch')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Dispatch.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageDispatch();
+                    }
+                }
+                else if($status == 'Delivery')
+                {
+                    if($package->status == 'Delivery')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Delivery.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = PackageDispatch::find($package->Reference_Number_1);
+                        $packageCreate->photoUrl      = $pod_url;
+                        $packageCreate->Date_Delivery = $created_at;
+                    }
                 }
                 else if($status == 'ReInbound')
                 {
@@ -212,6 +255,8 @@ class PackageInboundController extends Controller
                 $packageCreate->Route                        = $package->Route;
                 $packageCreate->quantity                     = $package->quantity;
                 $packageCreate->status                       = $status;
+                $packageCreate->created_at                   = $created_at;
+                $packageCreate->updated_at                   = $created_at;
                 $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
@@ -242,12 +287,24 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
-                $package->delete();
+                if($status != 'Delivery')
+                {
+                    $package->delete();
+                }
+
+                DB::commit();
+
+                return response()->json(['message' => "Shipment has been received"], 200);
             }
-
-            DB::commit();
-
-            return response()->json(['message' => "Shipment has been received"], 200);
+            else
+            {
+                return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID does not exists'
+                            ]
+                        , 400);
+            }
         }
         catch (Exception $e)
         {
