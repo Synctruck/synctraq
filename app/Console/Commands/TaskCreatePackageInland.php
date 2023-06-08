@@ -66,7 +66,7 @@ class TaskCreatePackageInland extends Command
                 $created_at      = $created_at_temp->format(DateTime::ATOM);
 
                 $data = '{
-                            "shipment_type": "pick_up",
+                            "shipment_type": "drop_off",
                             "created_at": "",
                             "ship_date": "2021-10-14T16:46:53-0600",
                             "shipment": {
