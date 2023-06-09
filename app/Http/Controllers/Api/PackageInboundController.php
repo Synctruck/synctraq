@@ -205,6 +205,10 @@ class PackageInboundController extends Controller
                             ]
                         , 400);
                     }
+                    else if($package->status == 'Delivery')
+                    {
+                        $packageCreate = PackageDispatch::find($package->Reference_Number_1);
+                    }
                     else
                     {
                         $packageCreate = new PackageDispatch();
@@ -224,6 +228,12 @@ class PackageInboundController extends Controller
                     else
                     {
                         $packageCreate = PackageDispatch::find($package->Reference_Number_1);
+
+                        if(!$packageCreate)
+                        {
+                            $packageCreate = new PackageDispatch();
+                        }
+
                         $packageCreate->photoUrl      = $pod_url;
                         $packageCreate->Date_Delivery = $created_at;
                     }
@@ -287,9 +297,16 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
-                if($status != 'Delivery')
+                if($package->status == 'Manifest' || $package->status == 'Inbound')
                 {
                     $package->delete();
+                }
+                else if($package->status == 'Dispatch' || $package->status == 'Delivery')
+                {
+                    if($status == 'Inbound')
+                    {
+                        $package->delete();
+                    }
                 }
 
                 DB::commit();
