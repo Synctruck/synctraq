@@ -151,7 +151,6 @@ class TaskCreatePackageInland extends Command
                 }
                 else if($http_status >= 500)
                 {
-                    Log::info($output);
                     $packageManifest->sendToInland = 4;
                     $packageManifest->errorInland  = $output['error'];
                 }
