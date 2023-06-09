@@ -313,7 +313,8 @@ function ReportDelivery() {
         {
             if(urlImageAux[0].includes('https'))
             {
-                imgs = <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                imgs     = <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                urlImage = urlImageAux[0];
             }
             else
             {
@@ -328,6 +329,8 @@ function ReportDelivery() {
                             <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
                             <img src={ urlImageAux[1] } width="50" style={ {border: '2px solid red'} }/>
                         </>
+
+                urlImage = urlImageAux[0] + urlImageAux[1];;
             }
             else
             {
