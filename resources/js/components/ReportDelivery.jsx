@@ -303,140 +303,170 @@ function ReportDelivery() {
 
         let imgs = '';
         let urlImage = '';
-
         let photoHttp = false;
+        let reVerification = false
+        let urlImageAux = packageDelivery.photoUrl.split(',');
 
-        if(packageDelivery.filePhoto1 == '' && packageDelivery.filePhoto2 == '')
+        console.log(urlImageAux);
+
+        if(urlImageAux.length == 1)
         {
-            if(packageDelivery.photoUrl == '')
+            if(urlImageAux[0].includes('https'))
             {
-                if(!packageDelivery.idOnfleet)
-                {
-                    photoHttp = true;
-                }
-                else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
-                {
-                    photoHttp = true;
-                }
+                imgs = <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
             }
-
-            if(photoHttp)
+            else
             {
-                let team     = ''
-                let driver   = '';
-
-                listDeliveries.forEach( delivery => {
-
-                    if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
-                    {
-                        urlImage = delivery.photoUrl;
-
-                        if(urlImage)
-                        {
-                            urlImage = urlImage.split('https');
-
-                            if(urlImage.length == 2)
-                            {
-                                imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
-                            }
-                            else if(urlImage.length >= 3)
-                            {
-                                imgs =  <>
-                                            <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
-                                            <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
-                                        </>
-                            }
-                        }
-
-                        urlImage = delivery.photoUrl;
-                    }
-                });
-
-                if(packageDelivery.driver)
-                {
-                    if(packageDelivery.driver.nameTeam)
-                    {
-                        team   = packageDelivery.driver.nameTeam;
-                        driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
-                    }
-                    else
-                    {
-                        team   = packageDelivery.driver.name;
-                    }
-                }
-            }
-            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
-            {
-                let idsImages = packageDelivery.photoUrl.split(',');
-
-                if(idsImages.length == 1)
-                {
-                    imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
-
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-                }
-                else if(idsImages.length >= 2)
-                {
-                    imgs =  <>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            </>
-
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
-                }
-            }
-            else if(packageDelivery.photoUrl != '' && packageDelivery.photoUrl != null)
-            {
-                let idsImages = packageDelivery.photoUrl.split(',');
-
-                if(idsImages.length == 1)
-                {
-                    imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
-
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-                }
-                else if(idsImages.length >= 2)
-                {
-                    imgs =  <>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                                <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            </>
-
-                    urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
-                }
+                reVerification = true;
             }
         }
-        else
+        else if(urlImageAux.length > 1)
         {
-            if(packageDelivery.filePhoto1 != '' && packageDelivery.filePhoto2 != '')
+            if(urlImageAux[0].includes('https') && urlImageAux[1].includes('https'))
             {
                 imgs =  <>
-                            <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ urlImageAux[1] } width="50" style={ {border: '2px solid red'} }/>
                         </>
-
-                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1 + url_general +'img/deliveries/'+ packageDelivery.filePhoto2
-
-                
             }
-            else if(packageDelivery.filePhoto1 != '')
+            else
             {
-                imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
-
-                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1;
+                reVerification = true;
             }
-            else if(packageDelivery.filePhoto2 != '')
-            {
-                imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
+        }
 
-                urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto2;
+        if(reVerification)
+        {
+            if(packageDelivery.filePhoto1 == '' && packageDelivery.filePhoto2 == '')
+            {
+                if(packageDelivery.photoUrl == '')
+                {
+                    if(!packageDelivery.idOnfleet)
+                    {
+                        photoHttp = true;
+                    }
+                    else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+                    {
+                        photoHttp = true;
+                    }
+                }
+
+                if(photoHttp)
+                {
+                    let team     = ''
+                    let driver   = '';
+
+                    listDeliveries.forEach( delivery => {
+
+                        if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
+                        {
+                            urlImage = delivery.photoUrl;
+
+                            if(urlImage)
+                            {
+                                urlImage = urlImage.split('https');
+
+                                if(urlImage.length == 2)
+                                {
+                                    imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                                }
+                                else if(urlImage.length >= 3)
+                                {
+                                    imgs =  <>
+                                                <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
+                                                <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
+                                            </>
+                                }
+                            }
+
+                            urlImage = delivery.photoUrl;
+                        }
+                    });
+
+                    if(packageDelivery.driver)
+                    {
+                        if(packageDelivery.driver.nameTeam)
+                        {
+                            team   = packageDelivery.driver.nameTeam;
+                            driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
+                        }
+                        else
+                        {
+                            team   = packageDelivery.driver.name;
+                        }
+                    }
+                }
+                else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
+                {
+                    let idsImages = packageDelivery.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
+                }
+                else if(packageDelivery.photoUrl != '' && packageDelivery.photoUrl != null)
+                {
+                    let idsImages = packageDelivery.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
+                }
+            }
+            else
+            {
+                if(packageDelivery.filePhoto1 != '' && packageDelivery.filePhoto2 != '')
+                {
+                    imgs =  <>
+                                <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
+                                <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
+                            </>
+
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1 + url_general +'img/deliveries/'+ packageDelivery.filePhoto2
+
+                    
+                }
+                else if(packageDelivery.filePhoto1 != '')
+                {
+                    imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
+
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1;
+                }
+                else if(packageDelivery.filePhoto2 != '')
+                {
+                    imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
+
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto2;
+                }
             }
         }
 
         let team   = (packageDelivery.team ? packageDelivery.team.name : '');
         let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
-
-        console.log(packageDelivery.Reference_Number_1 +': '+ urlImage);
 
         return (
 
