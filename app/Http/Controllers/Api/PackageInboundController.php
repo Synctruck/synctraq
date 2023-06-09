@@ -240,7 +240,19 @@ class PackageInboundController extends Controller
                 }
                 else if($status == 'ReInbound')
                 {
-                    $packageCreate = new PackageWarehouse();
+                    if($package->status == 'Inbound')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in ReInbound.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageInbound();
+                    }
                 }
                 else if($status == 'ReturnCompany')
                 {
@@ -250,8 +262,14 @@ class PackageInboundController extends Controller
                 $packageCreate->Reference_Number_1           = $package->Reference_Number_1;
                 $packageCreate->idCompany                    = $package->idCompany;
                 $packageCreate->company                      = $package->company;
-                $packageCreate->idStore                      = $package->idStore;
-                $packageCreate->store                        = $package->store;
+
+                if($status != 'ReturnCompany')
+                {
+                    $packageCreate->idStore  = $package->idStore;
+                    $packageCreate->store    = $package->store;
+                    $packageCreate->quantity = $package->quantity;
+                }
+                
                 $packageCreate->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageCreate->Dropoff_Company              = $package->Dropoff_Company;
                 $packageCreate->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -263,8 +281,7 @@ class PackageInboundController extends Controller
                 $packageCreate->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
                 $packageCreate->Weight                       = $package->Weight;
                 $packageCreate->Route                        = $package->Route;
-                $packageCreate->quantity                     = $package->quantity;
-                $packageCreate->status                       = $status;
+                $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
                 $packageCreate->save();
@@ -274,8 +291,14 @@ class PackageInboundController extends Controller
                 $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
-                $packageHistory->idStore                      = $package->idStore;
-                $packageHistory->store                        = $package->store;
+
+                if($status != 'ReturnCompany')
+                {
+                    $packageHistory->idStore  = $package->idStore;
+                    $packageHistory->store    = $package->store;
+                    $packageHistory->quantity = $package->quantity;
+                }
+
                 $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
                 $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -290,20 +313,19 @@ class PackageInboundController extends Controller
                 $packageHistory->Date_Inbound                 = $created_at;
                 $packageHistory->Description                  = 'INLAND: '. $description;
                 $packageHistory->inbound                      = 1;
-                $packageHistory->quantity                     = $package->quantity;
                 $packageHistory->status                       = $status;
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany')
                 {
                     $package->delete();
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound')
+                    if($status == 'Inbound' || $status == 'ReInbound' || $package->status == 'ReturnCompany')
                     {
                         $package->delete();
                     }
