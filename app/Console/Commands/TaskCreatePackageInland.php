@@ -120,8 +120,6 @@ class TaskCreatePackageInland extends Command
 
                 $curl = curl_init();
                 
-                $urlCreateInland = 
-
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest',
                     CURLOPT_RETURNTRANSFER => true,
@@ -141,7 +139,7 @@ class TaskCreatePackageInland extends Command
                 $output      = json_decode(curl_exec($curl), 1);
                 $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-                curl_close($curl);
+                curl_close($output);
                 
                 Log::info(ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest');
                 if($http_status >= 200 && $http_status <= 299)
