@@ -119,8 +119,10 @@ class TaskCreatePackageInland extends Command
 
                 $curl = curl_init();
                 
+                $urlCreateInland = 
+
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/add-to-manifest',
+                    CURLOPT_URL => ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10, 
