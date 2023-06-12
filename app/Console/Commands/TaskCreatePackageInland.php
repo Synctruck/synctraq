@@ -144,7 +144,7 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
                 
-                Log::info($output);
+                Log::info($data);
 
                 if($http_status >= 200 && $http_status <= 299)
                 {
