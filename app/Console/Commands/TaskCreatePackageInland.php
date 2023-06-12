@@ -55,6 +55,9 @@ class TaskCreatePackageInland extends Command
                                                 ->get()
                                                 ->take(400);
 
+        Log::info('$packageManifestList');
+        Log::info($packageManifestList);
+
         foreach($packageManifestList as $packageManifest)
         {
             $zipCode         = ZipCodeInland::where('zipCode', $packageManifest->Dropoff_Postal_Code)->first();
@@ -142,7 +145,7 @@ class TaskCreatePackageInland extends Command
                 curl_close($curl);
                 
                 Log::info($output);
-                
+
                 if($http_status >= 200 && $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
