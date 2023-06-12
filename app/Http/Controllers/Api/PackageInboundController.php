@@ -331,6 +331,9 @@ class PackageInboundController extends Controller
                     }
                 }
 
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($package, $status, null, date('Y-m-d H:i:s'));
+
                 DB::commit();
 
                 return response()->json(['message' => "Shipment has been received"], 200);
