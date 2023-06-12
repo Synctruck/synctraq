@@ -51,6 +51,7 @@ class TaskCreatePackageInland extends Command
     {
         $packageManifestList = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')
                                                 ->where('sendToInland', 0)
+                                                ->orderBy('created_at', 'desc')
                                                 ->get()
                                                 ->take(400);
 
@@ -142,6 +143,7 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
                 
+                Log::info($output);
                 if($http_status >= 200 && $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
