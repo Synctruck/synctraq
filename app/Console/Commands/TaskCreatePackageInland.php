@@ -144,7 +144,7 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
                 
-                Log::info($data);
+                Log::info($http_status);
 
                 if($http_status >= 200 && $http_status <= 299)
                 {
@@ -166,6 +166,7 @@ class TaskCreatePackageInland extends Command
             }
             else if($packageManifest)
             {
+                Log::info('Zip code does not exists:'. $zipCode);
                 $packageManifest->sendToInland     = 5;
                 $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
                 $packageManifest->save();
