@@ -143,7 +143,7 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
                 
-                Log::info($output);
+                Log::info(ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest');
                 if($http_status >= 200 && $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
