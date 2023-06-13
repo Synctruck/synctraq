@@ -51,8 +51,13 @@ class TaskCreatePackageInland extends Command
     {
         $packageManifestList = PackageManifest::where('company', '!=', 'INLAND LOGISTICS')
                                                 ->where('sendToInland', 0)
+                                                ->where('status', 'Manifest')
+                                                ->orderBy('created_at', 'desc')
                                                 ->get()
-                                                ->take(50);
+                                                ->take(400);
+
+        Log::info('$packageManifestList');
+        Log::info($packageManifestList);
 
         foreach($packageManifestList as $packageManifest)
         {
@@ -120,7 +125,7 @@ class TaskCreatePackageInland extends Command
                 $curl = curl_init();
                 
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/add-to-manifest',
+                    CURLOPT_URL => ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10, 
@@ -140,6 +145,9 @@ class TaskCreatePackageInland extends Command
 
                 curl_close($curl);
                 
+                Log::info(ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest');
+                Log::info('http_status: '. $http_status);
+
                 if($http_status >= 200 && $http_status <= 299)
                 {
                     $packageManifest->sendToInland = 1;
@@ -160,6 +168,7 @@ class TaskCreatePackageInland extends Command
             }
             else if($packageManifest)
             {
+                Log::info('Zip code does not exists:'. $packageManifest->Dropoff_Postal_Code);
                 $packageManifest->sendToInland     = 5;
                 $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
                 $packageManifest->save();

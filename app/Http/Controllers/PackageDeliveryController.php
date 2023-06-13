@@ -533,7 +533,7 @@ class PackageDeliveryController extends Controller
                         $idTeam        = 0;
                         $arrivalLonLat = $row[3];
                         $actualDate    = date('Y-m-d H:i:s');
-                        $created_at    = date('Y-m-d H:i:s', strtotime($row[2]));
+                        $created_at    = $row[6] == '' ? date('Y-m-d H:i:s', strtotime($row[2])) : date('Y-m-d H:i:s', strtotime($row[2] .' '. $row[6]));
 
                         if(isset($row[4]) && $row[4] != '')
                         {

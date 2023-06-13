@@ -303,9 +303,12 @@ class ServicePackageNeedMoreInformation{
 
         foreach($packageHistoryList as $packageHistory)
         {
-            $packageHistory = PackageHistory::find($packageHistory->id);
-            $packageHistory->internal_comment = $request->get('internalComment');
-            $packageHistory->save();
+            if($request->get('internalComment'))
+            {
+                $packageHistory = PackageHistory::find($packageHistory->id);
+                $packageHistory->internal_comment = $request->get('internalComment');
+                $packageHistory->save();
+            }
         }
 
         $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
