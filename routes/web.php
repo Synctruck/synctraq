@@ -200,8 +200,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//=========== Age of Package
 	Route::get('/package-age', [PackageAgeController::class, 'Index']);
-	Route::get('/package-age/list/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'List']);
-	Route::get('/package-age/export/{idCompany}/{routes}/{states}', [PackageAgeController::class, 'Export']);
+	Route::get('/package-age/list/{idCompany}/{routes}/{states}/{status}', [PackageAgeController::class, 'List']);
+	Route::get('/package-age/export/{idCompany}/{routes}/{states}/{status}', [PackageAgeController::class, 'Export']);
 
 	Route::get('/package-high-priority', [PackageHighPriorityController::class, 'Index'])->middleware('permission:highPriority.index');
 	Route::get('/package-high-priority/list/{idCompany}/{routes}/{states}', [PackageHighPriorityController::class, 'List']);

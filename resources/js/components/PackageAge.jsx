@@ -22,8 +22,9 @@ function PackageAge() {
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany]         = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -41,14 +42,14 @@ function PackageAge() {
 
         listReportInbound(page, StateSearch, RouteSearch);
 
-    }, [dateInit, dateEnd, idCompany]);
+    }, [dateInit, dateEnd, idCompany, StatusSearch]);
 
 
     const listReportInbound = (pageNumber, stateSearch, routeSearch) => {
 
         setIsLoading(true);
 
-        fetch(url_general +'package-age/list/'+  idCompany +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
+        fetch(url_general +'package-age/list/'+  idCompany +'/'+ stateSearch +'/'+ routeSearch +'/'+ StatusSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -262,6 +263,21 @@ function PackageAge() {
                                             </div>
                                             <div className="col-lg-12 form-group">
                                                 <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12 form-group">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12 form-group">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="Inbound">Inbound</option>
+                                                    <option value="Warehouse">Warehouse</option>
+                                                    <option value="Dispatch">Dispatch</option>    
+                                                </select>
                                             </div>
                                         </div>
                                     </div>

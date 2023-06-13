@@ -30,9 +30,9 @@ class PackageAgeController extends Controller
         return view('package.age');
     }
 
-    public function List($idCompany, $states, $routes)
+    public function List($idCompany, $states, $routes, $status)
     {
-        $data = $this->GetData($idCompany, $states, $routes, 'paginate');
+        $data = $this->GetData($idCompany, $states, $routes, $status, 'paginate');
         
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
@@ -44,9 +44,9 @@ class PackageAgeController extends Controller
         ];
     }
 
-    public function Export($idCompany, $states, $routes)
+    public function Export($idCompany, $states, $routes, $status)
     {
-        $data           = $this->GetData($idCompany, $states, $routes, 'all');
+        $data           = $this->GetData($idCompany, $states, $routes, $status, 'all');
         $packageListOld = $data['listAll'];
 
         $delimiter = ",";
@@ -90,13 +90,29 @@ class PackageAgeController extends Controller
         fpassthru($file);
     }
 
-    public function GetData($idCompany, $states, $routes, $typeData)
+    public function GetData($idCompany, $states, $routes, $status, $typeData) 
     {
-        $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
-        $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
-        $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+        if($status == 'all')
+        {
+            $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
+            $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
+            $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
 
-        $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch);
+            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch);
+        }
+        else if($status == 'Inbound')
+        {
+            $idsAll = PackageInbound::get('Reference_Number_1');
+        }
+        else if($status == 'Warehouse')
+        {
+            $idsAll = PackageWarehouse::get('Reference_Number_1');
+        }
+        else if($status == 'Dispatch')
+        {
+            $idsAll = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+        }
+        
 
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
@@ -133,6 +149,11 @@ class PackageAgeController extends Controller
             $packageHistoryList = $packageHistoryList->whereIn('Route', $routes);
         }
 
+        if($status != 0)
+        {
+            $packageHistoryList = $packageHistoryList->where('status', $status);
+        }
+
         if($typeData == 'paginate')
         {
             $packageHistoryList = $packageHistoryList->orderBy('created_at', 'asc')->paginate(50);
@@ -152,8 +173,8 @@ class PackageAgeController extends Controller
                 $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
                 $endDate  = date('Y-m-d');
 
-                $lateDays = $this->CalculateDaysLate($initDate, $endDate);
-                $status   = $this->GetStatus($packageHistory->Reference_Number_1);
+                $lateDays     = $this->CalculateDaysLate($initDate, $endDate);
+                $statusActual = $this->GetStatus($packageHistory->Reference_Number_1);
 
                 $package = [
 
@@ -162,9 +183,9 @@ class PackageAgeController extends Controller
                     "lateDays" => $lateDays,
                     "company" => $packageHistory->company,
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
-                    "status" => $status['status'],
-                    "statusDate" => $status['statusDate'],
-                    "statusDescription" => $status['statusDescription'],
+                    "status" => $statusActual['status'],
+                    "statusDate" => $statusActual['statusDate'],
+                    "statusDescription" => $statusActual['statusDescription'],
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
                     "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
