@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
 
+use App\Service\ServicePackageLost;
+
 use Illuminate\Support\Facades\Validator;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -25,6 +27,13 @@ use Session;
 
 class PackageLostController extends Controller
 {
+    private $servicePackageLost;
+
+    public function __construct()
+    {
+        $this->servicePackageLost = new ServicePackageLost();
+    }
+
     public function Index()
     {
         return view('package.lost');
@@ -534,5 +543,12 @@ class PackageLostController extends Controller
         $pdf->setPaper('A5', 'portrait');
 
         return $pdf->stream();
+    }
+
+    public function MoveToWarehouse($Reference_Number_1)
+    {
+        $servicePackageLost = new ServicePackageLost();
+
+        return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 }

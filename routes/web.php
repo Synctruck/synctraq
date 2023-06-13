@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-lost/export/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageLostController::class, 'Export']);
 	Route::post('/package-lost/insert', [PackageLostController::class, 'Insert']);
 	Route::post('/package-lost/import', [PackageLostController::class, 'Import']);
+	Route::get('/package-lost/move-to-warehouse/{PACKAGE_ID}', [PackageLostController::class, 'MoveToWarehouse']);
 
 	//============ Validation inbound
 	Route::get('/package-inbound', [PackageInboundController::class, 'Index'])->middleware('permission:inbound.index');

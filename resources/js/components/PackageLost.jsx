@@ -693,6 +693,42 @@ function PackageLost() {
         handlerPrintSecondary(printText);
     }
 
+    const handlerMoveToWarehouse = (Reference_Number) => {
+
+        setIsLoading(true);
+
+        fetch(url_general +'package-lost/move-to-warehouse/'+ Reference_Number)
+        .then(res => res.json())
+        .then((response) => {
+
+            if(response.stateAction == true)
+            {
+                swal("The package has been moved to WAREHOUSE!", {
+
+                    icon: "success",
+                });
+
+                listAllPackageInbound(page, RouteSearch, StateSearch);
+            }
+            else if(response.stateAction == false)
+            {
+                swal("The package does not exists in LOST!", {
+
+                    icon: "warning",
+                });
+            }
+            else
+            {
+                swal("A problem has occurred, please try again.!", {
+
+                    icon: "error",
+                });
+            }
+
+            setIsLoading(false);
+        });
+    }
+
     const listPackageTable = listPackageInbound.map( (pack, i) => {
 
         return (
@@ -715,13 +751,9 @@ function PackageLost() {
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
-                <td style={ {display: 'none'} }>
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
-
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1,pack.Weight,pack.Dropoff_Province,pack.Route) }>
-                        PDF
+                <td>
+                    <button className="btn btn-primary btn-sm m-2" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
+                        RETRIEVE
                     </button>
                 </td>
             </tr>
@@ -1107,7 +1139,7 @@ function PackageLost() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th style={ {display: 'none'} }>ACTION</th>
+                                                <th>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>
