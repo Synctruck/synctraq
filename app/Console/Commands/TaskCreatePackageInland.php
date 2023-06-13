@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, PackageManifest, ZipCodeInland };
+use App\Models\{ Company, PackageManifest, PackageHistory, ZipCodeInland };
 
 use DateTime;
 use Log;
@@ -163,6 +163,18 @@ class TaskCreatePackageInland extends Command
                 $packageManifest->sendToInland     = 5;
                 $packageManifest->sendToInlandDate = date('Y-m-d H:i:s');
                 $packageManifest->save();
+            }
+
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageManifest->Reference_Number_1)
+                                            ->where('status', 'Manifest')
+                                            ->first();
+
+            if($packageHistory)
+            {
+                $packageHistory->sendToInland     = $packageManifest->sendToInland;
+                $packageHistory->sendToInlandDate = $packageManifest->sendToInlandDate;
+                $packageHistory->errorInland      = isset($packageManifest->errorInland) ? $packageManifest->errorInland : '';
+                $packageHistory->save();
             }
         }
     }
