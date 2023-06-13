@@ -12,7 +12,7 @@ use App\Models\{
         PackageDelete, PackageDelivery, PackageDispatch, PackagePreDispatch, 
         PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
-        PackageNotExists, PackageReturn, PackageReturnCompany, 
+        PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
         PackageWarehouse, TeamRoute, User
     };
 
@@ -478,7 +478,7 @@ class PackageController extends Controller
 
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
 
-        $package = $package != null ? $package : Package::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
 
         if($package)
         {
