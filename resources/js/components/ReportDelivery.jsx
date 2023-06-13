@@ -973,7 +973,7 @@ function ReportDelivery() {
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                        <button className="btn btn-primary" disabled={ disabledButton }>Register Return</button>
+                                                        <button className="btn btn-primary" disabled={ disabledButton }>Register Delivery</button>
                                                     </div>
                                                 </div>
                                             </form>

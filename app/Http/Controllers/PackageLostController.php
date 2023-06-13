@@ -20,7 +20,6 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
-
 use DB;
 use Log;
 use Session;
