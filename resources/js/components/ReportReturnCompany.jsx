@@ -94,6 +94,16 @@ function ReportReturnCompany() {
 
     useEffect(() => {
 
+        if(auxReference_Number)
+        {
+            let urlActual = window.location.href;
+
+            history.pushState(null, "", urlActual.split('?')[0]);
+
+            setReference_Number_1(auxReference_Number);
+            handlerOpenModal();
+        }
+
         listReturnCompany(1, RouteSearch, StateSearch);
 
     }, [dateInit, dateEnd, idCompany]);
@@ -478,7 +488,7 @@ function ReportReturnCompany() {
         setHeight('');
     }
 
-    const handlerOpenModal = (PACKAGE_ID) => {
+    const handlerOpenModal = () => {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalInsertReturn'), {
 

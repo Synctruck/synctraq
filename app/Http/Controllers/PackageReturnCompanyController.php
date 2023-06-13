@@ -10,7 +10,11 @@ use App\Http\Controllers\Api\{ PackageController };
 
 use App\Service\ServicePackageTerminal;
 
-use App\Models\{ Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Models\{ 
+                    Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageNeedMoreInformation,
+                    PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost,
+                    PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn,
+                    PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -39,9 +43,11 @@ class PackageReturnCompanyController extends Controller
                     ];
     }
 
-    public function Index()
+    public function Index(Request $request)
     {
-        return view('report.indexreturncompany');
+        $Reference_Number = $request->get('Reference_Number');
+
+        return view('report.indexreturncompany', compact('Reference_Number'));
     }
 
     public function List($dateInit, $dateEnd, $idCompany, $route, $state)
@@ -152,6 +158,11 @@ class PackageReturnCompanyController extends Controller
         if($packageInbound == null)
         {
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
+        }
+
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageNeedMoreInformation::find($request->get('Reference_Number_1'));
         }
         
         if(!$packageInbound)

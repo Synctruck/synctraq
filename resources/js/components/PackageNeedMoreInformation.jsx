@@ -770,6 +770,11 @@ function PackageNeedMoreInformation() {
         });
     }
 
+    const handlerMoveToRTS = (Reference_Number) => {
+
+        window.open(url_general +'report/return-company?Reference_Number='+ Reference_Number);
+    }
+
     const listPackageTable = listPackageInbound.map( (pack, i) => {
 
         return (
@@ -803,8 +808,8 @@ function PackageNeedMoreInformation() {
                                     <button className="btn btn-success btn-sm m-2" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
                                         Move to Warehouse
                                     </button>
-                                    <button className="btn btn-primary btn-sm m-2" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
-                                        Move to Warehouse
+                                    <button className="btn btn-danger btn-sm m-2" onClick={ () => handlerMoveToRTS(pack.Reference_Number_1) }>
+                                        Move to RTS
                                     </button>
                                 </>
                         )
