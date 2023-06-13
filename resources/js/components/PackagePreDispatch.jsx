@@ -382,43 +382,11 @@ function PackagePreDispatch() {
         }
         else
         {
-            swal("You must select a team and a driver!", {
+            swal("You must select a TEAM and a DRIVER and enter PASSWORD DISPATCH!", {
 
                 icon: "warning",
             });
         }
-        /*swal({
-            title: "want to close the palette?",
-            text: "",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-
-            if(willDelete)
-            {
-                fetch(url_general +'package-pre-dispatch/chage-to-dispatch/'+ PalletNumberForm)
-                .then(res => res.json())
-                .then((response) => {
-
-                    if(response.stateAction == true)
-                    {
-                        swal("The palette was closed correctly!", {
-
-                            icon: "success",
-                        });
-                    }
-                    else
-                    {
-                        swal("There was a problem trying to close the palette, please try again!", {
-
-                            icon: "warning",
-                        });
-                    }
-                });
-            }
-        });*/
     }
 
     const listPackageDispatchTable = listPackage.map( (packagePreDispatch, i) => {
