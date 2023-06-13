@@ -1093,44 +1093,11 @@ function PackageDispatch() {
         }
     }
 
+    const [RouteSearchRoadWarrior, setRouteSearchRoadWarrior] = useState('');
+
     const handlerDownloadRoadWarrior = () => {
 
-        if(dayNight)
-        {
-            var checkboxes = document.getElementsByName('checkDispatch');
-
-            let countCheck = 0;
-
-            let valuesCheck = '';
-
-            for(var i = 0; i < checkboxes.length ; i++)
-            {
-                if(checkboxes[i].checked)
-                {
-                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
-
-                    countCheck++;
-                }
-            }
-
-            let type = 'all';
-
-            if(countCheck)
-            {
-                type = 'check'
-            }
-
-            if(valuesCheck == '')
-            {
-                valuesCheck = 'all';
-            }
-
-            location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
-        }
-        else
-        {
-            swal('Attention!', 'Select a time', 'warning');
-        }
+        location.href = url_general +'package/download/roadwarrior/'+ idCompany +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch+'/'+ RouteSearchList +'/'+ dateStart +'/'+ dateEnd;
     }
 
     const clearForm = () => {
@@ -1753,37 +1720,10 @@ function PackageDispatch() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-1" style={ {display: 'none'} }>
+                                            <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-1" style={ {display: 'none'} }>
-                                                <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2" style={ {display: 'none'} }>
-                                                <div className="row">
-                                                    <div className="col-lg-4" style={ {display: 'none'} }>
-                                                        <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
-                                                    </div>
-                                                    <div className="col-lg-4" style={ {display: 'none'} }>
-                                                        <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <label class="form-check-label text-dark" for="gridRadios1">D</label>&nbsp;
-                                                                <input class="form-check-input form-check-input-success border-success" type="radio" name="gridRadios" value="Day" checked={ dayNight == 'Day' } onChange={ (e) => setDayNight(e.target.value) }/>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <label class="form-check-label text-dark" for="gridRadios1">N</label>&nbsp;
-                                                                <input class="form-check-input form-check-input-dark border-dark" type="radio" name="gridRadios" value="Night" checked={ dayNight == 'Night' } onChange={ (e) => setDayNight(e.target.value) }/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
+                                                </div> 
                                             </div>
                                             <div className="col-lg-2">
                                                 <div className="form-group">
@@ -1827,7 +1767,6 @@ function PackageDispatch() {
                                                     ''
                                             }
                                         </div>
-
                                     </div>
                                 </div>
 
