@@ -416,6 +416,7 @@ class PackageController extends Controller
         $pod_url           = "";
         $package_id        = "";
         $header_curl       = "";
+        $sendStatusCompany = true;
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
         {
@@ -502,55 +503,67 @@ class PackageController extends Controller
             }
             else
             {
-                $header_curl = array(
-                    'code: '. $key_webhook,
-                    'Content-Type: application/json'
-                );
+                if($status != 'Lost')
+                {
+                    $header_curl = array(
+                        'code: '. $key_webhook,
+                        'Content-Type: application/json'
+                    );
 
-                $companyStatus = CompanyStatus::with('company')
-                                                ->where('idCompany', $package->idCompany)
-                                                ->where('status', $status)
-                                                ->first();
+                    $companyStatus = CompanyStatus::with('company')
+                                                    ->where('idCompany', $package->idCompany)
+                                                    ->where('status', $status)
+                                                    ->first();
 
-                Log::info('companyStatus');
-                Log::info($companyStatus);
+                    Log::info('companyStatus');
+                    Log::info($companyStatus);
 
-                $statusCodeCompany = $companyStatus->statusCodeCompany;
-                $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
-                $urlWebhook        = $url_webhook;
+
+                    $statusCodeCompany = $companyStatus->statusCodeCompany;
+                    $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
+                    $urlWebhook        = $url_webhook;
+                }
+                else
+                {
+                    $sendStatusCompany = false;
+                }
+                
             }
 
-            Log::info('DATA SEND WEBHOOK- COMPANY');
-            Log::info($dataSend);
-            Log::info($urlWebhook);
+            if($sendStatusCompany)
+            {
+                Log::info('DATA SEND WEBHOOK- COMPANY');
+                Log::info($dataSend);
+                Log::info($urlWebhook);
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $urlWebhook,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $dataSend,
-                CURLOPT_HTTPHEADER => $header_curl,
-            ));
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $urlWebhook,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => $dataSend,
+                    CURLOPT_HTTPHEADER => $header_curl,
+                ));
 
-            $response    = curl_exec($curl);
-            $response    = json_decode($response, true);
-            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                $response    = curl_exec($curl);
+                $response    = json_decode($response, true);
+                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-            curl_close($curl);
+                curl_close($curl);
 
-            Log::info($response);
+                Log::info($response);
 
-            Log::info('===========  INLAND - STATUS UPDATE');
-            Log::info('http_status: '. $http_status);
-            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-            Log::info('REPONSE STATUS: '. $response['status']);
-            Log::info('============INLAND - END STATUS UPDATE');
+                Log::info('===========  INLAND - STATUS UPDATE');
+                Log::info('http_status: '. $http_status);
+                Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+                Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+                Log::info('REPONSE STATUS: '. $response['status']);
+                Log::info('============INLAND - END STATUS UPDATE');
+            }
         }
     }
 
