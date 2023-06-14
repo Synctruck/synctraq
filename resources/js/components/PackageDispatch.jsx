@@ -214,6 +214,11 @@ function PackageDispatch() {
         exportAllPackageDispatch(StateSearch, RouteSearchList, type);
     }
 
+    const handlerRedirectToDebrief = () => {
+
+        location.href = url_general +'driver/defrief';
+    }
+
     const handlerChangePage = (pageNumber) => {
 
         listAllPackageDispatch(pageNumber, StateSearch, RouteSearchList);
@@ -1727,11 +1732,6 @@ function PackageDispatch() {
                                             </div>
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-warning btn-sm form-control" onClick={ () => handlerRedirectReturns() }>RETURNS</button>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2">
-                                                <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                         <i className="ri-file-excel-fill"></i> EXPORT
                                                     </button>
@@ -1766,6 +1766,14 @@ function PackageDispatch() {
                                                 :
                                                     ''
                                             }
+
+                                            <div className="col-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-info btn-sm form-control text-white" onClick={  () => handlerRedirectToDebrief() }>
+                                                        DEBRIEF
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

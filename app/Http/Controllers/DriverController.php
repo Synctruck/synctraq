@@ -12,6 +12,8 @@ use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Validator;
 
+use App\Service\ServicePackageDispatch;
+
 use DB;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -437,5 +439,48 @@ class DriverController extends Controller
         {
             return false;
         }
+    }
+
+    public function IndexDebrief()
+    {
+        return view('driver.index-debrief');
+    }
+
+    public function ListDebrief(Request $request)
+    {
+        $servicePackageDispatch = new ServicePackageDispatch();
+
+        $idsDriver = $servicePackageDispatch->GetIdDriverPackageDebrief();
+        $driverList = Driver::where('idRole', 4)
+                                ->whereIn('id', $idsDriver)
+                                ->get();
+
+        $newDriverList = [];
+
+        foreach($idsDriver as $idDriver)
+        {
+            $driver = Driver::find($idDriver->idUserDispatch);
+
+            if($driver)
+            {
+                $driver = [ 
+                    'idDriver' => $driver->id,
+                    'fullName' => $driver->name .' '. $driver->nameOfOwner,
+                    'email' => $driver->email,
+                    'quantityOfPackages' => $idDriver->quantityOfPackages
+                ];
+
+                array_push($newDriverList, $driver);
+            }
+        }
+
+        return ['driverList' => $newDriverList]; 
+    }
+
+    public function ListPackagesDebrief($idDriver)
+    {
+        $servicePackageDispatch = new ServicePackageDispatch();
+
+        return ['listPackages' => $servicePackageDispatch->ListPackagesDebrief($idDriver)];
     }
 }

@@ -8,6 +8,7 @@ require('./components/Companies');
 require('./components/Charge');
 require('./components/ChargeCompany');
 require('./components/Driver');
+require('./components/Debrief');
 require('./components/Home');
 require('./components/Dashboard');
 require('./components/Package');
