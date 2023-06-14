@@ -95,7 +95,7 @@ function PackageAge() {
 
     const handlerExport = () => {
         
-        location.href = url_general +'package-age/export/'+ idCompany +'/'+ StateSearch +'/'+ RouteSearch;
+        location.href = url_general +'package-age/export/'+ idCompany +'/'+ StateSearch +'/'+ RouteSearch +'/'+ StatusSearch;
     }
 
     const listReportTable = listReport.map( (packageInbound, i) => {
