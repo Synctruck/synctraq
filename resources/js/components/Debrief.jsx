@@ -7,6 +7,7 @@ import ReactLoading from 'react-loading';
 
 function Debrief() {
 
+    const [idDriver, setIdDriver]             = useState(0);
     const [disabledButton, setDisabledButton] = useState(false);
     const [titleModal, setTitleModal]         = useState('');
     const [textSearch, setSearch]             = useState('');
@@ -37,22 +38,9 @@ function Debrief() {
 
     const handlerOpenModal = (id) => {
 
-        clearValidation();
+        getPackages(id);
 
-        if(id)
-        {
-            setTitleModal('Update Driver')
-            setTextButtonSave('Update');
-        }
-        else
-        {
-            listAllRole();
-            clearForm();
-            setTitleModal('Add Driver');
-            setTextButtonSave('Save');
-        }
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalDriverInsert'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalPackages'), {
 
             keyboard: true
         });
@@ -62,23 +50,19 @@ function Debrief() {
 
     const getPackages = (id) => {
 
-        LoadingShow();
+        LoadingShowMap();
+
+        setIdDriver(id);
+        setPackageList([]);
 
         fetch(url_general +'driver/defrief/list-packages/'+ id)
         .then(response => response.json())
         .then(response => {
 
             setPackageList(response.listPackages);
-            setTitleModal('PACKAGE LIST');
+            setTitleModal('PACKAGE LIST: '+ response.listPackages.length);
 
-            let myModal = new bootstrap.Modal(document.getElementById('modalPackages'), {
-
-                keyboard: true
-            });
-
-            myModal.show();
-
-            LoadingHide();
+            LoadingHideMap();
         });
     }
 
@@ -92,17 +76,42 @@ function Debrief() {
                 <td>{ user['email'] }</td>
                 <td>{ user['quantityOfPackages'] }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => getPackages(user['idDriver']) }>
+                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => handlerOpenModal(user['idDriver']) }>
                         View Packages
                     </button>
                 </td>
             </tr>
         );
-    });
+    }); 
 
     const handlerChangeStatus = (newStatus, Reference_Number_1) => {
 
-        alert(newStatus);
+        if(newStatus == 'Delivery')
+        {
+            window.open(url_general +'report/delivery?Reference_Number='+ Reference_Number_1);
+        }
+        else
+        {
+            LoadingShowMap();
+
+            fetch(url_general +'driver/defrief/packages-change-status/'+ Reference_Number_1 +'/'+ newStatus)
+            .then(response => response.json())
+            .then(response => {
+
+                if(response.statusAction == true)
+                {
+                    swal('Correct', 'The package was moved to the selected status', 'success');
+
+                    getPackages(idDriver);
+                }
+                else if(response.statusAction == 'packageNotExists')
+                {
+                    swal('Attention', 'Package does not exist in dispatch', 'warning');
+                }
+
+                LoadingHideMap();
+            });
+        }
     }
 
     const packageListTable = packageList.map( (packageDispatch, i) => {
@@ -115,7 +124,9 @@ function Debrief() {
                 <td>
                     <select name="" id="" className="form-control" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
                         <option value="all">Select</option>
+                        <option value="Delivery">Delivery</option>
                         <option value="Lost">Lost</option>
+                        <option value="NMI">NMI</option>
                         <option value="Warehouse">Warehouse</option>
                     </select>
                 </td>

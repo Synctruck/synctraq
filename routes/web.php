@@ -109,6 +109,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/update', [PackageInboundController::class, 'Update']);
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
+	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
 
 	//============ PACKAGE NMI
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index'])->middleware('permission:nmi.index');
@@ -282,6 +283,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('driver/defrief', [DriverController::class, 'IndexDebrief']);
 	Route::get('driver/defrief/list', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
+	Route::get('driver/defrief/packages-change-status/{PACKAGE_ID}/{stsatus}', [DriverController::class, 'ChangeStatusPackageDebrief']);
 
 	//============ Maintenance of stores
 	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);

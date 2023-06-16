@@ -100,6 +100,16 @@ function ReportDelivery() {
 
     useEffect(() => {
 
+        if(auxReference_Number)
+        {
+            let urlActual = window.location.href;
+
+            history.pushState(null, "", urlActual.split('?')[0]);
+
+            setReference_Number_1(auxReference_Number);
+            handlerOpenModalInsertDelivery(); 
+        }
+
         listReportDispatch(1, RouteSearch, StateSearch);
 
     }, [ idCompany, dateInit, dateEnd, idTeam, idDriver ]);

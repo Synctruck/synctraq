@@ -386,9 +386,11 @@ class ReportController extends Controller
         ];
     }
 
-    public function IndexDelivery()
+    public function IndexDelivery(Request $request)
     {
-        return view('report.indexdelivery');
+        $Reference_Number = $request->get('Reference_Number');
+
+        return view('report.indexdelivery', compact('Reference_Number'));
     }
 
     public function ListDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)

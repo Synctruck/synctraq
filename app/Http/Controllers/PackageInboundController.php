@@ -651,4 +651,71 @@ class PackageInboundController extends Controller
 
         return $pdf->stream();
     }
+
+    public function DownloadRoadWarrior($idCompany, $StateSearch, $routeSearch, $initDate, $endDate)
+    {
+        $initDate = $initDate .' 00:00:00';
+        $endDate  = $endDate .' 23:59:59';
+
+        $delimiter = ",";
+        $filename = "ROAD WARRIOR - INBOUND " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('Name', 'building/house', 'Street Name', 'City', 'State', 'Postal', 'Country', 'Color', 'Phone', 'Note', 'Latitude', 'Longitude', 'Visit Time');
+
+
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageInbound = PackageInbound::whereBetween('created_at', [$initDate, $endDate]);
+
+        if($idCompany && $idCompany != 0)
+        {
+            $listPackageInbound = $listPackageInbound->where('idCompany', $idCompany);
+        }
+
+        if($StateSearch != 'all')
+        {
+            $StateSearch = explode(',', $StateSearch);
+
+            $listPackageInbound = $listPackageInbound->whereIn('Dropoff_Province', $StateSearch);
+        }
+
+        if($routeSearch != 'all')
+        {
+            $routeSearch = explode(',', $routeSearch);
+            $listPackageInbound = $listPackageInbound->whereIn('Route', $routeSearch);
+        }
+
+        $listPackageInbound = $listPackageInbound->get();
+
+        foreach($listPackageInbound as $packageInbound)
+        {
+            $lineData = array(
+                                $packageInbound->Dropoff_Address_Line_1,
+                                $packageInbound->Dropoff_Address_Line_2,
+                                $packageInbound->Dropoff_Address_Line_1,
+                                $packageInbound->Dropoff_City,
+                                $packageInbound->Dropoff_Province,
+                                $packageInbound->Dropoff_Postal_Code,
+                                'USA',
+                                '',
+                                $packageInbound->Dropoff_Contact_Phone_Number,
+                                $packageInbound->Reference_Number_1,
+                                '',
+                                '',
+                                '');
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
 }

@@ -865,6 +865,11 @@ function PackageInbound() {
         document.getElementById('Reference_Number_1').focus();
     }
 
+    const handlerDownloadRoadWarrior = () => {
+
+        location.href = url_general +'package-inbound/download/roadwarrior/'+ idCompany +'/'+ StateSearch+'/'+ RouteSearch +'/'+ dateStart +'/'+ dateEnd;
+    }
+
     return (
 
         <section className="section">
@@ -877,6 +882,11 @@ function PackageInbound() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
+                                                </div> 
+                                            </div>
                                             <div className="col-2">
                                                 <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
