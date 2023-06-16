@@ -109,7 +109,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/update', [PackageInboundController::class, 'Update']);
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
-
+	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
+	
 	//============ PACKAGE NMI
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index'])->middleware('permission:nmi.index');
 	Route::get('/package-nmi/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageNeedMoreInformationController::class, 'List']);
