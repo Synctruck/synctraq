@@ -1531,7 +1531,7 @@ class PackageDispatchController extends Controller
         $street = str_replace($number, '', $package->Dropoff_Address_Line_1);
 
         Log::info('$package->Dropoff_Contact_Name: '. $package->Dropoff_Contact_Name);
-        
+
         $data = [   
                     "destination" =>  [
                         "address" =>  [
@@ -1565,6 +1565,8 @@ class PackageDispatchController extends Controller
                     ],
                 ];
 
+        Log::info($data);
+        
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks');
