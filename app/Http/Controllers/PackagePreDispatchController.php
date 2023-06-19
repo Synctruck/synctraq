@@ -270,7 +270,7 @@ class PackagePreDispatchController extends Controller
             {
                 DB::beginTransaction();
 
-                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
+                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get()->take(1);
 
                 foreach($packagePreDispatchList as $packagePreDispatch)
                 {
