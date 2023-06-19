@@ -330,6 +330,7 @@ function PackagePreDispatch() {
                     const formData = new FormData();
 
                     formData.append('numberPallet', PalletNumberForm);
+                    formData.append('Reference_Number_1', packagePreDispatch.Reference_Number_1)
                     formData.append('idTeam', idTeam);
                     formData.append('idDriver', idDriver);
                     formData.append('passwordDispatch', passwordDispatch);
@@ -382,7 +383,7 @@ function PackagePreDispatch() {
                             });
                         }
                     });
-                }, 500);
+                }, 2000);
             });
         }
         else
