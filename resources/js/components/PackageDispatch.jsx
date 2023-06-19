@@ -13,6 +13,8 @@ function PackageDispatch() {
 
     const [listPackageDispatch, setListPackageDispatch] = useState([]);
     const [listTeam, setListTeam]                       = useState([]);
+    const [listTeamNow, setListTeamNow]                 = useState([]);
+    const [listTeamNew, setListTeamNew]                 = useState([]);
     const [listDriver, setListDriver]                   = useState([]);
     const [roleUser, setRoleUser]                       = useState([]);
     const [listRoute, setListRoute]                     = useState([]);
@@ -44,6 +46,8 @@ function PackageDispatch() {
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idTeam, setIdTeam] = useState(0);
+    const [idTeamNow, setIdTeamNow] = useState(0);
+    const [idTeamNew, setIdTeamNew] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
     const [idDriverAsing, setIdDriverAsing] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
@@ -263,7 +267,7 @@ function PackageDispatch() {
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
 
-    const [textButtonSave, setTextButtonSave] = useState('Guardar');
+    const [textButtonSave, setTextButtonSave] = useState('Move Packages');
 
     const optionsRole = listRoute.map( (route, i) => {
 
@@ -991,6 +995,22 @@ function PackageDispatch() {
         );
     });
 
+    const listTeamNowSelect = listTeamNow.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const listTeamNewSelect = listTeamNew.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
     const listDriverSelect = listDriver.map( (driver, i) => {
 
         return (
@@ -1169,36 +1189,6 @@ function PackageDispatch() {
         });
     }
 
-    const handlerOpenModalTeam = (id) => {
-
-        //clearValidationTeam();
-
-        /*if(id)
-        {
-            setTitleModal('Update Team')
-            setTextButtonSave('Update');
-        }
-        else
-        {
-            listAllRole();
-            listAllRoute();
-
-            //clearForm();
-            setTitleModal('Add Team');
-            setTextButtonSave('Save');
-        }*/
-
-        listAllRole();
-        clearFormTeam();
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalTeamInsert'), {
-
-            keyboard: true
-        });
-
-        myModal.show();
-    }
-
     const handlerSaveTeam = (e) => {
 
         e.preventDefault();
@@ -1330,102 +1320,14 @@ function PackageDispatch() {
         setEmail('');
     }
 
-    const modalTeamInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalTeamInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveTeam }>
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Team</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Role</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
-                                                                        { listRoleSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Team Name</label>
-                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Name of owner</label>
-                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Phone</label>
-                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Email</label>
-                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Permission Dispatch</label>
-                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
-                                                                        <option value="0">No</option>
-                                                                        <option value="1">Yes</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Routes</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                </div>
-                                                                <div className="row form-group">
-                                                                    { optionsCheckRoute }
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button className="btn btn-primary">{ textButtonSave }</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </React.Fragment>;
-
-    const handlerOpenModalDriver = (id) => {
+    const handlerOpenOtherTeam = (id) => {
 
         listAllRole();
         clearFormTeam();
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalDriverInsert'), {
+        setListTeamNow(listTeam);
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalOtherTeam'), {
 
             keyboard: true
         });
@@ -1500,88 +1402,69 @@ function PackageDispatch() {
         );
     });
 
-    const modalDriverInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalDriverInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const handlerChangeTeamOfPackages = (e) => {
+
+        e.preventDefault();
+
+        setIsLoading(true);
+        setReadOnly(true);
+
+        const formData = new FormData();
+
+        formData.append('idTeamNow', idTeamNow);
+        formData.append('idTeamNew', idTeamNew);
+
+        /*let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'package-dispatch/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                setIsLoading(false);
+            },
+        );*/
+    }
+
+    const handlerChangeTeamNow = (id) => {
+
+        setListTeamNew([]);
+        setIdTeamNew('');
+
+        let auxListTeamNow = listTeamNow.filter( team => team.id != id);
+
+        setListTeamNew(auxListTeamNow);
+    }
+
+    const modalOtherTeam = <React.Fragment>
+                                    <div className="modal fade" id="modalOtherTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveUser }>
+                                            <form onSubmit={ handlerChangeTeamOfPackages }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Driver</h5>
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">MOVE PACKAGES OF A TEAM O OTHER </h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Role</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
-                                                                        { listRoleDriverSelect }
-                                                                    </select>
-                                                                </div>
+                                                        <div className="col-lg-12">
+                                                            <div className="form-group mb-3">
+                                                                <label className="form">TEAM A REMOVE PACKAGES</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => handlerChangeTeamNow(e.target.value) } required>
+                                                                    <option value="">All</option>
+                                                                    { listTeamNowSelect }
+                                                                </select>
                                                             </div>
                                                         </div>
-
-                                                        {
-                                                            roleUser == 'Administrador'
-                                                            ?
-                                                                <>
-                                                                    <div className="col-lg-12">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
-                                                                                <option value="">All</option>
-                                                                                { listTeamSelect }
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            :
-                                                                ''
-                                                        }
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>First Name</label>
-                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Last Name</label>
-                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Address</label>
-                                                                    <div id="address" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ address } className="form-control" onChange={ (e) => setAddress(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Phone</label>
-                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Email</label>
-                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
-                                                                </div>
+                                                        <div className="col-lg-12">
+                                                            <div className="form-group mb-3">
+                                                                <label className="form">TEAM A ASSIGN PACKAGES</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdTeamNew(e.target.value) } required>
+                                                                    <option value="">All</option>
+                                                                    { listTeamNewSelect }
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1714,8 +1597,7 @@ function PackageDispatch() {
     return (
 
         <section className="section">
-            { modalTeamInsert }
-            { modalDriverInsert }
+            { modalOtherTeam }
             { modalPackageEdit }
             <div className="row">
                 <div className="col-lg-12">
@@ -1725,7 +1607,7 @@ function PackageDispatch() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-2">
+                                            <div className="col-lg-1">
                                                 <div className="form-group">
                                                     <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
                                                 </div> 
@@ -1771,6 +1653,13 @@ function PackageDispatch() {
                                                 <div className="form-group">
                                                     <button className="btn btn-info btn-sm form-control text-white" onClick={  () => handlerRedirectToDebrief() }>
                                                         DEBRIEF
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="col-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-secondary btn-sm form-control text-white" onClick={  () => handlerOpenOtherTeam() }>
+                                                        OTHER TEAM
                                                     </button>
                                                 </div>
                                             </div>
