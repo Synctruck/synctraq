@@ -1546,7 +1546,7 @@ class PackageDispatchController extends Controller
                     "recipients" =>  [
                         [
                             "name"  => $package->Dropoff_Contact_Name,
-                            "phone" => $package->Dropoff_Contact_Phone_Number,
+                            "phone" => "+". $package->Dropoff_Contact_Phone_Number,
                             "notes" => $age21Text,
                         ]
                     ],
