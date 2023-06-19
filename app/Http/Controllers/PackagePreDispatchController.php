@@ -266,7 +266,7 @@ class PackagePreDispatchController extends Controller
 
         if($user)
         {
-            $packagePreDispatch = PackagePreDispatch::find($packagePreDispatch->get('Reference_Number_1'));
+            $packagePreDispatch = PackagePreDispatch::find($request->get('Reference_Number_1'));
 
             if($packagePreDispatch)
             {
