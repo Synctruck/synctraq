@@ -324,66 +324,60 @@ function PackagePreDispatch() {
 
         if(idTeam != 0 && idDriver != 0 && passwordDispatch != '')
         {
-            listPackage.forEach( (packagePreDispatch) => {
+            const formData = new FormData();
 
-                setTimeout( () => {
-                    const formData = new FormData();
+            formData.append('numberPallet', PalletNumberForm);
+            formData.append('idTeam', idTeam);
+            formData.append('idDriver', idDriver);
+            formData.append('passwordDispatch', passwordDispatch);
 
-                    formData.append('numberPallet', PalletNumberForm);
-                    formData.append('Reference_Number_1', packagePreDispatch.Reference_Number_1)
-                    formData.append('idTeam', idTeam);
-                    formData.append('idDriver', idDriver);
-                    formData.append('passwordDispatch', passwordDispatch);
-         
-                    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                    let url = 'package-pre-dispatch/chage-to-dispatch';
+            let url = 'package-pre-dispatch/chage-to-dispatch';
 
-                    fetch(url_general + url, {
-                        headers: { "X-CSRF-TOKEN": token },
-                        method: 'post',
-                        body: formData
-                    })
-                    .then(res => res.json())
-                    .then((response) => {
+            fetch(url_general + url, {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
 
-                        if(response.stateAction == true)
-                        {
-                            if(response.closePallet == 1)
-                            {
-                                swal("The palette was dispatched correctly!", {
+                if(response.stateAction == true)
+                {
+                    if(response.closePallet == 1)
+                    {
+                        swal("The palette was dispatched correctly!", {
 
-                                    icon: "success",
-                                });
+                            icon: "success",
+                        });
 
-                                listAllPalet(page, RouteSearchList);
-                            }
-                            else
-                            {
-                                swal("The palette is still open, some packages could not be moved to dispatch, check the information of the packages!", {
+                        listAllPalet(page, RouteSearchList);
+                    }
+                    else
+                    {
+                        swal("The palette is still open, some packages could not be moved to dispatch, check the information of the packages!", {
 
-                                    icon: "warning",
-                                });
-                            }
+                            icon: "warning",
+                        });
+                    }
 
-                            listPackagePreDispatch(PalletNumberForm);
-                        }
-                        else if(response.stateAction == 'userNotExists')
-                        {
-                            swal("The dispatch confirmation password does not exist!", {
+                    listPackagePreDispatch(PalletNumberForm);
+                }
+                else if(response.stateAction == 'userNotExists')
+                {
+                    swal("The dispatch confirmation password does not exist!", {
 
-                                icon: "warning",
-                            });
-                        }
-                        else
-                        {
-                            swal("There was a problem trying to close the palette, please try again!", {
-
-                                icon: "warning",
-                            });
-                        }
+                        icon: "warning",
                     });
-                }, 2000);
+                }
+                else
+                {
+                    swal("There was a problem trying to close the palette, please try again!", {
+
+                        icon: "warning",
+                    });
+                }
             });
         }
         else

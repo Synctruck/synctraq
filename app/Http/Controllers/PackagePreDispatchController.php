@@ -266,13 +266,15 @@ class PackagePreDispatchController extends Controller
 
         if($user)
         {
-            $packagePreDispatch = PackagePreDispatch::find($request->get('Reference_Number_1'));
-
-            if($packagePreDispatch)
+            try
             {
-                try
+                DB::beginTransaction();
+
+                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
+
+                foreach($packagePreDispatchList as $packagePreDispatch)
                 {
-                    DB::beginTransaction();
+                    $packagePreDispatch = PackagePreDispatch::find($packagePreDispatch->Reference_Number_1);
 
                     $created_at  = date('Y-m-d H:i:s');
                     $team        = User::find($request->get('idTeam'));
@@ -362,33 +364,33 @@ class PackagePreDispatchController extends Controller
                         $packageHistory->save();
                         $packagePreDispatch->delete();
                     }
-
-                    $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
-
-                    $closePallet = 0;
-
-                    $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
-                    $palletDispatch->idUserDispatch = $user->id;
-                    $palletDispatch->dispatcher     = $user->name .' '. $user->nameOfOwner;
-
-                    if(count($packagePreDispatchList) == 0)
-                    {
-                        $closePallet            = 1;
-                        $palletDispatch->status = 'Closed';
-                    }
-
-                    $palletDispatch->save();
-
-                    DB::commit();
-
-                    return ['stateAction' => true, 'closePallet' => $closePallet];
                 }
-                catch (Exception $e)
+
+                $packagePreDispatchList = PackagePreDispatch::where('numberPallet', $request->get('numberPallet'))->get();
+
+                $closePallet = 0;
+
+                $palletDispatch = PalletDispatch::find($request->get('numberPallet'));
+                $palletDispatch->idUserDispatch = $user->id;
+                $palletDispatch->dispatcher     = $user->name .' '. $user->nameOfOwner;
+
+                if(count($packagePreDispatchList) == 0)
                 {
-                    DB::rollback();
-
-                    return ['stateAction' => false];
+                    $closePallet            = 1;
+                    $palletDispatch->status = 'Closed';
                 }
+
+                $palletDispatch->save();
+
+                DB::commit();
+
+                return ['stateAction' => true, 'closePallet' => $closePallet];
+            }
+            catch (Exception $e)
+            {
+                DB::rollback();
+
+                return ['stateAction' => false];
             }
         }
         
