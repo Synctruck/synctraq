@@ -1530,6 +1530,8 @@ class PackageDispatchController extends Controller
         $number = explode(' ', $package->Dropoff_Address_Line_1)[0];
         $street = str_replace($number, '', $package->Dropoff_Address_Line_1);
 
+        Log::info('$package->Dropoff_Contact_Name: '. $package->Dropoff_Contact_Name);
+        
         $data = [   
                     "destination" =>  [
                         "address" =>  [

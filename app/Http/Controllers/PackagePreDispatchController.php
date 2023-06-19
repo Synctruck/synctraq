@@ -274,7 +274,7 @@ class PackagePreDispatchController extends Controller
 
                 foreach($packagePreDispatchList as $packagePreDispatch)
                 {
-                    $packagePreDispatch      = PackagePreDispatch::find($packagePreDispatch->Reference_Number_1);
+                    $packagePreDispatch = PackagePreDispatch::find($packagePreDispatch->Reference_Number_1);
 
                     $created_at  = date('Y-m-d H:i:s');
                     $team        = User::find($request->get('idTeam'));
