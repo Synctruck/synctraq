@@ -132,6 +132,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-dispatch/import', [PackageDispatchController::class, 'Import']);
 	Route::get('/package-dispatch/getCoordinates/{taskOnfleet}', [PackageDispatchController::class, 'GetOnfleetShorId']);
 	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
+	Route::post('/package-dispatch/update/change-team', [PackageDispatchController::class, 'UpdateChangeTeam']);
 
 	//============ PALET RTS 
 	Route::get('/pallet-rts/list/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'List']);

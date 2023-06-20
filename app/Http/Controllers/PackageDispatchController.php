@@ -1512,6 +1512,57 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function UpdateChangeTeam(Request $request)
+    {
+        $packageDispatchList = PackageDispatch::where('idTeam', $request->get('idTeamNow'))
+                                            ->where('status', 'Dispatch')
+                                            ->get();
+
+        if(count($packageDispatchList) > 0)
+        {
+            try
+            {
+                DB::beginTransaction();
+
+                $packagesMovedList    = [];
+                $packagesNotMovedList = [];
+
+                foreach($packageDispatchList as $packageDispatch)
+                {
+                    if($packageDispatch->taskOnfleet)
+                    {
+                        $onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
+
+                        if($onfleet)
+                        {
+                            dd($onfleet);
+
+                            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                            $packageDispatch->idTeam         = $request->get('idTeamNew');
+                            $packageDispatch->idUserDispatch = $request->get('idDriverNew');
+                            $packageDispatch->save();
+                        }
+                    }
+                    
+                }
+
+                DB::commit();
+
+                return ['statusCode' => true];
+            }
+            catch(Exception $e)
+            {
+                DB::rollback();
+
+                return ['statusCode' => false];
+            }
+        }
+        else
+        {
+            return ['statusCode' => 'notExists'];
+        }     
+    }
+    
     public function RegisterOnfleet($package, $team, $driver)
     {
         $company = Company::select('id', 'name', 'age21')->find($package->idCompany);

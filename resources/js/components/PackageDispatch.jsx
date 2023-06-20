@@ -16,8 +16,9 @@ function PackageDispatch() {
     const [listTeamNow, setListTeamNow]                 = useState([]);
     const [listTeamNew, setListTeamNew]                 = useState([]);
     const [listDriver, setListDriver]                   = useState([]);
+    const [listDriverAssign, setListDriverAssign]       = useState([]);
     const [roleUser, setRoleUser]                       = useState([]);
-    const [listRoute, setListRoute]                     = useState([]);
+    const [listRoute, setListRoute]                     = useState([]); 
     const [listRole, setListRole]                       = useState([]);
     const [listState , setListState]                    = useState([]);
     const [listCompany , setListCompany]                = useState([]);
@@ -49,7 +50,7 @@ function PackageDispatch() {
     const [idTeamNow, setIdTeamNow] = useState(0);
     const [idTeamNew, setIdTeamNew] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
-    const [idDriverAsing, setIdDriverAsing] = useState(0);
+    const [idDriverNew, setIdDriverNew] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
     
     const [latitude, setLatitude]   = useState(0);
@@ -537,6 +538,20 @@ function PackageDispatch() {
         }
     }
 
+    const listAllDriverByTeamAssign = (idTeam) => {
+
+        setIdTeamNew(idTeam);
+        setIdDriverNew(0);
+        setListDriverAssign([]);
+
+        fetch(url_general +'driver/team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListDriverAssign(response.listDriver);
+        });
+    }
+
     const [sendDispatch, setSendDispatch] = useState(1);
 
     const handlerValidation = (e) => {
@@ -1019,6 +1034,14 @@ function PackageDispatch() {
         );
     });
 
+    const listDriverSelectAssign = listDriverAssign.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
     const handlerReturn = (idPackage) => {
 
         const formData = new FormData();
@@ -1402,41 +1425,50 @@ function PackageDispatch() {
         );
     });
 
+    const handlerChangeTeamNow = (id) => {
+
+        setListTeamNew([]);
+        setIdTeamNow(id);
+        setListDriverAssign([]);
+
+        let auxListTeamNow = listTeamNow.filter( team => team.id != id);
+
+        setListTeamNew(auxListTeamNow);
+    }
+
     const handlerChangeTeamOfPackages = (e) => {
 
         e.preventDefault();
-
-        setIsLoading(true);
-        setReadOnly(true);
 
         const formData = new FormData();
 
         formData.append('idTeamNow', idTeamNow);
         formData.append('idTeamNew', idTeamNew);
+        formData.append('idDriverNew', idDriverNew);
 
-        /*let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(url_general +'package-dispatch/insert', {
+        fetch(url_general +'package-dispatch/update/change-team', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
         })
-        .then(res => res.json()).
-        then((response) => {
+        .then(res => res.json())
+        .then((response) => {
 
-                setIsLoading(false);
-            },
-        );*/
-    }
-
-    const handlerChangeTeamNow = (id) => {
-
-        setListTeamNew([]);
-        setIdTeamNew('');
-
-        let auxListTeamNow = listTeamNow.filter( team => team.id != id);
-
-        setListTeamNew(auxListTeamNow);
+            if(response.statusCode == true)
+            {
+                swal('Correct!', 'The packages was assigned to the new TEAM', 'success');
+            }
+            else if(response.statusCode == false)
+            {
+                swal('Error!', 'An error has occurred, please try again', 'warning');
+            }
+            else if(response.statusCode == 'notExists')
+            {
+                swal('Attention!', 'The team has not packages in DISPATCH', 'warning');
+            }
+        });
     }
 
     const modalOtherTeam = <React.Fragment>
@@ -1451,7 +1483,7 @@ function PackageDispatch() {
                                                     <div className="modal-body">
                                                         <div className="col-lg-12">
                                                             <div className="form-group mb-3">
-                                                                <label className="form">TEAM A REMOVE PACKAGES</label>
+                                                                <label className="form">TEAM TO REMOVE PACKAGES</label>
                                                                 <select name="" id="" className="form-control" onChange={ (e) => handlerChangeTeamNow(e.target.value) } required>
                                                                     <option value="">All</option>
                                                                     { listTeamNowSelect }
@@ -1460,10 +1492,19 @@ function PackageDispatch() {
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <div className="form-group mb-3">
-                                                                <label className="form">TEAM A ASSIGN PACKAGES</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdTeamNew(e.target.value) } required>
+                                                                <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeamAssign(e.target.value) } required>
                                                                     <option value="">All</option>
                                                                     { listTeamNewSelect }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-lg-12">
+                                                            <div className="form-group">
+                                                                <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
+                                                                    <option value="">All</option>
+                                                                    { listDriverSelectAssign }
                                                                 </select>
                                                             </div>
                                                         </div>
