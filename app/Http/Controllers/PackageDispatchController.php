@@ -1531,17 +1531,19 @@ class PackageDispatchController extends Controller
                 {
                     if($packageDispatch->taskOnfleet)
                     {
-                        $onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
+                        $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                        $packageDispatch->idTeam         = $request->get('idTeamNew');
+                        $packageDispatch->idUserDispatch = $request->get('idDriverNew');
+                        $packageDispatch->save();
+
+                        /*$onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
 
                         if($onfleet)
                         {
                             dd($onfleet);
 
-                            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
-                            $packageDispatch->idTeam         = $request->get('idTeamNew');
-                            $packageDispatch->idUserDispatch = $request->get('idDriverNew');
-                            $packageDispatch->save();
-                        }
+                            
+                        }*/
                     }
                     
                 }
