@@ -1665,14 +1665,6 @@ class PackageDispatchController extends Controller
 
     public function UpdateOnfleet($team, $driver, $idOnfleet)
     {
-        $data = [   
-                    "container" =>  [
-                        "type"   =>  "WORKER",
-                        "team"   =>  $team->idOnfleet,
-                        "worker" =>  $driver->idOnfleet
-                    ],
-                ];
-        
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -1693,7 +1685,7 @@ class PackageDispatchController extends Controller
                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Basic '. $this->base64
+                'Authorization: Basic MjI1NGE3NDRhZTNkYmJkNjFkOGNiNmEwMWQzYTFlZWE6'
             ),
         ));
 
