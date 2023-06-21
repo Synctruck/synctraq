@@ -1535,19 +1535,35 @@ class PackageDispatchController extends Controller
 
                         if($onfleet)
                         {
-                            dd($onfleet['id']);
+                            $team   = User::find($request->get('idTeamNew'));
+                            $driver = User::find($request->get('idDriverNew'));
 
-                            $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
-                            $packageDispatch->idTeam         = $request->get('idTeamNew');
-                            $packageDispatch->idUserDispatch = $request->get('idDriverNew');
-                            $packageDispatch->save();
+                            $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id'])
+
+                            if($onfleetUpdate['status'] == 200)
+                            {
+                                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                                $packageDispatch->idTeam         = $request->get('idTeamNew');
+                                $packageDispatch->idUserDispatch = $request->get('idDriverNew');
+                                $packageDispatch->save();
+
+                                array_push($packagesMovedList, $packageDispatch->Reference_Number_1);
+                            }
+                            else
+                            {
+                                array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
+                            }
+                        }
+                        else
+                        {
+                            array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
                         }
                     }
                 }
 
                 DB::commit();
 
-                return ['statusCode' => true];
+                return ['statusCode' => true, 'packagesMovedList' => $packagesMovedList, 'packagesNotMovedList' => $packagesNotMovedList];
             }
             catch(Exception $e)
             {
@@ -1647,10 +1663,8 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function UpdateOnfleet($package, $team, $driver)
+    public function UpdateOnfleet($team, $driver)
     {
-        $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
-
         $data = [   
                     "container" =>  [
                         "type"   =>  "WORKER",
@@ -1687,7 +1701,7 @@ class PackageDispatchController extends Controller
         }
         else
         {
-            return ['status' => false, $output];
+            return ['status' => false, 'response' => $output];
         }
     }
 
