@@ -1663,7 +1663,7 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function UpdateOnfleet($team, $driver)
+    public function UpdateOnfleet($team, $driver, $idOnfleet)
     {
         $data = [   
                     "container" =>  [
@@ -1677,7 +1677,7 @@ class PackageDispatchController extends Controller
         
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks/');
+        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks/'. $idOnfleet);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_POST, true);
