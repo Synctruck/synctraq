@@ -1667,8 +1667,14 @@ class PackageDispatchController extends Controller
     {
         $curl = curl_init();
 
-        Log::info('$driver->idOnfleet: '. $driver->idOnfleet);
-        
+        Log::info('{
+                        "container":{
+                            "type":"WORKER",
+                            "team":"'. $team->idOnfleet .'",
+                            "worker":"'. $driver->idOnfleet .'"
+                        }
+                    }');
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://onfleet.com/api/v2/tasks/'. $idOnfleet,
             CURLOPT_RETURNTRANSFER => true,
