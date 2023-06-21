@@ -1673,7 +1673,10 @@ class PackageDispatchController extends Controller
                     ],
                 ];
 
-        Log::info($this->headers);
+        Log::info(array(
+                'Content-Type: application/json',
+                'Authorization: Basic '. $this->base64,
+            ));
         
         $curl = curl_init();
 
