@@ -1672,40 +1672,34 @@ class PackageDispatchController extends Controller
                         "worker" =>  $driver->idOnfleet
                     ],
                 ];
-
-        Log::info(array(
-                'Content-Type: application/json',
-                'Authorization: Basic '. $this->base64,
-            ));
         
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-          CURLOPT_URL => 'https://onfleet.com/api/v2/tasks/5NBC64RXsSI4lppJNECSmsWq',
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => '',
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => 'PUT',
-          CURLOPT_POSTFIELDS =>'{
-            "container":{
-                "type":"WORKER",
-                "team":"CtxF*ugii5Satm5iXhqvIiPz",
-                "worker":"QkjPDz3PNZZBcHkxY3SXs0Lh"
-            }
-        }',
-          CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json',
-            'Authorization: Basic MjI1NGE3NDRhZTNkYmJkNjFkOGNiNmEwMWQzYTFlZWE6'
-          ),
+            CURLOPT_URL => 'https://onfleet.com/api/v2/tasks/'. $idOnfleet,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_POSTFIELDS =>'{
+                        "container":{
+                            "type":"WORKER",
+                            "team":"'. $team->idOnfleet .'",
+                            "worker":"'. $driver->idOnfleet .'"
+                        }
+                    }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Basic '. $this->base64
+            ),
         ));
 
         $output      = curl_exec($curl);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        dd($output);
         curl_close($curl);
 
         if($http_status == 200)
