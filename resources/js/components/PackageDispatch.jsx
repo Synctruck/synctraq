@@ -1438,13 +1438,15 @@ function PackageDispatch() {
 
     const handlerChangeTeamOfPackages = (e) => {
 
+        LoadingShowMap();
+
         e.preventDefault();
 
         const formData = new FormData();
 
         formData.append('idTeamNow', idTeamNow);
         formData.append('idTeamNew', idTeamNew);
-        formData.append('idDriverNew', idDriverNew);
+        formData.append('idDriverNew', idDriverNew); 
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -1468,6 +1470,8 @@ function PackageDispatch() {
             {
                 swal('Attention!', 'The team has not packages in DISPATCH', 'warning');
             }
+
+            LoadingHideMap();
         });
     }
 
