@@ -1470,6 +1470,10 @@ function PackageDispatch() {
             {
                 swal('Attention!', 'The team has not packages in DISPATCH', 'warning');
             }
+            else
+            {
+                swal('Error!', 'A problem occurred, please try again', 'error');
+            }
 
             LoadingHideMap();
         });
