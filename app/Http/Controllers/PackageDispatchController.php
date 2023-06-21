@@ -1535,17 +1535,14 @@ class PackageDispatchController extends Controller
 
                         if($onfleet)
                         {
-                            dd($onfleet);
-                            
+                            dd($onfleet['id']);
+
                             $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
                             $packageDispatch->idTeam         = $request->get('idTeamNew');
                             $packageDispatch->idUserDispatch = $request->get('idDriverNew');
                             $packageDispatch->save();
                         }
-
-                        
                     }
-                    
                 }
 
                 DB::commit();
@@ -1625,6 +1622,50 @@ class PackageDispatchController extends Controller
         curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_USERPWD, '4c52f49c1db8d158f7ff1ace1722f341:');
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+
+        $output = curl_exec($curl);
+
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
+        {
+            return ['status' => 200, 'response' => $output];
+        }
+        else
+        {
+            return ['status' => false, $output];
+        }
+    }
+
+    public function UpdateOnfleet($package, $team, $driver)
+    {
+        $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
+
+        $data = [   
+                    "container" =>  [
+                        "type"   =>  "WORKER",
+                        "team"   =>  $team->idOnfleet,
+                        "worker" =>  $driver->idOnfleet
+                    ],
+                ];
+
+        Log::info($data);
+        
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks/');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
