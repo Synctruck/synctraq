@@ -1538,7 +1538,7 @@ class PackageDispatchController extends Controller
                             $team   = User::find($request->get('idTeamNew'));
                             $driver = User::find($request->get('idDriverNew'));
 
-                            $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id'])
+                            $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id']);
 
                             if($onfleetUpdate['status'] == 200)
                             {
