@@ -1673,7 +1673,7 @@ class PackageDispatchController extends Controller
                     ],
                 ];
 
-        Log::info($data);
+        Log::info($this->headers);
         
         $curl = curl_init();
 
