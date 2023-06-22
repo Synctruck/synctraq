@@ -1551,7 +1551,7 @@ class PackageDispatchController extends Controller
                             }
                             else
                             {
-                                array_push($packagesNotMovedList, $onfleetUpdate['response']);
+                                array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
                             }
                         }
                         else

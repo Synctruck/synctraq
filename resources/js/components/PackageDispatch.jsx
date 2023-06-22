@@ -1436,6 +1436,9 @@ function PackageDispatch() {
         setListTeamNew(auxListTeamNow);
     }
 
+    const [packagesMovedList, setPackagesMovedList]       = useState([]);
+    const [packagesNotMovedList, setPackagesNotMovedList] = useState([]);
+
     const handlerChangeTeamOfPackages = (e) => {
 
         LoadingShowMap();
@@ -1460,6 +1463,9 @@ function PackageDispatch() {
 
             if(response.statusCode == true)
             {
+                setPackagesMovedList(response.packagesMovedList);
+                setPackagesNotMovedList(response.packagesNotMovedList);
+
                 swal('Correct!', 'The packages was assigned to the new TEAM', 'success');
             }
             else if(response.statusCode == false)
@@ -1479,9 +1485,29 @@ function PackageDispatch() {
         });
     }
 
+    const packagesMovedListTable = packagesMovedList.map((packageMoved, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>{{ packageMoved }}</td>
+            </tr>
+        );
+    });
+
+    const packagesNotMovedListTable = packagesMovedList.map((packageNotMoved, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>{{ packageNotMoved }}</td>
+            </tr>
+        );
+    });
+
     const modalOtherTeam = <React.Fragment>
                                     <div className="modal fade" id="modalOtherTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-lg">
                                             <form onSubmit={ handlerChangeTeamOfPackages }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
@@ -1489,31 +1515,61 @@ function PackageDispatch() {
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
-                                                        <div className="col-lg-12">
-                                                            <div className="form-group mb-3">
-                                                                <label className="form">TEAM TO REMOVE PACKAGES</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => handlerChangeTeamNow(e.target.value) } required>
-                                                                    <option value="">All</option>
-                                                                    { listTeamNowSelect }
-                                                                </select>
+                                                        <div className="row mb-3">
+                                                            <div className="col-lg-4">
+                                                                <div className="form-group mb-3">
+                                                                    <label className="form">TEAM TO REMOVE PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerChangeTeamNow(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamNowSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-4">
+                                                                <div className="form-group mb-3">
+                                                                    <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeamAssign(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamNewSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-4">
+                                                                <div className="form-group">
+                                                                    <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listDriverSelectAssign }
+                                                                    </select>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-lg-12">
-                                                            <div className="form-group mb-3">
-                                                                <label className="form">TEAM TO ASSIGN PACKAGES</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeamAssign(e.target.value) } required>
-                                                                    <option value="">All</option>
-                                                                    { listTeamNewSelect }
-                                                                </select>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <label className="form">PACKAGES MOVED LIST</label>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PACKAGE ID</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesMovedListTable }
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                        </div>
-                                                        <div className="col-lg-12">
-                                                            <div className="form-group">
-                                                                <label className="form">TEAM TO ASSIGN PACKAGES</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
-                                                                    <option value="">All</option>
-                                                                    { listDriverSelectAssign }
-                                                                </select>
+                                                            <div className="col-lg-12">
+                                                                <label className="form">PACKAGES NOT MOVED LIST</label>
+                                                                <table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PACKAGE ID</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesNotMovedListTable }
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
