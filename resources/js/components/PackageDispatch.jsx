@@ -1545,12 +1545,11 @@ function PackageDispatch() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <label className="form">PACKAGES MOVED LIST</label>
-                                                                <table>
+                                                            <div className="col-lg-6">
+                                                                <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PACKAGE ID</th>
+                                                                            <th>PACKAGES MOVED LIST</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -1558,12 +1557,11 @@ function PackageDispatch() {
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-                                                            <div className="col-lg-12">
-                                                                <label className="form">PACKAGES NOT MOVED LIST</label>
-                                                                <table>
+                                                            <div className="col-lg-6">
+                                                                <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PACKAGE ID</th>
+                                                                            <th>PACKAGES NOT MOVED LIST</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
