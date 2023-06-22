@@ -1495,7 +1495,7 @@ function PackageDispatch() {
         );
     });
 
-    const packagesNotMovedListTable = packagesMovedList.map((packageNotMoved, i) => {
+    const packagesNotMovedListTable = packagesNotMovedList.map((packageNotMoved, i) => {
 
         return (
 
