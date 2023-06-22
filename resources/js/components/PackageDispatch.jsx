@@ -1536,7 +1536,7 @@ function PackageDispatch() {
                                                             </div>
                                                             <div className="col-lg-4">
                                                                 <div className="form-group">
-                                                                    <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                    <label className="form">DRIVER TO ASSIGN PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
                                                                         <option value="">All</option>
                                                                         { listDriverSelectAssign }
