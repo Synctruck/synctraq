@@ -1529,6 +1529,8 @@ class PackageDispatchController extends Controller
 
                 foreach($packageDispatchList as $packageDispatch)
                 {
+                    $moved = false;
+                    
                     if($packageDispatch->taskOnfleet)
                     {
                         $onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
@@ -1548,16 +1550,15 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->save();
 
                                 array_push($packagesMovedList, $packageDispatch->Reference_Number_1);
-                            }
-                            else
-                            {
-                                array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
+
+                                $moved = true;
                             }
                         }
-                        else
-                        {
-                            array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
-                        }
+                    }
+
+                    if($moved == false)
+                    {
+                        array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
                     }
                 }
 

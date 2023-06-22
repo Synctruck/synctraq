@@ -1490,7 +1490,7 @@ function PackageDispatch() {
         return (
 
             <tr key={ i }>
-                <td>{{ packageMoved }}</td>
+                <td>{ packageMoved }</td>
             </tr>
         );
     });
@@ -1500,7 +1500,7 @@ function PackageDispatch() {
         return (
 
             <tr key={ i }>
-                <td>{{ packageNotMoved }}</td>
+                <td>{ packageNotMoved }</td>
             </tr>
         );
     });
