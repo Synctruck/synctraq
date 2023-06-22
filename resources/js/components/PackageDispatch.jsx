@@ -1752,7 +1752,7 @@ function PackageDispatch() {
                                                     ''
                                             }
 
-                                            <div className="col-2" style={ {display: 'none'} }>
+                                            <div className="col-2" style={ {display: 'block'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-info btn-sm form-control text-white" onClick={  () => handlerRedirectToDebrief() }>
                                                         DEBRIEF

@@ -14,8 +14,10 @@ function Debrief() {
     const [textButtonSave, setTextButtonSave] = useState('Save');
     const [isLoading, setIsLoading]           = useState(false);
 
-    const [listDriver, setListDriver]   = useState([]);
-    const [packageList, setPackageList] = useState([]);
+    const [listDriver, setListDriver]         = useState([]);
+    const [packageListAux, setPackageListAux] = useState([]);
+    const [packageList, setPackageList]       = useState([]);
+    const [searchPackage, setSearchPackage]   = useState('');
 
     useEffect(() => {
 
@@ -54,12 +56,14 @@ function Debrief() {
 
         setIdDriver(id);
         setPackageList([]);
+        setPackageListAux([]);
 
         fetch(url_general +'driver/defrief/list-packages/'+ id)
         .then(response => response.json())
         .then(response => {
 
             setPackageList(response.listPackages);
+            setPackageListAux(response.listPackages);
             setTitleModal('PACKAGE LIST: '+ response.listPackages.length);
 
             LoadingHideMap();
@@ -102,11 +106,13 @@ function Debrief() {
                 {
                     swal('Correct', 'The package was moved to the selected status', 'success');
 
+                    setSearchPackage('');
+
                     getPackages(idDriver);
                 }
                 else if(response.statusAction == 'packageNotExists')
                 {
-                    swal('Attention', 'Package does not exist in dispatch', 'warning');
+                    swal('Attention', 'Package does not exist in DISPATCH or DELETE', 'warning');
                 }
 
                 LoadingHideMap();
@@ -120,7 +126,12 @@ function Debrief() {
 
             <tr key={i}>
                 <td>{ i + 1 }</td>
+                <td style={ { width: '100px'} }>
+                    <b>{ packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }</b><br/>
+                    { packageDispatch.created_at.substring(11, 19) }
+                </td>
                 <td>{ packageDispatch.Reference_Number_1 }</td>
+                <td>{ packageDispatch.status }</td>
                 <td>
                     <select name="" id="" className="form-control" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
                         <option value="all">Select</option>
@@ -134,42 +145,61 @@ function Debrief() {
         );
     });
 
-    const handlerSaveUser = () => {
+    const handlerSearchPackageId = (e) => {
 
+        e.preventDefault();
+
+        if(searchPackage == '')
+        {
+            setPackageList(packageListAux);
+        }
+        else
+        {
+            let packageListNow = packageList.filter(element => element.Reference_Number_1 == searchPackage);
+
+            setPackageList(packageListNow);
+        }
     };
 
     const modalPackages = <React.Fragment>
                                     <div className="modal fade" id="modalPackages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveUser }>
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div className="modal-body">
-                                                        <div className="row table-responsive">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <div className="row table-responsive">
+                                                        <form onSubmit={ handlerSearchPackageId }>
                                                             <div className="col-lg-12">
-                                                                <table className="table table-hover table-condensed">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>#</th>
-                                                                            <th>PACKAGE ID</th>
-                                                                            <th>ACTION</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        { packageListTable }
-                                                                    </tbody>
-                                                                </table>
+                                                                <div className="form-group">
+                                                                    <input type="text" className="form-control" value={ searchPackage } onChange={ (e) => setSearchPackage(e.target.value) } placeholder="Search PACKAGE ID"/>
+                                                                </div>
                                                             </div>
+                                                        </form>
+                                                        <div className="col-lg-12">
+                                                            <table className="table table-hover table-condensed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>DATE</th>
+                                                                        <th>PACKAGE ID</th>
+                                                                        <th>STATUS</th>
+                                                                        <th>ACTION</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    { packageListTable }
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    </div>
                                                 </div>
-                                            </form>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </React.Fragment>;

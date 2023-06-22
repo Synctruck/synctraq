@@ -10,7 +10,7 @@ class ServicePackageDispatch{
 
     public function GetIdDriverPackageDebrief()
     {
-        return PackageDispatch::where('status', 'Dispatch')
+        return PackageDispatch::whereIn('status', ['Dispatch', 'Delete'])
                             ->where('idUserDispatch', '!=', 0)
                             ->groupBy('idUserDispatch')
                             ->select('idUserDispatch', DB::raw('COUNT(idUserDispatch) as quantityOfPackages'))
@@ -28,13 +28,16 @@ class ServicePackageDispatch{
     public function ListPackagesDebrief($idDriver)
     {
         return PackageDispatch::where('idUserDispatch', $idDriver)
-                            ->where('status', 'Dispatch')
+                            ->whereIn('status', ['Dispatch', 'Delete'])
+                            ->orderBy('created_at', 'asc')
                             ->get();
     }
 
     public function MoveToOtherStatus($Reference_Number_1, $status)
     {
-        $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
+        $packageDispatch = PackageDispatch::where('status', 'Dispatch')
+                                            ->orWhere('status', 'Delete')
+                                            ->find($Reference_Number_1);
 
         if($packageDispatch)
         {
