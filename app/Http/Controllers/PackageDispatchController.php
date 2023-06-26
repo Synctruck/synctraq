@@ -260,6 +260,15 @@ class PackageDispatchController extends Controller
         return ['listPackageDispatch' => $listPackageDispatch];
     }
 
+    public function GetByTeam($idTeam)
+    {
+        $listPackageInDispatch = PackageDispatch::where('idTeam', $idTeam)
+                                                ->where('status', 'Dispatch')
+                                                ->get();
+
+        return ['listPackageInDispatch' => $listPackageInDispatch];
+    }
+
     public function Insert(Request $request)
     {
         /*if($request->get('autorizationDispatch') == false)
@@ -1514,7 +1523,9 @@ class PackageDispatchController extends Controller
 
     public function UpdateChangeTeam(Request $request)
     {
-        $packageDispatchList = PackageDispatch::where('idTeam', $request->get('idTeamNow'))
+        $References = explode(',', $request->get('References'));
+        
+        $packageDispatchList = PackageDispatch::whereIn('Reference_Number_1', $References)
                                             ->where('status', 'Dispatch')
                                             ->get();
 

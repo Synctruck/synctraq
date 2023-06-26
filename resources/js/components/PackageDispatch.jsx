@@ -1428,12 +1428,31 @@ function PackageDispatch() {
     const handlerChangeTeamNow = (id) => {
 
         setListTeamNew([]);
-        setIdTeamNow(id);
+        setIdTeamNow(id); 
         setListDriverAssign([]);
 
         let auxListTeamNow = listTeamNow.filter( team => team.id != id);
 
         setListTeamNew(auxListTeamNow);
+    }
+
+    const [listPackageInDispatch, setListPackageInDispatch] = useState([]);
+
+    const handlerGetPackagesInDispatch = (idTeam) => {
+
+        LoadingShowMap();
+        handlerChangeTeamNow(idTeam);
+        setListPackageInDispatch([]);
+
+        fetch(url_general +'package-dispatch/get-by-team/'+ idTeam)
+        .then(res => res.json()).
+        then((response) => {
+
+                setListPackageInDispatch(response.listPackageInDispatch);
+
+                LoadingHideMap();
+            },
+        );
     }
 
     const [packagesMovedList, setPackagesMovedList]       = useState([]);
@@ -1447,6 +1466,7 @@ function PackageDispatch() {
 
         const formData = new FormData();
 
+        formData.append('References', References);
         formData.append('idTeamNow', idTeamNow);
         formData.append('idTeamNew', idTeamNew);
         formData.append('idDriverNew', idDriverNew); 
@@ -1466,6 +1486,8 @@ function PackageDispatch() {
                 setPackagesMovedList(response.packagesMovedList);
                 setPackagesNotMovedList(response.packagesNotMovedList);
 
+                handlerGetPackagesInDispatch(idTeamNow);
+
                 swal('Correct!', 'The packages was assigned to the new TEAM', 'success');
             }
             else if(response.statusCode == false)
@@ -1484,6 +1506,40 @@ function PackageDispatch() {
             LoadingHideMap();
         });
     }
+
+    const [References, setReferences] = useState('');
+
+    const handleChangeCheckReferences = () => {
+
+        let referencesAux = '';
+
+        listPackageInDispatch.forEach( packageDispatch => {
+
+            if(document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked)
+            {
+                referencesAux = (referencesAux == '' ? packageDispatch.Reference_Number_1 : packageDispatch.Reference_Number_1 +','+ referencesAux);
+            }
+        });
+
+        setReferences(referencesAux);
+    };
+
+    const packagesListInDispatchTable = listPackageInDispatch.map((packageDispatch, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id={ 'Reference_Number_1'+ packageDispatch.Reference_Number_1 } value={ packageDispatch.Reference_Number_1 } onChange={ () => handleChangeCheckReferences() }/>
+                        <label class="form-check-label" for="gridCheck1">
+                             { packageDispatch.Reference_Number_1  }
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        );
+    });
 
     const packagesMovedListTable = packagesMovedList.map((packageMoved, i) => {
 
@@ -1519,7 +1575,7 @@ function PackageDispatch() {
                                                             <div className="col-lg-4">
                                                                 <div className="form-group mb-3">
                                                                     <label className="form">TEAM TO REMOVE PACKAGES</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerChangeTeamNow(e.target.value) } required>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerGetPackagesInDispatch(e.target.value) } required>
                                                                         <option value="">All</option>
                                                                         { listTeamNowSelect }
                                                                     </select>
@@ -1545,7 +1601,19 @@ function PackageDispatch() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-4">
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PACKAGES IN DISPATCH</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesListInDispatchTable }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div className="col-lg-4">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
@@ -1557,7 +1625,7 @@ function PackageDispatch() {
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-4">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
