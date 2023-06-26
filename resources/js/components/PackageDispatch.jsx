@@ -1533,7 +1533,7 @@ function PackageDispatch() {
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id={ 'Reference_Number_1'+ packageDispatch.Reference_Number_1 } value={ packageDispatch.Reference_Number_1 } onChange={ () => handleChangeCheckReferences() }/>
                         <label class="form-check-label" for="gridCheck1">
-                             { packageDispatch.Reference_Number_1  }
+                            &nbsp;{ packageDispatch.Reference_Number_1  }
                         </label>
                     </div>
                 </td>
