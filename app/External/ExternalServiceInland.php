@@ -13,6 +13,8 @@ class ExternalServiceInland{
 
         $curl = curl_init();
 
+        dd($company->url_webhook . $request->Reference_Number_1 .'/update-details');
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => $company->url_webhook . $request->Reference_Number_1 .'/update-details',
             CURLOPT_RETURNTRANSFER => true,
