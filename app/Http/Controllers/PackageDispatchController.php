@@ -1116,7 +1116,7 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
         
-        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        //$package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         /*if($package)
         {
