@@ -260,6 +260,15 @@ class PackageDispatchController extends Controller
         return ['listPackageDispatch' => $listPackageDispatch];
     }
 
+    public function GetByTeam($idTeam)
+    {
+        $listPackageInDispatch = PackageDispatch::where('idTeam', $idTeam)
+                                                ->where('status', 'Dispatch')
+                                                ->get();
+
+        return ['listPackageInDispatch' => $listPackageInDispatch];
+    }
+
     public function Insert(Request $request)
     {
         /*if($request->get('autorizationDispatch') == false)
@@ -1116,12 +1125,12 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
         
-        //$package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-        /*if($package)
+        if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
-        }*/
+        }
 
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
@@ -1512,6 +1521,75 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function UpdateChangeTeam(Request $request)
+    {
+        $References = explode(',', $request->get('References'));
+        
+        $packageDispatchList = PackageDispatch::whereIn('Reference_Number_1', $References)
+                                            ->where('status', 'Dispatch')
+                                            ->get();
+
+        if(count($packageDispatchList) > 0)
+        {
+            try
+            {
+                DB::beginTransaction();
+
+                $packagesMovedList    = [];
+                $packagesNotMovedList = [];
+
+                foreach($packageDispatchList as $packageDispatch)
+                {
+                    $moved = false;
+                    
+                    if($packageDispatch->taskOnfleet)
+                    {
+                        $onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
+
+                        if($onfleet)
+                        {
+                            $team   = User::find($request->get('idTeamNew'));
+                            $driver = User::find($request->get('idDriverNew'));
+
+                            $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id']);
+
+                            if($onfleetUpdate['status'] == 200)
+                            {
+                                $packageDispatch = PackageDispatch::find($packageDispatch->Reference_Number_1);
+                                $packageDispatch->idTeam         = $request->get('idTeamNew');
+                                $packageDispatch->idUserDispatch = $request->get('idDriverNew');
+                                $packageDispatch->save();
+
+                                array_push($packagesMovedList, $packageDispatch->Reference_Number_1);
+
+                                $moved = true;
+                            }
+                        }
+                    }
+
+                    if($moved == false)
+                    {
+                        array_push($packagesNotMovedList, $packageDispatch->Reference_Number_1);
+                    }
+                }
+
+                DB::commit();
+
+                return ['statusCode' => true, 'packagesMovedList' => $packagesMovedList, 'packagesNotMovedList' => $packagesNotMovedList];
+            }
+            catch(Exception $e)
+            {
+                DB::rollback();
+
+                return ['statusCode' => false];
+            }
+        }
+        else
+        {
+            return ['statusCode' => 'notExists'];
+        }     
+    }
+    
     public function RegisterOnfleet($package, $team, $driver)
     {
         $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
@@ -1529,6 +1607,8 @@ class PackageDispatchController extends Controller
 
         $number = explode(' ', $package->Dropoff_Address_Line_1)[0];
         $street = str_replace($number, '', $package->Dropoff_Address_Line_1);
+
+        Log::info('$package->Dropoff_Contact_Name: '. $package->Dropoff_Contact_Name);
 
         $data = [   
                     "destination" =>  [
@@ -1563,6 +1643,8 @@ class PackageDispatchController extends Controller
                     ],
                 ];
 
+        Log::info($data);
+        
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks');
@@ -1590,6 +1672,55 @@ class PackageDispatchController extends Controller
         else
         {
             return ['status' => false, $output];
+        }
+    }
+
+    public function UpdateOnfleet($team, $driver, $idOnfleet)
+    {
+        $curl = curl_init();
+
+        Log::info('{
+                        "container":{
+                            "type":"WORKER",
+                            "team":"'. $team->idOnfleet .'",
+                            "worker":"'. $driver->idOnfleet .'"
+                        }
+                    }');
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://onfleet.com/api/v2/tasks/'. $idOnfleet,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_POSTFIELDS =>'{
+                        "container":{
+                            "type":"WORKER",
+                            "team":"'. $team->idOnfleet .'",
+                            "worker":"'. $driver->idOnfleet .'"
+                        }
+                    }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Basic MjI1NGE3NDRhZTNkYmJkNjFkOGNiNmEwMWQzYTFlZWE6'
+            ),
+        ));
+
+        $output      = curl_exec($curl);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
+        {
+            return ['status' => 200, 'response' => $output];
+        }
+        else
+        {
+            return ['status' => false, 'response' => $output];
         }
     }
 
