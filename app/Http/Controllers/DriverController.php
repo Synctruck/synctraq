@@ -446,11 +446,11 @@ class DriverController extends Controller
         return view('driver.index-debrief');
     }
 
-    public function ListDebrief(Request $request)
+    public function ListDebrief(Request $request, $idTeam)
     {
         $servicePackageDispatch = new ServicePackageDispatch();
 
-        $idsDriver = $servicePackageDispatch->GetIdDriverPackageDebrief();
+        $idsDriver = $servicePackageDispatch->GetIdDriverPackageDebrief($idTeam);
         $driverList = Driver::where('idRole', 4)
                                 ->whereIn('id', $idsDriver)
                                 ->get();
@@ -461,16 +461,17 @@ class DriverController extends Controller
         {
             $driver = Driver::find($idDriver->idUserDispatch);
 
-            if($driver)
+            if($driver) 
             {
-                $driver = [ 
+                $data = [ 
+                    'team' => $driver->nameTeam,
                     'idDriver' => $driver->id,
                     'fullName' => $driver->name .' '. $driver->nameOfOwner,
                     'email' => $driver->email,
                     'quantityOfPackages' => $idDriver->quantityOfPackages
                 ];
 
-                array_push($newDriverList, $driver);
+                array_push($newDriverList, $data);
             }
         }
 

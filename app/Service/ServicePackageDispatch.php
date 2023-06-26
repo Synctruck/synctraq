@@ -8,13 +8,19 @@ use DB;
 
 class ServicePackageDispatch{
 
-    public function GetIdDriverPackageDebrief()
+    public function GetIdDriverPackageDebrief($idTeam)
     {
-        return PackageDispatch::whereIn('status', ['Dispatch', 'Delete'])
-                            ->where('idUserDispatch', '!=', 0)
-                            ->groupBy('idUserDispatch')
-                            ->select('idUserDispatch', DB::raw('COUNT(idUserDispatch) as quantityOfPackages'))
-                            ->get('idUserDispatch');
+        $packageDispatchList = PackageDispatch::whereIn('status', ['Dispatch', 'Delete'])->where('idUserDispatch', '!=', 0);
+
+        if($idTeam != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
+        }
+
+        return $packageDispatchList->groupBy('idUserDispatch')
+                                    ->select('idUserDispatch', DB::raw('COUNT(idUserDispatch) as quantityOfPackages'))
+                                    ->orderBy('idTeam', 'asc')
+                                    ->get('idUserDispatch');
     }
 
 	public function QuantityPackageDebrief($idDriver)

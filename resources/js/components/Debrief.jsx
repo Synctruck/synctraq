@@ -14,22 +14,25 @@ function Debrief() {
     const [textButtonSave, setTextButtonSave] = useState('Save');
     const [isLoading, setIsLoading]           = useState(false);
 
+    const [listTeam, setListTeam]             = useState([]);
     const [listDriver, setListDriver]         = useState([]);
     const [packageListAux, setPackageListAux] = useState([]);
     const [packageList, setPackageList]       = useState([]);
     const [searchPackage, setSearchPackage]   = useState('');
+    const [idTeam, setIdTeam]                 = useState(0);
 
     useEffect(() => {
 
         listAllDriver();
+        listAllTeam();
 
-    }, [textSearch])
+    }, [idTeam])
 
     const listAllDriver = () => {
 
         setIsLoading(true);
 
-        fetch(url_general +'driver/defrief/list')
+        fetch(url_general +'driver/defrief/list/'+ idTeam)
         .then(res => res.json())
         .then((response) => {
 
@@ -75,7 +78,7 @@ function Debrief() {
         return (
 
             <tr key={i}>
-                <td>{ i + 1 }</td>
+                <td><b>{ user['team'] }</b></td>
                 <td>{ user['fullName'] }</td>
                 <td>{ user['email'] }</td>
                 <td>{ user['quantityOfPackages'] }</td>
@@ -120,6 +123,16 @@ function Debrief() {
         }
     }
 
+    const handlerOpenHistory = (Reference_Number_1) => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
     const packageListTable = packageList.map( (packageDispatch, i) => {
 
         return (
@@ -130,7 +143,7 @@ function Debrief() {
                     <b>{ packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }</b><br/>
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
-                <td>{ packageDispatch.Reference_Number_1 }</td>
+                <td><a href="#" onClick={ () => handlerOpenHistory(packageDispatch.Reference_Number_1) }>{ packageDispatch.Reference_Number_1 }</a></td>
                 <td>{ packageDispatch.status }</td>
                 <td>
                     <select name="" id="" className="form-control" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
@@ -204,6 +217,25 @@ function Debrief() {
                                     </div>
                                 </React.Fragment>;
 
+
+    const listAllTeam = () => {
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    })
+
     return (
 
         <section className="section">
@@ -213,8 +245,14 @@ function Debrief() {
                     <div className="card">
                         <div className="card-body">
                             <div className="row">
-                                <div className="col-lg-12 mb-2">
-                                    <input type="text" value={textSearch} onChange={ (e) => setSearch(e.target.value) } className="form-control" placeholder="Buscar..."/>
+                                <div className="col-lg-3">
+                                    <div className="form-group">
+                                        <label className="form">TEAM</label>
+                                        <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                            <option value="0">All</option>
+                                            { listTeamSelect }
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="col-lg-12 mb-2" style={ {padding: (isLoading ? '1%' : '')} }>
                                     {
@@ -233,8 +271,8 @@ function Debrief() {
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th>DRIVER FULL NAME</th>
+                                                <th>TEAM</th>
+                                                <th>DRIVER</th>
                                                 <th>EMAIL</th>
                                                 <th>PACKAGES QUANTITY</th>
                                                 <th>ACTIONS</th>
