@@ -1118,10 +1118,10 @@ class PackageDispatchController extends Controller
         
         $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-        if($package)
+        /*if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
-        }
+        }*/
 
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
