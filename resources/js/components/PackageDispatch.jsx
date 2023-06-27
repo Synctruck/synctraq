@@ -1827,7 +1827,7 @@ function PackageDispatch() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="col-2">
+                                            <div className="col-2" style={ {display: 'none'} }>
                                                 <div className="form-group">
                                                     <button className="btn btn-secondary btn-sm form-control text-white" onClick={  () => handlerOpenOtherTeam() }>
                                                         OTHER TEAM
