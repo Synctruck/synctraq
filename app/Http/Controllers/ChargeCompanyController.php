@@ -142,7 +142,7 @@ class ChargeCompanyController extends Controller
         //create a file pointer
         $file   = fopen('php://memory', 'w');
         $charge = ChargeCompany::find($idCharge);
-        $fields = array('DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields = array('DATE', 'COMPANY', 'TEAM', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -182,7 +182,7 @@ class ChargeCompanyController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-
+ 
         fseek($file, 0);
 
         header('Content-Type: text/csv');

@@ -315,7 +315,9 @@ function ReportDelivery() {
         let urlImage = '';
         let photoHttp = false;
         let reVerification = false
-        let urlImageAux = packageDelivery.photoUrl.split(',');
+        let urlImageAux = (packageDelivery.photoUrl == null ? '' : packageDelivery.photoUrl);
+
+        urlImageAux = urlImageAux.split(',')
 
         console.log(urlImageAux);
 

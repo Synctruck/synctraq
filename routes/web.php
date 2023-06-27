@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
 /*
 |--------------------------------------------------------------------------
-| Web Routes 
+| Web Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
@@ -135,7 +135,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-dispatch/update/prices-teams/{startDate}/{endDate}', [PackageDispatchController::class, 'UpdatePriceTeams']);
 	Route::post('/package-dispatch/update/change-team', [PackageDispatchController::class, 'UpdateChangeTeam']);
 
-	//============ PALET RTS 
+	//============ PALET RTS
 	Route::get('/pallet-rts/list/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'List']);
 	Route::get('/pallet-rts/export/{idCompany}/{dateStart}/{dateEnd}/', [PalletRtsController::class, 'Export']);
 	Route::post('/pallet-rts/insert', [PalletRtsController::class, 'Insert']);
@@ -147,7 +147,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-pre-rts/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
 	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
 
-	//============ PALET DISPACTH 
+	//============ PALET DISPACTH
 	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);
 	Route::get('/pallet-dispatch/delete/{numberPallet}', [PalletDispatchController::class, 'Delete']);

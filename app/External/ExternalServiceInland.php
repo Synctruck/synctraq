@@ -12,7 +12,7 @@ class ExternalServiceInland{
         $company = Company::find(1);
 
         $curl = curl_init();
-
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => $company->url_webhook . $request->Reference_Number_1 .'/update-details',
             CURLOPT_RETURNTRANSFER => true,
