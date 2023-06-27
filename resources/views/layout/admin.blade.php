@@ -334,6 +334,7 @@
                             <div class="col-lg-12">
                                 <h5 class="text-primary" id="titleModalHistory">Historial Package</h5>
                                 <h6 class="text-primary" id="subTitleModalHistory"></h6>
+                                <button id="btnReturnToDebrief" class="btn btn-warning mt-2" style="display: none;" onclick="ReturnToDebrief()">RETURN TO DEBRIEF</button>
                             </div>
                         </div>
                         <div class="row">
@@ -659,6 +660,18 @@
         var limitToExport = 60;
         var url_general = '{{url('/')}}/';
 
+        function ReturnToDebrief()
+        {
+            document.getElementById('btnCloseHistorialPackage').click();
+
+            let myModal = new bootstrap.Modal(document.getElementById('modalPackagesListDebrief'), {
+
+                keyboard: true
+            });
+
+            myModal.show();
+        }
+
         function LoadingShow()
         {
             //document.getElementById('loader').style.display = 'block';
@@ -738,6 +751,7 @@
 
         function SearchPackageReferenceId()
         {
+            document.getElementById('btnReturnToDebrief').style.display = 'none';
             document.getElementById('divTableHistoryNMI').style.display = 'none';
             document.getElementById('divBtnHistoryNMI').style.display   = 'none';
 

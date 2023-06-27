@@ -45,7 +45,7 @@ function Debrief() {
 
         getPackages(id);
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalPackages'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalPackagesListDebrief'), {
 
             keyboard: true
         });
@@ -125,12 +125,12 @@ function Debrief() {
 
     const handlerOpenHistory = (Reference_Number_1) => {
 
-        let myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+        document.getElementById('searchPackage').value = Reference_Number_1;
 
-            keyboard: true
-        });
+        SearchPackageReferenceId();
 
-        myModal.show();
+        document.getElementById('btnCloseModalPackagesListDebrief').click();
+        document.getElementById('btnReturnToDebrief').style.display = 'block';
     }
 
     const packageListTable = packageList.map( (packageDispatch, i) => {
@@ -143,7 +143,7 @@ function Debrief() {
                     <b>{ packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }</b><br/>
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
-                <td><a href="#" onClick={ () => handlerOpenHistory(packageDispatch.Reference_Number_1) }>{ packageDispatch.Reference_Number_1 }</a></td>
+                <td><a href="#" onClick={ (e) => handlerOpenHistory(packageDispatch.Reference_Number_1) }>{ packageDispatch.Reference_Number_1 }</a></td>
                 <td>{ packageDispatch.status }</td>
                 <td>
                     <select name="" id="" className="form-control" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
@@ -175,7 +175,7 @@ function Debrief() {
     };
 
     const modalPackages = <React.Fragment>
-                                    <div className="modal fade" id="modalPackages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div className="modal fade" id="modalPackagesListDebrief" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <div className="modal-content">
                                                 <div className="modal-header">
@@ -210,7 +210,7 @@ function Debrief() {
                                                     </div>
                                                 </div>
                                                 <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" id="btnCloseModalPackagesListDebrief" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                 </div>
                                             </div>
                                         </div>
