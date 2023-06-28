@@ -45,6 +45,7 @@ class ServicePackageDispatch{
                                             ->orWhere('status', 'Delete')
                                             ->find($Reference_Number_1);
 
+        dd($packageDispatch);
         if($packageDispatch)
         {
             try
@@ -60,7 +61,7 @@ class ServicePackageDispatch{
                 else if($status == 'NMI')
                 {
                     $package = new PackageNeedMoreInformation();
-                    
+
                     $description = $comment;
                 }
                 else if($status == 'Warehouse')
