@@ -109,7 +109,7 @@ function Debrief() {
         }
     }
 
-    const handlerChangeComment = (newStatus, comment, Reference_Number_1) => {
+    const handlerChangeComment = (newStatus, Reference_Number_1, comment) => {
 
         hanldlerSaveNewStatus(newStatus, Reference_Number_1, comment)
     }
@@ -171,7 +171,7 @@ function Debrief() {
                     </select>
                 </td>
                 <td>
-                    <select id={ 'commentNMI'+ packageDispatch.Reference_Number_1 } className="form-control" style={ {display: 'none'} } onChange={ (e) => handlerChangeComment('NMI', e.target.value, packageDispatch.Reference_Number_1) }>
+                    <select id={ 'commentNMI'+ packageDispatch.Reference_Number_1 } className="form-control" style={ {display: 'none'} } onChange={ (e) => handlerChangeComment(e.target.value, packageDispatch.Reference_Number_1, 'NMI') }>
                         <option value="all">Select Comment</option>
                         <option value="Address not found">Address not found</option>
                         <option value="Customer unavailable">Customer unavailable</option>
