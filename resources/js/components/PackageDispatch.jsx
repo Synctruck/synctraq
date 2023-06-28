@@ -1488,6 +1488,8 @@ function PackageDispatch() {
 
                 handlerGetPackagesInDispatch(idTeamNow);
 
+                document.getElementById('Reference_Number_1_All').checked = false;
+
                 swal('Correct!', 'The packages was assigned to the new TEAM', 'success');
             }
             else if(response.statusCode == false)
