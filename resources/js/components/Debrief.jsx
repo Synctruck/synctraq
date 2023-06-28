@@ -92,35 +92,51 @@ function Debrief() {
     }); 
 
     const handlerChangeStatus = (newStatus, Reference_Number_1) => {
+        
+        document.getElementById('commentNMI'+ Reference_Number_1).style.display = 'none';
 
         if(newStatus == 'Delivery')
         {
             window.open(url_general +'report/delivery?Reference_Number='+ Reference_Number_1);
         }
+        else if(newStatus == 'NMI')
+        {
+            document.getElementById('commentNMI'+ Reference_Number_1).style.display = 'block';
+        }
         else
         {
-            LoadingShowMap();
-
-            fetch(url_general +'driver/defrief/packages-change-status/'+ Reference_Number_1 +'/'+ newStatus)
-            .then(response => response.json())
-            .then(response => {
-
-                if(response.statusAction == true)
-                {
-                    swal('Correct', 'The package was moved to the selected status', 'success');
-
-                    setSearchPackage('');
-
-                    getPackages(idDriver);
-                }
-                else if(response.statusAction == 'packageNotExists')
-                {
-                    swal('Attention', 'Package does not exist in DISPATCH or DELETE', 'warning');
-                }
-
-                LoadingHideMap();
-            });
+            hanldlerSaveNewStatus(newStatus, Reference_Number_1, 'all')
         }
+    }
+
+    const handlerChangeComment = (newStatus, comment, Reference_Number_1) => {
+
+        hanldlerSaveNewStatus(newStatus, Reference_Number_1, comment)
+    }
+
+    const hanldlerSaveNewStatus = (newStatus, Reference_Number_1, comment) => {
+
+        LoadingShowMap();
+
+        fetch(url_general +'driver/defrief/packages-change-status/'+ Reference_Number_1 +'/'+ newStatus +'/'+ comment)
+        .then(response => response.json())
+        .then(response => {
+
+            if(response.statusAction == true)
+            {
+                swal('Correct', 'The package was moved to the selected status', 'success');
+
+                setSearchPackage('');
+
+                getPackages(idDriver);
+            }
+            else if(response.statusAction == 'packageNotExists')
+            {
+                swal('Attention', 'Package does not exist in DISPATCH or DELETE', 'warning');
+            }
+
+            LoadingHideMap();
+        });
     }
 
     const handlerOpenHistory = (Reference_Number_1) => {
@@ -152,6 +168,15 @@ function Debrief() {
                         <option value="Lost">Lost</option>
                         <option value="NMI">NMI</option>
                         <option value="Warehouse">Warehouse</option>
+                    </select>
+                </td>
+                <td>
+                    <select id={ 'commentNMI'+ packageDispatch.Reference_Number_1 } className="form-control" style={ {display: 'none'} } onChange={ (e) => handlerChangeComment('NMI', e.target.value, packageDispatch.Reference_Number_1) }>
+                        <option value="all">Select Comment</option>
+                        <option value="Address not found">Address not found</option>
+                        <option value="Customer unavailable">Customer unavailable</option>
+                        <option value="Need access code">Need access code</option>
+                        <option value="Customer refused">Customer refused</option>
                     </select>
                 </td>
             </tr>
@@ -200,6 +225,7 @@ function Debrief() {
                                                                         <th>PACKAGE ID</th>
                                                                         <th>STATUS</th>
                                                                         <th>ACTION</th>
+                                                                        <th></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>

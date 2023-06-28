@@ -485,10 +485,10 @@ class DriverController extends Controller
         return ['listPackages' => $servicePackageDispatch->ListPackagesDebrief($idDriver)];
     }
 
-    public function ChangeStatusPackageDebrief($Reference_Number_1, $status)
+    public function ChangeStatusPackageDebrief($Reference_Number_1, $status, $comment)
     {
         $servicePackageDispatch = new ServicePackageDispatch();
 
-        return ['statusAction' => $servicePackageDispatch->MoveToOtherStatus($Reference_Number_1, $status)];
+        return ['statusAction' => $servicePackageDispatch->MoveToOtherStatus($Reference_Number_1, $status, $comment)];
     }
 }

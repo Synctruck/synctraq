@@ -39,7 +39,7 @@ class ServicePackageDispatch{
                             ->get();
     }
 
-    public function MoveToOtherStatus($Reference_Number_1, $status)
+    public function MoveToOtherStatus($Reference_Number_1, $status, $comment)
     {
         $packageDispatch = PackageDispatch::where('status', 'Dispatch')
                                             ->orWhere('status', 'Delete')
@@ -60,11 +60,14 @@ class ServicePackageDispatch{
                 else if($status == 'NMI')
                 {
                     $package = new PackageNeedMoreInformation();
+                    $description = $comment;
                 }
                 else if($status == 'Warehouse')
                 {
                     $package = new PackageWarehouse();
                 }
+
+                $created_at = date('Y-m-d H:i:s');
 
                 $package->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                 $package->idCompany                    = $packageDispatch->idCompany;
@@ -104,11 +107,11 @@ class ServicePackageDispatch{
                 $packageHistory->Route                        = $packageDispatch->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->description                  = $description;
-                $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                $packageHistory->Date_Inbound                 = $created_at;
                 $packageHistory->status                       = $status;
-                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                $packageHistory->actualDate                   = $created_at;
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
                 $packageDispatch->delete();

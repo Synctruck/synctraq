@@ -285,7 +285,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('driver/defrief', [DriverController::class, 'IndexDebrief']);
 	Route::get('driver/defrief/list/{idTeam}', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
-	Route::get('driver/defrief/packages-change-status/{PACKAGE_ID}/{stsatus}', [DriverController::class, 'ChangeStatusPackageDebrief']);
+	Route::get('driver/defrief/packages-change-status/{PACKAGE_ID}/{stsatus}/{comment}', [DriverController::class, 'ChangeStatusPackageDebrief']);
 
 	//============ Maintenance of stores
 	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);
