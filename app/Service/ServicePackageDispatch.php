@@ -60,6 +60,7 @@ class ServicePackageDispatch{
                 else if($status == 'NMI')
                 {
                     $package = new PackageNeedMoreInformation();
+                    
                     $description = $comment;
                 }
                 else if($status == 'Warehouse')

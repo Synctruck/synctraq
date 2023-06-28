@@ -171,7 +171,7 @@ function Debrief() {
                     </select>
                 </td>
                 <td>
-                    <select id={ 'commentNMI'+ packageDispatch.Reference_Number_1 } className="form-control" style={ {display: 'none'} } onChange={ (e) => handlerChangeComment(e.target.value, packageDispatch.Reference_Number_1, 'NMI') }>
+                    <select id={ 'commentNMI'+ packageDispatch.Reference_Number_1 } className="form-control" style={ {display: 'none'} } onChange={ (e) => handlerChangeComment('NMI', packageDispatch.Reference_Number_1, e.target.value) }>
                         <option value="all">Select Comment</option>
                         <option value="Address not found">Address not found</option>
                         <option value="Customer unavailable">Customer unavailable</option>
