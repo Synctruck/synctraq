@@ -69,6 +69,7 @@ class TaskCreatePackageInland extends Command
                 $company         = Company::where('name', 'INLAND LOGISTICS')->first();
                 $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                 $created_at      = $created_at_temp->format(DateTime::ATOM);
+                $label_message   = $packageManifest->company == 'EIGHTVAPE' ? '21+/VPOD' : 'Deliver behind planter at the front door.';
 
                 $data = '{
                             "shipment_type": "drop_off",
@@ -113,7 +114,7 @@ class TaskCreatePackageInland extends Command
                                     "signature_on_delivery": false,
                                     "hazardous_goods": false,
                                     "hazardous_goods_type": null,
-                                    "label_message": "Deliver behind planter at the front door.",
+                                    "label_message": "'. $label_message .'",
                                     "contains_alcohol": false,
                                     "insured_value": null,
                                     "service_code": null,
