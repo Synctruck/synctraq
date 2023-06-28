@@ -1509,6 +1509,26 @@ function PackageDispatch() {
 
     const [References, setReferences] = useState('');
 
+    const handleChangeCheckAllReferences = () => {
+
+        if(document.getElementById('Reference_Number_1_All').checked)
+        {
+            listPackageInDispatch.forEach( packageDispatch => {
+
+                document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked = true;
+            });
+        }
+        else
+        {
+            listPackageInDispatch.forEach( packageDispatch => {
+
+                document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked = false;
+            });
+        }
+
+        handleChangeCheckReferences();
+    }
+
     const handleChangeCheckReferences = () => {
 
         let referencesAux = '';
@@ -1605,7 +1625,14 @@ function PackageDispatch() {
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PACKAGES IN DISPATCH</th>
+                                                                            <th>
+                                                                                <div class="form-check">
+                                                                                    <input class="form-check-input" type="checkbox" id="Reference_Number_1_All" value="all" onChange={ () => handleChangeCheckAllReferences() }/>
+                                                                                    <label class="form-check-label" for="gridCheck1">
+                                                                                        &nbsp;PACKAGES IN DISPATCH
+                                                                                    </label>
+                                                                                </div>
+                                                                            </th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
