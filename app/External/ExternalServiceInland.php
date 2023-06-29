@@ -25,8 +25,7 @@ class ExternalServiceInland{
         $output      = json_decode(curl_exec($curl), 1);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        dd($http_status);
-        if($http_status >= 200 && 299 <= $http_status)
+        if($http_status >= 200 && $http_status <= 299)
         {
             return true;
         }
