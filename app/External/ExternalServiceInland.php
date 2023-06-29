@@ -9,7 +9,30 @@ class ExternalServiceInland{
 
     public function GetPackage($Reference_Number_1)
     {
-        return false;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.staging.inlandlogistics.co/api/v6/shipments/shipment-info/'. $Reference_Number_1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $output      = json_decode(curl_exec($curl), 1);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        if($http_status >= 200 && 299 <= $http_status)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function PackageUpdate($request)
