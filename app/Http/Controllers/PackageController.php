@@ -46,7 +46,7 @@ class PackageController extends Controller
     }
 
     public function List(Request $request)
-    {
+    { 
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
@@ -303,7 +303,9 @@ class PackageController extends Controller
                                                                             ->where('Reference_Number_1', $Reference_Number_1)
                                                                             ->orderBy('created_at', 'desc')
                                                                             ->get();
-                                                                            
+
+        $externalServiceInland = new ExternalServiceInland();
+
         return [
 
             'packageBlocked' => $packageBlocked,
@@ -315,6 +317,7 @@ class PackageController extends Controller
             'actualStatus' => $actualStatus['status'],
             'notesOnfleet' => $noteOnfleet,
             'latitudeLongitude' => $latitudeLongitude,
+            'existsInInland' => $externalServiceInland->GetPackage($Reference_Number_1),
         ];
     }
 

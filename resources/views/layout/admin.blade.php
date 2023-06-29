@@ -31,7 +31,7 @@
     <link href="{{asset('admin/assets/css/style.css')}}?{{time()}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="{{asset('js/barcode.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -423,6 +423,10 @@
                                     <br>
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
+                                <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
+                                    <br>
+                                    <button  class="btn btn-warning form-control">Synchronize Package</button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 form-group">
@@ -751,9 +755,10 @@
 
         function SearchPackageReferenceId()
         {
-            document.getElementById('btnReturnToDebrief').style.display = 'none';
-            document.getElementById('divTableHistoryNMI').style.display = 'none';
-            document.getElementById('divBtnHistoryNMI').style.display   = 'none';
+            document.getElementById('btnReturnToDebrief').style.display    = 'none';
+            document.getElementById('divTableHistoryNMI').style.display    = 'none';
+            document.getElementById('divBtnHistoryNMI').style.display      = 'none';
+            document.getElementById('divSynchronizePackage').style.display = 'none';
 
             document.getElementById('actualStatus').style.display    = 'none';
             document.getElementById('divActualStatus').style.display = 'none';
@@ -773,8 +778,17 @@
                 let notesOnfleet          = response.notesOnfleet;
                 let latitudeLongitude     = response.latitudeLongitude;
                 let actualStatus          = response.actualStatus;
+                let existsInInland        = response.existsInInland;
 
-                console.log(packageDispatch);
+                if(packageHistoryList.length > 0)
+                {
+                    if(packageHistoryList[0].company == 'INLAND LOGISTICS' && existsInInland == false)
+                    {
+                        document.getElementById('divSynchronizePackage').style.display = 'block';
+
+                    }
+                }
+
                 if(packageHistoryNMIList.length > 0)
                 {
                     document.getElementById('divBtnHistoryNMI').style.display   = 'block';

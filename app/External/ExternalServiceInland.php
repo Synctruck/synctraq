@@ -7,6 +7,11 @@ use Auth;
 
 class ExternalServiceInland{
 
+    public function GetPackage($Reference_Number_1)
+    {
+        return false;
+    }
+
     public function PackageUpdate($request)
     {
         $company = Company::find(1);
