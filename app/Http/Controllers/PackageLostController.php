@@ -48,7 +48,7 @@ class PackageLostController extends Controller
         foreach($packageListInbound as $packageLost)
         {
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
-                                            ->orderBy('created_at', 'desc')
+                                            ->orderBy('actualDate', 'desc')
                                             ->get();
 
             $package = [
