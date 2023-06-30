@@ -425,7 +425,7 @@
                                 </div>
                                 <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
                                     <br>
-                                    <button  class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
                                 </div>
                             </div>
                             <div class="row">
