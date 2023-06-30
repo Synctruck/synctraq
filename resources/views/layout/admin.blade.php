@@ -690,7 +690,7 @@
                 }
                 else
                 {
-                    swal('Error', 'The package does not was registered', 'error');
+                    swal('Error', response.output.error, 'error');
                 }
             });
         }
