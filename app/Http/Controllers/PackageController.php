@@ -60,7 +60,9 @@ class PackageController extends Controller
     {
         $package = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
-        dd($package);
+        $externalServiceInland = new ExternalServiceInland();
+        
+        return $externalServiceInland->RegisterPackage($package);
     }
 
     public function Insert(Request $request)

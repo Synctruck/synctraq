@@ -680,7 +680,12 @@
         {
             let Reference_Number_1 = document.getElementById('searchPackage').value;
 
-            location.href = "{{url('package/insert-inland')}}/"+ Reference_Number_1;
+            fetch("{{url('package/insert-inland')}}/"+ Reference_Number_1)
+            .then(response => response.json())
+            .then(response => {
+
+                console.log(response);
+            });
         }
 
         function LoadingShow()
