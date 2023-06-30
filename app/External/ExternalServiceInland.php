@@ -38,6 +38,8 @@ class ExternalServiceInland{
 
     public function RegisterPackage($package)
     {
+        $company = Company::find(1);
+        
         $label_message   = $package->company == 'EIGHTVAPE' ? '21+/VPOD' : 'Deliver behind planter at the front door.';
         $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
         $created_at      = $created_at_temp->format(DateTime::ATOM);
