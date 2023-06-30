@@ -56,6 +56,13 @@ class PackageController extends Controller
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
     }
 
+    public function InsertInland($Reference_Number_1)
+    {
+        $package = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
+
+        dd($package);
+    }
+
     public function Insert(Request $request)
     {
         $validator = Validator::make($request->all(),

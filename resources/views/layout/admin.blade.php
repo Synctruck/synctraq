@@ -425,7 +425,7 @@
                                 </div>
                                 <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
                                     <br>
-                                    <button  class="btn btn-warning form-control">Synchronize Package</button>
+                                    <button  class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -674,6 +674,13 @@
             });
 
             myModal.show();
+        }
+
+        function RegisterInland()
+        {
+            let Reference_Number_1 = document.getElementById('searchPackage').value;
+
+            location.href = "{{url('package/insert-inland')}}/"+ Reference_Number_1;
         }
 
         function LoadingShow()
