@@ -38,8 +38,7 @@ class ExternalServiceInland{
 
     public function RegisterPackage($package)
     {
-        $company = Company::find(1);
-
+        $company         = Company::find(1);
         $label_message   = $package->company == 'EIGHTVAPE' ? '21+/VPOD' : 'Deliver behind planter at the front door.';
         $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
         $created_at      = $created_at_temp->format(DateTime::ATOM);
@@ -71,8 +70,8 @@ class ExternalServiceInland{
                             "address_line1": "'. $package->Dropoff_Address_Line_1 .'",
                             "address_line2": "", 
                             "address_line3": "",
-                            "city_locality": "",
-                            "state_province": "",
+                            "city_locality": "'. $package->Dropoff_City .'",
+                            "state_province": "'. $package->Dropoff_Province .'",
                             "postal_code": "'. $package->Dropoff_Postal_Code .'",
                             "address_residential_indicator": true
                         },
