@@ -684,7 +684,14 @@
             .then(response => response.json())
             .then(response => {
 
-                console.log(response);
+                if(response.status == 201)
+                {
+                    swal('Correct', 'The package was registered', 'success');
+                }
+                else
+                {
+                    swal('Error', 'The package does not was registered', 'error');
+                }
             });
         }
 
