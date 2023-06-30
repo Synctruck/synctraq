@@ -686,6 +686,8 @@
 
                 if(response.status == 201)
                 {
+                    document.getElementById('divSynchronizePackage').style.display = 'none';
+                    
                     swal('Correct', 'The package was registered', 'success');
                 }
                 else
