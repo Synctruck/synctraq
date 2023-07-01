@@ -423,10 +423,12 @@
                                     <br>
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
-                                <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
-                                    <br>
-                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
-                                </div>
+                                @if(Auth::user()->role->name == 'Administrador')
+                                    <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
+                                        <br>
+                                        <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                    </div>
+                                @endif
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 form-group">
@@ -803,7 +805,7 @@
 
                 if(packageHistoryList.length > 0)
                 {
-                    if(packageHistoryList[0].company == 'INLAND LOGISTICS' && existsInInland == false)
+                    if(packageHistoryList[0].company != 'INLAND LOGISTICS' && existsInInland == false)
                     {
                         document.getElementById('divSynchronizePackage').style.display = 'block';
 
