@@ -423,12 +423,12 @@
                                     <br>
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
-                                @if(Auth::user()->role->name == 'Administrador')
-                                    <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
-                                        <br>
-                                        <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
-                                    </div>
-                                @endif
+                                <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
+                                    @if(Auth::user()->role->name == 'Administrador')
+                                    <br>
+                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                    @endif
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 form-group">
