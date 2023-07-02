@@ -1705,7 +1705,7 @@ class PackageDispatchController extends Controller
                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Basic MjI1NGE3NDRhZTNkYmJkNjFkOGNiNmEwMWQzYTFlZWE6'
+                'Authorization: Basic '. $this->base64
             ),
         ));
 
