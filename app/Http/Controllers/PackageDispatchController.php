@@ -1714,6 +1714,7 @@ class PackageDispatchController extends Controller
 
         curl_close($curl);
 
+        Log::info($output);
         if($http_status == 200)
         {
             return ['status' => 200, 'response' => $output];
