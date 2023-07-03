@@ -7,6 +7,7 @@ class ChargeCompanyDetail extends Model
 {
     protected $table      = 'charge_company_detail';
     protected $primaryKey = 'id';
+    protected $keyType    = 'string';
 
     public $timestamps   = false;
     public $incrementing = false;

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PeakeSeasonCompany, RangePriceCompany, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -161,6 +161,7 @@ class PackageInboundController extends Controller
         $created_at         = $request['datetime'];
         $pod_url            = $request['pod_url'];
         $description        = $request['description'];
+        $require_invoice    = $request['require_invoice'];
 
         Log::info($request);
 
@@ -234,8 +235,8 @@ class PackageInboundController extends Controller
                             $packageCreate = new PackageDispatch();
                         }
 
-                        $packageCreate->photoUrl      = $pod_url;
-                        $packageCreate->Date_Delivery = $created_at;
+                        $packageCreate->photoUrl        = $pod_url;
+                        $packageCreate->Date_Delivery   = $created_at;
                     }
                 }
                 else if($status == 'ReInbound')
@@ -284,6 +285,19 @@ class PackageInboundController extends Controller
                 $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
+
+                if($packageCreate->status == 'Delivery') 
+                {
+                    $packageCharge = ChargeCompanyDetail::where('Reference_Number_1', $package->Reference_Number_1)->first();
+
+                    if($packageCharge)
+                    {
+                        $packageCreate->invoiced = 1;
+                    }
+                    
+                    $packageCreate->require_invoice = $require_invoice ? 1 : 0;
+                }
+
                 $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
@@ -331,8 +345,8 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($package, $status, null, date('Y-m-d H:i:s'));
+                //$packageController = new PackageController();
+                //$packageController->SendStatusToInland($package, $status, null, date('Y-m-d H:i:s'));
 
                 DB::commit();
 
