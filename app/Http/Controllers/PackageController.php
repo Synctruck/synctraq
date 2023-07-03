@@ -46,7 +46,7 @@ class PackageController extends Controller
     }
 
     public function List(Request $request)
-    {
+    { 
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
@@ -54,6 +54,15 @@ class PackageController extends Controller
         $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
+    }
+
+    public function InsertInland($Reference_Number_1)
+    {
+        $package = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
+
+        $externalServiceInland = new ExternalServiceInland();
+        
+        return $externalServiceInland->RegisterPackage($package);
     }
 
     public function Insert(Request $request)
@@ -303,7 +312,9 @@ class PackageController extends Controller
                                                                             ->where('Reference_Number_1', $Reference_Number_1)
                                                                             ->orderBy('created_at', 'desc')
                                                                             ->get();
-                                                                            
+
+        $externalServiceInland = new ExternalServiceInland();
+
         return [
 
             'packageBlocked' => $packageBlocked,
@@ -315,6 +326,7 @@ class PackageController extends Controller
             'actualStatus' => $actualStatus['status'],
             'notesOnfleet' => $noteOnfleet,
             'latitudeLongitude' => $latitudeLongitude,
+            'existsInInland' => $externalServiceInland->GetPackage($Reference_Number_1),
         ];
     }
 

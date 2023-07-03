@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/dashboard/getallquantity/{startDate}/{endDate}', [IndexController::class, 'GetAllQuantity']);
 	Route::get('/dashboard/getDataPerDate/{startDate}/{endDate}', [IndexController::class, 'GetDataPerDate']);
 
+	Route::get('/package/insert-inland/{Reference}', [PackageController::class, 'InsertInland']);
 	Route::post('/package-history/update', [PackageController::class, 'Update']);
 
 	//============ Assigned
