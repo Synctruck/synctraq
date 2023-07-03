@@ -1552,7 +1552,7 @@ class PackageDispatchController extends Controller
                             $driver      = User::find($request->get('idDriverNew'));
                             $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
                             $created_at  = date('Y-m-d H:i:s');
-                            
+
                             $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id']);
 
                             if($onfleetUpdate['status'] == 200)
@@ -1583,7 +1583,7 @@ class PackageDispatchController extends Controller
                                 $packageHistory->Route                        = $packageDispatch->Route;
                                 $packageHistory->idUser                       = Auth::user()->id;
                                 $packageHistory->idTeam                       = $request->get('idTeam');
-                                $packageHistory->idUserDispatch               = $idUserDispatch;
+                                $packageHistory->idUserDispatch               = $request->get('idDriverNew');
                                 $packageHistory->Date_Dispatch                = $created_at;
                                 $packageHistory->dispatch                     = 1;
                                 $packageHistory->autorizationDispatch         = 1;
