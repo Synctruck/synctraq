@@ -1548,9 +1548,10 @@ class PackageDispatchController extends Controller
 
                         if($onfleet)
                         {
+                            $teamOld     = User::find($packageDispatch->idTeam);
                             $team        = User::find($request->get('idTeamNew'));
                             $driver      = User::find($request->get('idDriverNew'));
-                            $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                            $description = 'Passed from the '. $teamOld->name .' to '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
                             $created_at  = date('Y-m-d H:i:s');
 
                             $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id']);
