@@ -1548,8 +1548,11 @@ class PackageDispatchController extends Controller
 
                         if($onfleet)
                         {
-                            $team   = User::find($request->get('idTeamNew'));
-                            $driver = User::find($request->get('idDriverNew'));
+                            $teamOld     = User::find($packageDispatch->idTeam);
+                            $team        = User::find($request->get('idTeamNew'));
+                            $driver      = User::find($request->get('idDriverNew'));
+                            $description = 'Passed from the '. $teamOld->name .' to '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                            $created_at  = date('Y-m-d H:i:s');
 
                             $onfleetUpdate = $this->UpdateOnfleet($team, $driver, $onfleet['id']);
 
@@ -1559,6 +1562,39 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->idTeam         = $request->get('idTeamNew');
                                 $packageDispatch->idUserDispatch = $request->get('idDriverNew');
                                 $packageDispatch->save();
+
+                                $packageHistory = new PackageHistory();
+                                $packageHistory->id                           = uniqid();
+                                $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                                $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                                $packageHistory->company                      = $packageDispatch->company;
+                                $packageHistory->idStore                      = $packageDispatch->idStore;
+                                $packageHistory->store                        = $packageDispatch->store;
+                                $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                                $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                                $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                                $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                                $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                                $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                                $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                                $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                                $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                                $packageHistory->Notes                        = $packageDispatch->Notes;
+                                $packageHistory->Weight                       = $packageDispatch->Weight;
+                                $packageHistory->Route                        = $packageDispatch->Route;
+                                $packageHistory->idUser                       = Auth::user()->id;
+                                $packageHistory->idTeam                       = $request->get('idTeam');
+                                $packageHistory->idUserDispatch               = $request->get('idDriverNew');
+                                $packageHistory->Date_Dispatch                = $created_at;
+                                $packageHistory->dispatch                     = 1;
+                                $packageHistory->autorizationDispatch         = 1;
+                                $packageHistory->Description                  = $description;
+                                $packageHistory->quantity                     = $packageDispatch->quantity;
+                                $packageHistory->status                       = 'Dispatch';
+                                $packageHistory->actualDate                   = $created_at;
+                                $packageHistory->created_at                   = $created_at;
+                                $packageHistory->updated_at                   = $created_at;
+                                $packageHistory->save();
 
                                 array_push($packagesMovedList, $packageDispatch->Reference_Number_1);
 
