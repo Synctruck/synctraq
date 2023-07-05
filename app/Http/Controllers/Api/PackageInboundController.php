@@ -286,6 +286,7 @@ class PackageInboundController extends Controller
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
 
+
                 if($packageCreate->status == 'Delivery') 
                 {
                     $packageCharge = ChargeCompanyDetail::where('Reference_Number_1', $package->Reference_Number_1)->first();
@@ -295,7 +296,7 @@ class PackageInboundController extends Controller
                         $packageCreate->invoiced = 1;
                     }
                     
-                    $packageCreate->require_invoice = $require_invoice == true || $require_invoice == null ? 1 : 0;
+                    $packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
                 }
 
                 $packageCreate->save();
