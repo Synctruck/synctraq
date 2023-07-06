@@ -51,7 +51,7 @@ class ServicePackageDispatch{
                 {
                     DB::beginTransaction();
 
-                    $description =  '(Drebrief) for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                    $description =  $comment;
 
                     if($status == 'Lost')
                     {
@@ -60,8 +60,6 @@ class ServicePackageDispatch{
                     else if($status == 'NMI')
                     {
                         $package = new PackageNeedMoreInformation();
-
-                        $description = $comment;
                     }
                     else if($status == 'Warehouse')
                     {
@@ -85,6 +83,7 @@ class ServicePackageDispatch{
                     $package->Notes                        = $packageDispatch->Notes;
                     $package->Route                        = $packageDispatch->Route;
                     $package->Weight                       = $packageDispatch->Weight;
+                    $package->comment                      = $description;
                     $package->idUser                       = Auth::user()->id;
                     $package->status                       = $status;
                     $package->save();
