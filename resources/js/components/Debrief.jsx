@@ -105,7 +105,16 @@ function Debrief() {
         }
         else
         {
-            hanldlerSaveNewStatus(newStatus, Reference_Number_1, 'all')
+            let comment = prompt("Enter the comment");
+
+            if(comment != '' && comment != null)
+            {
+                hanldlerSaveNewStatus(newStatus, Reference_Number_1, comment)
+            }
+            else
+            {
+                swal('Attention', 'You have not entered anything. Select the status again', 'warning');
+            }
         }
     }
 
@@ -162,12 +171,12 @@ function Debrief() {
                 <td><a href="#" onClick={ (e) => handlerOpenHistory(packageDispatch.Reference_Number_1) }>{ packageDispatch.Reference_Number_1 }</a></td>
                 <td>{ packageDispatch.status }</td>
                 <td>
-                    <select name="" id="" className="form-control" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
+                    <select name="" id="" className="form-control mb-1" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
                         <option value="all">Select</option>
-                        <option value="Delivery">Delivery</option>
-                        <option value="Lost">Lost</option>
+                        <option value="Delivery">DELIVERY</option>
+                        <option value="Lost">LOST</option>
                         <option value="NMI">NMI</option>
-                        <option value="Warehouse">Warehouse</option>
+                        <option value="Warehouse">WAREHOUSE</option>
                     </select>
                 </td>
                 <td>
