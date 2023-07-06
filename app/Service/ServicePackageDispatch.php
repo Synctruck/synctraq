@@ -83,6 +83,7 @@ class ServicePackageDispatch{
                     $package->Notes                        = $packageDispatch->Notes;
                     $package->Route                        = $packageDispatch->Route;
                     $package->Weight                       = $packageDispatch->Weight;
+                    $package->comment                      = $description;
                     $package->idUser                       = Auth::user()->id;
                     $package->status                       = $status;
                     $package->save();
