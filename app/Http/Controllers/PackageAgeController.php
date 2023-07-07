@@ -224,6 +224,7 @@ class PackageAgeController extends Controller
     {
         $package = PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::where('status', '=', 'Warehouse')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::where('status', '=', 'Middle Mile Scan')->find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Dispatch')->find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Delete')->find($Reference_Number_1);
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
