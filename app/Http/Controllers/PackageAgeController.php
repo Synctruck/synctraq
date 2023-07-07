@@ -95,7 +95,7 @@ class PackageAgeController extends Controller
         if($status == 'all')
         {
             $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
-            $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
+            $idsPackageWarehouse = PackageWarehouse::where('status', '=', 'Warehouse')->get('Reference_Number_1');
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
@@ -108,7 +108,7 @@ class PackageAgeController extends Controller
         }
         else if($status == 'Warehouse')
         {
-            $idsAll = PackageWarehouse::get('Reference_Number_1');
+            $idsAll = PackageWarehouse::where('status', '=', 'Warehouse')->get('Reference_Number_1');
         }
         else if($status == 'Dispatch')
         {
@@ -238,7 +238,7 @@ class PackageAgeController extends Controller
                                         ->where('status', $package->status)
                                         ->orderBy('created_at', 'desc')
                                         ->first();
-                                        
+
             return [
                 'status' => $package->status,
                 'statusDate' => $packageLast->created_at,
