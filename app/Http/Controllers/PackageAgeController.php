@@ -234,6 +234,11 @@ class PackageAgeController extends Controller
 
         if($package)
         {
+            $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                        ->where('status', $package->status)
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+                                        
             return [
                 'status' => $package->status,
                 'statusDate' => $packageLast->created_at,
