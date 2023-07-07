@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNeedMoreInformation, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -97,8 +97,10 @@ class PackageAgeController extends Controller
             $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
             $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+            $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
+            $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
 
-            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch);
+            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI);
         }
         else if($status == 'Inbound')
         {
@@ -110,9 +112,20 @@ class PackageAgeController extends Controller
         }
         else if($status == 'Dispatch')
         {
-            $idsAll = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+            $idsAll = PackageDispatch::where('status', '=', 'Dispatch')->get('Reference_Number_1');
         }
-        
+        else if($status == 'Delete')
+        {
+            $idsAll = PackageDispatch::where('status', '=', 'Delete')->get('Reference_Number_1');
+        }
+        else if($status == 'Failed')
+        {
+            $idsAll = PackageFailed::get('Reference_Number_1');
+        }
+        else if($status == 'NMI')
+        {
+            $idsAll = PackageNeedMoreInformation::get('Reference_Number_1');
+        }
 
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
@@ -210,9 +223,11 @@ class PackageAgeController extends Controller
     public function GetStatus($Reference_Number_1)
     {
         $package = PackageInbound::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-        $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Dispatch')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Delete')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
