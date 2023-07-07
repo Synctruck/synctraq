@@ -276,7 +276,10 @@ function PackageAge() {
                                                     <option value="all">All</option>
                                                     <option value="Inbound">Inbound</option>
                                                     <option value="Warehouse">Warehouse</option>
-                                                    <option value="Dispatch">Dispatch</option>    
+                                                    <option value="Dispatch">Dispatch</option>
+                                                    <option value="Delete">Delete</option>
+                                                    <option value="Failed">Failed</option>
+                                                    <option value="NMI">NMI</option>
                                                 </select>
                                             </div>
                                         </div>
