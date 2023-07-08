@@ -461,7 +461,7 @@ class PackageController extends Controller
                 Log::info($idPhoto);
                 if(count($idPhoto) == 0)
                 {
-                    $pod_url = '"pod_url": ""';
+                    $pod_url = '"pod_url": "",';
                 }
                 else if(count($idPhoto) == 1)
                 {
