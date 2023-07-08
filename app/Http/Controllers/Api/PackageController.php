@@ -459,11 +459,11 @@ class PackageController extends Controller
             {
                 Log::info('idPhoto');
                 Log::info($idPhoto);
-                if($idPhoto != null)
+                if(count($idPhoto) == 0)
                 {
-                    
+                    $pod_url = '"pod_url": ""';
                 }
-                if(count($idPhoto) == 1)
+                else if(count($idPhoto) == 1)
                 {
                     $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
                 }
