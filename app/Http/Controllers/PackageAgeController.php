@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageInbound, PackageManifest, PackageNeedMoreInformation, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, 
+                PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageLost, 
+                PackageInbound, PackageManifest, PackageNeedMoreInformation, PackageNotExists, 
+                PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -95,7 +98,7 @@ class PackageAgeController extends Controller
         if($status == 'all')
         {
             $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
-            $idsPackageWarehouse = PackageWarehouse::where('status', '=', 'Warehouse')->get('Reference_Number_1');
+            $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
@@ -125,6 +128,14 @@ class PackageAgeController extends Controller
         else if($status == 'NMI')
         {
             $idsAll = PackageNeedMoreInformation::get('Reference_Number_1');
+        }
+        else if($status == 'Lost')
+        {
+            $idsAll = PackageLost::get('Reference_Number_1');
+        }
+        else if($status == 'Middle Mile Scan')
+        {
+            $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
         }
 
         $states = $states == 'all' ? [] : explode(',', $states);
@@ -229,6 +240,7 @@ class PackageAgeController extends Controller
         $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Delete')->find($Reference_Number_1);
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
@@ -241,8 +253,8 @@ class PackageAgeController extends Controller
 
             return [
                 'status' => $package->status,
-                'statusDate' => $packageLast->created_at,
-                'statusDescription' => $packageLast->Description
+                'statusDate' => ($packageLast ? $packageLast->created_at : ''), 
+                'statusDescription' => ($packageLast ? $packageLast->Description : ''),
             ];
         }
         else
