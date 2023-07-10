@@ -260,11 +260,18 @@ class PackageDispatchController extends Controller
         return ['listPackageDispatch' => $listPackageDispatch];
     }
 
-    public function GetByTeam($idTeam)
+    public function GetByTeamDriver($idTeam, $idDriver)
     {
-        $listPackageInDispatch = PackageDispatch::where('idTeam', $idTeam)
-                                                ->where('status', 'Dispatch')
-                                                ->get();
+        $listPackageInDispatch = PackageDispatch::with(['team', 'driver'])
+                                                ->where('idTeam', $idTeam)
+                                                ->where('status', 'Dispatch');
+
+        if($idDriver != 0)
+        {
+            $listPackageInDispatch = $listPackageInDispatch->where('idUserDispatch', $idDriver);
+        }
+
+        $listPackageInDispatch = $listPackageInDispatch->get();
 
         return ['listPackageInDispatch' => $listPackageInDispatch];
     }

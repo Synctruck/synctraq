@@ -16,6 +16,7 @@ function PackageDispatch() {
     const [listTeamNow, setListTeamNow]                 = useState([]);
     const [listTeamNew, setListTeamNew]                 = useState([]);
     const [listDriver, setListDriver]                   = useState([]);
+    const [listDriverNow, setListDriverNow]             = useState([]);
     const [listDriverAssign, setListDriverAssign]       = useState([]);
     const [roleUser, setRoleUser]                       = useState([]);
     const [listRoute, setListRoute]                     = useState([]); 
@@ -50,6 +51,7 @@ function PackageDispatch() {
     const [idTeamNow, setIdTeamNow] = useState(0);
     const [idTeamNew, setIdTeamNew] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
+    const [idDriverNow, setIdDriverNow] = useState(0);
     const [idDriverNew, setIdDriverNew] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
     
@@ -1042,6 +1044,14 @@ function PackageDispatch() {
         );
     });
 
+    const listDriverSelectNow = listDriverNow.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
     const handlerReturn = (idPackage) => {
 
         const formData = new FormData();
@@ -1431,22 +1441,51 @@ function PackageDispatch() {
         setIdTeamNow(id); 
         setListDriverAssign([]);
 
-        let auxListTeamNow = listTeamNow.filter( team => team.id != id);
+        //let auxListTeamNow = listTeamNow.filter( team => team.id != id);
 
-        setListTeamNew(auxListTeamNow);
+        setListTeamNew(listTeamNow);
     }
 
     const [listPackageInDispatch, setListPackageInDispatch] = useState([]);
 
-    const handlerGetPackagesInDispatch = (idTeam) => {
+    const listAllDriverByTeamNow = (idTeam) => {
+
+        setIdTeamNew(idTeam);
+        setIdDriverNow(0);
+        setListDriverNow([]);
+
+        fetch(url_general +'driver/team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListDriverNow(response.listDriver);
+        });
+    }
+
+    const handlerGetPackagesInDispatch = (idTeamAux) => {
 
         LoadingShowMap();
-        handlerChangeTeamNow(idTeam);
+        handlerChangeTeamNow(idTeamAux);
         setListPackageInDispatch([]);
 
-        fetch(url_general +'package-dispatch/get-by-team/'+ idTeam)
-        .then(res => res.json()).
-        then((response) => {
+        listAllDispatchByTeamDriver(idTeamAux, idDriverNow);
+        listAllDriverByTeamNow(idTeamAux);
+    }
+
+    const handlerChangeDriverNow = (idDriverAux) => {
+
+        setIdDriverNow(idDriverAux);
+
+        listAllDispatchByTeamDriver(idTeamNow, idDriverAux);
+    }
+
+    const listAllDispatchByTeamDriver = (idTeamAux, idDriverAux) => {
+
+        LoadingShowMap();
+
+        fetch(url_general +'package-dispatch/get-by-team-driver/'+ idTeamAux +'/'+ idDriverAux)
+        .then(res => res.json())
+        .then((response) => {
 
                 setListPackageInDispatch(response.listPackageInDispatch);
 
@@ -1559,6 +1598,12 @@ function PackageDispatch() {
                         </label>
                     </div>
                 </td>
+                <td>
+                    <b>{ packageDispatch.team.name  }</b>
+                </td>
+                <td>
+                    { packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  }
+                </td>
             </tr>
         );
     });
@@ -1594,7 +1639,7 @@ function PackageDispatch() {
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row mb-3">
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-3">
                                                                 <div className="form-group mb-3">
                                                                     <label className="form">TEAM TO REMOVE PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => handlerGetPackagesInDispatch(e.target.value) } required>
@@ -1603,7 +1648,16 @@ function PackageDispatch() {
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label className="form">DRIVER WITH ASSIGNED PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerChangeDriverNow(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listDriverSelectNow }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
                                                                 <div className="form-group mb-3">
                                                                     <label className="form">TEAM TO ASSIGN PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeamAssign(e.target.value) } required>
@@ -1612,7 +1666,7 @@ function PackageDispatch() {
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-3">
                                                                 <div className="form-group">
                                                                     <label className="form">DRIVER TO ASSIGN PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
@@ -1623,11 +1677,11 @@ function PackageDispatch() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-6">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>
+                                                                            <th colspan="3">
                                                                                 <div class="form-check">
                                                                                     <input class="form-check-input" type="checkbox" id="Reference_Number_1_All" value="all" onChange={ () => handleChangeCheckAllReferences() }/>
                                                                                     <label class="form-check-label" for="gridCheck1">
@@ -1636,13 +1690,18 @@ function PackageDispatch() {
                                                                                 </div>
                                                                             </th>
                                                                         </tr>
+                                                                        <tr>
+                                                                            <th>PACKAGE_ID</th>
+                                                                            <th>TEAM</th>
+                                                                            <th>DRIVER</th>
+                                                                        </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         { packagesListInDispatchTable }
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-3">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
@@ -1654,7 +1713,7 @@ function PackageDispatch() {
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-                                                            <div className="col-lg-4">
+                                                            <div className="col-lg-3">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>

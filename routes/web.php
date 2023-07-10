@@ -126,7 +126,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-dispatch/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'List']);
 	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{type}', [PackageDispatchController::class, 'Export']);
 	Route::get('/package-dispatch/getAll', [PackageDispatchController::class, 'GetAll']);
-	Route::get('/package-dispatch/get-by-team/{idTeam}', [PackageDispatchController::class, 'GetByTeam']);
+	Route::get('/package-dispatch/get-by-team-driver/{idTeam}/{idDriver}', [PackageDispatchController::class, 'GetByTeamDriver']);
 	Route::post('/package-dispatch/insert', [PackageDispatchController::class, 'Insert']);
 	Route::get('/package-dispatch/get/{PACKAGE_ID}', [PackageDispatchController::class, 'Get']);
 	Route::post('/package-dispatch/update', [PackageDispatchController::class, 'Update']);
