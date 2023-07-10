@@ -1643,7 +1643,7 @@ function PackageDispatch() {
                                                                 <div className="form-group mb-3">
                                                                     <label className="form">TEAM TO REMOVE PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => handlerGetPackagesInDispatch(e.target.value) } required>
-                                                                        <option value="">All</option>
+                                                                        <option value="0">All</option>
                                                                         { listTeamNowSelect }
                                                                     </select>
                                                                 </div>
@@ -1652,7 +1652,7 @@ function PackageDispatch() {
                                                                 <div className="form-group">
                                                                     <label className="form">DRIVER WITH ASSIGNED PACKAGES</label>
                                                                     <select name="" id="" className="form-control" onChange={ (e) => handlerChangeDriverNow(e.target.value) } required>
-                                                                        <option value="">All</option>
+                                                                        <option value="0">All</option>
                                                                         { listDriverSelectNow }
                                                                     </select>
                                                                 </div>
