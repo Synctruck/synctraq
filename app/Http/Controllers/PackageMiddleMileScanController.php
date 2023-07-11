@@ -400,19 +400,30 @@ class PackageMiddleMileScanController extends Controller
     {
         $packagesListInDelivery = $this->ListInDelivery();
 
-        dd($packagesListInDelivery);
-
-        /*foreach($listPackageMMS as $packageMMS)
+        try
         {
-            $packageDelivery = PackageDispatch::find($packageMMS->Reference_Number_1);
+            DB::beginTransaction();
 
-            if($packageDelivery)
+            foreach($packagesListInDelivery as $packageDelivery)
             {
-                array_push($packagesInDelivery, $packageMMS->Reference_Number_1);
-            }
-        }*/
+                $packageMMS = PackageWarehouse::where('status', 'Middle Mile Scan')
+                                                    ->where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                    ->first();
 
-        dd($packagesInDelivery);
+                if($packageMMS)
+                {
+                    $packageMMS->delete();
+                }
+            }
+
+            DB::commit();
+
+            return ['message' => "packages deleted"];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 
     public function GetOnfleet($idOnfleet)
