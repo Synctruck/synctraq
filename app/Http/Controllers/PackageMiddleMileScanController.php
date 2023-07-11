@@ -393,6 +393,25 @@ class PackageMiddleMileScanController extends Controller
             }
         }
 
+        return $packagesInDelivery;
+    }
+
+    public function DeleteInDelivery()
+    {
+        $packagesListInDelivery = $this->ListInDelivery();
+
+        dd($packagesListInDelivery);
+
+        /*foreach($listPackageMMS as $packageMMS)
+        {
+            $packageDelivery = PackageDispatch::find($packageMMS->Reference_Number_1);
+
+            if($packageDelivery)
+            {
+                array_push($packagesInDelivery, $packageMMS->Reference_Number_1);
+            }
+        }*/
+
         dd($packagesInDelivery);
     }
 
