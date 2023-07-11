@@ -333,6 +333,8 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
+                Log::info('$package->status: '. $package->status);
+
                 if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse')
                 {
                     $package->delete();
@@ -345,14 +347,11 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
-
-                /*if($package->company != 'INLAND LOGISTICS')
+                if($package->company != 'INLAND LOGISTICS')
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
-                }*/
+                }
 
                 DB::commit();
 
