@@ -345,14 +345,11 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
-
-                /*if($package->company != 'INLAND LOGISTICS')
+                if($package->company != 'INLAND LOGISTICS')
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
-                }*/
+                }
 
                 DB::commit();
 
