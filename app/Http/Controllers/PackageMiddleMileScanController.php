@@ -391,6 +391,13 @@ class PackageMiddleMileScanController extends Controller
             {
                 array_push($packagesInDelivery, $packageMMS->Reference_Number_1);
             }
+
+            $packageInbound = PackageInbound::find($packageMMS->Reference_Number_1);
+
+            if($packageInbound)
+            {
+                array_push($packagesInDelivery, $packageMMS->Reference_Number_1);
+            }
         }
 
         return $packagesInDelivery;
