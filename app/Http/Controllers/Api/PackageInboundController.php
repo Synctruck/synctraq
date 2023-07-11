@@ -286,7 +286,6 @@ class PackageInboundController extends Controller
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
 
-
                 if($packageCreate->status == 'Delivery') 
                 {
                     $packageCharge = ChargeCompanyDetail::where('Reference_Number_1', $package->Reference_Number_1)->first();
@@ -334,7 +333,7 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = $created_at;
                 $packageHistory->save();
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse')
                 {
                     $package->delete();
                 }
@@ -346,8 +345,11 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
+                if($package->company != 'INLAND LOGISTICS')
+                {
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
+                }
 
                 DB::commit();
 
