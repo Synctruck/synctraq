@@ -334,6 +334,7 @@ class PackageInboundController extends Controller
                 $packageHistory->save();
 
                 Log::info('$package->status: '. $package->status);
+                Log::info('$status: '. $status);
 
                 if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse')
                 {
