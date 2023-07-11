@@ -338,6 +338,9 @@ class PackageInboundController extends Controller
 
                 if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse')
                 {
+                    Log::info('Reference_Number_1: '. $package->Reference_Number_1);
+                    Log::info('Delete->status: MMS: '. $package->status);
+
                     $package->delete();
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
