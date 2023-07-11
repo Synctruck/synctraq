@@ -404,10 +404,10 @@ class PackageMiddleMileScanController extends Controller
         {
             DB::beginTransaction();
 
-            foreach($packagesListInDelivery as $packageDelivery)
+            foreach($packagesListInDelivery as $Reference_Number_1)
             {
                 $packageMMS = PackageWarehouse::where('status', 'Middle Mile Scan')
-                                                    ->where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                    ->where('Reference_Number_1', $Reference_Number_1)
                                                     ->first();
 
                 if($packageMMS)
