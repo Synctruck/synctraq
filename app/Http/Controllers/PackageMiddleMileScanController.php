@@ -377,6 +377,25 @@ class PackageMiddleMileScanController extends Controller
         return ['stateAction' => 'notExists'];
     }
 
+    public function ListInDelivery()
+    {
+        $listPackageMMS = PackageWarehouse::where('status', 'Middle Mile Scan')->get();
+
+        $packagesInDelivery = [];
+
+        foreach($listPackageMMS as $packageMMS)
+        {
+            $packageDelivery = PackageDispatch::find($packageMMS->Reference_Number_1);
+
+            if($packageDelivery)
+            {
+                array_push($packagesInDelivery, $packageMMS->Reference_Number_1);
+            }
+        }
+
+        dd($packagesInDelivery);
+    }
+
     public function GetOnfleet($idOnfleet)
     {
         $curl = curl_init("https://onfleet.com/api/v2/tasks/". $idOnfleet);

@@ -234,6 +234,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-mms', [PackageMiddleMileScanController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/package-mms/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageMiddleMileScanController::class, 'List']);
 	Route::post('/package-mms/insert', [PackageMiddleMileScanController::class, 'Insert']);
+	Route::get('/package-mms/list-in-delivery', [PackageMiddleMileScanController::class, 'ListInDelivery']);
 	Route::get('/package-mms/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageMiddleMileScanController::class, 'Export']);
 
 	//============ Maintenance of users
