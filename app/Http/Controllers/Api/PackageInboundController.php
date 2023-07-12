@@ -295,14 +295,10 @@ class PackageInboundController extends Controller
                         $packageCreate->invoiced = 1;
                     }
                     
-                    $packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
+                    //$packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
                 }
 
-                if($package->company != 'INLAND LOGISTICS')
-                {
-                    $packageCreate->require_invoice = 1;
-                }
-
+                $packageCreate->require_invoice = 1;
                 $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
