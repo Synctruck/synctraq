@@ -615,6 +615,55 @@ class PackageWarehouseController extends Controller
         return ['stateAction' => 'notExists'];
     }
 
+    public function ListInDelivery()
+    {
+        $listPackageWarehouse = PackageWarehouse::where('status', 'Warehouse')->get();
+
+        $packagesInDelivery = [];
+
+        foreach($listPackageWarehouse as $packageWarehouse)
+        {
+            $packageDelivery = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+
+            if($packageDelivery)
+            {
+                array_push($packagesInDelivery, $packageWarehouse->Reference_Number_1);
+            }
+        }
+
+        return $packagesInDelivery;
+    }
+
+    public function DeleteInDelivery()
+    {
+        $packagesListInDelivery = $this->ListInDelivery();
+
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($packagesListInDelivery as $Reference_Number_1)
+            {
+                $packageMMS = PackageWarehouse::where('status', 'Warehouse')
+                                                    ->where('Reference_Number_1', $Reference_Number_1)
+                                                    ->first();
+
+                if($packageMMS)
+                {
+                    $packageMMS->delete();
+                }
+            }
+
+            DB::commit();
+
+            return ['message' => "packages deleted"];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
+    }
+
     public function GetOnfleet($idOnfleet)
     {
         $curl = curl_init("https://onfleet.com/api/v2/tasks/". $idOnfleet);
