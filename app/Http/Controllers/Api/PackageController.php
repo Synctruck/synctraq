@@ -662,7 +662,16 @@ class PackageController extends Controller
                 Log::info($idPhoto);
 
 
-                if(count($idPhoto) == 1)
+                if(count($idPhoto) == 0)
+                {
+                    $photo1 = '';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    }';
+                }
+                else if(count($idPhoto) == 1)
                 {
                     $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
 
