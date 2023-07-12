@@ -658,6 +658,8 @@ class PackageController extends Controller
 
             if($statusCodeCompany == 'DDL')
             {
+                Log::info('idPhoto:'. $idPhoto);
+                
                 if(count($idPhoto) == 1)
                 {
                     $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
