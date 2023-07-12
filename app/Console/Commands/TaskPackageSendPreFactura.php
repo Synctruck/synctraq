@@ -52,20 +52,25 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
+        $startDate = date('Y-01-01');
+        $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
+
+        Log::info($startDate .' '. $endDate);
+
         /*try
         {
             DB::beginTransaction();
 
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = '2023-01-01 00:00:00';
-            $endDate   = '2023-05-13 23:59:59';
-            
+            $startDate = date('Y-01-01');
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+
             $companyList = Company::all();
 
             foreach($companyList as $company)
             {
-                if($company->id == 13)
+                if($company->id == 1 || $company->id == 10 || $company->id == 11 || $company->id == 13)
                 {
                     $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
                     $contents  = public_path($filename);
@@ -85,7 +90,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        /*if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
@@ -119,7 +124,7 @@ class TaskPackageSendPreFactura extends Command
             {
                 DB::rollback();
             }
-        }
+        }*/
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
