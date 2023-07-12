@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -304,6 +304,14 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('range-price-company/update/{id}', [RangePriceCompanyController::class, 'Update']);
 	Route::get('range-price-company/delete/{id}', [RangePriceCompanyController::class, 'Delete']);
 	Route::get('range-price-company/update/prices', [RangePriceCompanyController::class, 'UpdatePrices']);
+
+	//============ Maintenance of ranges prices teams
+	Route::get('range-price-base-team/list/{idTeam}', [RangePaymentTeamController::class, 'List']);
+	Route::post('range-price-base-team/insert', [RangePaymentTeamController::class, 'Insert']);
+	Route::get('range-price-base-team/get/{id}', [RangePaymentTeamController::class, 'Get']);
+	Route::post('range-price-base-team/update/{id}', [RangePaymentTeamController::class, 'Update']);
+	Route::get('range-price-base-team/delete/{id}', [RangePaymentTeamController::class, 'Delete']);
+	Route::get('range-price-base-team/update/prices', [RangePaymentTeamController::class, 'UpdatePrices']);
 
 	//============ Maintenance of ranges teams
 	Route::get('range-price-team-route-company/list/{idTeam}/{idCompany}/{Route}', [RangePriceTeamRouteCompanyController::class, 'List']);

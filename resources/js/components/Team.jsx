@@ -483,22 +483,31 @@ function Team() {
     }
 
     const handlerOpenModalRange = (idTeam, team) => {
- 
-        //listAllRange(idCompany);
+        
         setListRange([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
         setTitleModalRange('Team Prices Ranges: '+ team);
 
-        clearValidationRange();
+        fetch(url_general +'range-price-base-team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalRangeInsert'), {
+            setListRange(response.rangeList);
 
-            keyboard: false,
-            backdrop: 'static',
+            let myModal = new bootstrap.Modal(document.getElementById('modalRangePriceBaseTeam'), {
+
+                keyboard: false,
+                backdrop: 'static',
+            });
+     
+            myModal.show();
         });
 
-        myModal.show();
+        //listAllRange(idCompany);
+        
+
+        //clearValidationRange();
     }
 
     const listAllRange = (idTeam, idCompany, route) => {
@@ -844,7 +853,7 @@ function Team() {
                         )
                     }
                     &nbsp;
-                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) } style={ {display: 'none'} }>
+                    <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
                 </td>
@@ -1235,89 +1244,76 @@ function Team() {
                                     </div>
                                 </React.Fragment>;
 
-    const modalRangeInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalRangeInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-                                                <form onSubmit={ handlerSaveRange }>
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div className="modal-body" style={ {display: viewAddRange } }>
-                                                        <div className="row">
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">COMPANY</label>
-                                                                <div id="idCompanyRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <select className="form-control" onChange={ (e) => changeCompany(e.target.value) }>
-                                                                    <option value="">Select...</option>
-                                                                </select>
-                                                            </div> 
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">ROUTE</label>
-                                                                <div id="routeRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <select className="form-control" onChange={ (e) => changeRoute(e.target.value) } required>
-                                                                    <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
-                                                                    { optionsRoute }
-                                                                </select>
+    const modalRangePriceBaseTeam = <React.Fragment>
+                                        <div className="modal fade" id="modalRangePriceBaseTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div className="modal-dialog modal-lg">
+                                                <div className="modal-content">
+                                                    <form onSubmit={ handlerSaveRange }>
+                                                        <div className="modal-header">
+                                                            <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
+                                                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div className="modal-body" style={ {display: viewAddRange } }>
+                                                            <div className="row">
+                                                                <div className="col-lg-12 form-group">
+                                                                    <h4 className="text-primary">Price Range Data</h4>
+                                                                </div>
                                                             </div>
-                                                        </div> 
-                                                        <div className="row">
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">MIN. WEIGHT</label>
-                                                                <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
-                                                            </div>
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">MAX WEIGHT</label>
-                                                                <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
-                                                            </div>
-                                                            <div className="col-lg-6 form-group">
-                                                                <label className="form">Price $</label>
-                                                                <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" maxLength="100" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                            <div className="row">
+                                                                <div className="col-lg-3 form-group">
+                                                                    <label className="form">MIN. WEIGHT</label>
+                                                                    <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                                </div>
+                                                                <div className="col-lg-3 form-group">
+                                                                    <label className="form">MAX WEIGHT</label>
+                                                                    <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                                </div>
+                                                                <div className="col-lg-3 form-group">
+                                                                    <label className="form">Price $</label>
+                                                                    <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                                </div>
+                                                                <div className="col-lg-3 form-group">
+                                                                    <label className="text-white">--</label>
+                                                                    <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                    </form>
+                                                    <div className="modal-footer">
                                                         <div className="row">
-                                                            <div className="col-lg-6 form-group">
-                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                            <div className="col-lg-12 form-group pull-right">
+                                                                <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
+                                                                    <i className="bx bxs-plus-square"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
+                                                        <table className="table table-condensed table-hover">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>MIN. WEIGHT</th>
+                                                                    <th>MAX. WEIGHT</th>
+                                                                    <th>BASE PRICE</th>
+                                                                    <th>ACTIONS</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                { listRangeTable }
+                                                            </tbody>
+                                                        </table>
                                                     </div>
-                                                </form>
-                                                <div className="modal-footer">
-                                                    <div className="row">
-                                                        <div className="col-lg-12 form-group pull-right">
-                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
-                                                                <i className="bx bxs-plus-square"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <table className="table table-condensed table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>MIN. WEIGHT</th>
-                                                                <th>MAX. WEIGHT</th>
-                                                                <th>BASE PRICE</th>
-                                                                <th>ACTIONS</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            { listRangeTable }
-                                                        </tbody>
-                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </React.Fragment>;
+                                    </React.Fragment>;
 
     return (
 
         <section className="section">
             { modalCategoryInsert }
-            { modalRangeInsert }
+            { modalRangePriceBaseTeam }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
