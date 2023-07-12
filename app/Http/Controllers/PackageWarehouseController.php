@@ -644,13 +644,13 @@ class PackageWarehouseController extends Controller
 
             foreach($packagesListInDelivery as $Reference_Number_1)
             {
-                $packageMMS = PackageWarehouse::where('status', 'Warehouse')
+                $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')
                                                     ->where('Reference_Number_1', $Reference_Number_1)
                                                     ->first();
 
-                if($packageMMS)
+                if($packageWarehouse)
                 {
-                    $packageMMS->delete();
+                    $packageWarehouse->delete();
                 }
             }
 
