@@ -52,20 +52,14 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        $nowDate   = date('Y-m-d');
-        $startDate = date('Y-01-01');
-        $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
-
-        Log::info($startDate .' '. $endDate);
-
-        /*try
+        try
         {
             DB::beginTransaction();
 
             $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('Y-01-01');
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
 
             $companyList = Company::all();
 
@@ -89,7 +83,7 @@ class TaskPackageSendPreFactura extends Command
         catch(Exception $e)
         {
             DB::rollback();
-        }*/
+        }
 
         /*if($dayName == 'Monday' && $nowHour == 9)
         {
