@@ -292,7 +292,7 @@ class PackageInboundController extends Controller
 
                     if($packageCharge)
                     {
-                        $packageCreate->invoiced = 1;
+                        $packageCreate->require_invoice = 1;
                     }
                     
                     //$packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
