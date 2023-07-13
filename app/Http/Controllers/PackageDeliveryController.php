@@ -436,6 +436,8 @@ class PackageDeliveryController extends Controller
         $notInvoice = [];
         $invoice    = [];
 
+        echo $dateInit .' => '. $dateEnd .'<br>';
+
         foreach($listAll as $packageDelivery)
         {
             $chargeCompanyDetail = ChargeCompanyDetail::find($packageDelivery->Reference_Number_1);
