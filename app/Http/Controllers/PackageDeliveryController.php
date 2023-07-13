@@ -428,8 +428,8 @@ class PackageDeliveryController extends Controller
 
     public function ListInvoiced()
     {
-        $dateInit = '2023-02-01 00:00:00';
-        $dateEnd  = '2023-02-28 23:59:59';
+        $dateInit = '2023-03-01 00:00:00';
+        $dateEnd  = '2023-03-31 23:59:59';
 
         $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])->get('Reference_Number_1');
 
