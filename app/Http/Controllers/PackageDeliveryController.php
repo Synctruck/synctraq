@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{
-        Configuration, PackageHistory, PackageDelivery, PackageDispatch, 
+        ChargeCompanyDetail, Configuration, PackageHistory, PackageDelivery, PackageDispatch, 
         PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, 
         PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, TeamRoute, User};
 
@@ -424,6 +424,33 @@ class PackageDeliveryController extends Controller
                                     ->get();
 
         return ['reportList' => $listAll, 'listDeliveries' => $listDeliveries, 'listState' => $listState, 'roleUser' => $roleUser];
+    }
+
+    public function ListInvoiced()
+    {
+        $dateInit = '2023-06-01 00:00:00';
+        $dateEnd  = '2023-07-08 23:59:59';
+
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])->get('Reference_Number_1');
+
+        $notInvoice = [];
+        $invoice    = [];
+
+        foreach($listAll as $packageDelivery)
+        {
+            $chargeCompanyDetail = ChargeCompanyDetail::find($packageDelivery->Reference_Number_1);
+
+            if($chargeCompanyDetail)
+            {
+                array_push($invoice, $packageDelivery->Reference_Number_1);
+            }
+            else
+            {
+                array_push($notInvoice, $packageDelivery->Reference_Number_1);
+            }
+        }
+
+        dd($notInvoice);
     }
 
     public function ImportPhoto(Request $request)

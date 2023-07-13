@@ -184,6 +184,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-delivery/confirmation-check', [PackageDeliveryController::class, 'ConfirmationCheck']);
 	Route::get('/package-delivery/finance', [PackageDeliveryController::class, 'IndexFinance'])->middleware('permission:validatedDelivery.index');
 	Route::get('/package-delivery/list-finance/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{checked}/{routes}/{states}', [PackageDeliveryController::class, 'ListFinance']);
+	Route::get('/package-delivery/list-invoiced', [PackageDeliveryController::class, 'ListInvoiced']);
 
 	//=========== Charge Company
 	Route::get('/charge-company', [ChargeCompanyController::class, 'Index']);
