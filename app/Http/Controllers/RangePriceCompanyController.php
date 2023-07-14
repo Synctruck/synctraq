@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, PackageDispatch, PackageHistory, RangePriceCompany };
+use App\Models\{ Company, PackageDispatch, PackageHistory, RangePriceCompany, RangePriceCompanyZipCode };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -145,10 +145,29 @@ class RangePriceCompanyController extends Controller
         }
         else
         {
-            $range = RangePriceCompany::where('idCompany', $idCompany)
-                                ->where('minWeight', '<=', $weight)
-                                ->where('maxWeight', '>=', $weight)
-                                ->first();
+            $searchRangePriceCompany = false;
+
+            if($company->name == 'EIGHTVAPE')
+            {
+                $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                $range = RangePriceCompanyZipCode::where('zipCode', $packageHistory->Dropoff_Postal_Code)->first();
+
+                if($range == null)
+                {
+                    $searchRangePriceCompany = true;
+                }
+            }
+
+            if($searchRangePriceCompany)
+            {
+                $range = RangePriceCompany::where('idCompany', $idCompany)
+                                    ->where('minWeight', '<=', $weight)
+                                    ->where('maxWeight', '>=', $weight)
+                                    ->first();
+            }
         }
 
         if($range == null)
