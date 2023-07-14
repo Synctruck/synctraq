@@ -161,6 +161,11 @@ class RangePriceCompanyController extends Controller
 
                 $range = RangePriceCompanyZipCode::where('zipCode', $packageHistory->Dropoff_Postal_Code)->first();
 
+                if($range)
+                {
+                    Log::info($range->price);
+                }
+
                 if($range == null)
                 {
                     $searchRangePriceCompany = true;
