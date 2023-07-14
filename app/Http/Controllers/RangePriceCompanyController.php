@@ -147,11 +147,17 @@ class RangePriceCompanyController extends Controller
         {
             $searchRangePriceCompany = false;
 
+            Log::info('COMPANY: '. $Company->name);
+
             if($company->name == 'EIGHTVAPE')
             {
+                Log::info('new ranfe EIGHTVAPE');
+
                 $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                                 ->where('status', 'Manifest')
                                                 ->first();
+
+                Log::info('postal code: '. $packageHistory->Dropoff_Postal_Code);
 
                 $range = RangePriceCompanyZipCode::where('zipCode', $packageHistory->Dropoff_Postal_Code)->first();
 
