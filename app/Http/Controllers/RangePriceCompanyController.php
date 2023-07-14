@@ -147,7 +147,7 @@ class RangePriceCompanyController extends Controller
         {
             $searchRangePriceCompany = false;
 
-            Log::info('COMPANY: '. $Company->name);
+            Log::info('COMPANY: '. $company->name);
 
             if($company->name == 'EIGHTVAPE')
             {
