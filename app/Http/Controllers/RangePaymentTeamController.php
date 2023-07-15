@@ -26,12 +26,14 @@ class RangePaymentTeamController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "idCompany" => ["required"],
+                "idTeam" => ["required"],
                 "minWeight" => ["required", "min:1", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:1", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
             ],
             [
+                "idTeam.required" => "Seleccione un team",
+
                 "minWeight.required" => "The field is required",
                 "minWeight.min"  => "Enter minimum 1",
                 "minWeight.max"  => "Enter maximum 126",
@@ -56,15 +58,10 @@ class RangePaymentTeamController extends Controller
         //$pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
 
         $range = new RangePriceBaseTeam();
-
-        $range->idCompany       = $request->get('idCompany');
-        $range->minWeight       = $request->get('minWeight');
-        $range->maxWeight       = $request->get('maxWeight');
-        $range->price           = $request->get('price');
-        /*$range->fuelPercentage  = $request->get('fuelPercentage');
-        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];*/
-
+        $range->idTeam    = $request->get('idTeam');
+        $range->minWeight = $request->get('minWeight');
+        $range->maxWeight = $request->get('maxWeight');
+        $range->price     = $request->get('price');
         $range->save();
 
         return ['stateAction' => true];
@@ -82,12 +79,14 @@ class RangePaymentTeamController extends Controller
         $validator = Validator::make($request->all(),
 
             [
-                "idCompany" => ["required"],
+                "idTeam" => ["required"],
                 "minWeight" => ["required", "min:0", "max:126", "numeric"],
                 "maxWeight" => ["required", "min:0", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
             ],
             [
+                "idTeam.required" => "Seleccione un team",
+
                 "minWeight.required" => "The field is required",
                 "minWeight.min"  => "Enter minimum 0",
                 "minWeight.max"  => "Enter maximum 126",
@@ -109,18 +108,10 @@ class RangePaymentTeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        //$pricePecercentaje = $this->CalculatePricePecercentaje($request->get('price'), $request->get('fuelPercentage'));
-
         $range = RangePriceBaseTeam::find($idRange);
-
-        $range->idCompany       = $request->get('idCompany');
-        $range->minWeight       = $request->get('minWeight');
-        $range->maxWeight       = $request->get('maxWeight');
-        $range->price           = $request->get('price');
-        /*$range->fuelPercentage  = $request->get('fuelPercentage');
-        $range->pricePercentage = $pricePecercentaje['pricePercentage'];
-        $range->total           = $pricePecercentaje['total'];*/
-
+        $range->minWeight = $request->get('minWeight');
+        $range->maxWeight = $request->get('maxWeight');
+        $range->price     = $request->get('price');
         $range->save();
 
         return ['stateAction' => true];
