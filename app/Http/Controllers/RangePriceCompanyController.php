@@ -176,6 +176,8 @@ class RangePriceCompanyController extends Controller
             }
         }
 
+        Log::info('$Reference_Number_1: '. $Reference_Number_1);
+        Log::info($range);
         if($range == null)
         {
             $range = RangePriceCompany::orderBy('price', 'desc')->first();
