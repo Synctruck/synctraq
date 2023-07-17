@@ -145,7 +145,7 @@ class RangePriceCompanyController extends Controller
         }
         else
         {
-            $searchRangePriceCompany = false;
+            $searchRangePriceCompany = true;
 
             Log::info('COMPANY: '. $company->name);
 
@@ -165,6 +165,10 @@ class RangePriceCompanyController extends Controller
                 {
                     $searchRangePriceCompany = true;
                 }
+                else
+                {
+                    $searchRangePriceCompany = false;
+                }
             }
 
             if($searchRangePriceCompany)
@@ -176,6 +180,9 @@ class RangePriceCompanyController extends Controller
             }
         }
 
+        Log::info('$Reference_Number_1: '. $Reference_Number_1);
+        Log::info('$weight: '. $weight);
+        Log::info($range);
         if($range == null)
         {
             $range = RangePriceCompany::orderBy('price', 'desc')->first();
