@@ -143,8 +143,6 @@ class TaskPackageSendPreFactura extends Command
 
         $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('idCompany', $idCompany)
-                                                ->where('invoiced', 0)
-                                                ->where('require_invoice', 1)
                                                 ->where('status', 'Delivery')
                                                 ->get();
 
