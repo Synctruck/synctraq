@@ -52,7 +52,7 @@ class TaskPackageSendPreFactura extends Command
 
         Log::info('Hoy es: '. $dayName);
 
-        try
+        /*try
         {
             DB::beginTransaction();
 
@@ -83,9 +83,9 @@ class TaskPackageSendPreFactura extends Command
         catch(Exception $e)
         {
             DB::rollback();
-        }
+        }*/
 
-        /*if($dayName == 'Monday' && $nowHour == 9)
+        if($dayName == 'Monday' && $nowHour == 11)
         {
             try
             {
@@ -119,7 +119,7 @@ class TaskPackageSendPreFactura extends Command
             {
                 DB::rollback();
             }
-        }*/
+        }
     }
 
     public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
