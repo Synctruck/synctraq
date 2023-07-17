@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        if($dayName == 'Monday')
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
@@ -93,7 +93,7 @@ class TaskPackageSendPreFactura extends Command
 
                 $files     = [];
                 $nowDate   = date('Y-m-d');
-                $startDate = date('Y-07-09');
+                $startDate = date('Y-01-01');
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
@@ -143,6 +143,8 @@ class TaskPackageSendPreFactura extends Command
 
         $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('idCompany', $idCompany)
+                                                ->where('invoiced', 0)
+                                                ->where('require_invoice', 1)
                                                 ->where('status', 'Delivery')
                                                 ->get();
 
