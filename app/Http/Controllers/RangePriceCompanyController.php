@@ -177,6 +177,7 @@ class RangePriceCompanyController extends Controller
         }
 
         Log::info('$Reference_Number_1: '. $Reference_Number_1);
+        Log::info('$weight: '. $weight);
         Log::info($range);
         if($range == null)
         {
