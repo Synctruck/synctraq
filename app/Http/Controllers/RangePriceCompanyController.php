@@ -167,6 +167,8 @@ class RangePriceCompanyController extends Controller
                 }
             }
 
+            Log::info('$Reference_Number_1: '. $Reference_Number_1);
+            Log::info('$weight: '. $weight);
             if($searchRangePriceCompany)
             {
                 $range = RangePriceCompany::where('idCompany', $idCompany)
