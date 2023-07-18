@@ -455,6 +455,8 @@ function Team() {
 
     ///////////////////////////////////////////////////////////////////////////////
 //////////          MAINTENANCE RANGES        //////////////////////
+    const [buttonAddPriceCompany, setButtonAddPriceCompany] = useState('block');
+
     const [listCompany , setListCompany]                = useState([]);
     const [listRange, setListRange]                     = useState([]);
     const [listPriceByRoute, setListPriceByRoute]       = useState([]);
@@ -536,6 +538,9 @@ function Team() {
 
     const handlerOpenModalRangeByCompany = (idTeam, team) => {
         
+        clearValidationPriceByCompany();
+        clearFormPriceByCompany();
+
         setListPriceByCompany([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
@@ -920,7 +925,7 @@ function Team() {
         formData.append('idCompany', companyPrice);
         formData.append('price', priceByCompany);
 
-        clearValidationRange();
+        clearValidationPriceByCompany();
 
         if(idRange == 0)
         {
@@ -944,6 +949,13 @@ function Team() {
                         });
 
                         clearFormPriceByCompany();
+
+                        setButtonAddPriceCompany('block');
+                        setViewAddRange('none');
+
+                        let select = document.getElementById("selectIdCompany");
+                        select.value = '';
+
                         listAllPriceByCompany(idTeam);
                     }
                     else if(response.status == 422)
@@ -977,6 +989,14 @@ function Team() {
 
                 if(response.stateAction)
                 {
+                    clearFormPriceByCompany();
+
+                    setButtonAddPriceCompany('block');
+                    setViewAddRange('none');
+
+                    let select = document.getElementById("selectIdCompany");
+                    select.value = '';
+
                     listAllPriceByCompany(idTeam);
 
                     swal("Price updated!", {
@@ -1000,7 +1020,7 @@ function Team() {
 
     const getPriceByCompany = (id) => {
 
-        clearValidationRange(); 
+        clearValidationPriceByCompany(); 
 
         LoadingShowMap();
 
@@ -1010,9 +1030,9 @@ function Team() {
 
             LoadingHideMap();
 
-            let range = response.range;
+            setButtonAddPriceCompany('none');
 
-            console.log(range);
+            let range = response.range;
 
             let select = document.getElementById("selectIdCompany");
             select.value = range.idCompany;
@@ -1045,7 +1065,7 @@ function Team() {
                 .then(response => {
 
                     LoadingHideMap();
-                    
+
                     if(response.stateAction)
                     {
                         swal("Range deleted successfully!", {
@@ -1181,7 +1201,11 @@ function Team() {
 
     const clearFormPriceByCompany = () => {
 
+        let select = document.getElementById("selectIdCompany");
+        select.value = '';
+
         setIdRange(0);
+        setCompanyPrice('');
         setPriceByCompany('');
     }
 
@@ -1216,6 +1240,15 @@ function Team() {
 
         document.getElementById('priceRange').style.display = 'none';
         document.getElementById('priceRange').innerHTML     = '';
+    }
+
+    const clearValidationPriceByCompany = () => {
+
+        document.getElementById('idCompanyByCompany').style.display = 'none';
+        document.getElementById('idCompanyByCompany').innerHTML     = '';
+
+        document.getElementById('priceByCompany').style.display = 'none';
+        document.getElementById('priceByCompany').innerHTML     = '';
     }
 
     const listUserTable = listUser.map( (user, i) => {
@@ -1704,7 +1737,7 @@ function Team() {
                                                     </form>
                                                     <div className="modal-footer">
                                                         <div className="row">
-                                                            <div className="col-lg-12 form-group pull-right">
+                                                            <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
                                                                 <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
                                                                     <i className="bx bxs-plus-square"></i>
                                                                 </button>
@@ -1807,7 +1840,7 @@ function Team() {
                                                                         <div className="col-lg-4 form-group">
                                                                             <label className="form">COMPANY</label>
                                                                             <div id="idCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) }>
+                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) } required>
                                                                                 <option value="" style={ {display: 'none'} }>Select...</option>
                                                                                 { optionCompany }
                                                                             </select>
@@ -1826,7 +1859,7 @@ function Team() {
                                                             </form>
                                                             <div className="modal-footer">
                                                                 <div className="row">
-                                                                    <div className="col-lg-12 form-group pull-right">
+                                                                    <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
                                                                         <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
                                                                             <i className="bx bxs-plus-square"></i>
                                                                         </button>
