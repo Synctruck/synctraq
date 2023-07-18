@@ -515,6 +515,8 @@ function Team() {
 
     const handlerOpenModalRangeByRoute = (idTeam, team) => {
         
+        LoadingShowMap();
+
         setListPriceByRoute([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
@@ -523,6 +525,8 @@ function Team() {
         fetch(url_general +'range-price-team-by-route/list/'+ idTeam)
         .then(res => res.json())
         .then((response) => {
+
+            LoadingHideMap();
 
             setListPriceByRoute(response.rangeList);
 
@@ -538,6 +542,8 @@ function Team() {
 
     const handlerOpenModalRangeByCompany = (idTeam, team) => {
         
+        LoadingShowMap();
+
         clearValidationPriceByCompany();
         clearFormPriceByCompany();
 
@@ -550,6 +556,8 @@ function Team() {
         .then(res => res.json())
         .then((response) => {
 
+            LoadingHideMap();
+            
             setListPriceByCompany(response.rangeList);
 
             let myModal = new bootstrap.Modal(document.getElementById('modalRangePriceByCompanyTeam'), {
