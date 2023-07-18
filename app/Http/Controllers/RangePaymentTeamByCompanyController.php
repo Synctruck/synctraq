@@ -45,6 +45,28 @@ class RangePaymentTeamByCompanyController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $range = RangePriceTeamByCompany::where('idTeam', $request->get('idTeam'))
+                                        ->where('idCompany', $request->get('idCompany'))
+                                        ->first();
+
+        if($range)
+        {
+            $validator = Validator::make($request->all(),
+
+                [
+                    "idCompany" => ["required", "unique:range_payment_team_by_company"],
+                ],
+                [
+                    "idCompany.required" => "Select an item",
+                ]
+            );
+        }
+
+        if($validator->fails())
+        {
+            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
+        }
+
         $company = Company::find($request->get('idCompany'));
 
         $range = new RangePriceTeamByCompany();
@@ -82,6 +104,28 @@ class RangePaymentTeamByCompanyController extends Controller
                 "price.numeric"  => "Enter only numbers",
             ]
         );
+
+        if($validator->fails())
+        {
+            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
+        }
+
+        $range = RangePriceTeamByCompany::where('idTeam', $request->get('idTeam'))
+                                        ->where('idCompany', $request->get('idCompany'))
+                                        ->first();
+
+        if($range && $range->id != $idRange)
+        {
+            $validator = Validator::make($request->all(),
+
+                [
+                    "idCompany" => ["required", "unique:range_payment_team_by_company"],
+                ],
+                [
+                    "idCompany.required" => "Select an item",
+                ]
+            );
+        }
 
         if($validator->fails())
         {
