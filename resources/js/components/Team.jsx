@@ -458,6 +458,7 @@ function Team() {
     const [listCompany , setListCompany]                = useState([]);
     const [listRange, setListRange]                     = useState([]);
     const [listPriceByRoute, setListPriceByRoute]       = useState([]);
+    const [listPriceByCompany, setListPriceByCompany]   = useState([]);
     const [idTeam, setIdTeam]                           = useState(0);
     const [idCompany, setIdCompany]                     = useState(0);
     const [Route, setRoute]                             = useState('');
@@ -470,6 +471,8 @@ function Team() {
     const [priceWeightRange, setPriceWeightRange]       = useState('');
     const [routePrice, setRoutePrice]                   = useState('');
     const [priceByRoute, setPriceByRoute]               = useState('');
+    const [priceByCompany, setPriceByCompany]           = useState('');
+    const [companyPrice, setCompanyPrice]               = useState('');
     const [fuelPercentageRange, setfuelPercentageRange] = useState('');
 
     const handlerAddRange = () => {
@@ -513,7 +516,7 @@ function Team() {
         setListPriceByRoute([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
-        setTitleModalRange('Team Prices By route: '+ team);
+        setTitleModalRange('Team Prices By Route: '+ team);
 
         fetch(url_general +'range-price-team-by-route/list/'+ idTeam)
         .then(res => res.json())
@@ -522,6 +525,29 @@ function Team() {
             setListPriceByRoute(response.rangeList);
 
             let myModal = new bootstrap.Modal(document.getElementById('modalRangePriceByRouteTeam'), {
+
+                keyboard: false,
+                backdrop: 'static',
+            });
+     
+            myModal.show();
+        });
+    }
+
+    const handlerOpenModalRangeByCompany = (idTeam, team) => {
+        
+        setListPriceByCompany([]);
+        setIdTeam(idTeam);
+        setViewAddRange('none');
+        setTitleModalRange('Team Prices By Company: '+ team);
+
+        fetch(url_general +'range-price-team-by-company/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListPriceByCompany(response.rangeList);
+
+            let myModal = new bootstrap.Modal(document.getElementById('modalRangePriceByCompanyTeam'), {
 
                 keyboard: false,
                 backdrop: 'static',
@@ -558,6 +584,16 @@ function Team() {
         .then((response) => {
 
             setListPriceByRoute(response.rangeList);
+        });
+    }
+
+    const listAllPriceByCompany = (idTeam) => {
+
+        fetch(url_general +'range-price-team-by-company/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListPriceByCompany(response.rangeList);
         });
     }
 
@@ -768,7 +804,7 @@ function Team() {
                             icon: "success",
                         });
 
-                        clearFormPriceByroute();
+                        clearFormPriceByRoute();
                         listAllPriceByRoute(idTeam);
                     }
                     else if(response.status == 422)
@@ -874,6 +910,156 @@ function Team() {
         });
     }
 
+    const handlerSavePriceByCompany = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('idTeam', idTeam);
+        formData.append('idCompany', companyPrice);
+        formData.append('price', priceByCompany);
+
+        clearValidationRange();
+
+        if(idRange == 0)
+        {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            LoadingShowMap();
+
+            fetch(url_general +'range-price-team-by-company/insert', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Price was save!", {
+
+                            icon: "success",
+                        });
+
+                        clearFormPriceByCompany();
+                        listAllPriceByCompany(idTeam);
+                    }
+                    else if(response.status == 422)
+                    {
+                        for(const index in response.errors)
+                        {
+                            document.getElementById(index +'ByCompany').style.display = 'block';
+                            document.getElementById(index +'ByCompany').innerHTML     = response.errors[index][0];
+                        }
+                    }
+
+                    LoadingHideMap();
+                },
+            );
+        }
+        else
+        {
+            LoadingShowMap();
+
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url_general +'range-price-team-by-company/update/'+ idRange, {
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
+
+                if(response.stateAction)
+                {
+                    listAllPriceByCompany(idTeam);
+
+                    swal("Price updated!", {
+
+                        icon: "success",
+                    });
+                }
+                else(response.status == 422)
+                {
+                    for(const index in response.errors)
+                    {
+                        document.getElementById(index +'ByCompany').style.display = 'block';
+                        document.getElementById(index +'ByCompany').innerHTML     = response.errors[index][0];
+                    }
+                }
+
+                LoadingHideMap();
+            });
+        }
+    }
+
+    const getPriceByCompany = (id) => {
+
+        clearValidationRange(); 
+
+        LoadingShowMap();
+
+        fetch(url_general +'range-price-team-by-company/get/'+ id)
+        .then(response => response.json())
+        .then(response => {
+
+            LoadingHideMap();
+
+            let range = response.range;
+
+            console.log(range);
+
+            let select = document.getElementById("selectIdCompany");
+            select.value = range.idCompany;
+
+            setIdRange(range.id);
+            setCompanyPrice(range.idCompany);
+            setPriceByCompany(range.price);
+            setViewAddRange('block');
+            setTextButtonSaveRange('Updated');
+        });
+    }
+    
+    const deletePriceByCompany = (id) => {
+
+        swal({
+            title: "You want to delete?",
+            text: "Range will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShowMap();
+
+                fetch(url_general +'range-price-team-by-company/delete/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    LoadingHideMap();
+                    
+                    if(response.stateAction)
+                    {
+                        swal("Range deleted successfully!", {
+
+                            icon: "success",
+                        }); 
+
+                        listAllPriceByCompany(idTeam);
+                    }
+                });
+            } 
+        });
+    }
+
     const listRangeTable = listRange.map( (range, i) => {
 
         return (
@@ -906,6 +1092,25 @@ function Team() {
                         <i className="bx bx-edit-alt"></i>
                     </button>&nbsp;
                     <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deletePriceByRoute(range.id) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
+    const listPriceByCompanyTable = listPriceByCompany.map( (range, i) => {
+
+        return (
+
+            <tr key={i}>
+                <td><b>{ range.company }</b></td>
+                <td><b>{ range.price +' $' }</b></td>
+                <td className="text-center">
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getPriceByCompany(range.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button>&nbsp;
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deletePriceByCompany(range.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
@@ -967,11 +1172,17 @@ function Team() {
         setfuelPercentageRange('');
     }
 
-    const clearFormPriceByroute = () => {
+    const clearFormPriceByRoute = () => {
 
         setIdRange(0);
         setRoutePrice('')
         setPriceByRoute('');
+    }
+
+    const clearFormPriceByCompany = () => {
+
+        setIdRange(0);
+        setPriceByCompany('');
     }
 
     const clearValidation = () => {
@@ -1054,6 +1265,10 @@ function Team() {
                     </button>
                     &nbsp;
                     <button className="btn btn-warning btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByRoute(user.id, user.name) }>
+                        <i className="bx bxs-badge-dollar"></i>
+                    </button>
+                    &nbsp;
+                    <button className="btn btn-danger btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByCompany(user.id, user.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
                 </td>
@@ -1313,6 +1528,11 @@ function Team() {
         });
     }
 
+    const optionCompany = listCompany.map( (company, i) => {
+
+        return <option value={ company.id }>{ company.name }</option>
+    });
+
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -1521,19 +1741,19 @@ function Team() {
                                                             <div className="modal-body" style={ {display: viewAddRange } }>
                                                                 <div className="row">
                                                                     <div className="col-lg-12 form-group">
-                                                                        <h4 className="text-primary">Price Range Data</h4>
+                                                                        <h4 className="text-primary">Price By Route</h4>
                                                                     </div>
                                                                 </div>
                                                                 <div className="row">
                                                                     <div className="col-lg-4 form-group">
                                                                         <label className="form">ROUTE</label>
                                                                         <div id="routeByRoute" className="text-danger" style={ {display: 'none'} }></div>
-                                                                        <input type="text" className="form-control" value={ routePrice } min="0" max="999" onChange={ (e) => setRoutePrice(e.target.value) } required/>
+                                                                        <input type="text" className="form-control" value={ routePrice } onChange={ (e) => setRoutePrice(e.target.value) } required/>
                                                                     </div>
                                                                     <div className="col-lg-4 form-group">
                                                                         <label className="form">PRICE $</label>
                                                                         <div id="priceByRoute" className="text-danger" style={ {display: 'none'} }></div>
-                                                                        <input type="number" className="form-control" value={ priceByRoute } min="1" max="999" step="0.0001" onChange={ (e) => setPriceByRoute(e.target.value) } required/>
+                                                                        <input type="number" className="form-control" value={ priceByRoute } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByRoute(e.target.value) } required/>
                                                                     </div>
                                                                     <div className="col-lg-4 form-group">
                                                                         <label className="text-white">--</label>
@@ -1568,12 +1788,75 @@ function Team() {
                                             </div>
                                         </React.Fragment>;
 
+    const modalRangePriceByCompanyTeam =    <React.Fragment>
+                                                <div className="modal fade" id="modalRangePriceByCompanyTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div className="modal-dialog modal-lg">
+                                                        <div className="modal-content">
+                                                            <form onSubmit={ handlerSavePriceByCompany }>
+                                                                <div className="modal-header">
+                                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
+                                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div className="modal-body" style={ {display: viewAddRange } }>
+                                                                    <div className="row">
+                                                                        <div className="col-lg-12 form-group">
+                                                                            <h4 className="text-primary">Price By Company</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="row">
+                                                                        <div className="col-lg-4 form-group">
+                                                                            <label className="form">COMPANY</label>
+                                                                            <div id="idCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) }>
+                                                                                <option value="" style={ {display: 'none'} }>Select...</option>
+                                                                                { optionCompany }
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="col-lg-4 form-group">
+                                                                            <label className="form">PRICE $</label>
+                                                                            <div id="priceByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                            <input type="number" className="form-control" value={ priceByCompany } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByCompany(e.target.value) } required/>
+                                                                        </div>
+                                                                        <div className="col-lg-4 form-group">
+                                                                            <label className="text-white">--</label>
+                                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                            <div className="modal-footer">
+                                                                <div className="row">
+                                                                    <div className="col-lg-12 form-group pull-right">
+                                                                        <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
+                                                                            <i className="bx bxs-plus-square"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <table className="table table-condensed table-hover">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>COMPANY</th>
+                                                                            <th>PRICE</th>
+                                                                            <th>ACTIONS</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { listPriceByCompanyTable }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </React.Fragment>;
+
     return (
 
         <section className="section">
             { modalCategoryInsert }
             { modalRangePriceBaseTeam }
             { modalRangePriceByRouteTeam }
+            { modalRangePriceByCompanyTeam }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
