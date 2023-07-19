@@ -19,7 +19,7 @@ class PaymentTeam extends Model
 
     public function team()
     {
-        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
+        return $this->belongsTo('App\Models\User', 'idTeam', 'id');
     }
 
     //observers
