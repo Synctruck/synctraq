@@ -3,6 +3,8 @@ namespace App\Service;
 
 use App\Models\{ PackageDispatch, PackageHistory, PackageLost, PackageNeedMoreInformation, PackageWarehouse };
 
+use App\Http\Controllers\PackageAgeController;
+
 use Auth;
 use DB;
 
@@ -33,10 +35,34 @@ class ServicePackageDispatch{
 
     public function ListPackagesDebrief($idDriver)
     {
-        return PackageDispatch::where('idUserDispatch', $idDriver)
-                            ->whereIn('status', ['Dispatch', 'Delete'])
-                            ->orderBy('created_at', 'asc')
-                            ->get();
+        $packageAgeController = new PackageAgeController();
+
+        $packageDispatchList = PackageDispatch::where('idUserDispatch', $idDriver)
+                                                ->whereIn('status', ['Dispatch', 'Delete'])
+                                                ->orderBy('created_at', 'asc')
+                                                ->get();
+
+        $packageDispatchListNew = [];
+
+        foreach($packageDispatchList as $packageDispatch)
+        {
+            $initDate = date('Y-m-d', strtotime($packageDispatch->created_at));
+            $endDate  = date('Y-m-d');
+
+            $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+
+            $package = [ 
+
+                "created_at" => $packageDispatch->created_at,
+                "Reference_Number_1" => $packageDispatch->Reference_Number_1,
+                "lateDays" => $lateDays,
+                "status" => $packageDispatch->status,
+            ];
+
+            array_push($packageDispatchListNew, $package);
+        }
+
+        return $packageDispatchListNew;
     }
 
     public function MoveToOtherStatus($Reference_Number_1, $status, $comment)
