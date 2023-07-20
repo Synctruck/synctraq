@@ -40,27 +40,29 @@ class ServicePackageDispatch{
         $packageDispatchList = PackageDispatch::where('idUserDispatch', $idDriver)
                                                 ->whereIn('status', ['Dispatch', 'Delete'])
                                                 ->orderBy('created_at', 'asc')
-                                                ->get('Reference_Number_1');
-
-        $packageDispatchList = PackageHistory::whereIn('Reference_Number_1', $packageDispatchList)
-                                            ->where('status', 'Inbound')
-                                            ->get();
+                                                ->get();
 
         $packageDispatchListNew = [];
 
-        foreach($packageDispatchList as $packageInbound)
+        foreach($packageDispatchList as $packageDispatch)
         {
-            $initDate = date('Y-m-d', strtotime($packageInbound->created_at));
-            $endDate  = date('Y-m-d');
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
 
-            $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+            $lateDays = 'NOT INBOUND';
 
-            $packageDispatch = PackageDispatch::find($packageInbound->Reference_Number_1);
+            if($packageHistory)
+            {
+                $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
+                $endDate  = date('Y-m-d');
+                $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+            }
 
-            $package = [
+            $package = [ 
 
-                "created_at" => $packageInbound->created_at,
-                "Reference_Number_1" => $packageInbound->Reference_Number_1,
+                "created_at" => $packageDispatch->created_at,
+                "Reference_Number_1" => $packageDispatch->Reference_Number_1,
                 "lateDays" => $lateDays,
                 "status" => $packageDispatch->status,
             ];

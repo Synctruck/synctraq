@@ -234,7 +234,7 @@ function Debrief() {
                                                                         <th>DATE</th>
                                                                         <th>PACKAGE ID</th>
                                                                         <th>STATUS</th>
-                                                                        <th>LATE DAYS</th>
+                                                                        <th>AGE</th>
                                                                         <th>ACTION</th>
                                                                         <th></th>
                                                                     </tr>
