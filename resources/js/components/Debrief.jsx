@@ -41,9 +41,9 @@ function Debrief() {
         });
     }
 
-    const handlerOpenModal = (id) => {
+    const handlerOpenModal = (id, teamName, driverName) => {
 
-        getPackages(id);
+        getPackages(id, teamName, driverName);
 
         let myModal = new bootstrap.Modal(document.getElementById('modalPackagesListDebrief'), {
 
@@ -53,7 +53,7 @@ function Debrief() {
         myModal.show();
     }
 
-    const getPackages = (id) => {
+    const getPackages = (id, teamName, driverName) => {
 
         LoadingShowMap();
 
@@ -67,7 +67,7 @@ function Debrief() {
 
             setPackageList(response.listPackages);
             setPackageListAux(response.listPackages);
-            setTitleModal('PACKAGE LIST: '+ response.listPackages.length);
+            setTitleModal(teamName +' - '+ driverName +': '+ response.listPackages.length);
 
             LoadingHideMap();
         });
@@ -83,7 +83,7 @@ function Debrief() {
                 <td>{ user['email'] }</td>
                 <td>{ user['quantityOfPackages'] }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => handlerOpenModal(user['idDriver']) }>
+                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => handlerOpenModal(user['idDriver'], user['team'], user['fullName']) }>
                         View Packages
                     </button>
                 </td>
