@@ -461,7 +461,7 @@ class DriverController extends Controller
         {
             $driver = Driver::find($idDriver->idUserDispatch);
 
-            if($driver) 
+            if($driver)
             {
                 $data = [ 
                     'team' => $driver->nameTeam,

@@ -40,21 +40,27 @@ class ServicePackageDispatch{
         $packageDispatchList = PackageDispatch::where('idUserDispatch', $idDriver)
                                                 ->whereIn('status', ['Dispatch', 'Delete'])
                                                 ->orderBy('created_at', 'asc')
-                                                ->get();
+                                                ->get('Reference_Number_1');
+
+        $packageDispatchList = PackageHistory::whereIn('Reference_Number_1', $packageDispatchList)
+                                            ->where('status', 'Inbound')
+                                            ->get();
 
         $packageDispatchListNew = [];
 
-        foreach($packageDispatchList as $packageDispatch)
+        foreach($packageDispatchList as $packageInbound)
         {
-            $initDate = date('Y-m-d', strtotime($packageDispatch->created_at));
+            $initDate = date('Y-m-d', strtotime($packageInbound->created_at));
             $endDate  = date('Y-m-d');
 
             $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
 
-            $package = [ 
+            $packageDispatch = PackageDispatch::find($packageInbound->Reference_Number_1);
 
-                "created_at" => $packageDispatch->created_at,
-                "Reference_Number_1" => $packageDispatch->Reference_Number_1,
+            $package = [
+
+                "created_at" => $packageInbound->created_at,
+                "Reference_Number_1" => $packageInbound->Reference_Number_1,
                 "lateDays" => $lateDays,
                 "status" => $packageDispatch->status,
             ];
