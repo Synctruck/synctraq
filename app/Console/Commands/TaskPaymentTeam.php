@@ -6,7 +6,10 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam };
+use App\Models\{ 
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, 
+            PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
+            RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -47,175 +50,221 @@ class TaskPaymentTeam extends Command
 
     public function handle()
     {
-        $dayName = date("l");
-        $nowHour = date('H');
-
-        Log::info('Hoy es: '. $dayName);
+        $files     = [];
+        $nowDate   = date('Y-05-29');
+        $startDate = date('Y-05-21');
+        $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
         try
         {
             DB::beginTransaction();
 
-            $files     = [];
-            $nowDate   = date('Y-m-d');
-            $startDate = date('Y-07-13');
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $teamsList = User::with(['drivers', 'role', 'routes_team'])
+                            ->where('idRole', 3)
+                            ->where('status', 'Active')
+                            ->orderBy('name', 'asc')
+                            ->get();
 
-            $companyList = Company::all();
-
-            foreach($companyList as $company)
+            foreach($teamsList as $team)
             {
-                if($company->id == 1 || $company->id == 10 || $company->id == 11 || $company->id == 13)
+                $paymentTeam = new PaymentTeam();
+                $paymentTeam->id        = date('YmdHis') .'-'. $team->id;
+                $paymentTeam->idTeam    = $team->id;
+                $paymentTeam->startDate = $startDate;
+                $paymentTeam->endDate   = $endDate;            
+
+                $startDate = $startDate .' 00:00:00';
+                $endDate   = $endDate .' 23:59:59';
+
+                $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                        ->where('idTeam', $team->id)
+                                                        ->where('paid', 0)
+                                                        ->where('status', 'Delivery')
+                                                        ->get();
+
+                $totalTeam = 0;
+
+                if($listPackageDelivery)
                 {
-                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                    $contents  = public_path($filename);
-
-                    array_push($files, $contents);
-                
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
-                }
-            }
-
-            $this->SendPreFactura($startDate, $endDate, $files);
-
-            DB::commit();
-        }
-        catch(Exception $e)
-        {
-            DB::rollback();
-        }
-
-    }
-
-    public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
-    {
-        $idCharge = date('YmdHis') .'-'. $idCompany;
-
-        $chargeCompany = new ChargeCompany();
-
-        $chargeCompany->id        = $idCharge;
-        $chargeCompany->idCompany = $idCompany;
-        $chargeCompany->startDate = $startDate;
-        $chargeCompany->endDate   = $endDate;
-
-        $startDate = $startDate .' 00:00:00';
-        $endDate   = $endDate .' 23:59:59';
-        $delimiter = ",";
-        $file      = fopen($contents, 'w');
-        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
-
-        fputcsv($file, $fields, $delimiter);
-
-        $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
-                                                ->where('idCompany', $idCompany)
-                                                ->where('invoiced', 0)
-                                                ->where('require_invoice', 1)
-                                                ->where('status', 'Delivery')
-                                                ->get();
-
-        Log::info('================');
-        Log::info('SEND PRE FACTURA - EMAIL - COMPANY - '. $idCompany);
-        Log::info('Quantity:'. count($listPackageDelivery));
-
-        $totalCharge = 0;
-
-        if(count($listPackageDelivery) > 0)
-        {
-            foreach($listPackageDelivery as $packageDelivery)
-            {
-                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                $packageDelivery->invoiced = 1;
-                $packageDelivery->save();
-
-                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
-                                                                    ->first();
-
-                if($packagePriceCompanyTeam == null || date("l", strtotime($packageDelivery->Date_Delivery)) == 'Monday')
-                {
-                    //create or update price company team
-                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                    $packagePriceCompanyTeamController->Insert($packageDelivery, 'old');
-
-                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
-                                                                    ->first();
-                }
-
-                if($packagePriceCompanyTeam)
-                {
-                    $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
-
-                    if($chargeCompanyDetail == null)
+                    foreach($listPackageDelivery as $packageDelivery)
                     {
-                        $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
+                        $dimFactor = 200;
+                        $weight    = $packageDelivery->Weight;
+                        $weightRound = ceil($weight);
 
-                        $chargeCompanyDetail = new ChargeCompanyDetail();
 
-                        $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
-                        $chargeCompanyDetail->idChargeCompany    = $idCharge;
+                        $dieselPrice = $this->GetDieselPrice('today', $packageDelivery);
 
-                        $chargeCompanyDetail->save();
+                        if($dieselPrice)
+                        {
+                            $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
+                                                        ->where('minWeight', '<=', $weight)
+                                                        ->where('maxWeight', '>=', $weight)
+                                                        ->first();
 
-                        $lineData = array(
-                                        date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
-                                        $packageDelivery->company,
-                                        $packageDelivery->Reference_Number_1,
-                                        '$'. $packagePriceCompanyTeam->dieselPriceCompany,
-                                        $packagePriceCompanyTeam->weight,
-                                        $packagePriceCompanyTeam->dimWeightCompanyRound,
-                                        '$'. $packagePriceCompanyTeam->priceWeightCompany,
-                                        '$'. $packagePriceCompanyTeam->peakeSeasonPriceCompany,
-                                        '$'. $packagePriceCompanyTeam->priceBaseCompany,
-                                        $packagePriceCompanyTeam->surchargePercentageCompany .'%',
-                                        '$'. $packagePriceCompanyTeam->surchargePriceCompany,
-                                        '$'. $packagePriceCompanyTeam->totalPriceCompany
-                                    );
+                            if($range)
+                            {
+                                $priceWeight = $range->price;
+                                $peakeSeasonPrice = $this->GetPeakeSeasonTeam($packageDelivery);
+                                $priceBase = number_format($priceWeight + $peakeSeasonPrice, 2);
 
-                        fputcsv($file, $lineData, $delimiter);
+                                $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
+
+                                $surchargePrice = number_format(($priceBase * $surchargePercentage) / 100, 4);
+                                $priceByRoute = $this->GetPriceTeamByRoute($packageDelivery->idTeam, $packageDelivery->Route);
+                                $priceByCompany = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany);
+                                $totalPrice     = number_format($priceBase + $surchargePrice + $priceByRoute + $priceByCompany, 4);
+
+                                $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
+
+                                if(!$paymentTeamDetail)
+                                {
+                                    $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                                    $packageDelivery->paid = 1;
+                                    $packageDelivery->save();
+
+                                    $paymentTeamDetail = new PaymentTeamDetail();
+                                    $paymentTeamDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
+                                    $paymentTeamDetail->idPaymentTeam      = $paymentTeam->id;
+                                    $paymentTeamDetail->dimFactor      = $dimFactor;
+                                    $paymentTeamDetail->weight      = $weight;
+                                    $paymentTeamDetail->weightRound      = $weightRound;
+                                    $paymentTeamDetail->priceWeight      = $priceWeight;
+                                    $paymentTeamDetail->peakeSeasonPrice      = $peakeSeasonPrice;
+                                    $paymentTeamDetail->priceBase      = $priceBase;
+                                    $paymentTeamDetail->dieselPrice      = $dieselPrice;
+                                    $paymentTeamDetail->surchargePercentage      = $surchargePercentage;
+                                    $paymentTeamDetail->surchargePrice      = $surchargePrice;
+                                    $paymentTeamDetail->priceByRoute      = $priceByRoute;
+                                    $paymentTeamDetail->priceByCompany      = $priceByCompany;
+                                    $paymentTeamDetail->totalPrice           = $totalPrice;
+                                    $paymentTeamDetail->Date_Delivery        = $packageDelivery->Date_Delivery;
+                                    $paymentTeamDetail->save();
+
+                                    $totalTeam = $totalTeam + $totalPrice;
+                                }
+                                
+                            }
+                        }
+                    }
+
+                    if($totalTeam > 0)
+                    {
+                        $paymentTeam->total  = $totalTeam;
+                        $paymentTeam->status = 'Payable';
+                        $paymentTeam->save();
                     }
                 }
             }
 
-            rewind($file);
-            fclose($file);
+            DB::commit();
+
+            Log::info('correct payment team');
         }
+        catch(Exception $e)
+        {
+            DB::rollback();
 
-        $chargeCompany->total  = $totalCharge;
-        $chargeCompany->status = 'DRAFT INVOICE';
-
-        $chargeCompany->save();
-
-        Log::info('SEND PRE FACTURA - EMAIL - COMPANY - '. $idCompany);
-        Log::info('================');
+            Log::info('error payment team');
+        }
     }
 
-    public function SendPreFactura($startDate, $endDate, $files)
+    public function GetDieselPrice($from, $packageDelivery)
     {
-        $files = $files;
-        $data  = ['startDate' => $startDate, 'endDate' => $endDate];
+        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
-        if(ENV('APP_ENV') == 'production')
+        $dieselPriceCompany = 0;
+
+        if($from == 'today')
         {
-            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
+            $dieselPriceCompany = Configuration::first()->diesel_price;
+        }
+        else
+        {
+            $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
-                $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
-                ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+            foreach($historyDieselList as $historyDiesel)
+            {
+                $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+                $timeChangeDateStart = strtotime($nowDate);
+                $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+                $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDelivery->Date_Delivery)));
 
-                foreach ($files as $file)
+                if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
                 {
-                    $message->attach($file);
+                    $dieselPriceCompany = $historyDiesel->roundPrice;
                 }
-            });
+            }
         }
 
-        Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
+        return $dieselPriceCompany;
+    }
 
-            $message->to('wilcm123@gmail.com', 'WILBER CM')
-            ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+    public function GetPeakeSeasonTeam($packageDelivery)
+    {
+        $peakeSeasonPriceTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
 
-            foreach ($files as $file)
+        $date = strtotime(date('Y-m-d'));
+
+        if($date >= strtotime($peakeSeasonPriceTeam->start_date)  && $date <= strtotime($peakeSeasonPriceTeam->end_date))
+        {
+            if($dimWeightCompanyRound <= $peakeSeasonPriceTeam->lb1_weight)
             {
-                $message->attach($file);
+                $peakeSeasonPriceTeam = $peakeSeasonPriceTeam->lb1_weight_price;
             }
-        });
+            else if($dimWeightCompanyRound > $peakeSeasonPriceTeam->lb1_weight)
+            {
+                $peakeSeasonPriceTeam = $peakeSeasonPriceTeam->lb2_weight_price;
+            }
+        }
+        else
+        {
+            $peakeSeasonPriceTeam = 0;
+        }
+
+        return $peakeSeasonPriceTeam;
+    }
+
+    public function GetSurchargePercentage($idTeam, $dieselPrice)
+    {
+        $surchargePercentage = RangeDieselTeam::where('idTeam', $idTeam)
+                                            ->where('at_least', '<=', $dieselPrice)
+                                            ->where('but_less', '>=',  $dieselPrice)
+                                            ->first();
+
+        if($surchargePercentage)
+        {
+            return $surchargePercentage->surcharge_percentage;
+        }
+
+        return 0;
+    }
+
+    public function GetPriceTeamByRoute($idTeam, $route)
+    {
+        $range = RangePriceTeamByRoute::where('idTeam', $idTeam)
+                                    ->where('route', $route)
+                                    ->first();
+
+        if($range)
+        {
+            return $range->price;
+        }
+
+        return 0;
+    }
+
+    public function GetPriceTeamByCompany($idTeam, $idCompany)
+    {
+        $range = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->first();
+
+        if($range)
+        {
+            return $range->price;
+        }
+
+        return 0;
     }
 }
