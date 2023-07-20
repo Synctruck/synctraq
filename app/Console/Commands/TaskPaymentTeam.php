@@ -104,16 +104,14 @@ class TaskPaymentTeam extends Command
 
                             if($range)
                             {
-                                $priceWeight = $range->price;
-                                $peakeSeasonPrice = $this->GetPeakeSeasonTeam($packageDelivery);
-                                $priceBase = number_format($priceWeight + $peakeSeasonPrice, 2);
-
+                                $priceWeight         = $range->price;
+                                $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($packageDelivery);
+                                $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
                                 $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
-
-                                $surchargePrice = number_format(($priceBase * $surchargePercentage) / 100, 4);
-                                $priceByRoute = $this->GetPriceTeamByRoute($packageDelivery->idTeam, $packageDelivery->Route);
-                                $priceByCompany = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany);
-                                $totalPrice     = number_format($priceBase + $surchargePrice + $priceByRoute + $priceByCompany, 4);
+                                $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
+                                $priceByRoute        = $this->GetPriceTeamByRoute($packageDelivery->idTeam, $packageDelivery->Route);
+                                $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany);
+                                $totalPrice          = number_format($priceBase + $surchargePrice + $priceByRoute + $priceByCompany, 4);
 
                                 $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
 
@@ -124,21 +122,21 @@ class TaskPaymentTeam extends Command
                                     $packageDelivery->save();
 
                                     $paymentTeamDetail = new PaymentTeamDetail();
-                                    $paymentTeamDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
-                                    $paymentTeamDetail->idPaymentTeam      = $paymentTeam->id;
-                                    $paymentTeamDetail->dimFactor      = $dimFactor;
-                                    $paymentTeamDetail->weight      = $weight;
-                                    $paymentTeamDetail->weightRound      = $weightRound;
-                                    $paymentTeamDetail->priceWeight      = $priceWeight;
-                                    $paymentTeamDetail->peakeSeasonPrice      = $peakeSeasonPrice;
-                                    $paymentTeamDetail->priceBase      = $priceBase;
-                                    $paymentTeamDetail->dieselPrice      = $dieselPrice;
-                                    $paymentTeamDetail->surchargePercentage      = $surchargePercentage;
+                                    $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
+                                    $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
+                                    $paymentTeamDetail->dimFactor           = $dimFactor;
+                                    $paymentTeamDetail->weight              = $weight;
+                                    $paymentTeamDetail->weightRound         = $weightRound;
+                                    $paymentTeamDetail->priceWeight         = $priceWeight;
+                                    $paymentTeamDetail->peakeSeasonPrice    = $peakeSeasonPrice;
+                                    $paymentTeamDetail->priceBase           = $priceBase;
+                                    $paymentTeamDetail->dieselPrice         = $dieselPrice;
+                                    $paymentTeamDetail->surchargePercentage = $surchargePercentage;
                                     $paymentTeamDetail->surchargePrice      = $surchargePrice;
-                                    $paymentTeamDetail->priceByRoute      = $priceByRoute;
+                                    $paymentTeamDetail->priceByRoute        = $priceByRoute;
                                     $paymentTeamDetail->priceByCompany      = $priceByCompany;
-                                    $paymentTeamDetail->totalPrice           = $totalPrice;
-                                    $paymentTeamDetail->Date_Delivery        = $packageDelivery->Date_Delivery;
+                                    $paymentTeamDetail->totalPrice          = $totalPrice;
+                                    $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
                                     $paymentTeamDetail->save();
 
                                     $totalTeam = $totalTeam + $totalPrice;
