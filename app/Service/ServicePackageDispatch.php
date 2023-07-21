@@ -19,7 +19,23 @@ class ServicePackageDispatch{
             $packageDispatchList = $packageDispatchList->where('idTeam', $idTeam);
         }
 
-        return $packageDispatchList->groupBy('idUserDispatch')
+        $idsPackages = [];
+
+        foreach($packageDispatchList->get() as $packageDispatch)
+        {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            if($packageHistory)
+            {
+                array_push($idsPackages, $packageHistory->Reference_Number_1);
+            }
+        }
+
+
+        return PackageDispatch::whereIn('Reference_Number_1', $idsPackages)
+                                    ->groupBy('idUserDispatch')
                                     ->select('idUserDispatch', DB::raw('COUNT(idUserDispatch) as quantityOfPackages'))
                                     ->orderBy('idTeam', 'asc')
                                     ->get('idUserDispatch');
@@ -40,37 +56,48 @@ class ServicePackageDispatch{
         $packageDispatchList = PackageDispatch::where('idUserDispatch', $idDriver)
                                                 ->whereIn('status', ['Dispatch', 'Delete'])
                                                 ->orderBy('created_at', 'asc')
-                                                ->get();
+                                                ->get('Reference_Number_1');
+
+        
+        $packageHistoryList = PackageHistory::whereIn('Reference_Number_1', $packageDispatchList)
+                                            ->where('status', 'Inbound')
+                                            ->orderBy('created_at', 'asc')
+                                            ->get();
 
         $packageDispatchListNew = [];
 
-        foreach($packageDispatchList as $packageDispatch)
+        foreach($packageHistoryList as $packageHistory)
         {
-            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
-                                            ->where('status', 'Inbound')
-                                            ->first();
+            $packageDispatch = PackageDispatch::whereIn('status', ['Dispatch', 'Delete'])->find($packageHistory->Reference_Number_1);
 
-            $lateDays = 'NOT INBOUND';
-
-            if($packageHistory)
+            if($packageDispatch)
             {
+                $lateDays = 'NOT INBOUND';
                 $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
                 $endDate  = date('Y-m-d');
                 $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+
+                $package = [ 
+
+                    "created_at" => $packageDispatch->created_at,
+                    "Reference_Number_1" => $packageDispatch->Reference_Number_1,
+                    "lateDays" => $lateDays,
+                    "status" => $packageDispatch->status,
+                ];
+
+                array_push($packageDispatchListNew, $package);
             }
-
-            $package = [ 
-
-                "created_at" => $packageDispatch->created_at,
-                "Reference_Number_1" => $packageDispatch->Reference_Number_1,
-                "lateDays" => $lateDays,
-                "status" => $packageDispatch->status,
-            ];
-
-            array_push($packageDispatchListNew, $package);
         }
 
         return $packageDispatchListNew;
+    }
+
+    public function holamundo($a, $b)
+    {
+        if ($a == $b) {
+            return 0;
+        }
+        return ($a < $b) ? -1 : 1;
     }
 
     public function MoveToOtherStatus($Reference_Number_1, $status, $comment)
