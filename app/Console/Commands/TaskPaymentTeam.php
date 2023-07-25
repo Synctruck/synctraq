@@ -92,7 +92,7 @@ class TaskPaymentTeam extends Command
                         $weight      = $packageDelivery->Weight;
                         $weightRound = ceil($weight);
 
-                        $dieselPrice = $this->GetDieselPrice('today', $packageDelivery);
+                        $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
                         if($dieselPrice)
                         {
@@ -168,29 +168,20 @@ class TaskPaymentTeam extends Command
 
     public function GetDieselPrice($from, $packageDelivery)
     {
-        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
-
         $dieselPriceCompany = 0;
 
-        if($from == 'today')
-        {
-            $dieselPriceCompany = Configuration::first()->diesel_price;
-        }
-        else
-        {
-            $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
-            foreach($historyDieselList as $historyDiesel)
+        foreach($historyDieselList as $historyDiesel)
+        {
+            $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+            $timeChangeDateStart = strtotime($nowDate);
+            $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDelivery->Date_Delivery)));
+
+            if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
             {
-                $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
-                $timeChangeDateStart = strtotime($nowDate);
-                $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
-                $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDelivery->Date_Delivery)));
-
-                if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
-                {
-                    $dieselPriceCompany = $historyDiesel->roundPrice;
-                }
+                $dieselPriceCompany = $historyDiesel->roundPrice;
             }
         }
 
