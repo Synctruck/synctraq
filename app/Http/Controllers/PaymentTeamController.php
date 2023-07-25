@@ -21,8 +21,8 @@ class PaymentTeamController extends Controller
     public function Index()
     {
         $files     = [];
-        $nowDate   = date('Y-07-02');
-        $startDate = date('Y-06-01');
+        $nowDate   = date('Y-07-10');
+        $startDate = date('Y-07-02');
         $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
         return view('payment.payment');
