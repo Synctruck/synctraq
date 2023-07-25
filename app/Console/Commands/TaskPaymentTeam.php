@@ -166,7 +166,7 @@ class TaskPaymentTeam extends Command
         }
     }
 
-    public function GetDieselPrice($from, $packageDelivery)
+    public function GetDieselPrice($packageDelivery)
     {
         $dieselPriceCompany = 0;
 
