@@ -51,8 +51,8 @@ class TaskPaymentTeam extends Command
     public function handle()
     {
         $files     = [];
-        $nowDate   = date('Y-05-29');
-        $startDate = date('Y-05-21');
+        $nowDate   = date('Y-03-08');
+        $startDate = date('Y-02-15');
         $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
         try
@@ -88,18 +88,17 @@ class TaskPaymentTeam extends Command
                 {
                     foreach($listPackageDelivery as $packageDelivery)
                     {
-                        $dimFactor = 200;
-                        $weight    = $packageDelivery->Weight;
+                        $dimFactor   = 200;
+                        $weight      = $packageDelivery->Weight;
                         $weightRound = ceil($weight);
-
 
                         $dieselPrice = $this->GetDieselPrice('today', $packageDelivery);
 
                         if($dieselPrice)
                         {
                             $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
-                                                        ->where('minWeight', '<=', $weight)
-                                                        ->where('maxWeight', '>=', $weight)
+                                                        ->where('minWeight', '<=', $weightRound)
+                                                        ->where('maxWeight', '>=', $weightRound)
                                                         ->first();
 
                             if($range)
@@ -109,9 +108,8 @@ class TaskPaymentTeam extends Command
                                 $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
                                 $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
                                 $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
-                                $priceByRoute        = $this->GetPriceTeamByRoute($packageDelivery->idTeam, $packageDelivery->Route);
-                                $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany);
-                                $totalPrice          = number_format($priceBase + $surchargePrice + $priceByRoute + $priceByCompany, 4);
+                                $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route);
+                                $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
                                 $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
 
@@ -123,6 +121,7 @@ class TaskPaymentTeam extends Command
 
                                     $paymentTeamDetail = new PaymentTeamDetail();
                                     $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
+                                    $paymentTeamDetail->Route               = $packageDelivery->Route;
                                     $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
                                     $paymentTeamDetail->dimFactor           = $dimFactor;
                                     $paymentTeamDetail->weight              = $weight;
@@ -133,7 +132,7 @@ class TaskPaymentTeam extends Command
                                     $paymentTeamDetail->dieselPrice         = $dieselPrice;
                                     $paymentTeamDetail->surchargePercentage = $surchargePercentage;
                                     $paymentTeamDetail->surchargePrice      = $surchargePrice;
-                                    $paymentTeamDetail->priceByRoute        = $priceByRoute;
+                                    $paymentTeamDetail->priceByRoute        = 0;
                                     $paymentTeamDetail->priceByCompany      = $priceByCompany;
                                     $paymentTeamDetail->totalPrice          = $totalPrice;
                                     $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
@@ -200,26 +199,27 @@ class TaskPaymentTeam extends Command
 
     public function GetPeakeSeasonTeam($packageDelivery)
     {
-        $peakeSeasonPriceTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
+        $peakeSeasonTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
+        
+        $peakeSeasonPriceTeam = 0;
 
-        $date = strtotime(date('Y-m-d'));
-
-        if($date >= strtotime($peakeSeasonPriceTeam->start_date)  && $date <= strtotime($peakeSeasonPriceTeam->end_date))
+        if($peakeSeasonTeam)
         {
-            if($dimWeightCompanyRound <= $peakeSeasonPriceTeam->lb1_weight)
+            $date = strtotime(date('Y-m-d'));
+
+            if($date >= strtotime($peakeSeasonTeam->start_date)  && $date <= strtotime($peakeSeasonTeam->end_date))
             {
-                $peakeSeasonPriceTeam = $peakeSeasonPriceTeam->lb1_weight_price;
-            }
-            else if($dimWeightCompanyRound > $peakeSeasonPriceTeam->lb1_weight)
-            {
-                $peakeSeasonPriceTeam = $peakeSeasonPriceTeam->lb2_weight_price;
+                if($dimWeightCompanyRound <= $peakeSeasonTeam->lb1_weight)
+                {
+                    $peakeSeasonPriceTeam = $peakeSeasonTeam->lb1_weight_price;
+                }
+                else if($dimWeightCompanyRound > $peakeSeasonTeam->lb1_weight)
+                {
+                    $peakeSeasonPriceTeam = $peakeSeasonTeam->lb2_weight_price;
+                }
             }
         }
-        else
-        {
-            $peakeSeasonPriceTeam = 0;
-        }
-
+        
         return $peakeSeasonPriceTeam;
     }
 
@@ -252,11 +252,30 @@ class TaskPaymentTeam extends Command
         return 0;
     }
 
-    public function GetPriceTeamByCompany($idTeam, $idCompany)
+    public function GetPriceTeamByCompany($idTeam, $idCompany, $route)
     {
         $range = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
+                                    ->where('route', $route)
                                     ->first();
+
+        if($range == null)
+        {
+            $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->where('route', '')
+                                    ->first();
+
+            $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', 0)
+                                    ->where('route', $route)
+                                    ->first();
+
+            $rangePriceByCompany = $rangeByCompany ? $rangeByCompany->price : 0;
+            $rangePriceByRoute   = $rangeByRoute ? $rangeByRoute->price : 0;
+
+            return $rangePriceByCompany + $rangePriceByRoute;
+        }
 
         if($range)
         {

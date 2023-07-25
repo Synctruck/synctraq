@@ -74,7 +74,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldTeam, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
-        $fields = array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE');
+        $fields = array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -90,6 +90,7 @@ class PaymentTeamController extends Controller
                 $date,
                 $dateDelivery,
                 $paymentDetail->Reference_Number_1,
+                $paymentDetail->Route,
                 $paymentDetail->dimFactor,
                 $paymentDetail->weight,
                 $paymentDetail->weightRound,

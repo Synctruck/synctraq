@@ -474,7 +474,8 @@ function Team() {
     const [routePrice, setRoutePrice]                   = useState('');
     const [priceByRoute, setPriceByRoute]               = useState('');
     const [priceByCompany, setPriceByCompany]           = useState('');
-    const [companyPrice, setCompanyPrice]               = useState('');
+    const [routeByCompany, setRouteByCompany]           = useState('');
+    const [companyPrice, setCompanyPrice]               = useState(0);
     const [fuelPercentageRange, setfuelPercentageRange] = useState('');
 
     const handlerAddRange = () => {
@@ -550,7 +551,7 @@ function Team() {
         setListPriceByCompany([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
-        setTitleModalRange('Team Prices By Company: '+ team);
+        setTitleModalRange('Team - Prices - By Company - Route: '+ team);
 
         fetch(url_general +'range-price-team-by-company/list/'+ idTeam)
         .then(res => res.json())
@@ -931,6 +932,7 @@ function Team() {
 
         formData.append('idTeam', idTeam);
         formData.append('idCompany', companyPrice);
+        formData.append('routeByCompany', routeByCompany);
         formData.append('price', priceByCompany);
 
         clearValidationPriceByCompany();
@@ -962,7 +964,7 @@ function Team() {
                         setViewAddRange('none');
 
                         let select = document.getElementById("selectIdCompany");
-                        select.value = '';
+                        select.value = 0;
 
                         listAllPriceByCompany(idTeam);
                     }
@@ -1003,7 +1005,7 @@ function Team() {
                     setViewAddRange('none');
 
                     let select = document.getElementById("selectIdCompany");
-                    select.value = '';
+                    select.value = 0;
 
                     listAllPriceByCompany(idTeam);
 
@@ -1047,6 +1049,7 @@ function Team() {
 
             setIdRange(range.id);
             setCompanyPrice(range.idCompany);
+            setRouteByCompany(range.route);
             setPriceByCompany(range.price);
             setViewAddRange('block');
             setTextButtonSaveRange('Updated');
@@ -1133,6 +1136,7 @@ function Team() {
 
             <tr key={i}>
                 <td><b>{ range.company }</b></td>
+                <td><b>{ range.route }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
                 <td className="text-center">
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getPriceByCompany(range.id) }>
@@ -1213,6 +1217,7 @@ function Team() {
         select.value = '';
 
         setIdRange(0);
+        setRouteByCompany('');
         setCompanyPrice('');
         setPriceByCompany('');
     }
@@ -1254,6 +1259,9 @@ function Team() {
 
         document.getElementById('idCompanyByCompany').style.display = 'none';
         document.getElementById('idCompanyByCompany').innerHTML     = '';
+
+        document.getElementById('routeByCompanyByCompany').style.display = 'none';
+        document.getElementById('routeByCompanyByCompany').innerHTML     = '';
 
         document.getElementById('priceByCompany').style.display = 'none';
         document.getElementById('priceByCompany').innerHTML     = '';
@@ -1305,10 +1313,9 @@ function Team() {
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
                     &nbsp;
-                    <button className="btn btn-warning btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByRoute(user.id, user.name) }>
+                    <button className="btn btn-warning btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByRoute(user.id, user.name) } style={ {display: 'none'}}>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
-                    &nbsp;
                     <button className="btn btn-danger btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByCompany(user.id, user.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
@@ -1845,20 +1852,25 @@ function Team() {
                                                                         </div>
                                                                     </div>
                                                                     <div className="row">
-                                                                        <div className="col-lg-4 form-group">
+                                                                        <div className="col-lg-3 form-group">
                                                                             <label className="form">COMPANY</label>
                                                                             <div id="idCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) } required>
-                                                                                <option value="" style={ {display: 'none'} }>Select...</option>
+                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) }>
+                                                                                <option value="0">Select...</option>
                                                                                 { optionCompany }
                                                                             </select>
                                                                         </div>
-                                                                        <div className="col-lg-4 form-group">
+                                                                        <div className="col-lg-3 form-group">
+                                                                            <label className="form">ROUTE</label>
+                                                                            <div id="routeByCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                            <input type="text" className="form-control" value={ routeByCompany } maxLength="20" step="0.0001" onChange={ (e) => setRouteByCompany(e.target.value) }/>
+                                                                        </div>
+                                                                        <div className="col-lg-3 form-group">
                                                                             <label className="form">PRICE $</label>
                                                                             <div id="priceByCompany" className="text-danger" style={ {display: 'none'} }></div>
                                                                             <input type="number" className="form-control" value={ priceByCompany } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByCompany(e.target.value) } required/>
                                                                         </div>
-                                                                        <div className="col-lg-4 form-group">
+                                                                        <div className="col-lg-3 form-group">
                                                                             <label className="text-white">--</label>
                                                                             <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
                                                                         </div>
@@ -1877,6 +1889,7 @@ function Team() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th>COMPANY</th>
+                                                                            <th>ROUTE</th>
                                                                             <th>PRICE</th>
                                                                             <th>ACTIONS</th>
                                                                         </tr>
