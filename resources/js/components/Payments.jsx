@@ -24,8 +24,9 @@ function Payments() {
     const [idTeam, setIdTeam]     = useState(0);
     const [idDriver, setIdDriver] = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -61,14 +62,14 @@ function Payments() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam]);
+    }, [dateInit, dateEnd, idTeam, StatusSearch]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'payment-team/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'?page='+ pageNumber)
+        fetch(url_general +'payment-team/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -77,7 +78,7 @@ function Payments() {
             setTotalPage(response.paymentList.per_page);
             setPage(response.paymentList.current_page);
             setQuantityPayment(response.paymentList.total);
-            setTotalPaymentTeam(response.totalPayment);
+            setTotalPaymentTeam(response.totalPayments);
         });
     }
 
@@ -111,27 +112,76 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
+    const handlerConfirmInvoiced = (id, status) => {
+
+        if(status == 'Payable')
+        {
+            swal({
+                title: "You want change the status PAYABLE to PAID?",
+                text: "Change status!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+
+                if(willDelete)
+                {
+                    LoadingShow();
+
+                    fetch(url_general +'payment-team/confirm/'+ id)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    const handlerChangeFormatPrice = (number) => {
+
+        const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+        const rep = '$1,';
+        let arr   = number.toString().split('.');
+        arr[0]    = arr[0].replace(exp,rep);
+
+        return arr[1] ? arr.join('.'): arr[0];
+    }
+
     const listReportTable = listReport.map( (payment, i) => {
+
+        let total = handlerChangeFormatPrice(payment.total);
 
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { payment.created_at.substring(5, 7) }-{ payment.created_at.substring(8, 10) }-{ payment.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ payment.created_at.substring(5, 7) }-{ payment.created_at.substring(8, 10) }-{ payment.created_at.substring(0, 4) }</b><br/>
                     { payment.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ payment.idTeam }</b></td>
-                <td>{ payment.startDate }</td>
-                <td>{ payment.endDate }</td>
-                <td className="text-success text-right"><b>{ payment.totalDelivery +' $' }</b></td>
-                <td className="text-danger text-right"><b>{ payment.totalReturn +' $' }</b></td>
-                <td className="text-danger text-right"><b>{ payment.refund +' $' }</b></td>
-                <td className="text-primary text-right"><b>{ payment.total +' $' }</b></td>
+                <td><b>{ payment.id }</b></td>
+                <td><b>{ payment.team.name }</b></td>
+                <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
+                <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td> 
+                <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
+                <td>
+                    <button className={ (payment.status == 'Payable' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
+                        { payment.status }
+                    </button>
+                </td>
                 <td>
                     <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment(payment.id) }>
-                        <i className="ri-file-excel-fill"></i> Export
+                        <i className="ri-file-excel-fill"></i> EXPORT DETAIL
                     </button>
                 </td>
             </tr>
@@ -374,6 +424,20 @@ function Payments() {
                                             </select>
                                         </div>
                                     </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="Payable">PAYABLE</option>
+                                                    <option value="Paid">PAID</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-4 mb-3">
@@ -389,16 +453,14 @@ function Payments() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>DATE</th>
-                                                <th>HOUR</th>
+                                                <th><b>DATE</b></th>
+                                                <th><b>N° PAYMENT</b></th>
                                                 <th><b>TEAM</b></th>
-                                                <th>START DATE</th>
-                                                <th>END DATE</th>
-                                                <th>TOTAL DELIVERY</th>
-                                                <th>TOTAL RETURN</th>
-                                                <th>REFUND</th>
-                                                <th>TOTAL</th>
-                                                <th>ACTION</th>
+                                                <th><b>START DATE</b></th>
+                                                <th><b>END DATE</b></th>
+                                                <th><b>TOTAL</b></th>
+                                                <th><b>STATUS</b></th>
+                                                <th><b>ACTION</b></th>
                                             </tr>
                                         </thead>
                                         <tbody>
