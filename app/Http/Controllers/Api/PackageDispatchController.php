@@ -14,7 +14,7 @@ use Session;
 class PackageDispatchController extends Controller
 {
     /*
-        * Retorna packages de inland que están en dispatch y  que fueron asignados a un driver
+        * Retorna packages que están en dispatch y  que fueron asignados a un driver
         *
         * @var: apiKey
         * @var: idDriver
@@ -53,14 +53,13 @@ class PackageDispatchController extends Controller
     }
 
     /*
-        * Listar Packages de inland que están en dispatch y  que fueron asignados a un driver
+        * Listar Packages que están en dispatch y  que fueron asignados a un driver
         * @var: idDriver
         * formato: usar modelo solicitado
     */
     public function ListPackagesInDispatch($idDriver)
     {
-        $packageDispatchList = PackageDispatch::where('idCompany', 1)
-                                                ->where('idUserDispatch', $idDriver)
+        $packageDispatchList = PackageDispatch::where('idUserDispatch', $idDriver)
                                                 ->where('status', 'Dispatch')
                                                 ->get();
 
@@ -71,8 +70,10 @@ class PackageDispatchController extends Controller
             $created_at = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
             $created_at = $created_at->format(DateTime::ATOM);
 
-            $package = [
+            $needsSignature = $packageDispatch->company == 'EIGHTVAPE' ? true : false;
 
+            $package = [
+                'barcode' => $packageDispatch->Reference_Number_1,
                 'createdAt' => $packageDispatch->created_at,
                 'shipToStreet1' => $packageDispatch->Dropoff_Address_Line_1,
                 'shipToStreet2' => $packageDispatch->Dropoff_Address_Line_2,
@@ -80,7 +81,7 @@ class PackageDispatchController extends Controller
                 'shipToState' => $packageDispatch->Dropoff_Province,
                 'shipToPostalCode' => $packageDispatch->Dropoff_Postal_Code,
                 'shipToName' => $packageDispatch->Dropoff_Contact_Name,
-                'needsSignature' => true,
+                'needsSignature' => $needsSignature,
             ];
 
             array_push($packageList, $package);
