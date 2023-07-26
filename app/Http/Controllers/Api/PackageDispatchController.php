@@ -6,11 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Models\{ Company, PackageDispatch, User };
 
-use Illuminate\Support\Facades\Validator;
-
-use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
-use App\Http\Controllers\Api\PackageController;
-
 use DB;
 use DateTime;
 use Log;
