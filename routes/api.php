@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\{ PackageController, PackageInboundController, WHookController };
+use App\Http\Controllers\Api\{ PackageController, PackageInboundController, PackageDispatchController, WHookController };
 use App\Http\Controllers\{ IndexController };
 /*
 |--------------------------------------------------------------------------
@@ -45,3 +45,5 @@ Route::get('packages-warehouse/updated-route', [PackageController::class, 'Updat
 
 Route::post('package-inbound/insert', [PackageInboundController::class, 'Insert']);
 Route::post('package/shipments/inland/{keyApi}', [PackageInboundController::class, 'ShipmentInland']);
+
+Route::get('package-dispatch/packages-by-driver-inland/{apiKey}/{idDriver}', [PackageDispatchController::class, 'ListByDriverInland']);
