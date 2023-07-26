@@ -16,8 +16,8 @@ class PackageDispatchController extends Controller
     /*
         * Retorna packages que están en dispatch y  que fueron asignados a un driver
         *
-        * @var: apiKey
-        * @var: idDriver
+        * @parametro: apiKey
+        * @parametro: idDriver
         * @validation: apiKey and idDriver
     */
     public function ListByDriverInland($apiKey, $idDriver)
@@ -54,7 +54,7 @@ class PackageDispatchController extends Controller
 
     /*
         * Listar Packages que están en dispatch y  que fueron asignados a un driver
-        * @var: idDriver
+        * @parametro: idDriver
         * formato: usar modelo solicitado
     */
     public function ListPackagesInDispatch($idDriver)
