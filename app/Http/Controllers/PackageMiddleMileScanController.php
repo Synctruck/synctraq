@@ -183,6 +183,7 @@ class PackageMiddleMileScanController extends Controller
 
     public function Insert(Request $request)
     {
+        dd($request);
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
