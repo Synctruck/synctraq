@@ -67,17 +67,7 @@ class PackageLmCarrierController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Auth::user()->role->name == 'Administrador')
-        {
-            $packageListWarehouse = PackageLmCarrier::with('user');
-        }
-        else
-        {
-            $packageListWarehouse = PackageLmCarrier::where('idUser', Auth::user()->id);
-        }
-
-        $packageListWarehouse = $packageListWarehouse->where('status', 'Middle Mile Scan')
-                                                    ->whereBetween('created_at', [$dateStart, $dateEnd]);
+        $packageListWarehouse = PackageLmCarrier::whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($idCompany != 0)
         {
