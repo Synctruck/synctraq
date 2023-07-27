@@ -41,9 +41,9 @@ function Debrief() {
         });
     }
 
-    const handlerOpenModal = (id) => {
+    const handlerOpenModal = (id, teamName, driverName) => {
 
-        getPackages(id);
+        getPackages(id, teamName, driverName);
 
         let myModal = new bootstrap.Modal(document.getElementById('modalPackagesListDebrief'), {
 
@@ -53,7 +53,7 @@ function Debrief() {
         myModal.show();
     }
 
-    const getPackages = (id) => {
+    const getPackages = (id, teamName, driverName) => {
 
         LoadingShowMap();
 
@@ -67,7 +67,7 @@ function Debrief() {
 
             setPackageList(response.listPackages);
             setPackageListAux(response.listPackages);
-            setTitleModal('PACKAGE LIST: '+ response.listPackages.length);
+            setTitleModal(teamName +' - '+ driverName +': '+ response.listPackages.length);
 
             LoadingHideMap();
         });
@@ -83,7 +83,7 @@ function Debrief() {
                 <td>{ user['email'] }</td>
                 <td>{ user['quantityOfPackages'] }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => handlerOpenModal(user['idDriver']) }>
+                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => handlerOpenModal(user['idDriver'], user['team'], user['fullName']) }>
                         View Packages
                     </button>
                 </td>
@@ -170,6 +170,7 @@ function Debrief() {
                 </td>
                 <td><a href="#" onClick={ (e) => handlerOpenHistory(packageDispatch.Reference_Number_1) }>{ packageDispatch.Reference_Number_1 }</a></td>
                 <td>{ packageDispatch.status }</td>
+                <td>{ packageDispatch.lateDays }</td>
                 <td>
                     <select name="" id="" className="form-control mb-1" onChange={ (e) => handlerChangeStatus(e.target.value, packageDispatch.Reference_Number_1) }>
                         <option value="all">Select</option>
@@ -210,7 +211,7 @@ function Debrief() {
 
     const modalPackages = <React.Fragment>
                                     <div className="modal fade" id="modalPackagesListDebrief" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
+                                        <div className="modal-dialog modal-md">
                                             <div className="modal-content">
                                                 <div className="modal-header">
                                                     <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
@@ -233,6 +234,7 @@ function Debrief() {
                                                                         <th>DATE</th>
                                                                         <th>PACKAGE ID</th>
                                                                         <th>STATUS</th>
+                                                                        <th>AGE</th>
                                                                         <th>ACTION</th>
                                                                         <th></th>
                                                                     </tr>
