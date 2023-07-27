@@ -75,7 +75,6 @@ function PackageLmCarrier() {
 
         listAllRoute();
         listAllCompany();
-        document.getElementById('Reference_Number_1').focus();
 
     }, []);
 
@@ -632,52 +631,6 @@ function PackageLmCarrier() {
     const [StateLabel, setStateLabel]         = useState('CR');
     const [ReferenceLabel, setReferenceLabel] = useState('');
     const [RouteLabel, setRouteLabel]         = useState('QWE');
-
-    const handlerPrint = (nombreDiv) => {
-
-        JsBarcode("#imgBarcode", Reference_Number_1, {
-
-            textMargin: 0,
-            fontSize: 27,
-        });
-
-        var content = document.getElementById('labelPrint');
-        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
-
-        pri.document.open();
-        pri.document.write(content.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
-
-        document.getElementById('Reference_Number_1').focus();
-    }
-
-
-    const handlerPrintSecondary = (printText) => {
-
-        JsBarcode("#imgBarcode", printText, {
-
-            textMargin: 0,
-            fontSize: 27,
-        });
-
-        var content = document.getElementById('labelPrint');
-        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
-
-        pri.document.open();
-        pri.document.write(content.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
-
-        document.getElementById('Reference_Number_1').focus();
-    }
-
-    const handlerDownloadRoadWarrior = () => {
-
-        location.href = url_general +'package-lm-carrier/download/roadwarrior/'+ idCompany +'/'+ StateSearch+'/'+ RouteSearch +'/'+ dateStart +'/'+ dateEnd;
-    }
 
     return (
 
