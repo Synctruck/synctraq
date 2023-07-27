@@ -50,6 +50,7 @@ require('./components/PackageAge');
 require('./components/PackageLost');
 require('./components/PackageWarehouse');
 require('./components/PackageMiddleMileScan');
+require('./components/PackageLmCarrier');
 require('./components/PackageCheckDelivery');
 require('./components/PackageHighPriority');
 require('./components/PackageFinance');

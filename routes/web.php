@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController,  RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController};
+use App\Http\Controllers\{AssignedController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController,  RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -247,6 +247,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-mms/list-in-delivery', [PackageMiddleMileScanController::class, 'ListInDelivery']);
 	Route::get('/package-mms/delete-in-delivery', [PackageMiddleMileScanController::class, 'DeleteInDelivery']);
 	Route::get('/package-mms/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageMiddleMileScanController::class, 'Export']);
+
+	//============ Validation LM CARRIER
+	Route::get('/package-lm-carrier', [PackageLmCarrierController::class, 'Index'])->middleware('permission:mms.index');
+	Route::get('/package-lm-carrier/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLmCarrierController::class, 'List']);
+	Route::get('/package-lm-carrier/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageLmCarrierController::class, 'Export']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
