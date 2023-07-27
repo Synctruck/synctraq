@@ -88,7 +88,6 @@ class PackageLmCarrierController extends Controller
             $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')
                                                         ->select(
                                                             'created_at',
-                                                            'idUser',
                                                             'company',
                                                             'Reference_Number_1',
                                                             'Dropoff_Contact_Name',
