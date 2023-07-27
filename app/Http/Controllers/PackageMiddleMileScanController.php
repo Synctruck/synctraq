@@ -367,6 +367,11 @@ class PackageMiddleMileScanController extends Controller
 
                 $packageInbound->delete();
 
+                //data for INLAND
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
+                //end data for inland
+                    
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
