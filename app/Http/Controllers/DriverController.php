@@ -89,7 +89,7 @@ class DriverController extends Controller
     }
 
     public function Insert(Request $request)
-    {
+    {        
         $validator = Validator::make($request->all(),
 
             [
@@ -124,16 +124,28 @@ class DriverController extends Controller
 
         $team = User::find($request->get('idTeam'));
 
-        $registerTeam = $this->RegisterOnfleet($team, $request);
+        $registerTeam = true;
 
-        if($registerTeam == 400)
+        $request['id'] = strtotime(date('YmdHis'));
+
+        if($request->usageApp == 'onfleet')
+        {
+            //$registerTeam = $this->RegisterOnfleet($team, $request);
+        }
+        else
+        {
+            $registerTeam = $this->RegisterPDOApp($request);
+        }
+        
+
+        if($registerTeam === 400)
         {
             return ['stateAction' => 'phoneIncorrect'];
         }
 
-        if($registerTeam)
+        if($registerTeam === true)
         {
-            $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
+            //$request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
             $request['idRole']    = 4;
             $request['password']  = Hash::make($request->get('email'));
             $request['idTeam']    = $team->id;
@@ -284,6 +296,63 @@ class DriverController extends Controller
         if($http_status == 200)
         {
             return $output;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public function RegisterPDOApp($request, $idDriver)
+    {
+        $data = [
+                    "firstName" => $request->get('name'),
+                    "lastName" => $request->get('nameOfOwner'),
+                    "email" => $request->get('email'),
+                    "password" => 'Pa$$word1234',
+                    "phoneNumber" => $request->get('phone'),
+                    "address" => ''
+                    "meta": [
+                        "syncDriverId" => $idDriver
+                    ]
+                ];
+
+        $curl = curl_init();
+
+        $this->headers = [
+                        'Authorization: Basic '. $this->base64,
+                    ];
+
+        $apiKey = 'T9M6HB3-CST4GFF-MGPH64Z-A01BRT7';
+
+        $base64 = base64_encode($apiKey .':');
+
+        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/workers');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_USERPWD, '');
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+
+        $output = curl_exec($curl);
+
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status == 200)
+        {
+            return $output;
+        }
+        elseif($http_status == 400)
+        {
+
+            return 400;
         }
         else
         {
