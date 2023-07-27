@@ -161,6 +161,15 @@
                 </li>
             @endif
 
+            @if(hasPermission('packageLmCarrier.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-lm-carrier') ? 'show' : 'collapsed'}}" href="{{url('/package-lm-carrier')}}">
+                        <i class="bx bx-car"></i>
+                        <span>L M CARRIER</span>
+                    </a>
+                </li>
+            @endif
+
             @if(hasPermission('lost.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-lost') ? 'show' : 'collapsed'}}" href="{{url('/package-lost')}}">
