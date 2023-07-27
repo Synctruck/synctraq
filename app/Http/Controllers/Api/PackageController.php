@@ -418,7 +418,7 @@ class PackageController extends Controller
         $header_curl       = "";
         $sendStatusCompany = true;
 
-        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' || 'Middle Mile Scan')
         {
             $company = Company::find($package->idCompany);
 
@@ -453,6 +453,10 @@ class PackageController extends Controller
             elseif($status == 'Lost')
             {
                 $statusCodeCompany = 'not_delivered_lost';
+            }
+            elseif($status == 'Middle Mile Scan')
+            {
+                $statusCodeCompany = 'scan_pre_middle_mile';
             }
 
             if($status == 'Delivery')
