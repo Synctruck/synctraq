@@ -4,42 +4,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Package extends Model
+class PackageLmCarrier extends Model
 {
     // use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'package';
+    protected $table      = 'packagelmcarrier';
     protected $primaryKey = 'Reference_Number_1';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
-    public $incrementing = true;
+    public $incrementing = false;
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    public function user_inbound()
-    {
-        return $this->belongsTo('App\Models\User', 'idUserInbound', 'id');
-    }
-
-    public function user_dispatch()
-    {
-        return $this->belongsTo('App\Models\User', 'idUserDispatch', 'id');
-    }
-
-    public function dispatchs()
-    {
-        return $this->hasMany('App\Models\PackageDispatch', 'idPackage');
-    }
-
-    public function histories()
-    {
-        return $this->hasMany('App\Models\PackageHistory', 'idPackage');
-    }
-
 
     //observers
     protected static function booted()

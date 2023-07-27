@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
+use App\Service\ServicePackageLmCarrier;
+
 use DB;
 use Log;
 use Session;
@@ -260,9 +262,9 @@ class PackageInboundController extends Controller
                     $packageCreate = new PackageReturnCompany();
                 }
 
-                $packageCreate->Reference_Number_1           = $package->Reference_Number_1;
-                $packageCreate->idCompany                    = $package->idCompany;
-                $packageCreate->company                      = $package->company;
+                $packageCreate->Reference_Number_1 = $package->Reference_Number_1;
+                $packageCreate->idCompany          = $package->idCompany;
+                $packageCreate->company            = $package->company;
 
                 if($status != 'ReturnCompany')
                 {
@@ -292,13 +294,13 @@ class PackageInboundController extends Controller
 
                     if($packageCharge)
                     {
-                        $packageCreate->require_invoice = 1;
+                        //$packageCreate->require_invoice = 1;
                     }
                     
                     //$packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
                 }
 
-                $packageCreate->require_invoice = 1;
+                //$packageCreate->require_invoice = 1;
                 $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
@@ -356,6 +358,17 @@ class PackageInboundController extends Controller
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
+                }
+
+                $servicePackageLmCarrier = new ServicePackageLmCarrier();
+
+                if($status == 'Delivery')
+                {
+                    $servicePackageLmCarrier->Delete($Reference_Number_1);
+                }
+                else
+                {
+                    $servicePackageLmCarrier->Insert($Reference_Number_1, $packageCreate, $status);
                 }
 
                 DB::commit();
