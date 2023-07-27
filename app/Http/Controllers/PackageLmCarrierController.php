@@ -59,7 +59,7 @@ class PackageLmCarrierController extends Controller
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
 
-    private function GetDataLmCarrier($idCompany, $dateStart,$dateEnd, $route, $state,$type='list')
+    private function GetDataLmCarrier($idCompany, $dateStart, $dateEnd, $route, $state, $type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';

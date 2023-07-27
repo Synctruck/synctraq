@@ -459,196 +459,6 @@ function PackageLmCarrier() {
 
     const [sendInbound, setSendInbound] = useState(1);
 
-    const handlerInsert = (e) => {
-
-        e.preventDefault();
-
-        console.log(sendInbound);
-
-        if(sendInbound)
-        {
-            const formData = new FormData();
-
-            formData.append('Reference_Number_1', Reference_Number_1);
-            formData.append('TRUCK', Truck);
-            formData.append('CLIENT', Client);
-            formData.append('latitude', latitude);
-            formData.append('longitude', longitude);
-
-            if(latitude !=0 && longitude != 0)
-            {
-                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                setReadInput(true);
-                setSendInbound(0);
-
-                fetch(url_general +'package-lm-carrier/insert', {
-                    headers: { "X-CSRF-TOKEN": token },
-                    method: 'post',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then((response) => {
-
-                        setTextMessageDate('');
-                        setTextMessage2('');
-
-                        if(response.stateAction == 'validatedReturnCompany')
-                        {
-                            setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
-                        }
-                        else if(response.stateAction == 'validatedLost')
-                        {
-                            setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                            setTypeMessage('warning'); 
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedFilterPackage')
-                        {
-                            let packageBlocked  = response.packageBlocked;
-                            let packageManifest = response.packageManifest;
-
-                            if(packageBlocked)
-                            {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                    text: packageBlocked.comment,
-                                    showConfirmButton: false,
-                                    timer: 2000,
-                                });
-                            }
-                            
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                            setTextMessage('');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoBlocked').play();
-                        }
-                        else if(response.stateAction == 'packageInPreDispatch')
-                        {
-                            setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'packageTerminal')
-                        {
-                            setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'notExists')
-                        {
-                            setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                            setTypeMessage('error');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoError').play();
-                        }
-                        else if(response.stateAction == 'validatedInbound')
-                        {
-                            let packageInbound = response.packageInbound;
-
-                            setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                            setTextMessageDate(packageInbound.created_at);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedWarehouse')
-                        {
-                            let packageWarehouse = response.packageWarehouse;
-
-                            setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                            setTextMessageDate(packageWarehouse.created_at);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validatedFilterPackage')
-                        {
-                            let packageManifest = response.packageManifest;
-                            //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                                showConfirmButton: false,
-                                timer: 2000,
-                            })
-
-                            setTypeMessage('primary');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoBlocked').play();
-                        }
-                        else if(response.stateAction == 'validatedFilterState')
-                        {
-                            setTextMessage("OTHER STATE "+ Reference_Number_1);
-                            setTypeMessage('primary');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction == 'validated')
-                        {
-                            setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                            setTypeMessage('warning');
-                            setNumberPackage('');
-
-                            document.getElementById('soundPitidoWarning').play();
-                        }
-                        else if(response.stateAction)
-                        {
-                            setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
-                            setTypeMessage('success');
-                            setNumberPackage('');
-
-                            setWeightLabel(response.packageInbound.Weight);
-                            setStateLabel(response.packageInbound.Dropoff_Province);
-                            setRouteLabel(response.packageInbound.Route);
-                            setReferenceLabel(response.packageInbound.Reference_Number_1);
-
-                            listAllPackageInbound(1, RouteSearch, StateSearch);
-
-                            document.getElementById('Reference_Number_1').focus();
-                            document.getElementById('soundPitidoSuccess').play();
-
-                            //handlerPrint('labelPrint');
-                        }
-                        else
-                        {
-                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                            setTypeMessage('error');
-                            setNumberPackage('');
-
-                            document.getElementById('Reference_Number_1').focus();
-                            document.getElementById('soundPitidoError').play();
-                        }
-
-                        setReadInput(false);
-                        setSendInbound(1);
-                    },
-                );
-            }
-            else
-            {
-                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
-            }
-        }
-    }
-
     const handlerImport = (e) => {
 
         e.preventDefault();
@@ -707,7 +517,6 @@ function PackageLmCarrier() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
-                <td>{ pack.TRUCK }</td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -942,43 +751,6 @@ function PackageLmCarrier() {
                                                 ''
                                         }
                                     </div>
-
-                                    <div className="col-lg-8 form-group" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="">PACKAGE ID</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
-                                            </div>
-                                            <div className="col-lg-2 form-group">
-                                                <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div className="col-lg-4 form-group" style={ {display: 'none'} }>
-                                        <div className="form-group">
-                                            <label htmlFor="">TRUCK #</label>
-                                            <input id="Reference_Number_1" type="text" className="form-control" value={ Truck } onChange={ (e) => setTruck(e.target.value) } maxLength="20"/>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-2" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
@@ -1115,7 +887,6 @@ function PackageLmCarrier() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                <th>TRUCK #</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
