@@ -442,6 +442,9 @@ class PackageController extends Controller
             $typeServices      = $companyStatus->company->typeServices;
         }
 
+        Log::info('$package->Reference_Number_1:'. $package->Reference_Number_1);
+        Log::info('status:'. $status);
+
         if($typeServices == 'API')
         {
             Log::info('SendStatusToInland: '. $package->company);
