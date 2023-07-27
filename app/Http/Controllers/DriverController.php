@@ -89,8 +89,64 @@ class DriverController extends Controller
     }
 
     public function Insert(Request $request)
-    {        
+    {
         $validator = Validator::make($request->all(),
+
+            [
+                "idRole" => ["required"],
+                "name" => ["required", "max:100"],
+                "nameOfOwner" => ["required", "max:100"],
+                "phone" => ["required","unique:user"],
+                "email" => ["required", "unique:user", "max:100"],
+            ],
+            [
+                "idRole.required" => "Seleccione un rol",
+
+                "name.required" => "El campo es requerido",
+                "name.max"  => "Debe ingresar máximo 100 dígitos",
+
+                "nameOfOwner.required" => "El campo es requerido",
+                "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+
+                "phone.required" => "El campo es requerido",
+                "phone.unique" => "El teléfono ya existe",
+
+                "email.unique" => "El correo ya existe",
+                "email.required" => "El campo es requerido",
+                "email.max"  => "Debe ingresar máximo 100 dígitos",
+            ]
+        );
+
+        if($validator->fails())
+        {
+            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
+        }
+
+        $team = User::find($request->get('idTeam'));
+
+        $registerTeam = $this->RegisterOnfleet($team, $request);
+
+        if($registerTeam == 400)
+        {
+            return ['stateAction' => 'phoneIncorrect'];
+        }
+
+        if($registerTeam)
+        {
+            $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
+            $request['idRole']    = 4;
+            $request['password']  = Hash::make($request->get('email'));
+            $request['idTeam']    = $team->id;
+            $request['nameTeam']  = $team->name;
+
+            Driver::create($request->all());
+
+            return ['stateAction' => true];
+        }
+
+        return ['stateAction' => 'notTeamOnfleet'];
+        
+        /*$validator = Validator::make($request->all(),
 
             [
                 "idRole" => ["required"],
@@ -156,7 +212,7 @@ class DriverController extends Controller
             return ['stateAction' => true];
         }
 
-        return ['stateAction' => 'notTeamOnfleet'];
+        return ['stateAction' => 'notTeamOnfleet'];*/
     }
 
     public function Get($id)
