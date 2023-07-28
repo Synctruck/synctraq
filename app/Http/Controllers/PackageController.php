@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
         Configuration, Driver, Package, PackageBlocked,
-        PackageDelete, PackageDelivery, PackageDispatch, PackagePreDispatch, 
+        PackageDelete, PackageDelivery, PackageDispatch, PackagelmCarrier, PackagePreDispatch, 
         PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
@@ -477,20 +477,14 @@ class PackageController extends Controller
         $package = PackageManifest::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
 
         if($package)
         {
