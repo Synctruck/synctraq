@@ -195,9 +195,7 @@ class DriverController extends Controller
 
             if($registerPDOApp['statusCode'] === true)
             {
-                //Log::info($registerPDOApp['output']);
-
-                $driver->idOnfleet = $registerPDOApp['output']['data']['_id'];
+                $driver->idOnfleet = $registerPDOApp['response']['data']['_id'];
                 $driver->save();
 
                 return ['stateAction' => true];
@@ -394,23 +392,15 @@ class DriverController extends Controller
 
         curl_close($curl);
 
-        Log::info($response);
-
-        $output = curl_exec($curl);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
         if($http_status >= 200 && $http_status <= 209)
         {
-            //Log::info(json_decode($output, true));
-
-            return ['statusCode' => true, 'output' => $output];
+            Log::info($response);
+            
+            return ['statusCode' => true, 'response' => $response];
         }
         else
         {
-            Log::info($output);
+            Log::info($response);
 
             return ['statusCode' => false];
         }
