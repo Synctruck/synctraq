@@ -385,6 +385,7 @@ function Driver() {
                 <td>{ user.phone }</td> 
                 <td>{ user.email }</td>
                 <td>{ user.idOnfleet }</td>
+                <td>{ user.usageApp }</td>
                 <td>
                     {
                         (
@@ -512,7 +513,7 @@ function Driver() {
                                                                     <div className="col-lg-12">
                                                                         <div className="form-group">
                                                                             <label htmlFor="">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
                                                                                 <option value="" style={ {display: 'none'} }>Select a team</option>
                                                                                 { listTeamSelect }
                                                                             </select>
@@ -545,7 +546,7 @@ function Driver() {
                                                                 <div className="form-group">
                                                                     <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -563,7 +564,7 @@ function Driver() {
                                                                     <div id="usageApp" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ usageApp } className="form-control" onChange={ (e) => setUsageApp(e.target.value) } required>
                                                                         <option value="Onfleet" >Onfleet</option>
-                                                                        <option value="PDOApp" >PDOApp</option>
+                                                                        <option value="PODApp" >PODApp</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -640,6 +641,7 @@ function Driver() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>USAGE APP</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

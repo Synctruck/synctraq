@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Service\ServicePackageDispatch;
 
+
+use Auth;
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Log;
 use Session;
 
 class DriverController extends Controller
@@ -58,7 +60,7 @@ class DriverController extends Controller
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('idTeam', '!=', 0)
+                                ->where('idRole', 4)
                                 ->paginate($this->paginate);
         }
         else
@@ -89,130 +91,122 @@ class DriverController extends Controller
     }
 
     public function Insert(Request $request)
-    {
-        $validator = Validator::make($request->all(),
-
-            [
-                "idRole" => ["required"],
-                "name" => ["required", "max:100"],
-                "nameOfOwner" => ["required", "max:100"],
-                "phone" => ["required","unique:user"],
-                "email" => ["required", "unique:user", "max:100"],
-            ],
-            [
-                "idRole.required" => "Seleccione un rol",
-
-                "name.required" => "El campo es requerido",
-                "name.max"  => "Debe ingresar máximo 100 dígitos",
-
-                "nameOfOwner.required" => "El campo es requerido",
-                "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
-
-                "phone.required" => "El campo es requerido",
-                "phone.unique" => "El teléfono ya existe",
-
-                "email.unique" => "El correo ya existe",
-                "email.required" => "El campo es requerido",
-                "email.max"  => "Debe ingresar máximo 100 dígitos",
-            ]
-        );
-
-        if($validator->fails())
-        {
-            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-        }
-
+    {        
         $team = User::find($request->get('idTeam'));
-
-        $registerTeam = $this->RegisterOnfleet($team, $request);
-
-        if($registerTeam == 400)
-        {
-            return ['stateAction' => 'phoneIncorrect'];
-        }
-
-        if($registerTeam)
-        {
-            $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
-            $request['idRole']    = 4;
-            $request['password']  = Hash::make($request->get('email'));
-            $request['idTeam']    = $team->id;
-            $request['nameTeam']  = $team->name;
-
-            Driver::create($request->all());
-
-            return ['stateAction' => true];
-        }
-
-        return ['stateAction' => 'notTeamOnfleet'];
-        
-        /*$validator = Validator::make($request->all(),
-
-            [
-                "idRole" => ["required"],
-                "name" => ["required", "max:100"],
-                "nameOfOwner" => ["required", "max:100"],
-                "phone" => ["required","unique:user"],
-                "email" => ["required", "unique:user", "max:100"],
-            ],
-            [
-                "idRole.required" => "Seleccione un rol",
-
-                "name.required" => "El campo es requerido",
-                "name.max"  => "Debe ingresar máximo 100 dígitos",
-
-                "nameOfOwner.required" => "El campo es requerido",
-                "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
-
-                "phone.required" => "El campo es requerido",
-                "phone.unique" => "El teléfono ya existe",
-
-                "email.unique" => "El correo ya existe",
-                "email.required" => "El campo es requerido",
-                "email.max"  => "Debe ingresar máximo 100 dígitos",
-            ]
-        );
-
-        if($validator->fails())
-        {
-            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-        }
-
-        $team = User::find($request->get('idTeam'));
-
-        $registerTeam = true;
-
-        $request['id'] = strtotime(date('YmdHis'));
 
         if($request->usageApp == 'onfleet')
         {
-            //$registerTeam = $this->RegisterOnfleet($team, $request);
+            $validator = Validator::make($request->all(),
+                [
+                    "idRole" => ["required"],
+                    "name" => ["required", "max:100"],
+                    "nameOfOwner" => ["required", "max:100"],
+                    "phone" => ["required","unique:user"],
+                    "email" => ["required", "unique:user", "max:100"],
+                ],
+                [
+                    "idRole.required" => "Seleccione un rol",
+
+                    "name.required" => "El campo es requerido",
+                    "name.max"  => "Debe ingresar máximo 100 dígitos",
+
+                    "nameOfOwner.required" => "El campo es requerido",
+                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+
+                    "phone.required" => "El campo es requerido",
+                    "phone.unique" => "El teléfono ya existe",
+
+                    "email.unique" => "El correo ya existe",
+                    "email.required" => "El campo es requerido",
+                    "email.max"  => "Debe ingresar máximo 100 dígitos",
+                ]
+            );
+
+            if($validator->fails())
+            {
+                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
+            }
+
+            $registerTeam = $this->RegisterOnfleet($team, $request);
+
+            if($registerTeam == 400)
+            {
+                return ['stateAction' => 'phoneIncorrect'];
+            }
+
+            if($registerTeam)
+            {
+                $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
+                $request['idRole']    = 4;
+                $request['password']  = Hash::make($request->get('email'));
+                $request['idTeam']    = $team->id;
+                $request['nameTeam']  = $team->name;
+
+                Driver::create($request->all());
+
+                return ['stateAction' => true];
+            }
+
+            return ['stateAction' => 'notTeamOnfleet'];
         }
         else
         {
-            $registerTeam = $this->RegisterPDOApp($request);
+            $validator = Validator::make($request->all(),
+                [
+                    "idRole" => ["required"],
+                    "name" => ["required", "max:100"],
+                    "nameOfOwner" => ["required", "max:100"],
+                    "email" => ["required", "unique:user", "max:100"],
+                ],
+                [
+                    "idRole.required" => "Seleccione un rol",
+
+                    "name.required" => "El campo es requerido",
+                    "name.max"  => "Debe ingresar máximo 100 dígitos",
+
+                    "nameOfOwner.required" => "El campo es requerido",
+                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+
+                    "email.unique" => "El correo ya existe",
+                    "email.required" => "El campo es requerido",
+                    "email.max"  => "Debe ingresar máximo 100 dígitos",
+                ]
+            );
+
+            if($validator->fails())
+            {
+                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
+            }
+
+            $driverLast = Driver::all()->last();
+
+            $driver = new Driver();
+            $driver->id          = $driverLast->id + 1;
+            $driver->idRole      = 4;
+            $driver->name        = $request->name;
+            $driver->nameOfOwner = $request->nameOfOwner;
+            $driver->phone       = $request->phone;
+            $driver->email       = $request->email;
+            $driver->password    = Hash::make($request->email);
+            $driver->usageApp    = $request->usageApp;
+            $driver->status      = $request->status;
+
+            $registerPDOApp = $this->RegisterPDOApp($driver);
+
+            if($registerPDOApp['statusCode'] === true)
+            {
+                //Log::info($registerPDOApp['output']);
+
+                $driver->idOnfleet = $registerPDOApp['output']['data']['_id'];
+                $driver->save();
+
+                return ['stateAction' => true];
+            }
+            else
+            {
+                return ['stateAction' => 'notTeamOnfleet'];
+            }
         }
-        
-
-        if($registerTeam === 400)
-        {
-            return ['stateAction' => 'phoneIncorrect'];
-        }
-
-        if($registerTeam === true)
-        {
-            //$request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
-            $request['idRole']    = 4;
-            $request['password']  = Hash::make($request->get('email'));
-            $request['idTeam']    = $team->id;
-            $request['nameTeam']  = $team->name;
-
-            Driver::create($request->all());
-
-            return ['stateAction' => true];
-        }
-
-        return ['stateAction' => 'notTeamOnfleet'];*/
     }
 
     public function Get($id)
@@ -359,41 +353,48 @@ class DriverController extends Controller
         }
     }
 
-    public function RegisterPDOApp($request, $idDriver)
+    public function RegisterPDOApp($request)
     {
         $data = [
-                    "firstName" => $request->get('name'),
-                    "lastName" => $request->get('nameOfOwner'),
-                    "email" => $request->get('email'),
+                    "firstName" => $request->name,
+                    "lastName" => $request->nameOfOwner,
+                    "email" => $request->email,
                     "password" => 'Pa$$word1234',
-                    "phoneNumber" => $request->get('phone'),
-                    "address" => ''
-                    "meta": [
-                        "syncDriverId" => $idDriver
+                    "phoneNumber" => $request->phone,
+                    "address" => '',
+                    "meta" => [
+                        "syncDriverId" => $request->id
                     ]
                 ];
 
         $curl = curl_init();
 
-        $this->headers = [
-                        'Authorization: Basic '. $this->base64,
-                    ];
+        $apiKey  = 'T9M6HB3-CST4GFF-MGPH64Z-A01BRT7';
+        $headers =  array(
+                        'Content-Type: application/json',
+                        'Authorization: '. $apiKey
+                    );
 
-        $apiKey = 'T9M6HB3-CST4GFF-MGPH64Z-A01BRT7';
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://core-auth-dot-staging-inland.uc.r.appspot.com/api/auth/signup',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => $headers,
+        ));
 
-        $base64 = base64_encode($apiKey .':');
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/workers');
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERPWD, '');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_HEADER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+        curl_close($curl);
+
+        Log::info($response);
 
         $output = curl_exec($curl);
 
@@ -401,18 +402,17 @@ class DriverController extends Controller
 
         curl_close($curl);
 
-        if($http_status == 200)
+        if($http_status >= 200 && $http_status <= 209)
         {
-            return $output;
-        }
-        elseif($http_status == 400)
-        {
+            //Log::info(json_decode($output, true));
 
-            return 400;
+            return ['statusCode' => true, 'output' => $output];
         }
         else
         {
-            return false;
+            Log::info($output);
+
+            return ['statusCode' => false];
         }
     }
 
