@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
         Configuration, Driver, Package, PackageBlocked,
-        PackageDelete, PackageDelivery, PackageDispatch, PackagelmCarrier, PackagePreDispatch, 
+        PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch, 
         PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
@@ -484,7 +484,7 @@ class PackageController extends Controller
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
-        $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
 
         if($package)
         {
