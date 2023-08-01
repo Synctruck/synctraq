@@ -418,6 +418,7 @@ class PackageController extends Controller
         $header_curl       = "";
         $sendStatusCompany = true;
 
+        Log::info('status => '. $status);
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' || 'Middle Mile Scan')
         {
             $company = Company::find($package->idCompany);
@@ -436,6 +437,7 @@ class PackageController extends Controller
 
             Log::info('companyStatus');
             Log::info('===========');
+            Log::info($companyStatus);
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
             $url_webhook       = $companyStatus->company->url_webhook;
