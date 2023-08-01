@@ -48,7 +48,8 @@ class PackageMassQueryController extends Controller
                                                 'Dropoff_City',
                                                 'Dropoff_Province',
                                                 'Dropoff_Postal_Code',
-                                                'Route'
+                                                'Route',
+                                                'Weight'
                                             )
                                             ->whereIn('Reference_Number_1', $idsAll)
                                             ->where('status', 'Inbound')
@@ -82,6 +83,7 @@ class PackageMassQueryController extends Controller
                     "Dropoff_Province" => $packageHistory->Dropoff_Province,
                     "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
                     "Route" => $packageHistory->Route,
+                    "Weight" => $packageHistory->Weight,
                 ];
 
                 array_push($packageHistoryListNew, $package);

@@ -124,6 +124,7 @@ function PackageMassQuery() {
                 <td>{ packageInbound.Dropoff_Province }</td>
                 <td>{ packageInbound.Dropoff_Postal_Code }</td>
                 <td>{ packageInbound.Route }</td>
+                <td>{ packageInbound.Weight }</td>
             </tr>
         );
     });
@@ -253,6 +254,7 @@ function PackageMassQuery() {
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
                                                 <th>ROUTE</th>
+                                                <th>Weight</th>
                                             </tr>
                                         </thead>
                                         <tbody>
