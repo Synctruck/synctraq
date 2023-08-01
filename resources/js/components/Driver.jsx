@@ -23,7 +23,7 @@ function Driver() {
 
     const [listUser, setListUser] = useState([]);
     const [listRole, setListRole] = useState([]);
-    const [listTeam, setListTeam] = useState([]);
+    const [listTeam, setListTeam] = useState([]); 
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -159,6 +159,13 @@ function Driver() {
                     else if(response.stateAction == 'phoneIncorrect')
                     {
                         swal("The phone number of the driver is wrong!", {
+
+                            icon: "warning",
+                        });
+                    }
+                    else if(response.stateAction == 'notRegisterPODApp')
+                    {
+                        swal('PODApp Message: '+ response.response.error, {
 
                             icon: "warning",
                         });

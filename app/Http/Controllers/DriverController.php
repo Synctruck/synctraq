@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\{Configuration, Driver, PackageDispatch, PackageHistory, TeamRoute, User};
+use App\Models\{ Configuration, Driver, PackageDispatch, PackageHistory, TeamRoute, User};
 
 use App\Http\Controllers\UserController;
 
@@ -191,18 +191,18 @@ class DriverController extends Controller
             $driver->usageApp    = $request->usageApp;
             $driver->status      = $request->status;
 
-            $registerPDOApp = $this->RegisterPDOApp($driver);
+            $registerPODApp = $this->RegisterPODApp($driver);
 
-            if($registerPDOApp['statusCode'] === true)
+            if($registerPODApp['statusCode'] === true)
             {
-                $driver->idOnfleet = $registerPDOApp['response']['data']['_id'];
+                $driver->idOnfleet = $registerPODApp['response']['data']['_id'];
                 $driver->save();
 
                 return ['stateAction' => true];
             }
             else
             {
-                return ['stateAction' => 'notTeamOnfleet'];
+                return ['stateAction' => 'notRegisterPODApp', 'response' => $registerPODApp['response']];
             }
         }
     }
@@ -351,7 +351,7 @@ class DriverController extends Controller
         }
     }
 
-    public function RegisterPDOApp($request)
+    public function RegisterPODApp($request)
     {
         $data = [
                     "firstName" => $request->name,
@@ -367,14 +367,16 @@ class DriverController extends Controller
 
         $curl = curl_init();
 
+        $configuration = Configuration::first();
+
         $apiKey  = 'T9M6HB3-CST4GFF-MGPH64Z-A01BRT7';
         $headers =  array(
                         'Content-Type: application/json',
-                        'Authorization: '. $apiKey
+                        'Authorization: '. $configuration->podAppKey
                     );
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://core-auth-dot-staging-inland.uc.r.appspot.com/api/auth/signup',
+            CURLOPT_URL => $configuration->podAppUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -402,7 +404,7 @@ class DriverController extends Controller
         {
             Log::info($response);
 
-            return ['statusCode' => false];
+            return ['statusCode' => false, 'response' => $response];
         }
     }
 
@@ -589,7 +591,7 @@ class DriverController extends Controller
                 array_push($newDriverList, $data);
             }
         }
-
+ 
         return ['driverList' => $newDriverList]; 
     }
 
