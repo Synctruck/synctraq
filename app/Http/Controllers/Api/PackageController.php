@@ -413,12 +413,11 @@ class PackageController extends Controller
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
-        $pod_url           = '"pod_url": "",';
+        $pod_url           = "";
         $package_id        = "";
         $header_curl       = "";
         $sendStatusCompany = true;
 
-        Log::info('status => '. $status);
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan')
         {
             $company = Company::find($package->idCompany);
@@ -437,7 +436,6 @@ class PackageController extends Controller
 
             Log::info('companyStatus');
             Log::info('===========');
-            Log::info($companyStatus);
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
             $url_webhook       = $companyStatus->company->url_webhook;
@@ -471,10 +469,7 @@ class PackageController extends Controller
                 }
                 else if(count($idPhoto) == 1)
                 {
-                    if($idPhoto[0] != '')
-                    {
-                        $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
-                    }
+                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
                 }
                 else
                 {
@@ -483,11 +478,10 @@ class PackageController extends Controller
 
                     $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
                 }
-            } 
+            }
 
             Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
             Log::info($pod_url);
-            Log::info($statusCodeCompany);
 
             $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
             $created_at      = $created_at_temp->format(DateTime::ATOM);
