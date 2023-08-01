@@ -419,7 +419,7 @@ class PackageController extends Controller
         $sendStatusCompany = true;
 
         Log::info('status => '. $status);
-        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' || 'Middle Mile Scan')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan')
         {
             $company = Company::find($package->idCompany);
 
