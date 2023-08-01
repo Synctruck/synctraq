@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PeakeSeasonCompany, RangePriceCompany, States };
 
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
+
+use App\Service\ServicePackageLmCarrier;
 
 use DB;
 use Log;
@@ -171,6 +173,7 @@ class PackageInboundController extends Controller
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+        $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
 
         try
         {
@@ -194,6 +197,53 @@ class PackageInboundController extends Controller
                         $packageCreate = new PackageInbound();
                     }
                     
+                }
+                else if($status == 'LM Carrier')
+                {
+                    if($package->status == 'LM Carrier')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Inbound.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackagelmCarrier();
+                    }
+                    
+                }
+                else if($status == 'Middle Mile Scan' || $status == 'Warehouse')
+                {
+                    if($package->status == 'Middle Mile Scan' && $status == 'Middle Mile Scan')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in '. $status .'.'
+                            ]
+                        , 400);
+                    }
+                    else if($package->status == 'Warehouse' && $status == 'Warehouse')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in '. $status .'.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = PackageWarehouse::find($package->Reference_Number_1);
+
+                        if(!$packageCreate)
+                        {
+                            $packageCreate = new PackageWarehouse();
+                        }
+                    }
                 }
                 else if($status == 'Dispatch')
                 {
@@ -260,11 +310,11 @@ class PackageInboundController extends Controller
                     $packageCreate = new PackageReturnCompany();
                 }
 
-                $packageCreate->Reference_Number_1           = $package->Reference_Number_1;
-                $packageCreate->idCompany                    = $package->idCompany;
-                $packageCreate->company                      = $package->company;
+                $packageCreate->Reference_Number_1 = $package->Reference_Number_1;
+                $packageCreate->idCompany          = $package->idCompany;
+                $packageCreate->company            = $package->company;
 
-                if($status != 'ReturnCompany')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier')
                 {
                     $packageCreate->idStore  = $package->idStore;
                     $packageCreate->store    = $package->store;
@@ -292,13 +342,13 @@ class PackageInboundController extends Controller
 
                     if($packageCharge)
                     {
-                        $packageCreate->require_invoice = 1;
+                        //$packageCreate->require_invoice = 1;
                     }
                     
                     //$packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
                 }
 
-                $packageCreate->require_invoice = 1;
+                //$packageCreate->require_invoice = 1;
                 $packageCreate->save();
 
                 $packageHistory = new PackageHistory();
@@ -307,7 +357,7 @@ class PackageInboundController extends Controller
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
 
-                if($status != 'ReturnCompany')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier')
                 {
                     $packageHistory->idStore  = $package->idStore;
                     $packageHistory->store    = $package->store;
@@ -337,16 +387,27 @@ class PackageInboundController extends Controller
                 Log::info('$package->status: '. $package->status);
                 Log::info('$status: '. $status);
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier')
                 {
                     Log::info('Reference_Number_1: '. $package->Reference_Number_1);
                     Log::info('Delete->status: MMS: '. $package->status);
 
-                    $package->delete();
+                    if($package->status == 'Middle Mile Scan' && $status == 'Warehouse')
+                    {
+
+                    }
+                    else if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
+                    {
+
+                    }
+                    else
+                    {
+                        $package->delete();
+                    }
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound' || $status == 'ReInbound' || $package->status == 'ReturnCompany')
+                    if($status == 'Inbound' || $status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'LM Carrier')
                     {
                         $package->delete();
                     }
@@ -357,6 +418,10 @@ class PackageInboundController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
                 }
+
+                $servicePackageLmCarrier = new ServicePackageLmCarrier();
+
+                
 
                 DB::commit();
 

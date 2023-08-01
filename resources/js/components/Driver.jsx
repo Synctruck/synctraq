@@ -13,6 +13,7 @@ function Driver() {
     const [address, setAddress]         = useState('');
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
+    const [usageApp, setUsageApp]       = useState('');
     const [status, setStatus]           = useState('');
     const [roleUser, setRoleUser]       = useState([]);
     const [idTeam, setIdTeam]           = useState(0);
@@ -34,7 +35,7 @@ function Driver() {
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     useEffect(() => {
-
+ 
         listAllUser(page);
 
     }, [textSearch])
@@ -126,6 +127,7 @@ function Driver() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('usageApp', usageApp);
         formData.append('status', status);
 
         clearValidation();
@@ -338,6 +340,7 @@ function Driver() {
         setPhone('');
         setEmail('');
         setStatus('Active');
+        setUsageApp('Onfleet');
     }
 
     const clearValidation = () => {
@@ -356,6 +359,9 @@ function Driver() {
 
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
+
+        document.getElementById('usageApp').style.display = 'none';
+        document.getElementById('usageApp').innerHTML     = '';
 
         document.getElementById('status').style.display = 'none';
         document.getElementById('status').innerHTML     = '';
@@ -379,6 +385,7 @@ function Driver() {
                 <td>{ user.phone }</td> 
                 <td>{ user.email }</td>
                 <td>{ user.idOnfleet }</td>
+                <td>{ user.usageApp }</td>
                 <td>
                     {
                         (
@@ -506,7 +513,7 @@ function Driver() {
                                                                     <div className="col-lg-12">
                                                                         <div className="form-group">
                                                                             <label htmlFor="">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
                                                                                 <option value="" style={ {display: 'none'} }>Select a team</option>
                                                                                 { listTeamSelect }
                                                                             </select>
@@ -539,7 +546,7 @@ function Driver() {
                                                                 <div className="form-group">
                                                                     <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -547,6 +554,18 @@ function Driver() {
                                                                     <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">USAGE APP</label>
+                                                                    <div id="usageApp" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ usageApp } className="form-control" onChange={ (e) => setUsageApp(e.target.value) } required>
+                                                                        <option value="Onfleet" >Onfleet</option>
+                                                                        <option value="PODApp" >PODApp</option>
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -622,6 +641,7 @@ function Driver() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>USAGE APP</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
