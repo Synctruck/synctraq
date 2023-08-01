@@ -254,7 +254,7 @@ function PackageMassQuery() {
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
                                                 <th>ROUTE</th>
-                                                <th>Weight</th>
+                                                <th>WEIGHT</th>
                                             </tr>
                                         </thead>
                                         <tbody>
