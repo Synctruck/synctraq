@@ -845,7 +845,7 @@ class PackageReturnCompanyController extends Controller
             $packageHistory->idUser                       = Auth::user()->id;
             $packageHistory->Description                  = '( RTS REMOVAL) For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $packageHistory->quantity                     = $packageReturnCompany->quantity;
-            $packageHistory->status                       = 'ReturnCompany';
+            $packageHistory->status                       = 'Warehouse';
             $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
