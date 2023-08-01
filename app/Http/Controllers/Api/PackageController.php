@@ -481,10 +481,11 @@ class PackageController extends Controller
 
                     $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
                 }
-            }
+            } 
 
             Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
             Log::info($pod_url);
+            Log::info($statusCodeCompany);
 
             $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
             $created_at      = $created_at_temp->format(DateTime::ATOM);
