@@ -530,10 +530,16 @@ class PackageController extends Controller
                     Log::info('companyStatus');
                     Log::info($companyStatus);
 
-
-                    $statusCodeCompany = $companyStatus->statusCodeCompany;
-                    $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
-                    $urlWebhook        = $url_webhook;
+                    if($companyStatus)
+                    {
+                        $statusCodeCompany = $companyStatus->statusCodeCompany;
+                        $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
+                        $urlWebhook        = $url_webhook;
+                    }
+                    else
+                    {
+                        $sendStatusCompany = false;
+                    }
                 }
                 else
                 {
