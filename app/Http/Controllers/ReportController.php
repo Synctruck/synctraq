@@ -996,7 +996,7 @@ class ReportController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'DAYS TO DISPATCH', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'INBOUND DATE', 'DAYS TO DISPATCH', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1021,6 +1021,7 @@ class ReportController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($packageDispatch['created_at'])), 
                                 date('H:i:s', strtotime($packageDispatch['created_at'])),
+                                date('m-d-Y H:i:s', strtotime($packageInbound->created_at)),
                                 $lateDays,
                                 $packageDispatch['company'],
                                 $team,
