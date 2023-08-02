@@ -10,7 +10,7 @@ use Log;
 use Session;
 use DateTime;
 
-class ServicePackageNeedMoreInformation{
+class ServicePackageNeedMoreInformation{ 
 
     public function List($request, $idCompany, $dateStart,$dateEnd, $route, $state)
     {
@@ -92,6 +92,11 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->save();
 
             $package->delete(); 
+
+            //data for INLAND
+            $packageController = new PackageController();
+            $packageController->SendStatusToInland($package, 'NMI', null, date('Y-m-d H:i:s'));
+            //end data for inland
 
             return ['stateAction' => true, 'package' => $package];
         }
