@@ -3,6 +3,8 @@ namespace App\Service;
 
 use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound };
 
+use App\Http\Controllers\Api\PackageController;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
