@@ -360,6 +360,10 @@
                                     <input type="text" id="contactAddress" name="contactAddress" class="form-control" required>
                                 </div>
                                 <div class="col-lg-3 form-group">
+                                    <label for="contactAddress2">ADDREESS 2</label>
+                                    <input type="text" id="contactAddress2" name="contactAddress2" class="form-control" required>
+                                </div>
+                                <div class="col-lg-3 form-group">
                                     <label for="contactCity">CITY</label>
                                     <input type="text" id="contactCity" name="contactCity" class="form-control" required>
                                 </div>
@@ -980,6 +984,7 @@
                 document.getElementById('contactName').value           = '';
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
+                document.getElementById('contactAddress2').value       = '';
                 document.getElementById('highPriority').value          = 'Normal';
 
                 if(packageHistoryList.length > 0)
@@ -988,6 +993,7 @@
                     document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
                     document.getElementById('contactPhone').value    = packageHistoryList[0].Dropoff_Contact_Phone_Number;
                     document.getElementById('contactAddress').value  = packageHistoryList[0].Dropoff_Address_Line_1;
+                    document.getElementById('contactAddress2').value = packageHistoryList[0].Dropoff_Address_Line_2;
                     document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
                     document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
                     document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;

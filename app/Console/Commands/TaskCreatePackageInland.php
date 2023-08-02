@@ -96,7 +96,7 @@ class TaskCreatePackageInland extends Command
                                     "company": "",
                                     "phone": "'. $packageManifest->Dropoff_Contact_Phone_Number .'",
                                     "address_line1": "'. $packageManifest->Dropoff_Address_Line_1 .'",
-                                    "address_line2": "", 
+                                    "address_line2": "'. $packageManifest->Dropoff_Address_Line_2 .'",
                                     "address_line3": "",
                                     "city_locality": "'. $packageManifest->Dropoff_City .'",
                                     "state_province": "'. $packageManifest->Dropoff_Province .'",
