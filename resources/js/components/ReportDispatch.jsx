@@ -219,15 +219,14 @@ function ReportDispatch() {
 
             <tr key={i}>
                 <td>
-                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }<br/>
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 <td>
                     { packageDispatch.inboundDate.substring(5, 7) }-{ packageDispatch.inboundDate.substring(8, 10) }-{ packageDispatch.inboundDate.substring(0, 4) }<br/>
                     { packageDispatch.inboundDate.substring(11, 19) }
                 </td>
+                <td><b>{ packageDispatch.lateDays }</b></td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
                     roleUser == 'Administrador'
@@ -529,8 +528,8 @@ function ReportDispatch() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>INBOUND DATE</th>
+                                                <th>DAYS TO DISPATCH</th>
                                                 <th>COMPANY</th>
                                                 {
                                                     roleUser == 'Administrador'

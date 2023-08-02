@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\PackageAgeController;
 
 use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
-use Shuchkin\SimpleXLSXGen;
 
 use Session;
 
@@ -353,15 +352,22 @@ class ReportController extends Controller
 
         $packageHistoryListNew = [];
 
+        $packageAgeController = new PackageAgeController();
+
         foreach($listPackageDispatch as $packageDispatch)
         {
             $packageInbound = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
                                                 ->where('status', 'Inbound')
                                                 ->first();
-                
+
+            $initDate = date('Y-m-d', strtotime(($packageInbound ? $packageInbound->created_at : '')));
+            $endDate  = date('Y-m-d', strtotime($packageDispatch->created_at));
+            $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+
             $package = [
                 "created_at" => $packageDispatch->created_at,
                 "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
+                "lateDays" => $lateDays,
                 "company" => $packageDispatch->company,
                 "team" => $packageDispatch->team,
                 "driver" => $packageDispatch->driver,
@@ -990,21 +996,32 @@ class ReportController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'DAYS TO DISPATCH', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
         $listPackageDispatch = $this->getDataDispatch($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $type = 'export');
         $listPackageDispatch = $listPackageDispatch['listAll'];
 
+        $packageAgeController = new PackageAgeController();
+
         foreach($listPackageDispatch as $packageDispatch)
         {
             $team   = isset($packageDispatch['team']) ? $packageDispatch['team']['name'] : '';
             $driver = isset($packageDispatch['driver']) ? $packageDispatch['driver']['name'] .' '. $packageDispatch['driver']['nameOfOwner'] : '';
 
+            $packageInbound = PackageHistory::where('Reference_Number_1', $packageDispatch['Reference_Number_1'])
+                                                ->where('status', 'Inbound')
+                                                ->first();
+                                                
+            $initDate = date('Y-m-d', strtotime(($packageInbound ? $packageInbound->created_at : '')));
+            $endDate  = date('Y-m-d', strtotime($packageDispatch['created_at']));
+            $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDispatch['created_at'])),
+                                date('m-d-Y', strtotime($packageDispatch['created_at'])), 
                                 date('H:i:s', strtotime($packageDispatch['created_at'])),
+                                $lateDays,
                                 $packageDispatch['company'],
                                 $team,
                                 $driver,
