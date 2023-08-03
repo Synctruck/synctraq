@@ -361,7 +361,7 @@
                                 </div>
                                 <div class="col-lg-3 form-group">
                                     <label for="contactAddress2">ADDREESS 2</label>
-                                    <input type="text" id="contactAddress2" name="contactAddress2" class="form-control" required>
+                                    <input type="text" id="contactAddress2" name="contactAddress2" class="form-control">
                                 </div>
                                 <div class="col-lg-3 form-group">
                                     <label for="contactCity">CITY</label>
