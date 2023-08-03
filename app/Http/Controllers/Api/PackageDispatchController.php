@@ -89,4 +89,22 @@ class PackageDispatchController extends Controller
 
         return $packageList;
     }
+
+    public function UpdateStatus(Request $request, $apiKey)
+    {
+        $company = Company::where('id', 1)
+                            ->where('key_api', $apiKey)
+                            ->first();
+
+        if($company)
+        {
+            Log::info($request);
+
+            return response()->json(['message' => "Correct: updated status"], 200);
+        }
+        else
+        {
+            return response()->json(['message' => "Authentication Failed: incorrect api-key"], 401);
+        }
+    }
 }
