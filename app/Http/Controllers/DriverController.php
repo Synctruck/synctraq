@@ -93,10 +93,8 @@ class DriverController extends Controller
     public function Insert(Request $request)
     {        
         $team = User::find($request->get('idTeam'));
-
-        dd($request->usageApp);
         
-        if($request->usageApp == 'onfleet')
+        if($request->usageApp == 'Onfleet')
         {
             $validator = Validator::make($request->all(),
                 [
