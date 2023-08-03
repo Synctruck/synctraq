@@ -520,7 +520,7 @@ function Driver() {
                                                                     <div className="col-lg-12">
                                                                         <div className="form-group">
                                                                             <label htmlFor="">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
+                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
                                                                                 <option value="" style={ {display: 'none'} }>Select a team</option>
                                                                                 { listTeamSelect }
                                                                             </select>
