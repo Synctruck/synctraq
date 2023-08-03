@@ -1095,6 +1095,7 @@
             formData.append('Dropoff_Contact_Name', document.getElementById('contactName').value);
             formData.append('Dropoff_Contact_Phone_Number', document.getElementById('contactPhone').value);
             formData.append('Dropoff_Address_Line_1', document.getElementById('contactAddress').value);
+            formData.append('Dropoff_Address_Line_2', document.getElementById('contactAddress2').value);
             formData.append('Dropoff_City', document.getElementById('contactCity').value);
             formData.append('Dropoff_Province', document.getElementById('contactState').value);
             formData.append('Dropoff_Postal_Code', document.getElementById('contactZipCode').value);
