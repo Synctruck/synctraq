@@ -94,6 +94,8 @@ class DriverController extends Controller
     {        
         $team = User::find($request->get('idTeam'));
 
+        dd($request->usageApp);
+        
         if($request->usageApp == 'onfleet')
         {
             $validator = Validator::make($request->all(),
