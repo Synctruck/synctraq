@@ -158,7 +158,7 @@ class PackageController extends Controller
     }
 
     public function Update(Request $request)
-    {
+    {        
         try
         {
             DB::beginTransaction();

@@ -68,7 +68,7 @@ class ExternalServiceInland{
                             "company": "",
                             "phone": "'. $package->Dropoff_Contact_Phone_Number .'",
                             "address_line1": "'. $package->Dropoff_Address_Line_1 .'",
-                            "address_line2": "", 
+                            "address_line2": "'. $package->Dropoff_Address_Line_2 .'",
                             "address_line3": "",
                             "city_locality": "'. $package->Dropoff_City .'",
                             "state_province": "'. $package->Dropoff_Province .'",
@@ -136,7 +136,7 @@ class ExternalServiceInland{
             CURLOPT_CUSTOMREQUEST => 'PUT',
             CURLOPT_POSTFIELDS => '{
                 "address_line1": "'. $request->Dropoff_Address_Line_1 .'",
-                "address_line2": "",
+                "address_line2": "'. $request->Dropoff_Address_Line_2 .'",
                 "city_locality": "'. $request->Dropoff_City .'",
                 "state_province": "'. $request->Dropoff_Province .'",
                 "postal_code": "'. $request->Dropoff_Postal_Code .'"
