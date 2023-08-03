@@ -13,7 +13,7 @@ function Driver() {
     const [address, setAddress]         = useState('');
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
-    const [usageApp, setUsageApp]       = useState('');
+    const [usageApp, setUsageApp]       = useState('Onfleet');
     const [status, setStatus]           = useState('');
     const [roleUser, setRoleUser]       = useState([]);
     const [idTeam, setIdTeam]           = useState(0);
@@ -571,7 +571,6 @@ function Driver() {
                                                                     <div id="usageApp" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ usageApp } className="form-control" onChange={ (e) => setUsageApp(e.target.value) } required>
                                                                         <option value="Onfleet" >Onfleet</option>
-                                                                        <option value="PODApp" >PODApp</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
