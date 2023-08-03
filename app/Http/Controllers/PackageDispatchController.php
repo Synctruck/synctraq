@@ -1167,7 +1167,7 @@ class PackageDispatchController extends Controller
                     $driver              = User::find($packageDispatch->idUserDispatch);
                     $idOnfleet           = $packageDispatch->idOnfleet;
                     $taskOnfleet         = $packageDispatch->taskOnfleet;
-                    $teamName            = $team->name;
+                    $teamName            = $team ? $team->name : 'NOT FOUND'; 
                     $workerName          = ($driver ? $driver->name .' '. $driver->nameOfOwner : '');
                     $photoUrl            = '';
                     $statusOnfleet       = '';
