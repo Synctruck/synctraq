@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, User };
 
@@ -103,7 +104,7 @@ class PackageDispatchController extends Controller
 
                 [
                     "package_id" => ["required", "min:10", "max:40"],
-                    "status" => ["required", "min:6", "max:8"],
+                    "status" => ["required", "min:6", "max:8", Rule::in(['Delivery', 'Failed'])],
                     "datetime" => ["required"],
                 ],
             );
