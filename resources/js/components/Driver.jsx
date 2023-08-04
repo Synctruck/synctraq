@@ -571,6 +571,7 @@ function Driver() {
                                                                     <div id="usageApp" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ usageApp } className="form-control" onChange={ (e) => setUsageApp(e.target.value) } required>
                                                                         <option value="Onfleet" >Onfleet</option>
+                                                                        <option value="PODApp" >PODApp</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
