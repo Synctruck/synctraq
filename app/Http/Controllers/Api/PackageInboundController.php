@@ -164,6 +164,7 @@ class PackageInboundController extends Controller
         $pod_url            = $request['pod_url'];
         $description        = $request['description'];
         $require_invoice    = $request['require_invoice'];
+        $idTeam             = $request['synctruck_team'];
 
         Log::info($request);
 
@@ -287,6 +288,7 @@ class PackageInboundController extends Controller
 
                         $packageCreate->photoUrl        = $pod_url;
                         $packageCreate->Date_Delivery   = $created_at;
+                        $packageCreate->idTeam          = $idTeam ? $idTeam : 0;
                     }
                 }
                 else if($status == 'ReInbound')
