@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{
         ChargeCompanyDetail, Configuration, PackageHistory, PackageDelivery, PackageDispatch, 
-        PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, 
+        PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageLost,
         PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, TeamRoute, User};
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
@@ -498,6 +498,15 @@ class PackageDeliveryController extends Controller
                     if($packageInbound)
                     {
                         $packageAux = $packageInbound;
+
+                        $contador++;
+                    }
+
+                    $packageLost = PackageLost::find($row[0]);
+
+                    if($packageLost)
+                    {
+                        $packageAux = $packageLost;
 
                         $contador++;
                     }
