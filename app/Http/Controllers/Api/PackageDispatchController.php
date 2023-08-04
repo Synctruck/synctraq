@@ -140,7 +140,7 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
-                        $this->TaskFailed($request);
+                        $this->TaskFailed($request, $Date_Delivery);
                     }
 
                     DB::commit();
@@ -219,12 +219,11 @@ class PackageDispatchController extends Controller
         $packageHistory->save();
     }
 
-    public function TaskFailed(Request $request)
+    public function TaskFailed(Request $request, $Date_Failed)
     {
         $Reference_Number_1  = $request['package_id'];
         $created_at          = date('Y-m-d H:i:s'); 
         $status              = $request['status'];
-        $Date_Delivery       = $request['datetime'];
         $photoUrl            = $request['pod_url'];
         $Description_Onfleet = $request['failure_notes'];
 
