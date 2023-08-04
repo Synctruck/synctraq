@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, User };
 
@@ -98,6 +99,20 @@ class PackageDispatchController extends Controller
 
         if($company)
         {
+            $validator = Validator::make($request->all(),
+
+                [
+                    "package_id" => ["required", "min:10", "max:40"],
+                    "status" => ["required", "min:6", "max:8"],
+                    "datetime" => ["required"],
+                ],
+            );
+
+            if($validator->fails())
+            {
+                return response()->json(["errors" => $validator->errors()], 422);
+            }
+
             $Reference_Number_1 = $request['package_id'];
             $Date_Delivery      = $request['datetime'];
 
@@ -114,7 +129,7 @@ class PackageDispatchController extends Controller
                         $strtotime     = strtotime($Date_Delivery);
                         $Date_Delivery = date('Y-m-d H:i:s', $strtotime);
                         $photoUrl      = $request['pod_url'];
-                        
+
                         $this->TaskCompleted($request, $Date_Delivery);
 
                         //data for INLAND
@@ -210,7 +225,6 @@ class PackageDispatchController extends Controller
         $status              = $request['status'];
         $Date_Delivery       = $request['datetime'];
         $photoUrl            = $request['pod_url'];
-        $Description         = $request['description'];
         $Description_Onfleet = $request['failure_notes'];
 
         $packageFailed = new PackageFailed();
