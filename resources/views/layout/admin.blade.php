@@ -929,6 +929,7 @@
                         {
                             let urlsPhoto = packageDispatch.photoUrl.split('https:')
 
+                            console.log('https: '+ urlsPhoto.length);
                             console.log(packageDispatch.photoUrl);
 
                             if(urlsPhoto.length > 0)
