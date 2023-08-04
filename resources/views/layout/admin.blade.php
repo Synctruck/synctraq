@@ -927,13 +927,12 @@
                     {
                         if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
                         {
-                            let urlsPhoto = packageDispatch.photoUrl.split('https:')
+                            let urlsPhoto = packageDispatch.photoUrl.includes('https:')
 
-                            console.log('https: '+ urlsPhoto.length);
-                            console.log(urlsPhoto);
+                            console.log('https: '+ urlsPhoto);
                             console.log(packageDispatch.photoUrl);
 
-                            if(urlsPhoto.length > 0)
+                            if(urlsPhoto)
                             {
                                 urlsPhoto = packageDispatch.photoUrl.split(',');
 
