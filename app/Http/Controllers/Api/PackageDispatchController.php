@@ -92,6 +92,58 @@ class PackageDispatchController extends Controller
         return $packageList;
     }
 
+    /*
+        * Devuelve la información de un determinado Package
+        * @parametro: apiKey, Reference_Number_1
+        * @request: request (información que manda la PODApp)
+        * response: devuelve formato solicitado
+    */
+    public function GetPackage($apiKey, $Reference_Number_1) 
+    {
+        $company = Company::where('id', 1)
+                            ->where('key_api', $apiKey)
+                            ->first();
+
+        if($company)
+        {
+            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+
+            if($packageDispatch)
+            {
+                $needsSignature = $packageDispatch->company == 'EIGHTVAPE' ? true : false;
+
+                $package = [
+                    'barcode' => $packageDispatch->Reference_Number_1,
+                    'createdAt' => $packageDispatch->created_at,
+                    'shipToStreet1' => $packageDispatch->Dropoff_Address_Line_1,
+                    'shipToStreet2' => $packageDispatch->Dropoff_Address_Line_2,
+                    'shipToCity' => $packageDispatch->Dropoff_City,
+                    'shipToState' => $packageDispatch->Dropoff_Province,
+                    'shipToPostalCode' => $packageDispatch->Dropoff_Postal_Code,
+                    'shipToName' => $packageDispatch->Dropoff_Contact_Name,
+                    'needsSignature' => false,
+                ];
+
+                return response()->json($package);
+            }
+
+            return response()->json([
+                'package_id' => $Reference_Number_1,
+                'message' => "The package is not in DISPATCH or DELIVERY status."
+            ], 400);
+        }
+        else
+        {
+            return response()->json(['message' => "Authentication Failed: incorrect api-key"], 401);
+        }
+    }
+
+    /*
+        * Actualiza los status de los packages Dispatch de synctruck, que manda la PODApp y  que fueron asignados a un driver
+        * @parametro: apiKey
+        * @request: request (información que manda la PODApp)
+        * formato: usar modelo solicitado
+    */
     public function UpdateStatus(Request $request, $apiKey)
     {
         $company = Company::where('id', 1)

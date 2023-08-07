@@ -48,3 +48,4 @@ Route::post('package/shipments/inland/{keyApi}', [PackageInboundController::clas
 
 Route::get('package-dispatch/packages-by-driver-inland/{apiKey}/{idDriver}', [PackageDispatchController::class, 'ListByDriverInland']);
 Route::post('package-dispatch/update-status/{apiKey}', [PackageDispatchController::class, 'UpdateStatus']);
+Route::get('package-dispatch/get-package/{apiKey}/{Reference_Number_1}', [PackageDispatchController::class, 'GetPackage']);
