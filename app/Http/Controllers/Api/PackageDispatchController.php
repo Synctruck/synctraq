@@ -137,15 +137,19 @@ class PackageDispatchController extends Controller
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $Date_Delivery);
                         //end data for inland
+
+                        $messageResponse = 'Correct: updated status to DELIVERY';
                     }
                     else
                     {
                         $this->TaskFailed($request, $Date_Delivery);
+
+                        $messageResponse = 'Correct: updated status to FAILED';
                     }
 
                     DB::commit();
 
-                    return response()->json(['message' => "Correct: updated status to DELIVERY"], 200);
+                    return response()->json(['message' => $messageResponse], 200);
                 }
                 catch(Exception $e)
                 {
@@ -228,7 +232,7 @@ class PackageDispatchController extends Controller
         $Description_Onfleet = $request['failure_notes'];
 
         $packageDispatch = PackageDispatch::find($Reference_Number_1);
-        
+
         $packageFailed = new PackageFailed();
         $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
         $packageFailed->idCompany                    = $packageDispatch->idCompany;
