@@ -255,7 +255,6 @@ class PackageDispatchController extends Controller
         $packageFailed->status                       = 'Failed';
         $packageFailed->created_at                   = $created_at;
         $packageFailed->updated_at                   = $created_at;
-
         $packageFailed->save();
 
         $packageHistory = new PackageHistory();
@@ -287,7 +286,6 @@ class PackageDispatchController extends Controller
         $packageHistory->actualDate                   = $created_at;
         $packageHistory->created_at                   = $created_at;
         $packageHistory->updated_at                   = $created_at;
-
         $packageHistory->save();
         
         $packageDispatch->delete();
