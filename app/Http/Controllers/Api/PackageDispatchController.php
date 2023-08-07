@@ -227,6 +227,8 @@ class PackageDispatchController extends Controller
         $photoUrl            = $request['pod_url'];
         $Description_Onfleet = $request['failure_notes'];
 
+        $packageDispatch = PackageDispatch::find($Reference_Number_1);
+        
         $packageFailed = new PackageFailed();
         $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
         $packageFailed->idCompany                    = $packageDispatch->idCompany;
