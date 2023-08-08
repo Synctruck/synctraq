@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{ 
-            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, 
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamDetailReturn, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
@@ -68,12 +68,11 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-
-        $fields = array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE');
-
-        fputcsv($file, $fields, $delimiter);
+        fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+
+        $totalDelivery = 0;
 
         foreach($paymentTeamDetailList as $paymentDetail)
         {
@@ -100,9 +99,57 @@ class PaymentTeamController extends Controller
                 $paymentDetail->totalPrice,
             );
 
+            $totalDelivery = $totalDelivery + $paymentDetail->totalPrice;
+
             fputcsv($file, $lineData, $delimiter);
         }
- 
+        
+        $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
+
+        if(count($paymentTeamDetailReturnList) > 0)
+        {
+            fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
+            fputcsv($file, [], $delimiter);
+            fputcsv($file, [], $delimiter);
+            fputcsv($file, ['REVERTS'], $delimiter);
+
+            fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE'), $delimiter);
+            
+            $totalRevert = 0;
+
+            foreach($paymentTeamDetailReturnList as $paymentDetailReturn)
+            {
+                $date         = date('m-d-Y', strtotime($paymentDetailReturn->created_at)) .' '. date('H:i:s', strtotime($paymentDetailReturn->created_at));
+                $dateDelivery = date('m-d-Y', strtotime($paymentDetailReturn->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetailReturn->Date_Delivery));
+
+                $lineData = array(
+
+                    $date,
+                    $dateDelivery,
+                    $paymentDetailReturn->Reference_Number_1,
+                    $paymentDetailReturn->Route,
+                    $paymentDetailReturn->dimFactor,
+                    $paymentDetailReturn->weight,
+                    $paymentDetailReturn->weightRound,
+                    $paymentDetailReturn->priceWeight,
+                    $paymentDetailReturn->peakeSeasonPrice,
+                    $paymentDetailReturn->priceBase,
+                    $paymentDetailReturn->dieselPrice,
+                    $paymentDetailReturn->surchargePercentage,
+                    $paymentDetailReturn->surchargePrice,
+                    $paymentDetailReturn->priceByRoute,
+                    $paymentDetailReturn->priceByCompany,
+                    $paymentDetailReturn->totalPrice,
+                );
+
+                $totalRevert = $totalRevert + $paymentDetail->totalPrice;
+
+                fputcsv($file, $lineData, $delimiter);
+            }
+
+            fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL REVERT', $totalRevert), $delimiter);
+        }
+
         fseek($file, 0);
 
         header('Content-Type: text/csv');

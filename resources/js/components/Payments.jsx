@@ -160,7 +160,9 @@ function Payments() {
 
     const listReportTable = listReport.map( (payment, i) => {
 
-        let total = handlerChangeFormatPrice(payment.total);
+        let totalDelivery = handlerChangeFormatPrice(payment.totalDelivery);
+        let totalRevert   = handlerChangeFormatPrice(payment.totalRevert);
+        let total         = handlerChangeFormatPrice(payment.total);
 
         return (
 
@@ -172,16 +174,45 @@ function Payments() {
                 <td><b>{ payment.id }</b></td>
                 <td><b>{ payment.team.name }</b></td>
                 <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
-                <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td> 
+                <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td>
+                <td className="text-primary text-right"><h5><b>{ '$ '+ totalDelivery }</b></h5></td>
+                <td className="text-danger text-right"><h5><b>{ '$ '+ totalRevert }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
                 <td>
-                    <button className={ (payment.status == 'Payable' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
-                        { payment.status }
-                    </button>
+                    { 
+                        (
+                            payment.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
+                                    { payment.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    { 
+                        (
+                            payment.status == 'PAYABLE'
+                            ? 
+                                <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
+                                    { payment.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    { 
+                        (
+                            payment.status == 'PAID'
+                            ? 
+                                <button className="btn btn-success font-weight-bold text-center btn-sm">
+                                    { payment.status }
+                                </button>
+                            : ''
+                        )
+                    }
                 </td>
                 <td>
-                    <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment(payment.id) }>
-                        <i className="ri-file-excel-fill"></i> EXPORT DETAIL
+                    <button className="btn btn-primary form-control btn-sm" onClick={ () => handlerExportPayment(payment.id) }>
+                        <i className="ri-file-excel-fill"></i> EXPORT
                     </button>
                 </td>
             </tr>
@@ -458,6 +489,8 @@ function Payments() {
                                                 <th><b>TEAM</b></th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
+                                                <th><b>TOTAL DELIVERY</b></th>
+                                                <th><b>TOTAL REVERT</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>STATUS</b></th>
                                                 <th><b>ACTION</b></th>

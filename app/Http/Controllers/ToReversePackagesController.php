@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ PaymentTeamDetail, PaymentTeamDetailReturn, ToReversePackages };
+use App\Models\{ PaymentTeam, PaymentTeamDetail, PaymentTeamDetailReturn, ToReversePackages };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -38,9 +38,7 @@ class ToReversePackagesController extends Controller
         }
 
         $totalReverts          = $toReversePackagesList->get()->sum('priceToRevert');
-        $toReversePackagesList = $toReversePackagesList->orderBy('created_at', 'desc')
-                                                        ->orderBy('priceToRevert', 'desc')
-                                                        ->paginate(100);
+        $toReversePackagesList = $toReversePackagesList->orderBy('created_at', 'desc')->paginate(100);
 
         return [
             'totalReverts' => number_format($totalReverts, 4),
@@ -50,35 +48,62 @@ class ToReversePackagesController extends Controller
 
     public function Insert(Request $request)
     {
-        $paymentTeamDetail = PaymentTeamDetail::find($request->Reference_Number_1);
-
-        if($paymentTeamDetail)
+        try
         {
-            $paymentTeamDetailReturn = new PaymentTeamDetailReturn();
-            $paymentTeamDetailReturn->id                  = uniqid();
-            $paymentTeamDetailReturn->Reference_Number_1  = $paymentTeamDetail->Reference_Number_1;
-            $paymentTeamDetailReturn->Route               = $paymentTeamDetail->Route;
-            $paymentTeamDetailReturn->idPaymentTeam       = $paymentTeamDetail->idPaymentTeam;
-            $paymentTeamDetailReturn->dimFactor           = $paymentTeamDetail->dimFactor;
-            $paymentTeamDetailReturn->weight              = $paymentTeamDetail->weight;
-            $paymentTeamDetailReturn->weightRound         = $paymentTeamDetail->weightRound;
-            $paymentTeamDetailReturn->priceWeight         = $paymentTeamDetail->priceWeight;
-            $paymentTeamDetailReturn->peakeSeasonPrice    = $paymentTeamDetail->peakeSeasonPrice;
-            $paymentTeamDetailReturn->priceBase           = $paymentTeamDetail->priceBase;
-            $paymentTeamDetailReturn->dieselPrice         = $paymentTeamDetail->dieselPrice;
-            $paymentTeamDetailReturn->surchargePercentage = $paymentTeamDetail->surchargePercentage;
-            $paymentTeamDetailReturn->surchargePrice      = $paymentTeamDetail->surchargePrice;
-            $paymentTeamDetailReturn->priceByRoute        = $paymentTeamDetail->priceByRoute;
-            $paymentTeamDetailReturn->priceByCompany      = $paymentTeamDetail->priceByCompany;
-            $paymentTeamDetailReturn->totalPrice          = $paymentTeamDetail->totalPrice;
-            $paymentTeamDetailReturn->Date_Delivery       = $paymentTeamDetail->Date_Delivery;
-            $paymentTeamDetailReturn->created_at          = date('Y-m-d H:i:s');
-            $paymentTeamDetailReturn->updated_at          = date('Y-m-d H:i:s');
-            $paymentTeamDetailReturn->save();
+            DB::commit();
+
+            $paymentTeamDetail = PaymentTeamDetail::find($request->Reference_Number_1);
+
+            if($paymentTeamDetail)
+            {
+                $paymentTeam = PaymentTeam::find($paymentTeamDetail->idPaymentTeam);
+                $paymentTeam->totalRevert = $paymentTeam->totalRevert + $paymentTeamDetail->totalPrice;
+                $paymentTeam->total       = $paymentTeam->totalDelivery - $paymentTeam->totalRevert;
+                $paymentTeam->save();
+
+                $paymentTeamDetailReturn = new PaymentTeamDetailReturn();
+                $paymentTeamDetailReturn->id                  = uniqid();
+                $paymentTeamDetailReturn->Reference_Number_1  = $paymentTeamDetail->Reference_Number_1;
+                $paymentTeamDetailReturn->Route               = $paymentTeamDetail->Route;
+                $paymentTeamDetailReturn->idPaymentTeam       = $paymentTeamDetail->idPaymentTeam;
+                $paymentTeamDetailReturn->dimFactor           = $paymentTeamDetail->dimFactor;
+                $paymentTeamDetailReturn->weight              = $paymentTeamDetail->weight;
+                $paymentTeamDetailReturn->weightRound         = $paymentTeamDetail->weightRound;
+                $paymentTeamDetailReturn->priceWeight         = $paymentTeamDetail->priceWeight;
+                $paymentTeamDetailReturn->peakeSeasonPrice    = $paymentTeamDetail->peakeSeasonPrice;
+                $paymentTeamDetailReturn->priceBase           = $paymentTeamDetail->priceBase;
+                $paymentTeamDetailReturn->dieselPrice         = $paymentTeamDetail->dieselPrice;
+                $paymentTeamDetailReturn->surchargePercentage = $paymentTeamDetail->surchargePercentage;
+                $paymentTeamDetailReturn->surchargePrice      = $paymentTeamDetail->surchargePrice;
+                $paymentTeamDetailReturn->priceByRoute        = $paymentTeamDetail->priceByRoute;
+                $paymentTeamDetailReturn->priceByCompany      = $paymentTeamDetail->priceByCompany;
+                $paymentTeamDetailReturn->totalPrice          = $paymentTeamDetail->totalPrice;
+                $paymentTeamDetailReturn->Date_Delivery       = $paymentTeamDetail->Date_Delivery;
+                $paymentTeamDetailReturn->created_at          = date('Y-m-d H:i:s');
+                $paymentTeamDetailReturn->updated_at          = date('Y-m-d H:i:s');
+                $paymentTeamDetailReturn->save();
+
+                $toReversePackages = new ToReversePackages();
+                $toReversePackages->shipmentId    = $paymentTeamDetail->Reference_Number_1;
+                $toReversePackages->idPaymentTeam = $paymentTeamDetail->idPaymentTeam;
+                $toReversePackages->idTeam        = $paymentTeam->idTeam;
+                $toReversePackages->priceToRevert = -$paymentTeamDetail->totalPrice;
+                $toReversePackages->save();
+
+                $paymentTeamDetail->delete();
+
+                return response()->json(['statusCode' => true]);
+            }
+
+            DB::commit();
 
             return response()->json(['statusCode' => 'notExists']);
         }
+        catch(Exception $e)
+        {
+            DB::rollback();
 
-        return response()->json(['statusCode' => 'notExists']);
+            return response()->json(['statusCode' => 'error'], 500);
+        }
     }
 }

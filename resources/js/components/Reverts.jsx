@@ -174,15 +174,15 @@ function Reverts() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch(url_general +'package-delivery/insert', {
+        fetch(url_general +'payment-revert/insert', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
         })
-        .then(res => res.json()).
-        then((response) => {
+        .then(res => res.json())
+        .then((response) => {
 
-                if(response.stateAction == true)
+                if(response.statusCode === true)
                 {
                     swal("The package was closed!", {
 
@@ -190,20 +190,19 @@ function Reverts() {
                     });
 
                     setReference_Number_1('');
-                    setFilePhoto1('');
-                    setFilePhoto2('');
-                    setDateDelivery('');
-                    setHourDelivery('');
-                    setArrivalLonLat('');
 
-                    document.getElementById('fileImportPhoto1').value = '';
-                    document.getElementById('fileImportPhoto2').value = '';
-
-                    listReportDispatch(1, RouteSearch, StateSearch);
+                    listToReverseDispatch(1, RouteSearch, StateSearch);
                 }
-                else if(response.stateAction == 'notExists')
+                else if(response.statusCode == 'notExists')
                 {
-                    swal("The package does not exist!", {
+                    swal("The package was not invoiced!", {
+
+                        icon: "warning",
+                    });
+                }
+                else if(response.statusCode == 'error')
+                {
+                    swal("There was a problem performing the process, please try again!", {
 
                         icon: "warning",
                     });
@@ -441,7 +440,7 @@ function Reverts() {
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2" style={ {display: 'none'} }>
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 STATUS:
@@ -461,7 +460,7 @@ function Reverts() {
                                         <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Revert Quantity: { quantityRevert }</b>
                                     </div>
                                     <div className="col-lg-4 mb-3">
-                                        <b className="alert-danger" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Payment Team: { '-'+ totalPaymentRevert +' $' }</b>
+                                        <b className="alert-danger" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Total Payment Team: { totalPaymentRevert +' $' }</b>
                                     </div>
                                 </div>
                             </h5>

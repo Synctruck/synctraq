@@ -204,6 +204,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//=========== Payment Team Revert
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
 	Route::get('/payment-revert/{dateInit}/{dateEnd}/{idTeam}/{status}', [ToReversePackagesController::class, 'List']);
+	Route::post('/payment-revert/insert', [ToReversePackagesController::class, 'Insert']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);

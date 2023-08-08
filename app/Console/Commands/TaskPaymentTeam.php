@@ -51,8 +51,8 @@ class TaskPaymentTeam extends Command
     public function handle()
     {
         $files     = [];
-        $nowDate   = date('Y-07-10');
-        $startDate = date('Y-07-02');
+        $nowDate   = date('Y-08-02');
+        $startDate = date('Y-06-01');
         $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
         try
@@ -71,7 +71,7 @@ class TaskPaymentTeam extends Command
                 $paymentTeam->id        = date('YmdHis') .'-'. $team->id;
                 $paymentTeam->idTeam    = $team->id;
                 $paymentTeam->startDate = $startDate;
-                $paymentTeam->endDate   = $endDate;            
+                $paymentTeam->endDate   = $endDate;
 
                 $startDate = $startDate .' 00:00:00';
                 $endDate   = $endDate .' 23:59:59';
@@ -148,7 +148,7 @@ class TaskPaymentTeam extends Command
                     if($totalTeam > 0)
                     {
                         $paymentTeam->total  = $totalTeam;
-                        $paymentTeam->status = 'Payable';
+                        $paymentTeam->status = 'TO APPROVE';
                         $paymentTeam->save();
                     }
                 }
