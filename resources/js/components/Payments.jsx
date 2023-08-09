@@ -214,7 +214,18 @@ function Payments() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-primary form-control btn-sm" onClick={ () => handlerExportPayment(payment.id) } title="Export Payment">
+                    { 
+                        (
+                            payment.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id) } title="Export Payment">
+                                    <i className="bx bx-edit-alt"></i>
+                                </button> 
+                            : ''
+                        )
+                    }
+                    
+                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Export Payment">
                         <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>
@@ -224,11 +235,9 @@ function Payments() {
 
     const [listViewImages, setListViewImages] = useState([]);
 
-    const viewImages = (urlImage) => {
+    const handlerOpenModalEditPayment = () => {
 
-        setListViewImages(urlImage.split('https'));
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
 
             keyboard: true
         });
@@ -247,12 +256,12 @@ function Payments() {
         }
     });
 
-    const modalViewImages = <React.Fragment>
-                                    <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const modalEditPayment = <React.Fragment>
+                                    <div className="modal fade" id="modalEditPayment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <div className="modal-content">
                                                 <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">PAYMENT TEAM - ADJUSTMENT</h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div className="modal-body">
@@ -434,7 +443,7 @@ function Payments() {
     return (
 
         <section className="section">
-            { modalViewImages }
+            { modalEditPayment }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

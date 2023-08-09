@@ -140,7 +140,7 @@ function Reverts() {
                 <td><b>{ paymentRevert.idPaymentTeam }</b></td>
                 <td><b>{ paymentRevert.team.name }</b></td>
                 <td className="text-danger text-right">
-                    <h5><b>{ '-$ '+ total }</b></h5>
+                    <h5><b>{ total +' $' }</b></h5>
                 </td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment(paymentRevert.shipmentId) }>

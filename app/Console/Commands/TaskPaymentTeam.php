@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ 
-            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, 
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
             RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User };
 
@@ -67,10 +67,6 @@ class TaskPaymentTeam extends Command
 
             foreach($teamsList as $team)
             {
-                $totalRevert = ToReversePackages::where('idTeam', $team->id)
-                                                ->get()
-                                                ->sum('priceToRevert');
-
                 $paymentTeam = new PaymentTeam();
                 $paymentTeam->id          = date('YmdHis') .'-'. $team->id;
                 $paymentTeam->idTeam      = $team->id;
@@ -90,6 +86,15 @@ class TaskPaymentTeam extends Command
 
                 if($listPackageDelivery)
                 {
+                    $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
+                    $totalRevert           = $toReversePackagesList->sum('priceToRevert');
+
+                    foreach($toReversePackagesList as $revert)
+                    {
+                        $toReversePackages = ToReversePackages::find($revert->shipmentId);
+                        $toReversePackages->delete();
+                    }
+
                     foreach($listPackageDelivery as $packageDelivery)
                     {
                         $dimFactor   = 200;
@@ -151,8 +156,18 @@ class TaskPaymentTeam extends Command
 
                     if($totalTeam > 0)
                     {
+                        if($totalRevert != 0)
+                        {
+                            $paymentTeamAdjustment = new PaymentTeamAdjustment();
+                            $paymentTeamAdjustment->id            = uniqid();
+                            $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
+                            $paymentTeamAdjustment->amount        = $totalRevert;
+                            $paymentTeamAdjustment->description   = 'Reverts';
+                            $paymentTeamAdjustment->save();
+                        }
+
                         $paymentTeam->totalDelivery = $totalTeam;
-                        $paymentTeam->totalRevert   = $totalRevert * -1;
+                        $paymentTeam->totalRevert   = $totalRevert;
                         $paymentTeam->total         = $totalTeam + $totalRevert;
                         $paymentTeam->status        = 'TO APPROVE';
                         $paymentTeam->save();

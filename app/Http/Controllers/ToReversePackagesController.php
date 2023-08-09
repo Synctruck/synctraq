@@ -56,11 +56,6 @@ class ToReversePackagesController extends Controller
 
             if($paymentTeamDetail)
             {
-                $paymentTeam = PaymentTeam::find($paymentTeamDetail->idPaymentTeam);
-                $paymentTeam->totalRevert = $paymentTeam->totalRevert + $paymentTeamDetail->totalPrice;
-                $paymentTeam->total       = $paymentTeam->totalDelivery - $paymentTeam->totalRevert;
-                $paymentTeam->save();
-
                 $paymentTeamDetailReturn = new PaymentTeamDetailReturn();
                 $paymentTeamDetailReturn->id                  = uniqid();
                 $paymentTeamDetailReturn->Reference_Number_1  = $paymentTeamDetail->Reference_Number_1;
@@ -83,12 +78,18 @@ class ToReversePackagesController extends Controller
                 $paymentTeamDetailReturn->updated_at          = date('Y-m-d H:i:s');
                 $paymentTeamDetailReturn->save();
 
+                $paymentTeam = PaymentTeam::find($paymentTeamDetail->idPaymentTeam);
+
                 $toReversePackages = new ToReversePackages();
                 $toReversePackages->shipmentId    = $paymentTeamDetail->Reference_Number_1;
                 $toReversePackages->idPaymentTeam = $paymentTeamDetail->idPaymentTeam;
                 $toReversePackages->idTeam        = $paymentTeam->idTeam;
                 $toReversePackages->priceToRevert = -$paymentTeamDetail->totalPrice;
                 $toReversePackages->save();
+
+                $paymentTeam->totalRevert = $paymentTeam->totalRevert - $paymentTeamDetail->totalPrice;
+                $paymentTeam->total       = $paymentTeam->totalDelivery + $paymentTeam->totalRevert;
+                $paymentTeam->save();
 
                 $paymentTeamDetail->delete();
 

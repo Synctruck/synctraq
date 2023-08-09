@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class ToReversePackages extends Model
 {
     protected $table      = 'to_reverse_packages';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'shipmentId';
     protected $keyType    = 'string';
 
     public $timestamps   = false;
