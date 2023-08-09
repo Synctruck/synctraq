@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class PaymentTeamAdjustment extends Model
+class PaymentTeamAdjustment extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     protected $table      = 'payment_team_adjustment';
     protected $primaryKey = 'id';
 

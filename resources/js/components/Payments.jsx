@@ -218,7 +218,7 @@ function Payments() {
                         (
                             payment.status == 'TO APPROVE'
                             ? 
-                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id) } title="Export Payment">
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="Export Payment">
                                     <i className="bx bx-edit-alt"></i>
                                 </button> 
                             : ''
@@ -233,39 +233,183 @@ function Payments() {
         );
     });
 
-    const [listViewImages, setListViewImages] = useState([]);
+    const [titleModal, setTitleModal]         = useState('');
+    const [listAdjustment, setListAdjustment] = useState([]);
 
-    const handlerOpenModalEditPayment = () => {
+    const [totalAdjustment, setTotalAdjustment] = useState(0);
+    const [totalDelivery, setTotalDelivery]     = useState('');
+    const [idPayment, setidPayment]             = useState('');
+    const [amount, setAmount]                   = useState('');
+    const [description, setDescription]         = useState('');
+
+    const handlerOpenModalEditPayment = (idPayment, totalDelivery) => {
+
+        setTotalDelivery(totalDelivery);
+        setidPayment(idPayment);
+        setTitleModal('PAYMENT TEAM - ADJUSTMENT');
+
+        ListAdjustmentPayment(idPayment);
 
         let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
 
-            keyboard: true
+            keyboard: true 
         });
 
         myModal.show();
     }
 
-    const listViewImagesModal = listViewImages.map( (image, i) => {
+    const ListAdjustmentPayment = (idPayment) => {
 
-        if(i > 0)
-        {
-            return (
+        LoadingShowMap();
 
-                <img src={ 'https'+ image } className="img-fluid mt-2"/>
-            );
-        }
+        fetch(url_general +'payment-team-adjustment/'+ idPayment)
+        .then(response => response.json())
+        .then(response => {
+
+            LoadingHideMap();
+
+            setListAdjustment(response.listAdjustment);
+
+            handlerCalculateTotalAdjustment(response.listAdjustment);
+        });
+    }
+
+    const handlerCalculateTotalAdjustment = (listAdjustment) => {
+
+        let total = 0;
+
+        listAdjustment.map((adjustment, i) => {
+
+            total = parseFloat(total) + parseFloat(adjustment.amount);
+        });
+
+        setTotalAdjustment(total);
+    }
+
+    const listPaymentAdjustmentModal = listAdjustment.map( (adjustment, i) => {
+
+        return (
+
+            <tr>
+                <td>{ adjustment.description }</td>
+                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>{ adjustment.amount } $</h6></td>
+            </tr>
+        );
     });
+
+    const handlerSaveAdjustment = (e) => {
+
+        LoadingShowMap();
+
+        e.preventDefault();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        const formData = new FormData();
+
+        formData.append('idPaymentTeam', idPayment);
+        formData.append('amount', amount);
+        formData.append('description', description);
+
+        fetch(url_general +'payment-team-adjustment/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+                if(response.statusCode == true)
+                {
+                    swal("Adjustment was registered!", {
+
+                        icon: "success",
+                    });
+
+                    clearFormAdjustment();
+                    ListAdjustmentPayment(idPayment);
+                }
+                else if(response.statusCode == false)
+                {
+                    swal("a problem occurred, please try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                LoadingHideMap();
+            },
+        );
+    }
+
+    const clearFormAdjustment = () => {
+
+        setAmount('');
+        setDescription('');
+    }
 
     const modalEditPayment = <React.Fragment>
                                     <div className="modal fade" id="modalEditPayment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <div className="modal-content">
                                                 <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">PAYMENT TEAM - ADJUSTMENT</h5>
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div className="modal-body">
-                                                    { listViewImagesModal }
+                                                    <form onSubmit={ handlerSaveAdjustment }>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">PAYMENT: <span className="text-primary">{ idPayment }</span></label>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">TOTAL DELIVERY: <span className="text-primary">{ totalDelivery } $</span></label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            
+                                                            <div className="col-lg-3 mb-3">
+                                                                <label htmlFor="" className="form">AMOUNT</label>
+                                                                <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
+                                                            </div>
+                                                            <div className="col-lg-9 mb-3">
+                                                                <label htmlFor="" className="form">DESCRIPTION</label>
+                                                                <input type="text" value={ description } onChange={ (e) => setDescription(e.target.value) } className="form-control" minLength="4" maxLength="500" required/>
+                                                            </div>
+                                                            <div className="col-lg-3 mb-3">
+                                                                <button className="btn btn-primary btn-sm form-control">SAVE</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                            <table className="table table-hover table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>DESCRIPTION</th>
+                                                                        <th>AMOUNT</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    { listPaymentAdjustmentModal }
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL ADJUSTMENT</h6></td>
+                                                                        <td className="text-right"><h6 className={ (totalAdjustment >= 0 ? 'text-success' : 'text-danger') }>{ totalAdjustment } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL DELIVERY</h6></td>
+                                                                        <td className="text-right"><h6 className='text-primary'>{ totalDelivery } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6 className="text-success">TOTAL</h6></td>
+                                                                        <td className="text-right"><h6 className='text-success'>{ (parseFloat(totalDelivery) + parseFloat(totalAdjustment)).toFixed(4) } $</h6></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="modal-footer">
                                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -282,163 +426,6 @@ function Payments() {
             <option value={ team.id } text={ team.name }>{ team.name }</option>
         );
     });
-
-    const listDriverSelect = listDriver.map( (driver, i) => {
-
-        return (
-
-            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
-        );
-    });
-
-    const handlerChangeRoute = (routes) => {
-
-        if(routes.length != 0)
-        {
-            let routesSearch = '';
-
-            routes.map( (route) => {
-
-                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
-            });
-
-            setRouteSearch(routesSearch);
-
-            listReportDispatch(1, routesSearch, StateSearch);
-        }
-        else
-        {
-            setRouteSearch('all');
-
-            listReportDispatch(1, 'all', StateSearch);
-        }
-    };
-
-    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
-
-    const listOptionRoute = (listRoutes) => {
-
-        setOptionsRoleSearch([]);
-
-        listRoutes.map( (route, i) => {
-
-            optionsRoleSearch.push({ value: route.name, label: route.name });
-
-            setOptionsRoleSearch(optionsRoleSearch);
-        });
-    }
-
-    const handlerChangeState = (states) => {
-
-        if(states.length != 0)
-        {
-            let statesSearch = '';
-
-            states.map( (state) => {
-
-                statesSearch = statesSearch == '' ? state.value : statesSearch +','+ state.value;
-            });
-
-            setStateSearch(statesSearch);
-
-            listReportDispatch(page, RouteSearch, statesSearch);
-        }
-        else
-        {
-            setStateSearch('all');
-
-            listReportDispatch(page, RouteSearch, 'all');
-        }
-    };
-
-    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
-
-    const listOptionState = (listState) => {
-
-        setOptionsStateSearch([]);
-
-        listState.map( (state, i) => {
-
-            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
-
-            setOptionsStateSearch(optionsStateSearch);
-        });
-    }
-
-    const handlerRegisterPayment = () => {
-
-        if(idTeam != 0)
-        {
-            swal({
-                title: "You want to register the payment of the TEAM: "+ team +" ?",
-                text: "Start Date: "+ dateInit +' | End Date: '+ dateEnd,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((confirmation) => {
-
-                if(confirmation)
-                {
-                    const formData = new FormData();
-
-                    formData.append('idTeam', idTeam);
-                    formData.append('startDate', dateInit);
-                    formData.append('endDate', dateEnd);
-
-                    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                    LoadingShow(); 
-
-                    fetch(url_general +'payment-delivery/insert', {
-                        headers: { "X-CSRF-TOKEN": token },
-                        method: 'post',
-                        body: formData
-                    })
-                    .then(res => res.json()).
-                    then((response) => {
-
-                            if(response.stateAction == 'incorrectDate')
-                            {
-                                swal("Select a correct date range!", {
-
-                                    icon: "error",
-                                });
-                            }
-                            else if(response.stateAction == 'paymentExists')
-                            {
-                                swal("There is already a payment for the selected filters!", {
-
-                                    icon: "warning",
-                                });
-                            }
-                            else if(response.stateAction)
-                            {
-                                swal("Payment was made correctly!", {
-
-                                    icon: "success",
-                                });
-
-                                document.getElementById('fileImport').value = '';
-
-                                listAllPackage();
-                                setbtnDisplay('none');
-                            }
-
-                            LoadingHide();
-                        },
-                    );
-                }
-            });
-        }
-        else
-        {
-            swal("You must select a TEAM for checkout registration!", {
-
-                icon: "warning",
-            });
-        }
-    }
 
     return (
 
