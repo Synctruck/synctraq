@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\{ 
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
-            RangePriceTeamByRoute, RangePriceTeamByCompany, User };
+            RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -67,11 +67,15 @@ class TaskPaymentTeam extends Command
 
             foreach($teamsList as $team)
             {
+                $totalRevert = ToReversePackages::where('idTeam', $team->id)
+                                                ->get()
+                                                ->sum('priceToRevert');
+
                 $paymentTeam = new PaymentTeam();
-                $paymentTeam->id        = date('YmdHis') .'-'. $team->id;
-                $paymentTeam->idTeam    = $team->id;
-                $paymentTeam->startDate = $startDate;
-                $paymentTeam->endDate   = $endDate;
+                $paymentTeam->id          = date('YmdHis') .'-'. $team->id;
+                $paymentTeam->idTeam      = $team->id;
+                $paymentTeam->startDate   = $startDate;
+                $paymentTeam->endDate     = $endDate;
 
                 $startDate = $startDate .' 00:00:00';
                 $endDate   = $endDate .' 23:59:59';
@@ -147,8 +151,10 @@ class TaskPaymentTeam extends Command
 
                     if($totalTeam > 0)
                     {
-                        $paymentTeam->total  = $totalTeam;
-                        $paymentTeam->status = 'TO APPROVE';
+                        $paymentTeam->totalDelivery = $totalTeam;
+                        $paymentTeam->totalRevert   = $totalRevert * -1;
+                        $paymentTeam->total         = $totalTeam + $totalRevert;
+                        $paymentTeam->status        = 'TO APPROVE';
                         $paymentTeam->save();
                     }
                 }

@@ -28,13 +28,13 @@ class PaymentTeamController extends Controller
         $dateInit = $dateInit .' 00:00:00';
         $endDate  = $endDate .' 23:59:59';
 
-        $paymentList = PaymentTeam::with('team')->whereBetween('created_at', [$dateInit, $endDate]);
+        $paymentList = PaymentTeam::with(['team', 'user_payable', 'user_paid'])->whereBetween('created_at', [$dateInit, $endDate]);
 
         if($idTeam)
         {
             $paymentList = $paymentList->where('idTeam', $idTeam);
         }
-
+ 
         if($status != 'all')
         {
             $paymentList = $paymentList->where('status', $status);
@@ -158,11 +158,21 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
-    public function Confirm($idPayment)
+    public function StatusChange($idPayment, $status)
     {
         $paymentTeam = PaymentTeam::find($idPayment);
-        $paymentTeam->idUser = Auth::user()->id;
-        $paymentTeam->status = 'Paid';
+
+        if($status == 'PAYABLE')
+        {
+            $paymentTeam->idUserPayable = Auth::user()->id;
+            $paymentTeam->status        = 'PAYABLE';
+        }
+        else if($status == 'PAID')
+        {
+            $paymentTeam->idUserPaid = Auth::user()->id;
+            $paymentTeam->status     = 'PAID';
+        }
+
         $paymentTeam->save();
 
         return ['stateAction' => true];

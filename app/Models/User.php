@@ -130,6 +130,16 @@ class User extends Authenticatable  implements Auditable
         return $this->hasMany('App\Models\ToReversePackages', 'idTeam');
     }
 
+    public function payments_payable()
+    {
+        return $this->hasMany('App\Models\PaymentTeam', 'idUserPayable');
+    }
+
+    public function payments_paid()
+    {
+        return $this->hasMany('App\Models\PaymentTeam', 'idUserPaid');
+    }
+
     //obtiene todos los permisos por rol y por usuario
     public static function allPermisions($id_user,$id_role)
     {

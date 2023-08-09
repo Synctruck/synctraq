@@ -197,7 +197,7 @@ Route::group(['middleware' => 'auth'], function() {
 	//=========== Payment Team
 	Route::get('/payment-team', [PaymentTeamController::class, 'Index']);
 	Route::get('/payment-team/list/{dateInit}/{endDate}/{idteam}/{status}', [PaymentTeamController::class, 'List']);
-	Route::get('/payment-team/confirm/{idpayment}', [PaymentTeamController::class, 'Confirm']);
+	Route::get('/payment-team/status-change/{idpayment}/{status}', [PaymentTeamController::class, 'StatusChange']);
 	Route::get('/payment-team/import', [PaymentTeamController::class, 'Import']);
 	Route::get('/payment-team/export/{id}', [PaymentTeamController::class, 'Export']);
 
@@ -211,9 +211,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-delivery/list/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'List']);
 	Route::post('/payment-delivery/insert', [PaymentDeliveryTeamController::class, 'Insert']);
 	Route::get('/payment-delivery/export/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [PaymentDeliveryTeamController::class, 'Export']);
-	//oute::get('/payment-team', [PaymentDeliveryTeamController::class, 'IndexPayment'])->middleware('permission:chargeCompany.index');
-	//Route::get('/payment-team/list/{dateInit}/{dateEnd}/{idTeam}', [PaymentDeliveryTeamController::class, 'PaymentList']);
-	//Route::get('/payment-team/export/{id}', [PaymentDeliveryTeamController::class, 'ExportPayment']);
 
 
 	//=========== Age of Package

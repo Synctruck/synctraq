@@ -112,40 +112,37 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
-    const handlerConfirmInvoiced = (id, status) => {
+    const handlerChangeStatus = (id, status) => {
 
-        if(status == 'Payable')
-        {
-            swal({
-                title: "You want change the status PAYABLE to PAID?",
-                text: "Change status!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
+        swal({
+            title: "You want change the status to "+ status +"?",
+            text: "Change status!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
 
-                if(willDelete)
-                {
-                    LoadingShow();
+            if(willDelete)
+            {
+                LoadingShow();
 
-                    fetch(url_general +'payment-team/confirm/'+ id)
-                    .then(response => response.json())
-                    .then(response => {
+                fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
+                .then(response => response.json())
+                .then(response => {
 
-                        if(response.stateAction)
-                        {
-                            swal("PAYMENT TEAM status changed!", {
+                    if(response.stateAction)
+                    {
+                        swal("PAYMENT TEAM status changed!", {
 
-                                icon: "success",
-                            });
+                            icon: "success",
+                        });
 
-                            listReportDispatch(1, RouteSearch, StateSearch);
-                        }
-                    });
-                }
-            });
-        }
+                        listReportDispatch(1, RouteSearch, StateSearch);
+                    }
+                });
+            }
+        });
     }
 
     const handlerChangeFormatPrice = (number) => {
@@ -171,29 +168,35 @@ function Payments() {
                     <b>{ payment.created_at.substring(5, 7) }-{ payment.created_at.substring(8, 10) }-{ payment.created_at.substring(0, 4) }</b><br/>
                     { payment.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ payment.id }</b></td>
-                <td><b>{ payment.team.name }</b></td>
+                <td>
+                    <b>{ payment.id }</b><br/>
+                    <b className="text-primary">{ payment.team.name }</b>
+                </td>
+                <td>
+                    <b className="text-warning">{ (payment.user_payable ? payment.user_payable.name : '' )}</b> <br/>
+                    <b className="text-success">{ (payment.user_paid ? payment.user_paid.name : '' )}</b> <br/>
+                </td>
                 <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
                 <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td>
-                <td className="text-primary text-right"><h5><b>{ '$ '+ totalDelivery }</b></h5></td>
-                <td className="text-danger text-right"><h5><b>{ '$ '+ totalRevert }</b></h5></td>
-                <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
+                <td className="text-primary text-right"><h5><b>{ totalDelivery +' $'  }</b></h5></td>
+                <td className="text-danger text-right"><h5><b>{ totalRevert +' $'  }</b></h5></td>
+                <td className="text-success text-right"><h5><b>{ total +' $'  }</b></h5></td>
                 <td>
                     { 
                         (
                             payment.status == 'TO APPROVE'
                             ? 
-                                <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
+                                <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAYABLE') }>
                                     { payment.status }
                                 </button>
                             : ''
                         )
                     }
-                    { 
+                    {
                         (
                             payment.status == 'PAYABLE'
                             ? 
-                                <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerConfirmInvoiced(payment.id, payment.status) }>
+                                <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAID') }>
                                     { payment.status }
                                 </button>
                             : ''
@@ -203,16 +206,16 @@ function Payments() {
                         (
                             payment.status == 'PAID'
                             ? 
-                                <button className="btn btn-success font-weight-bold text-center btn-sm">
+                                <span className="alert-success font-weight-bold text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
                                     { payment.status }
-                                </button>
+                                </span>
                             : ''
                         )
                     }
                 </td>
                 <td>
-                    <button className="btn btn-primary form-control btn-sm" onClick={ () => handlerExportPayment(payment.id) }>
-                        <i className="ri-file-excel-fill"></i> EXPORT
+                    <button className="btn btn-primary form-control btn-sm" onClick={ () => handlerExportPayment(payment.id) } title="Export Payment">
+                        <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>
             </tr>
@@ -485,8 +488,13 @@ function Payments() {
                                         <thead>
                                             <tr>
                                                 <th><b>DATE</b></th>
-                                                <th><b>N° PAYMENT</b></th>
-                                                <th><b>TEAM</b></th>
+                                                <th>
+                                                    <b>N° PAYMENT</b><br/>
+                                                    <b>TEAM</b>
+                                                </th>
+                                                <th>
+                                                    <b>USERS</b><br/>
+                                                </th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
                                                 <th><b>TOTAL DELIVERY</b></th>
