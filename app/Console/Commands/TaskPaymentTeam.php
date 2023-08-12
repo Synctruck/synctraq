@@ -82,8 +82,11 @@ class TaskPaymentTeam extends Command
                                                         ->where('status', 'Delivery')
                                                         ->get();
 
-                Log::info('$team => ');
-                Log::info($team);
+                if($team->id == 271)
+                {
+                    Log::info('$listPackageDelivery => ');
+                    Log::info($listPackageDelivery);
+                }
 
                 $totalTeam = 0;
 
