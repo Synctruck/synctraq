@@ -266,6 +266,7 @@ function PackageDispatch() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
     const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
+    const [forcedDispatch, setForcedDispatch] = useState('NO');
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
@@ -564,6 +565,7 @@ function PackageDispatch() {
 
         if(sendDispatch)
         {
+            setTextMessage('');
             setIsLoading(true);
             setReadOnly(true);
             setSendDispatch(0);
@@ -577,6 +579,7 @@ function PackageDispatch() {
             formData.append('autorizationDispatch', autorizationDispatch);
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
+            formData.append('forcedDispatch', forcedDispatch);
 
             if(latitude == 0 || longitude == 0)
             {
@@ -597,7 +600,13 @@ function PackageDispatch() {
 
                     setIsLoading(false);
 
-                    if(response.stateAction == 'notAutorization')
+                    if(response.stateAction == 'dispatchedMoreThanTwice')
+                    {
+                        setTextMessage('The package was dispatched more than twice, therefore it should be invoiced and registered as RTS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+                    }
+                    else if(response.stateAction == 'notAutorization')
                     {
                         setTextMessage('This driver has packages pending return. You must mark the authorization to make the dispatch #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
@@ -801,6 +810,7 @@ function PackageDispatch() {
                     }
                     else if(response.stateAction)
                     {
+                        setForcedDispatch('NO');
                         setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
@@ -1853,6 +1863,18 @@ function PackageDispatch() {
         setAutorizationDispatch(!autorizationDispatch);
     }
 
+    const handlerForcedDispatch = (forcedDispatch) => {
+
+        if(forcedDispatch == 'NO')
+        {
+            setForcedDispatch('YES');
+        }
+        else
+        {
+            setForcedDispatch('NO');
+        }
+    }
+
     return (
 
         <section className="section">
@@ -2018,7 +2040,7 @@ function PackageDispatch() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-2 form-group">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <label htmlFor="">ROUTES</label>
@@ -2026,6 +2048,13 @@ function PackageDispatch() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col-lg-3">
+                                        <button className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} } onClick={ () => handlerForcedDispatch(forcedDispatch) }>
+                                            FORCED EV: { forcedDispatch }
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="row">
                                     <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>
                                         <div className="row">
                                             <div className="col-sm-12" style={ {display: 'none'} }>
@@ -2046,8 +2075,7 @@ function PackageDispatch() {
                                     </div>
                                 </div>
 
-
-                                <hr/><br/>
+                                <hr/>
 
                                 <div className="row">
                                     <div className="col-lg-3 mb-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>

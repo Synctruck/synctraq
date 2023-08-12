@@ -62,11 +62,13 @@ class PaymentTeamController extends Controller
         $fieldDate      = array('DATE', date('m/d/Y H:i:s'));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
         $fieldTeam      = array('TEAM', $payment->team->name);
+        $fieldSurcharge = array('SURCHARGE', ($payment->surcharge ? 'YES' : 'NO'));
         $fielBlank      = array('');
 
         fputcsv($file, $fieldDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
+        fputcsv($file, $fieldSurcharge, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
         fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE'), $delimiter);
 

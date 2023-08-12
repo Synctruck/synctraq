@@ -19,6 +19,7 @@ use App\Models\{
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
+use DateTime;
 use DB;
 use Log;
 use Session;
@@ -206,11 +207,29 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
+
+                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                    ->where('status', 'Dispatch')
+                                                    ->where('company', 'EIGHTVAPE')
+                                                    ->orderBy('created_at', 'asc')
+                                                    ->get();
+
+                if(count($packageHistoryDispatchList) > 1)
+                {
+                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+                    if($hourDifference >= 6)
+                    {
+                        $packageReturnCompany->invoice = 1;
+                        $packageReturnCompany->paid    = 1;
+                    }
+                }
+
                 $packageReturnCompany->status                       = 'ReturnCompany';
                 $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
                 $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
 
-                $packageReturnCompany->save();
+                $packageReturnCompany->save(); 
 
                 //regsister history
 
@@ -268,6 +287,19 @@ class PackageReturnCompanyController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function CalculateHourDifferenceDispatch($packageHistoryDispatchList)
+    {
+        $oneDispatch = $packageHistoryDispatchList[0];
+        $twoDispatch = $packageHistoryDispatchList[1];
+
+        $dateInit = new DateTime($oneDispatch->created_at);
+        $dateEnd  = new DateTime($twoDispatch->created_at);
+
+        $interval = $dateInit->diff($dateEnd);
+
+        return (int)$interval->format('%H');
     }
 
     public function Import(Request $request)

@@ -330,21 +330,9 @@ class CompanyController extends Controller
         $surchargePercentage = RangeDieselCompany::where('idCompany', $idCompany)
                                                     ->where('at_least', '<=', $dieselPrice)
                                                     ->where('but_less', '>=',  $dieselPrice)
-                                                    ->first()->surcharge_percentage;
+                                                    ->first();
 
-        if($surchargePercentage)
-        {
-            Log::info('surcharge_percentage');
-            Log::info($surchargePercentage);
-            Log::info('=====================');
-        }
-        else
-        {
-            Log::info('not_surcharge_percentage');
-            Log::info('=====================');
-        }
-
-        return $surchargePercentage;
+        return $surchargePercentage ? $surchargePercentage->surcharge_percentage : 0;
     }
 
     /*public function GetConfigurationRates($idCompany)

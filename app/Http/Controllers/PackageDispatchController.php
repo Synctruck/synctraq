@@ -14,6 +14,7 @@ use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
 
+use DateTime;
 use DB;
 use Log;
 use Session;
@@ -282,6 +283,22 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'notAutorization'];
         }*/
+
+        $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                    ->where('status', 'Dispatch')
+                                                    ->where('company', 'EIGHTVAPE')
+                                                    ->orderBy('created_at', 'asc')
+                                                    ->get();
+
+        if(count($packageHistoryDispatchList) > 1 && $request->forcedDispatch == 'NO')
+        {
+            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+            if($hourDifference >= 6)
+            {
+                return ['stateAction' => 'dispatchedMoreThanTwice'];
+            }
+        }
 
         $validateDispatch = false;
 
@@ -753,6 +770,19 @@ class PackageDispatchController extends Controller
 
             return ['stateAction' => false];
         }
+    }
+
+    public function CalculateHourDifferenceDispatch($packageHistoryDispatchList)
+    {
+        $oneDispatch = $packageHistoryDispatchList[0];
+        $twoDispatch = $packageHistoryDispatchList[count($packageHistoryDispatchList) - 1];
+
+        $dateInit = new DateTime($oneDispatch->created_at);
+        $dateEnd  = new DateTime($twoDispatch->created_at);
+
+        $interval = $dateInit->diff($dateEnd);
+
+        return (int)$interval->format('%H');
     }
 
     public function Get($Reference_Number_1)

@@ -115,8 +115,18 @@ class TaskPaymentTeam extends Command
                                 $priceWeight         = $range->price;
                                 $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($packageDelivery);
                                 $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
-                                $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
-                                $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
+
+                                if($team->surcharge)
+                                {
+                                    $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
+                                    $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
+                                }
+                                else
+                                {
+                                    $surchargePercentage = 0;
+                                    $surchargePrice      = 0;
+                                }
+                                
                                 $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route);
                                 $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
@@ -169,6 +179,7 @@ class TaskPaymentTeam extends Command
                         $paymentTeam->totalDelivery = $totalTeam;
                         $paymentTeam->totalRevert   = $totalRevert;
                         $paymentTeam->total         = $totalTeam + $totalRevert;
+                        $paymentTeam->surcharge     = $team->surcharge;
                         $paymentTeam->status        = 'TO APPROVE';
                         $paymentTeam->save();
                     }
