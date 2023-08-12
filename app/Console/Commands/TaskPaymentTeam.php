@@ -111,6 +111,8 @@ class TaskPaymentTeam extends Command
 
                         if($dieselPrice)
                         {
+                            Log::info('dieselPrice => '. $dieselPrice);
+                            
                             $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
                                                         ->where('minWeight', '<=', $weightRound)
                                                         ->where('maxWeight', '>=', $weightRound)
