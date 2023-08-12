@@ -51,8 +51,8 @@ class TaskPaymentTeam extends Command
     public function handle()
     {
         $files     = [];
-        $nowDate   = date('Y-08-02');
-        $startDate = date('Y-06-01');
+        $nowDate   = date('Y-08-14');
+        $startDate = date('Y-08-06');
         $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
         try

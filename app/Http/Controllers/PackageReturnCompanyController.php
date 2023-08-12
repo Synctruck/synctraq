@@ -55,7 +55,6 @@ class PackageReturnCompanyController extends Controller
     {
         $roleUser = Auth::user()->role->name;
 
-
         $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $idCompany, $route, $state, 'ReturnCompany');
 
         $quantityReturn = $packageReturnCompanyList->total();
@@ -221,7 +220,6 @@ class PackageReturnCompanyController extends Controller
                     if($hourDifference >= 6)
                     {
                         $packageReturnCompany->invoice = 1;
-                        $packageReturnCompany->paid    = 1;
                     }
                 }
 
@@ -292,7 +290,7 @@ class PackageReturnCompanyController extends Controller
     public function CalculateHourDifferenceDispatch($packageHistoryDispatchList)
     {
         $oneDispatch = $packageHistoryDispatchList[0];
-        $twoDispatch = $packageHistoryDispatchList[1];
+        $twoDispatch = $packageHistoryDispatchList[count($packageHistoryDispatchList) - 1];
 
         $dateInit = new DateTime($oneDispatch->created_at);
         $dateEnd  = new DateTime($twoDispatch->created_at);
