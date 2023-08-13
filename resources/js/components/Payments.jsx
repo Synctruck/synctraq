@@ -283,7 +283,7 @@ function Payments() {
             total = parseFloat(total) + parseFloat(adjustment.amount);
         });
 
-        setTotalAdjustment(total.toFixed(2));
+        setTotalAdjustment(total.toFixed(4));
     }
 
     const listPaymentAdjustmentModal = listAdjustment.map( (adjustment, i) => {
