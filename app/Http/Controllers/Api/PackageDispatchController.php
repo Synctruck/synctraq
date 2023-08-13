@@ -232,7 +232,7 @@ class PackageDispatchController extends Controller
         $status             = $request['status'];
         $Date_Delivery      = $Date_Delivery;
         $photoUrl           = $request['pod_url'];
-        $Description        = '';
+        $Description        = 'PODApp: Delivery';
 
         $packageDispatch = PackageDispatch::find($Reference_Number_1);
         $packageDispatch->photoUrl      = $photoUrl;
