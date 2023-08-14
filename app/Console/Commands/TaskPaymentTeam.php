@@ -172,7 +172,6 @@ class TaskPaymentTeam extends Command
 
                                         $totalTeam = $totalTeam + $totalPrice;
                                     }
-                                    
                                 }
                             }
                         }
