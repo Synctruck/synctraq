@@ -82,7 +82,7 @@ class TaskPackageSendPreFactura extends Command
         }
         catch(Exception $e)
         {
-            DB::rollback();
+            DB::rollback(); 
         }*/
 
         if(1)
@@ -92,8 +92,8 @@ class TaskPackageSendPreFactura extends Command
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-d');
-                $startDate = date('Y-01-01');
+                $nowDate   = date('Y-08-14');
+                $startDate = date('Y-08-06');
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
