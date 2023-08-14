@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use DateTime;
 use DB;
+use Log;
 use Session;
 
 class ChargeCompanyController extends Controller
@@ -164,7 +165,7 @@ class ChargeCompanyController extends Controller
             else
             {
                 Log::info('$chargeDetail->Reference_Number_1 => '. $chargeDetail->Reference_Number_1);
-                
+
                 $packageDelivery = PackageReturnCompany::find($chargeDetail->Reference_Number_1);
 
                 $date = date('m-d-Y', strtotime($packageDelivery->created_at)) .' '. date('H:i:s', strtotime($packageDelivery->created_at));
