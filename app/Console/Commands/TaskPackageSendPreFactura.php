@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam };
+use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam, PackageReturnCompany };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -57,8 +57,8 @@ class TaskPackageSendPreFactura extends Command
             DB::beginTransaction();
 
             $files     = [];
-            $nowDate   = date('Y-m-d');
-            $startDate = date('Y-07-13');
+            $nowDate   = date('Y-08-14');
+            $startDate = date('Y-08-06');
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
             $companyList = Company::all();
@@ -82,7 +82,7 @@ class TaskPackageSendPreFactura extends Command
         }
         catch(Exception $e)
         {
-            DB::rollback();
+            DB::rollback(); 
         }*/
 
         if($dayName == 'Monday' && $nowHour == 9)
@@ -92,8 +92,8 @@ class TaskPackageSendPreFactura extends Command
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-d');
-                $startDate = date('Y-01-01');
+                $nowDate   = date('Y-08-14');
+                $startDate = date('Y-08-06');
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
@@ -148,19 +148,21 @@ class TaskPackageSendPreFactura extends Command
                                                 ->where('status', 'Delivery')
                                                 ->get();
 
+        $packageReturnCompanyList = PackageReturnCompany::where('invoice', 1)
+                                                        ->where('idCompany', $idCompany)
+                                                        ->get();
+
         Log::info('================');
         Log::info('SEND PRE FACTURA - EMAIL - COMPANY - '. $idCompany);
         Log::info('Quantity:'. count($listPackageDelivery));
 
         $totalCharge = 0;
 
-        if(count($listPackageDelivery) > 0)
+        if(count($listPackageDelivery) > 0 || count($packageReturnCompanyList) > 0)
         {
             foreach($listPackageDelivery as $packageDelivery)
             {
                 $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                $packageDelivery->invoiced = 1;
-                $packageDelivery->save();
 
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
@@ -207,9 +209,70 @@ class TaskPackageSendPreFactura extends Command
 
                         fputcsv($file, $lineData, $delimiter);
                     }
+                    
+                    $packageDelivery->invoiced = 1;
+                    $packageDelivery->save();
                 }
             }
 
+            foreach($packageReturnCompanyList as $packageReturnCompany)
+            {
+                $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
+                
+                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                                    ->first();
+
+                if($packagePriceCompanyTeam == null || date("l", strtotime($packageReturnCompany->created_at)) == 'Monday')
+                {
+                    //create or update price company team
+                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                    $packagePriceCompanyTeamController->Insert($packageReturnCompany, 'old');
+
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                                    ->first();
+                }
+
+                Log::info('$packagePriceCompanyTeam => '. $packagePriceCompanyTeam);
+
+                if($packagePriceCompanyTeam)
+                {
+                    $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)->first();
+
+                    if($chargeCompanyDetail == null)
+                    {
+                        $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
+
+                        $chargeCompanyDetail = new ChargeCompanyDetail();
+
+                        $chargeCompanyDetail->Reference_Number_1 = $packageReturnCompany->Reference_Number_1;
+                        $chargeCompanyDetail->idChargeCompany    = $idCharge;
+
+                        $chargeCompanyDetail->save();
+
+                        $lineData = array(
+                                        date('m-d-Y', strtotime($packageReturnCompany->created_at)),
+                                        $packageReturnCompany->company,
+                                        $packageReturnCompany->Reference_Number_1,
+                                        '$'. $packagePriceCompanyTeam->dieselPriceCompany,
+                                        $packagePriceCompanyTeam->weight,
+                                        $packagePriceCompanyTeam->dimWeightCompanyRound,
+                                        '$'. $packagePriceCompanyTeam->priceWeightCompany,
+                                        '$'. $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->priceBaseCompany,
+                                        $packagePriceCompanyTeam->surchargePercentageCompany .'%',
+                                        '$'. $packagePriceCompanyTeam->surchargePriceCompany,
+                                        '$'. $packagePriceCompanyTeam->totalPriceCompany
+                                    );
+
+                        fputcsv($file, $lineData, $delimiter);
+                    }
+
+                    $packageReturnCompany->invoice = 2;
+                    $packageReturnCompany->save();
+                }
+            }
+
+            
             rewind($file);
             fclose($file);
         }

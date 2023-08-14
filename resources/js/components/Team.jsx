@@ -14,6 +14,7 @@ function Team() {
     const [address, setAddress]                       = useState('');
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
+    const [surcharge, setSurcharge]                   = useState(1);
     const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
@@ -123,19 +124,6 @@ function Team() {
     const [defaultOptionConfiguration, setDefaultOptionConfiguration] = useState(null);
     const [valueOptionConfiguration, setValueOptionConfiguration]     = useState('');
 
-    const listConfigurarionPrice = (idTeam) => {
-
-        setValueOptionConfiguration('');
-        setDefaultOptionConfiguration(<option value="">Select configuration</option>);
-
-        fetch(url_general +'range-price-team-route-company/list-configuration-price-team/'+ idTeam)
-        .then(res => res.json())
-        .then((response) => {
-
-            setListConfigurationPrice(response.listConfigurarionPrice);
-        });
-    }
-
     const handlerOpenModal = (id) => {
 
         setRouteSearch(null);
@@ -155,7 +143,6 @@ function Team() {
             setTitleModal('Add Team');
             setTextButtonSave('Save');
 
-            listConfigurarionPrice(0);
             handlerChangeRoute([]);
         }
 
@@ -171,32 +158,6 @@ function Team() {
 
         e.preventDefault();
 
-        let dataPrices  = [];
-        let minWeight   = 0;
-        let maxWeight   = 0;
-        let priceWeight = 0;
-
-        listCompany.map( company => {
-
-            minWeight   = document.getElementById('minWeight'+ 1 + company.id).value;
-            maxWeight   = document.getElementById('maxWeight'+ 1 + company.id).value;
-            priceWeight = document.getElementById('priceWeight'+ 1 + company.id).value;
-
-            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
-
-            minWeight   = document.getElementById('minWeight'+ 2 + company.id).value;
-            maxWeight   = document.getElementById('maxWeight'+ 2 + company.id).value;
-            priceWeight = document.getElementById('priceWeight'+ 2 + company.id).value;
-
-            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
-
-            minWeight   = document.getElementById('minWeight'+ 3 + company.id).value;
-            maxWeight   = document.getElementById('maxWeight'+ 3 + company.id).value;
-            priceWeight = document.getElementById('priceWeight'+ 3 + company.id).value;
-
-            dataPrices.push(company.id, minWeight, maxWeight, priceWeight);
-        });
-
         const formData = new FormData();
 
         formData.append('idRole', idRole);
@@ -206,15 +167,14 @@ function Team() {
         formData.append('phone', phone);
         formData.append('email', email);
         formData.append('status', status);
-        formData.append('route', RouteSearch);
-        formData.append('routeOld', RouteOld);
-        formData.append('dataPrices', dataPrices);
-        formData.append('valueOptionConfiguration', valueOptionConfiguration);
+        formData.append('surcharge', surcharge);
 
         clearValidation();
 
         if(idTeam == 0)
         {
+            LoadingShowMap();
+
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             setDisabledButton(true);
@@ -254,6 +214,8 @@ function Team() {
                         }
                     }
 
+                    LoadingHideMap();
+
                     setDisabledButton(false);
                 },
             );
@@ -277,8 +239,7 @@ function Team() {
                 if(response.stateAction == true)
                 {
                     listAllTeam(1);
-                    listConfigurarionPrice(idTeam);
-                    handlerChangeConfiguration(RouteSearch);
+
                     swal("Equipment was updated!", {
 
                         icon: "success",
@@ -338,8 +299,8 @@ function Team() {
             setPermissionDispatch(team.permissionDispatch);
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
+            setSurcharge(team.surcharge);
             
-            listConfigurarionPrice(id);
             /*setTimeout( () => {
 
                 console.log(listPrices);
@@ -1160,39 +1121,6 @@ function Team() {
         setPhone('');
         setEmail('');
         setStatus('Active');
-
-        listCompany.map( company => {
-
-            document.getElementById('minWeight'+ 1 + company.id).value = '';
-            document.getElementById('maxWeight'+ 1 + company.id).value = '';
-            document.getElementById('priceWeight'+ 1 + company.id).value = '';
-
-            document.getElementById('minWeight'+ 2 + company.id).value = '';
-            document.getElementById('maxWeight'+ 2 + company.id).value = '';
-            document.getElementById('priceWeight'+ 2 + company.id).value = '';
-
-            document.getElementById('minWeight'+ 3 + company.id).value = '';
-            document.getElementById('maxWeight'+ 3 + company.id).value = '';
-            document.getElementById('priceWeight'+ 3 + company.id).value = '';
-        });
-    }
-
-    const clearPricesTeams = () => {
-
-        listCompany.map( company => {
-
-            document.getElementById('minWeight'+ 1 + company.id).value = '';
-            document.getElementById('maxWeight'+ 1 + company.id).value = '';
-            document.getElementById('priceWeight'+ 1 + company.id).value = '';
-
-            document.getElementById('minWeight'+ 2 + company.id).value = '';
-            document.getElementById('maxWeight'+ 2 + company.id).value = '';
-            document.getElementById('priceWeight'+ 2 + company.id).value = '';
-
-            document.getElementById('minWeight'+ 3 + company.id).value = '';
-            document.getElementById('maxWeight'+ 3 + company.id).value = '';
-            document.getElementById('priceWeight'+ 3 + company.id).value = '';
-        });
     }
 
     const clearFormRange = () => {
@@ -1281,7 +1209,18 @@ function Team() {
                 </td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
-                <td>{ user.idOnfleet }</td> 
+                <td>{ user.idOnfleet }</td>
+                <td>
+                    {
+                        (
+                            user.surcharge
+                            ?
+                                <div className="alert alert-success font-weight-bold">YES</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">NO</div>
+                        )
+                    }
+                </td>
                 <td>
                     {
                         (
@@ -1462,52 +1401,6 @@ function Team() {
         setRouteSearch(routesSearch);
     };
 
-    const handlerChangeConfiguration = (routePrice) => {
-
-        clearPricesTeams();
-        setRouteOld(routePrice);
-        setRouteSearch(routePrice);
-        setValueOptionConfiguration(routePrice);
-
-        if(routePrice != '' && routePrice != null)
-        {
-            fetch(url_general +'range-price-team-route-company/get-prices-team/'+ idTeam +'/'+ routePrice)
-            .then(response => response.json())
-            .then(response => {
-
-                let listPrices = response.listPrices;
-
-                setTimeout( () => {
-
-                    console.log(listPrices);
-
-                    for(var i = 0; i < listPrices.length; i++)
-                    {
-                        setRouteSearch(listPrices[i].route);
-
-                        if((i % 3) == 0)
-                        {
-                            document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
-                            document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
-                            document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
-
-                            document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
-                            document.getElementById('maxWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].maxWeight;
-                            document.getElementById('priceWeight'+ 2 + listPrices[i].idCompany).value = listPrices[i + 1].price;
-
-                            document.getElementById('minWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].minWeight;
-                            document.getElementById('maxWeight'+ 3 + listPrices[i].idCompany).value   = listPrices[i + 2].maxWeight;
-                            document.getElementById('priceWeight'+ 3 + listPrices[i].idCompany).value = listPrices[i + 2].price;
-                        }
-                    }
-
-                }, 100);
-            });
-        }
-
-        listPricesTeams(routePrice);
-    }
-
     const listPricesTeams = (routePrice) => {
 
         let routePricesTeams = [];
@@ -1601,7 +1494,7 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Role</label>
+                                                                    <label className="form">Role</label>
                                                                     <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
                                                                         { listRoleSelect }
@@ -1612,14 +1505,14 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Team Name</label>
+                                                                    <label className="form">Team Name</label>
                                                                     <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Name of owner</label>
+                                                                    <label className="form">Name of owner</label>
                                                                     <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
                                                                 </div>
@@ -1629,14 +1522,14 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Phone</label>
+                                                                    <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Email</label>
+                                                                    <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
                                                                 </div>
@@ -1646,58 +1539,30 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label>Id Onfleet</label>
+                                                                    <label className="form">Id Onfleet</label>
                                                                     <input type="text" value={ idOnfleet } className="form-control" readOnly/>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="row" >
-                                                            <div className="col-lg-12">
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
-                                                                    <label>Status</label>
+                                                                    <label className="form">Surcharge</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ surcharge } className="form-control" onChange={ (e) => setSurcharge(e.target.value) } required>
+                                                                        <option value="1" >YES</option>
+                                                                        <option value="0" >NO</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
                                                                         <option value="Active" >Active</option>
                                                                         <option value="Inactive" >Inactive</option>
                                                                     </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="" className="form">Configurations :</label>
-                                                                    <select name="" id="" className="form-control" value={ valueOptionConfiguration } onChange={ (e) => handlerChangeConfiguration(e.target.value) }>
-                                                                        { defaultOptionConfiguration }
-                                                                        { listConfigurationOption }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="" className="form">Route :</label>
-                                                                    <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } value={ RoutesSelect }/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <table className="table table-hover table-condensed">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>COMPANY</th>
-                                                                                <th>MIN WEIGHT</th>
-                                                                                <th>MAX WEIGHT</th>
-                                                                                <th>PRICE</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            { listInputPricesTeams }
-                                                                        </tbody>
-                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1955,6 +1820,7 @@ function Team() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>SURCHARGE</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

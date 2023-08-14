@@ -234,10 +234,10 @@
             @endif
 
             <li class="nav-item" id="liUlFinanzas">
-                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check') ? 'true' : 'false'}}">
+                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check' || Request::is('payment-revert')) ? 'true' : 'false'}}">
                   <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team')) ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
+                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team') || Request::is('payment-revert')) ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
                     @if(hasPermission('chargeCompany.index'))
                         <li>
                             <a class="nav-link {{Request::is('charge-company') ? 'active' : 'collapsed'}}" href="{{url('charge-company')}}">
@@ -251,6 +251,14 @@
                             <a class="nav-link {{Request::is('payment-team') ? 'active' : 'collapsed'}}" href="{{url('payment-team')}}">
                                 <i class="bx bxs-dollar-circle"></i>
                                 <span>PAYMENTS TEAMS</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if(hasPermission('paymentTeamReverts.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('payment-revert') ? 'active' : 'collapsed'}}" href="{{url('payment-revert')}}">
+                                <i class="bx bxs-dollar-circle"></i>
+                                <span>PAYMENT REVERTS</span>
                             </a>
                         </li>
                     @endif

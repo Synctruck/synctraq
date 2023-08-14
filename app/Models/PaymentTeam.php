@@ -22,6 +22,16 @@ class PaymentTeam extends Model
         return $this->belongsTo('App\Models\User', 'idTeam', 'id');
     }
 
+    public function user_payable()
+    {
+        return $this->belongsTo('App\Models\User', 'idUserPayable', 'id');
+    }
+
+    public function user_paid()
+    {
+        return $this->belongsTo('App\Models\User', 'idUserPaid', 'id');
+    }
+
     //observers
     protected static function booted()
     {

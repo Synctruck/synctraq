@@ -24,6 +24,7 @@ require('./components/PackagePreDispatch');
 require('./components/PackageReturn');
 require('./components/PaymentDeliveryTeam');
 require('./components/Payments');
+require('./components/Reverts');
 require('./components/Report');
 require('./components/ReportDelivery');
 require('./components/ReportDispatch');

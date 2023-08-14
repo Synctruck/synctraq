@@ -927,18 +927,42 @@
                     {
                         if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
                         {
-                            let urlsPhoto = packageDispatch.photoUrl.split(',')
+                            let urlsPhoto = packageDispatch.photoUrl.includes('https:')
 
-                            urlsPhoto.forEach( photoCode => {
+                            console.log('https: '+ urlsPhoto);
+                            console.log(packageDispatch.photoUrl);
 
-                                let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+                            if(urlsPhoto)
+                            {
+                                urlsPhoto = packageDispatch.photoUrl.split(',');
 
-                                tr =    '<tr>'+
-                                            '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
-                                        '</tr>';
+                                urlsPhoto.forEach( url => {
 
-                                tableHistoryPackage.insertRow(-1).innerHTML = tr;
-                            });
+                                    if(url)
+                                    {
+                                        tr =    '<tr>'+
+                                                    '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                                '</tr>';
+
+                                        tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                urlsPhoto = packageDispatch.photoUrl.split(',')
+
+                                urlsPhoto.forEach( photoCode => {
+
+                                    let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+
+                                    tr =    '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                });
+                            }
                         }
                         else if(packageDelivery)
                         {
@@ -979,6 +1003,7 @@
                         }
                     }
                 }
+
 
                 document.getElementById('titleModalHistory').innerHTML = 'History Package: '+ PACKAGE_ID;
                 document.getElementById('contactName').value           = '';

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, PackageDispatch, PackageHistory, PackagePriceCompanyTeam, PeakeSeasonCompany, RangeDieselCompany };
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, 
+                PackageDispatch, PackageHistory, PackagePriceCompanyTeam, 
+                PeakeSeasonCompany, RangeDieselCompany, PackageReturnCompany };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -152,7 +154,7 @@ class ChargeCompanyController extends Controller
         {
             $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
             $packageDelivery         = PackageDispatch::find($chargeDetail->Reference_Number_1);
-            
+
             if($packageDelivery)
             {
                 $team = $packageDelivery->team ? $packageDelivery->team->name : '';
@@ -160,6 +162,9 @@ class ChargeCompanyController extends Controller
             }
             else
             {
+                $packageDelivery = PackageReturnCompany::find($chargeDetail->Reference_Number_1);
+
+                $date = date('m-d-Y', strtotime($packageDelivery->created_at)) .' '. date('H:i:s', strtotime($packageDelivery->created_at));
                 $team = '';
             }
 
