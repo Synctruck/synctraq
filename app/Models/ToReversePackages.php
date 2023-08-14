@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class ToReversePackages extends Model
+class ToReversePackages extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+    
     protected $table      = 'to_reverse_packages';
     protected $primaryKey = 'shipmentId';
     protected $keyType    = 'string';
