@@ -155,6 +155,7 @@ class ChargeCompanyController extends Controller
             $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
             $packageDelivery         = PackageDispatch::find($chargeDetail->Reference_Number_1);
 
+
             if($packageDelivery)
             {
                 $team = $packageDelivery->team ? $packageDelivery->team->name : '';
@@ -162,6 +163,8 @@ class ChargeCompanyController extends Controller
             }
             else
             {
+                Log::info('$chargeDetail->Reference_Number_1 => '. $chargeDetail->Reference_Number_1);
+                
                 $packageDelivery = PackageReturnCompany::find($chargeDetail->Reference_Number_1);
 
                 $date = date('m-d-Y', strtotime($packageDelivery->created_at)) .' '. date('H:i:s', strtotime($packageDelivery->created_at));
