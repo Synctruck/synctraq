@@ -284,7 +284,8 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'notAutorization'];
         }*/
 
-        $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->Reference_Number_1)
+        $packageDispatch = PackageDispatch::with('driver')
+                                        ->where('Reference_Number_1', $request->Reference_Number_1)
                                         ->where('status', '!=', 'Delete')
                                         ->first();
         if($packageDispatch)
