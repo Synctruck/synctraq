@@ -190,6 +190,8 @@ class DriverController extends Controller
             $driver->password    = Hash::make($request->email);
             $driver->usageApp    = $request->usageApp;
             $driver->status      = $request->status;
+            $driver->idTeam      = $team->id;
+            $driver->nameTeam    = $team->name;      
 
             $registerPODApp = $this->RegisterPODApp($driver);
 
