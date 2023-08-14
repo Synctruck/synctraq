@@ -98,7 +98,7 @@ class PackageDispatchController extends Controller
         * @request: request (información que manda la PODApp)
         * response: devuelve formato solicitado
     */
-    public function GetPackage($apiKey, $Reference_Number_1) 
+    public function GetPackage($apiKey, $Reference_Number_1)
     {
         $company = Company::where('id', 1)
                             ->where('key_api', $apiKey)
