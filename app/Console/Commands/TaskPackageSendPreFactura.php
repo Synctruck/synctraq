@@ -57,8 +57,8 @@ class TaskPackageSendPreFactura extends Command
             DB::beginTransaction();
 
             $files     = [];
-            $nowDate   = date('Y-m-d');
-            $startDate = date('Y-07-13');
+            $nowDate   = date('Y-08-14');
+            $startDate = date('Y-08-06');
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
             $companyList = Company::all();
@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback(); 
         }*/
 
-        if(1)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
