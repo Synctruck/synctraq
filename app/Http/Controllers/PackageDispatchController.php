@@ -284,6 +284,19 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'notAutorization'];
         }*/
 
+        $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->Reference_Number_1)
+                                        ->where('status', '!=', 'Delete')
+                                        ->first();
+        if($packageDispatch)
+        {
+            if($packageDispatch->status == 'Delivery')
+            {
+                return ['stateAction' => 'delivery'];
+            }
+
+            return ['stateAction' => 'validated', 'packageDispatch' => $packageDispatch];
+        }
+
         $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                     ->where('status', 'Dispatch')
                                                     ->where('company', 'EIGHTVAPE')
