@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, ChargeCompanyDetail, PackageDelivery, 
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, ChargeCompanyAdjustment, PackageDelivery, 
                 PackageDispatch, PackageHistory, PackagePriceCompanyTeam, 
                 PeakeSeasonCompany, RangeDieselCompany, PackageReturnCompany };
 
@@ -47,12 +47,20 @@ class ChargeCompanyController extends Controller
         return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
     }
 
-    public function Confirm($idCharge)
+    public function Confirm($idCharge, $status)
     {
         $charge = ChargeCompany::find($idCharge);
 
-        $charge->idUser = Auth::user()->id;
-        $charge->status = 'INVOICE';
+        if($status == 'APPROVED')
+        {
+            $charge->idReceivable  = Auth::user()->id;
+            $charge->status        = 'APPROVED';
+        }
+        else if($status == 'PAID')
+        {
+            $charge->idUserInvoiced = Auth::user()->id;
+            $charge->status         = 'PAID';
+        }
 
         $charge->save();
 
@@ -138,15 +146,50 @@ class ChargeCompanyController extends Controller
 
     public function Export($idCharge)
     {
+        $charge = ChargeCompany::with('company')->find($idCharge);
+
         $delimiter = ",";
-        $filename = "CHARGE - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
+        $filename  = "CHARGE - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
+        $file      = fopen('php://memory', 'w');
 
-        //create a file pointer
-        $file   = fopen('php://memory', 'w');
-        $charge = ChargeCompany::find($idCharge);
-        $fields = array('DATE', 'COMPANY', 'TEAM', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
+        $fieldIdPayment   = array('ID CHARGE', $idCharge);
+        $fieldCompany     = array('COMPANY', $charge->company->name);
+        $fietotalDelivery = array('TOTAL DELIVERY', $charge->totalDelivery .' $');
+        $fielBlank        = array('');
 
-        fputcsv($file, $fields, $delimiter);
+        fputcsv($file, $fieldDate, $delimiter);
+        fputcsv($file, $fieldIdPayment, $delimiter);
+        fputcsv($file, $fieldCompany, $delimiter);
+        fputcsv($file, $fietotalDelivery, $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+
+        $chargeCompanyAdjustmentList = ChargeCompanyAdjustment::where('idCharge', $idCharge)
+                                                                ->orderBy('created_at', 'asc')
+                                                                ->get();
+
+        if(count($chargeCompanyAdjustmentList) > 0)
+        {
+            fputcsv($file, array('ADJUSTMENT'), $delimiter);
+            fputcsv($file, array('TOTAL ADJUSTMENT', $charge->totalRevert .' $'), $delimiter);
+            fputcsv($file, array('DATE', 'DESCRIPTION', 'AMOUNT'), $delimiter);
+
+            foreach($chargeCompanyAdjustmentList as $chargeAdjustment)
+            {
+                $lineDataAdjustment = array(
+                    date('m/d/y H:i:s', strtotime($chargeAdjustment->created_at)),
+                    $chargeAdjustment->description,
+                    $chargeAdjustment->amount
+                );
+
+                fputcsv($file, $lineDataAdjustment, $delimiter);
+            }
+
+            fputcsv($file, $fielBlank, $delimiter);
+            fputcsv($file, $fielBlank, $delimiter);
+        }
+        
+        fputcsv($file, array('DATE', 'COMPANY', 'TEAM', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY'), $delimiter);
 
         $chargeCompanyDetailList = ChargeCompanyDetail::where('idChargeCompany', $idCharge)->get();
 

@@ -462,8 +462,9 @@ function Payments() {
                                             <div className="col-lg-12">
                                                 <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
                                                     <option value="all">All</option>
-                                                    <option value="Payable">PAYABLE</option>
-                                                    <option value="Paid">PAID</option>
+                                                    <option value="TO APPROVE">TO APPROVE</option>
+                                                    <option value="PAYABLE">PAYABLE</option>
+                                                    <option value="PAID">PAID</option>
                                                 </select>
                                             </div>
                                         </div>

@@ -272,13 +272,12 @@ class TaskPackageSendPreFactura extends Command
                 }
             }
 
-            
             rewind($file);
             fclose($file);
         }
 
         $chargeCompany->total  = $totalCharge;
-        $chargeCompany->status = 'DRAFT INVOICE';
+        $chargeCompany->status = 'TO APPROVE';
 
         $chargeCompany->save();
 
