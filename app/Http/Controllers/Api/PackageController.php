@@ -473,12 +473,27 @@ class PackageController extends Controller
                 }
                 else if(count($idPhoto) == 1)
                 {
-                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                    if(strpos($idPhoto[0], 'http') === false)
+                    {
+                        $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                    }
+                    else
+                    {
+                        $pod_url = '"pod_url": "'. $idPhoto[0] .'",';
+                    }
                 }
                 else
                 {
-                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
-                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+                    if(strpos($idPhoto[0], 'http') === false)
+                    {
+                        $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                        $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+                    }
+                    else
+                    {
+                        $photo1 = $idPhoto[0];
+                        $photo2 = $idPhoto[1];
+                    }
 
                     $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
                 }

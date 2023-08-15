@@ -908,7 +908,7 @@ function PackageMiddleMileScan() {
                                                 ''
                                         }
                                     </div>
-                                    <div className="col-lg-10 form-group">
+                                    <div className="col-lg-12 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -922,7 +922,7 @@ function PackageMiddleMileScan() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2" style={ {display: 'none'} }>
                                         <div className="form-group">
                                             <label htmlFor="">LinaHaul Filter</label>
                                             <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />

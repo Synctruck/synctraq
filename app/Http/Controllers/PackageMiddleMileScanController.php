@@ -215,7 +215,8 @@ class PackageMiddleMileScanController extends Controller
         $packageWarehouse = PackageWarehouse::find($request->get('Reference_Number_1'));
 
         $stateValidate = $request->get('StateValidate');
-        $stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
+        //$stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
+        $stateValidate = ['MD', 'DC', 'DE', 'VA'];
 
         if($packageWarehouse)
         {
