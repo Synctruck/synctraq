@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use DateTime;
 use DB;
+use Log;
 use Session;
 
 class ChargeCompanyController extends Controller
@@ -198,6 +199,7 @@ class ChargeCompanyController extends Controller
             $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
             $packageDelivery         = PackageDispatch::find($chargeDetail->Reference_Number_1);
 
+
             if($packageDelivery)
             {
                 $team = $packageDelivery->team ? $packageDelivery->team->name : '';
@@ -207,7 +209,15 @@ class ChargeCompanyController extends Controller
             {
                 $packageDelivery = PackageReturnCompany::find($chargeDetail->Reference_Number_1);
 
-                $date = date('m-d-Y', strtotime($packageDelivery->created_at)) .' '. date('H:i:s', strtotime($packageDelivery->created_at));
+                if($packageDelivery)
+                {
+                    $date = date('m-d-Y', strtotime($packageDelivery->created_at)) .' '. date('H:i:s', strtotime($packageDelivery->created_at));
+                }
+                else
+                {
+                    $date = date('Y-m-d', strtotime($chargeDetail->created_at .' - 2day'));
+                }
+
                 $team = '';
             }
 
