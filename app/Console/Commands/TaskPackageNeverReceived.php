@@ -76,7 +76,7 @@ class TaskPackageNeverReceived extends Command
         {
             $days = (strtotime($nowDate) - strtotime($packageManifest->created_at)) / 86400;
 
-            if($days >= 7)
+            if($days >= 15)
             {
                 $packageDelete = PackageDelete::find($packageManifest->Reference_Number_1);
 
