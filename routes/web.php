@@ -418,6 +418,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/list/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListManifest']);
 	Route::get('/report/export/manifest/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{type}', [ReportController::class, 'ExportManifest']);
 
+	Route::get('/report/mms', [ReportController::class, 'IndexMMS'])->middleware('permission:reportMiddleMileScan.index');
+	Route::get('/report/list/mms/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListMMS']);
+	Route::get('/report/export/mms/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{type}', [ReportController::class, 'ExportMMS']);
+
 	Route::get('/report/inbound', [ReportController::class, 'IndexInbound'])->middleware('permission:reportInbound.index');
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
 	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportInbound']);

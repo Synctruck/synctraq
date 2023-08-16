@@ -30,6 +30,7 @@ require('./components/ReportDelivery');
 require('./components/ReportDispatch');
 require('./components/ReportInbound');
 require('./components/ReportManifest');
+require('./components/ReportMiddleMileScan');
 require('./components/ReportNotExists');
 require('./components/ReportAssigns');
 require('./components/ReportDelete');

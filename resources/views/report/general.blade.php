@@ -149,7 +149,7 @@
 
         <!-- Revenue Card -->
         @if(hasPermission('reportNotexists.index'))
-        <div class="col-xxl-3 col-md-6">
+        <div class="col-xxl-3 col-md-6" style=" display: none;">
             <a href="{{url('/report/notExists')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -169,6 +169,30 @@
             </a>
         </div><!-- End Sales Card -->
         @endif
+
+        <!-- Revenue Card -->
+        @if(hasPermission('reportMiddleMileScan.index'))
+            <div class="col-xxl-3 col-md-6">
+                <a href="{{url('/report/mms')}}" style="text-decoration: none">
+                <div class="card info-card ">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="color: #C2185B ; background:#F48FB1  ">
+                            <i class="bx bxs-report"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>Middle Mile Scan</h6>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="{{url('/report/mms')}}">Go to report <i class="bi bi-arrow-right-circle"></i></a>
+                    </div>
+                </div>
+                </a>
+            </div><!-- End Sales Card -->
+        @endif
+
         <!-- Revenue Card -->
         @if(hasPermission('reportReturncompany.index'))
             <!-- Customers Card -->
