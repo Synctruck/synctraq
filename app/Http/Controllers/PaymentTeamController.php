@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{ 
-            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamDetailReturn, 
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamAdjustment, PaymentTeamDetailReturn, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
@@ -39,7 +39,7 @@ class PaymentTeamController extends Controller
         {
             $paymentList = $paymentList->where('status', $status);
         }
-
+ 
         $totalPayments = $paymentList->get()->sum('total');
         $paymentList   = $paymentList->orderBy('created_at', 'desc')
                                     ->orderBy('total', 'desc')
@@ -70,6 +70,32 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldTeam, $delimiter);
         fputcsv($file, $fieldSurcharge, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
+
+        $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
+                                                                ->orderBy('created_at', 'asc')
+                                                                ->get();
+
+        if(count($paymentTeamAdjustmentList) > 0)
+        {
+            fputcsv($file, array('ADJUSTMENT'), $delimiter);
+            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalRevert .' $'), $delimiter);
+            fputcsv($file, array('DATE', 'DESCRIPTION', 'AMOUNT'), $delimiter);
+
+            foreach($paymentTeamAdjustmentList as $chargeAdjustment)
+            {
+                $lineDataAdjustment = array(
+                    date('m/d/y H:i:s', strtotime($chargeAdjustment->created_at)),
+                    $chargeAdjustment->description,
+                    $chargeAdjustment->amount
+                );
+
+                fputcsv($file, $lineDataAdjustment, $delimiter);
+            }
+
+            fputcsv($file, $fielBlank, $delimiter);
+            fputcsv($file, $fielBlank, $delimiter);
+        }
+
         fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
