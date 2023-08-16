@@ -322,6 +322,75 @@ class ReportController extends Controller
         return $listAll;
     }
 
+    public function IndexLmCarrier()
+    {
+        return view('report.indexlmcarrier');
+    }
+
+    public function ListLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state)
+    {
+        $listAll = $this->getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state);
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('status', 'Middle Mile Scan')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        return ['listAll' => $listAll, 'listState' => $listState];
+    }
+
+    private function getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state, $type = 'list')
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'LM CARRIER');
+
+        if($idCompany != 0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
+
+        if($route != 'all')
+        {
+            $listAll = $listAll->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }
+ 
+        if($type == 'list')
+        {
+            $listAll = $listAll->select(
+                                    'created_at',
+                                    'company',
+                                    'Reference_Number_1',
+                                    'Dropoff_Contact_Name',
+                                    'Dropoff_Contact_Phone_Number',
+                                    'Dropoff_Address_Line_1',
+                                    'Dropoff_City',
+                                    'Dropoff_Province',
+                                    'Dropoff_Postal_Code',
+                                    'Weight',
+                                    'Route',
+                                    'status'
+                                )
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(50);
+        }
+        else
+        {
+            $listAll = $listAll->get();
+        }
+
+        return $listAll;
+    }
+
     public function IndexDispatch()
     {
         return view('report.indexdispatch');
@@ -1431,6 +1500,59 @@ class ReportController extends Controller
             fclose($file);
 
             SendGeneralExport('Report Midle Mile Scan', $filename);
+
+            return ['stateAction' => true];
+        }
+    }
+
+    public function ExportLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state, $typeExport)
+    {
+        $delimiter = ",";
+        $filename  = $typeExport == 'download' ? "Report Lm Carrier " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Lm Carrier.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageManifest = $this->getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state, $type = 'export');
+
+        foreach($listPackageManifest as $packageManifest)
+        {
+
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageManifest->created_at)),
+                                date('H:i:s', strtotime($packageManifest->created_at)),
+                                $packageManifest->Reference_Number_1,
+                                $packageManifest->Dropoff_Contact_Name,
+                                $packageManifest->Dropoff_Contact_Phone_Number,
+                                $packageManifest->Dropoff_Address_Line_1,
+                                $packageManifest->Dropoff_City,
+                                $packageManifest->Dropoff_Province,
+                                $packageManifest->Dropoff_Postal_Code,
+                                $packageManifest->Weight,
+                                $packageManifest->Route
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
+
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Lm Carrier', $filename);
 
             return ['stateAction' => true];
         }

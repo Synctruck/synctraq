@@ -31,6 +31,7 @@ require('./components/ReportDispatch');
 require('./components/ReportInbound');
 require('./components/ReportManifest');
 require('./components/ReportMiddleMileScan');
+require('./components/ReportLmCarrier');
 require('./components/ReportNotExists');
 require('./components/ReportAssigns');
 require('./components/ReportDelete');
