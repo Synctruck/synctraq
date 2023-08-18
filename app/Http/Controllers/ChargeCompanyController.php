@@ -25,10 +25,20 @@ class ChargeCompanyController extends Controller
  
     public function List($dateStart, $dateEnd, $idCompany, $status)
     {
+        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'list');
+
+        $chargeList  = $data['chargeList'];
+        $totalCharge = $data['totalCharge'];
+
+        return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
+    }
+
+    public function GetDataListExport($dateStart, $dateEnd, $idCompany, $status, $typeAction)
+    {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
 
-        $chargeList = ChargeCompany::whereBetween('created_at', [$dateStart, $dateEnd]);
+        $chargeList = ChargeCompany::with('company')->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($idCompany != 0)
         {
@@ -41,11 +51,18 @@ class ChargeCompanyController extends Controller
         }
 
         $totalCharge = $chargeList->get()->sum('total');
-        $chargeList  = $chargeList->with('company')
-                                    ->orderBy('created_at', 'desc')
-                                    ->paginate(50);
+        $chargeList  = $chargeList->orderBy('created_at', 'desc');
 
-        return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
+        if($typeAction == 'list')
+        {
+            $chargeList  = $chargeList->paginate(50);
+        }
+        else
+        {
+            $chargeList  = $chargeList->get();
+        }
+
+        return ['totalCharge' => $totalCharge, 'chargeList' => $chargeList];
     }
 
     public function Confirm($idCharge, $status)
@@ -236,6 +253,53 @@ class ChargeCompanyController extends Controller
                 $packagePriceCompanyTeam->surchargePercentageCompany,
                 $packagePriceCompanyTeam->surchargePriceCompany,
                 $packagePriceCompanyTeam->totalPriceCompany
+            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+ 
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
+    public function ExportAll($dateStart, $dateEnd, $idCompany, $status)
+    {
+        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'export');
+
+        $chargeList  = $data['chargeList'];
+        $totalCharge = $data['totalCharge'];
+
+        $delimiter = ",";
+        $filename  = "CHARGES - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
+        $file      = fopen('php://memory', 'w');
+
+        $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
+        $fietotalCharges = array('TOTAL CHARGES', $totalCharge .' $');
+        $fielBlank        = array('');
+
+        fputcsv($file, $fieldDate, $delimiter);
+        fputcsv($file, $fietotalCharges, $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+        
+        fputcsv($file, array('DATE', 'ID INVOICE', 'COMPANY', 'START DATE', 'END DATE', 'TOTAL DELIVERY', 'TOTAL ADJUSTMENT', 'TOTAL', 'STATUS'), $delimiter);
+
+        foreach($chargeList as $charge)
+        {
+            $lineData = array(
+
+                date('m-d-Y', strtotime($charge->created_at)) .' '. date('H:i:s', strtotime($charge->created_at)),
+                $charge->id,
+                $charge->company->name,
+                date('m-d-Y', strtotime($charge->startDate)),
+                date('m-d-Y', strtotime($charge->endDate)),
+                $charge->totalDelivery,
+                $charge->totalRevert,
+                $charge->total,
+                $charge->status
             );
 
             fputcsv($file, $lineData, $delimiter);

@@ -427,6 +427,11 @@ function Payments() {
         );
     });
 
+    const handlerExport = () => {
+
+        location.href = 'payment-team/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch;
+    }
+
     return (
 
         <section className="section">
@@ -436,6 +441,13 @@ function Payments() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
                                         <label htmlFor="">Start date:</label>

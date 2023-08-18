@@ -25,30 +25,44 @@ class PaymentTeamController extends Controller
     
     public function List($dateInit, $endDate, $idTeam, $status)
     {
-        $dateInit = $dateInit .' 00:00:00';
-        $endDate  = $endDate .' 23:59:59';
+        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'list');
 
-        $paymentList = PaymentTeam::with(['team', 'user_payable', 'user_paid'])->whereBetween('created_at', [$dateInit, $endDate]);
+        $paymentList  = $data['paymentList'];
+        $totalPayments = $data['totalPayments'];
 
-        if($idTeam)
+        return ['paymentList' => $paymentList, 'totalPayments' => number_format($totalPayments, 4)];
+    }
+
+    public function GetDataListExport($dateStart, $dateEnd, $idTeam, $status, $typeAction)
+    {
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd   = $dateEnd .' 23:59:59';
+
+        $paymentList = PaymentTeam::with('team')->whereBetween('created_at', [$dateStart, $dateEnd]);
+
+        if($idTeam != 0)
         {
             $paymentList = $paymentList->where('idTeam', $idTeam);
         }
- 
+
         if($status != 'all')
         {
             $paymentList = $paymentList->where('status', $status);
         }
- 
-        $totalPayments = $paymentList->get()->sum('total');
-        $paymentList   = $paymentList->orderBy('created_at', 'desc')
-                                    ->orderBy('total', 'desc')
-                                    ->paginate(100);
 
-        return [
-            'totalPayments' => number_format($totalPayments, 4),
-            'paymentList' => $paymentList,
-        ];
+        $totalPayment = $paymentList->get()->sum('total');
+        $paymentList  = $paymentList->orderBy('created_at', 'desc');
+
+        if($typeAction == 'list')
+        {
+            $paymentList = $paymentList->paginate(50);
+        }
+        else
+        {
+            $paymentList = $paymentList->get();
+        }
+
+        return ['totalPayment' => $totalPayment, 'paymentList' => $paymentList];
     }
 
     public function Export($idPayment)
@@ -204,5 +218,52 @@ class PaymentTeamController extends Controller
         $paymentTeam->save();
 
         return ['stateAction' => true];
+    }
+
+    public function ExportAll($dateStart, $dateEnd, $idCompany, $status)
+    {
+        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'export');
+
+        $paymentList  = $data['paymentList'];
+        $totalPayment = $data['totalPayment'];
+
+        $delimiter = ",";
+        $filename  = "PAYMENTS - TEAMS  " . date('Y-m-d H:i:s') . ".csv";
+        $file      = fopen('php://memory', 'w');
+
+        $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
+        $fietotalPayments = array('TOTAL PAYMENTS', $totalPayment .' $');
+        $fielBlank        = array('');
+
+        fputcsv($file, $fieldDate, $delimiter);
+        fputcsv($file, $fietotalCharges, $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+        
+        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'TOTAL DELIVERY', 'TOTAL REVERT', 'TOTAL', 'STATUS'), $delimiter);
+
+        foreach($paymentList as $payment)
+        {
+            $lineData = array(
+
+                date('m-d-Y', strtotime($payment->created_at)) .' '. date('H:i:s', strtotime($payment->created_at)),
+                $payment->id,
+                $payment->team->name,
+                date('m-d-Y', strtotime($payment->startDate)),
+                date('m-d-Y', strtotime($payment->endDate)),
+                $payment->totalDelivery,
+                $payment->totalRevert,
+                $payment->total,
+                $payment->status
+            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+ 
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 }
