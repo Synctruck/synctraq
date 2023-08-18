@@ -427,6 +427,22 @@ function Payments() {
         );
     });
 
+    const handlerExport = () => {
+
+        location.href = 'payment-team/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch;
+    }
+
+    const handlerExportListAll = () => {
+
+        listReport.forEach((payment, index) => {
+
+            setTimeout(() => {
+
+                handlerExportPayment(payment.id);
+            }, index * 1500);
+        });
+    }
+
     return (
 
         <section className="section">
@@ -436,6 +452,13 @@ function Payments() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
                                         <label htmlFor="">Start date:</label>
@@ -498,7 +521,12 @@ function Payments() {
                                                 <th><b>TOTAL REVERT</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>STATUS</b></th>
-                                                <th><b>ACTION</b></th>
+                                                <th>
+                                                    <b>ACTION</b>&nbsp;
+                                                    <button className="btn btn-success btn-sm" onClick={  () => handlerExportListAll() }>
+                                                        <i className="ri-file-excel-fill"></i>
+                                                    </button>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -193,6 +193,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/charge-company/confirm/{idCharge}/{status}', [ChargeCompanyController::class, 'Confirm']);
 	Route::get('/charge-company/import', [ChargeCompanyController::class, 'Import']);
 	Route::get('/charge-company/export/{id}', [ChargeCompanyController::class, 'Export']);
+	Route::get('/charge-company/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [ChargeCompanyController::class, 'ExportAll']);
 
 	Route::get('/charge-company-adjustment/{idCharge}', [ChargeCompanyAdjustmentController::class, 'List']);
 	Route::post('/charge-company-adjustment/insert', [ChargeCompanyAdjustmentController::class, 'Insert']);
@@ -203,6 +204,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/status-change/{idpayment}/{status}', [PaymentTeamController::class, 'StatusChange']);
 	Route::get('/payment-team/import', [PaymentTeamController::class, 'Import']);
 	Route::get('/payment-team/export/{id}', [PaymentTeamController::class, 'Export']);
+	Route::get('/payment-team/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);

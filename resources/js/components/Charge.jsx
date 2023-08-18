@@ -553,6 +553,22 @@ function Charge() {
         });
     }
 
+    const handlerExport = () => {
+
+        location.href= 'charge-company/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch;
+    }
+
+    const handlerExportListAll = () => {
+
+        listReport.forEach((charge, index) => {
+
+            setTimeout(() => {
+
+                handlerExportCharge(charge.id);
+            }, index * 1500);
+        });
+    } 
+
     return (
 
         <section className="section">
@@ -562,6 +578,13 @@ function Charge() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
                                         <label htmlFor="">Start date:</label>
@@ -688,7 +711,12 @@ function Charge() {
                                                 <th><b>TOTAL ADJUSTMENT</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>STATUS</b></th>
-                                                <th><b>ACTION</b></th>
+                                                <th>
+                                                    <b>ACTION</b>&nbsp;
+                                                    <button className="btn btn-success btn-sm" onClick={  () => handlerExportListAll() }>
+                                                        <i className="ri-file-excel-fill"></i>
+                                                    </button>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
