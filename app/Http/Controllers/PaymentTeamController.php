@@ -224,15 +224,15 @@ class PaymentTeamController extends Controller
     {
         $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'export');
 
-        $paymentList  = $data['paymentList'];
-        $totalPayment = $data['totalPayment'];
+        $paymentList   = $data['paymentList'];
+        $totalPayments = $data['totalPayments'];
 
         $delimiter = ",";
         $filename  = "PAYMENTS - TEAMS  " . date('Y-m-d H:i:s') . ".csv";
         $file      = fopen('php://memory', 'w');
 
         $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
-        $fietotalPayments = array('TOTAL PAYMENTS', $totalPayment .' $');
+        $fietotalPayments = array('TOTAL PAYMENTS', $totalPayments .' $');
         $fielBlank        = array('');
 
         fputcsv($file, $fieldDate, $delimiter);
