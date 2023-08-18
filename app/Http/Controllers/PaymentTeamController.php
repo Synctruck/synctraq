@@ -236,7 +236,7 @@ class PaymentTeamController extends Controller
         $fielBlank        = array('');
 
         fputcsv($file, $fieldDate, $delimiter);
-        fputcsv($file, $fietotalCharges, $delimiter);
+        fputcsv($file, $fietotalPayments, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
         
         fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'TOTAL DELIVERY', 'TOTAL REVERT', 'TOTAL', 'STATUS'), $delimiter);
