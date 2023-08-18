@@ -23,9 +23,9 @@ class PaymentTeamController extends Controller
         return view('payment.payment');
     }
     
-    public function List($dateInit, $endDate, $idTeam, $status)
+    public function List($dateStart, $dateEnd, $idTeam, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'list');
+        $data = $this->GetDataListExport($dateStart, $dateEnd, $idTeam, $status, 'list');
 
         $paymentList  = $data['paymentList'];
         $totalPayments = $data['totalPayments'];
