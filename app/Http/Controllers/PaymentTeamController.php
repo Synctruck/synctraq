@@ -27,7 +27,7 @@ class PaymentTeamController extends Controller
     {
         $data = $this->GetDataListExport($dateStart, $dateEnd, $idTeam, $status, 'list');
 
-        $paymentList  = $data['paymentList'];
+        $paymentList   = $data['paymentList'];
         $totalPayments = $data['totalPayments'];
 
         return ['paymentList' => $paymentList, 'totalPayments' => number_format($totalPayments, 4)];
@@ -50,8 +50,8 @@ class PaymentTeamController extends Controller
             $paymentList = $paymentList->where('status', $status);
         }
 
-        $totalPayment = $paymentList->get()->sum('total');
-        $paymentList  = $paymentList->orderBy('created_at', 'desc');
+        $totalPayments = $paymentList->get()->sum('total');
+        $paymentList   = $paymentList->orderBy('created_at', 'desc');
 
         if($typeAction == 'list')
         {
@@ -62,7 +62,7 @@ class PaymentTeamController extends Controller
             $paymentList = $paymentList->get();
         }
 
-        return ['totalPayment' => $totalPayment, 'paymentList' => $paymentList];
+        return ['totalPayments' => $totalPayments, 'paymentList' => $paymentList];
     }
 
     public function Export($idPayment)
