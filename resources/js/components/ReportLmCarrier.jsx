@@ -52,11 +52,11 @@ function ReportLmCarrier() {
         .then((response) => {
 
             setIsLoading(false);
-            setListReport(response.listAll.data);
-            setTotalPackage(response.listAll.total);
-            setTotalPage(response.listAll.per_page);
-            setPage(response.listAll.current_page);
-            setQuantityMMS(response.listAll.total);
+            setListReport(response.listAll);
+            setTotalPackage(response.packageHistoryList.total);
+            setTotalPage(response.packageHistoryList.per_page);
+            setPage(response.packageHistoryList.current_page);
+            setQuantityMMS(response.packageHistoryList.total);
             setListState(response.listState);
 
             if(listState.length == 0)
@@ -168,6 +168,7 @@ function ReportLmCarrier() {
                 </td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.status }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
                 <td>{ pack.Dropoff_Address_Line_1 }</td>
@@ -344,6 +345,7 @@ function ReportLmCarrier() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>ACTUAL STATUS</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
                                                 <th>ADDRESS</th>
