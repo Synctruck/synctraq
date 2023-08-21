@@ -160,6 +160,7 @@ function Payments() {
         let totalDelivery = handlerChangeFormatPrice(payment.totalDelivery);
         let totalRevert   = handlerChangeFormatPrice(payment.totalRevert);
         let total         = handlerChangeFormatPrice(payment.total);
+        let averagePrice  = handlerChangeFormatPrice(payment.averagePrice);
 
         return (
 
@@ -178,9 +179,13 @@ function Payments() {
                 </td>
                 <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
                 <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td>
-                <td className="text-primary text-right"><h5><b>{ totalDelivery +' $'  }</b></h5></td>
-                <td className="text-danger text-right"><h5><b>{ totalRevert +' $'  }</b></h5></td>
-                <td className="text-success text-right"><h5><b>{ total +' $'  }</b></h5></td>
+                <td className="text-center">
+                    <b>{ payment.totalPieces }</b>
+                </td>
+                <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
+                <td className="text-danger text-right"><h5><b>{ totalRevert }</b></h5></td>
+                <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
+                <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
                 <td>
                     { 
                         (
@@ -517,9 +522,11 @@ function Payments() {
                                                 </th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
+                                                <th><b>PIECES</b></th>
                                                 <th><b>TOTAL DELIVERY</b></th>
                                                 <th><b>TOTAL REVERT</b></th>
                                                 <th><b>TOTAL</b></th>
+                                                <th><b>AVERAGE PRICE</b></th>
                                                 <th><b>STATUS</b></th>
                                                 <th>
                                                     <b>ACTION</b>&nbsp;
