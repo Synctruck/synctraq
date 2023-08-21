@@ -32,7 +32,6 @@ class ReportController extends Controller
 
     public function ListManifest($idCompany, $dateInit, $dateEnd, $route, $state)
     {
-
         $listAll = $this->getDataManifest($idCompany, $dateInit, $dateEnd, $route, $state);
 
         $listState = PackageHistory::select('Dropoff_Province')
@@ -329,14 +328,21 @@ class ReportController extends Controller
 
     public function ListLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state)
     {
-        $listAll = $this->getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state);
+        $data = $this->getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state);
+
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
 
         $listState = PackageHistory::select('Dropoff_Province')
                                     ->where('status', 'Middle Mile Scan')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
-        return ['listAll' => $listAll, 'listState' => $listState];
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'listAll' => $packageHistoryListNew,
+            'listState' => $listState,
+        ];
     }
 
     private function getDataLmCarrier($idCompany, $dateInit, $dateEnd, $route, $state, $type = 'list')
@@ -388,7 +394,36 @@ class ReportController extends Controller
             $listAll = $listAll->get();
         }
 
-        return $listAll;
+        $packageHistoryListNew = [];
+
+        foreach($listAll as $packageHistory)
+        {
+            $status = $this->GetStatus($packageHistory->Reference_Number_1);
+
+            $package = [
+
+                "created_at" => $packageHistory->created_at,
+                "company" => $packageHistory->company,
+                "status" => $status['status'],
+                "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageHistory->Dropoff_City,
+                "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                "Route" => $packageHistory->Route,
+                "Weight" => $packageHistory->Weight
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return [
+
+            'packageHistoryList' => $listAll,
+            'listAll' => $packageHistoryListNew,
+        ];
     }
 
     public function IndexDispatch()
