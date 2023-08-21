@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageAgeController;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -1700,6 +1700,7 @@ class ReportController extends Controller
         $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1);
 
