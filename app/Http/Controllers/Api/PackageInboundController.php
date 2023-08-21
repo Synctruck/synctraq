@@ -197,7 +197,6 @@ class PackageInboundController extends Controller
                     {
                         $packageCreate = new PackageInbound();
                     }
-                    
                 }
                 else if($status == 'LM Carrier')
                 {
@@ -293,23 +292,28 @@ class PackageInboundController extends Controller
                 }
                 else if($status == 'ReInbound')
                 {
-                    if($package->status == 'Inbound')
-                    {
-                        return response()->json(
-                            [
-                                'status' => 400,
-                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in ReInbound.'
-                            ]
-                        , 400);
-                    }
-                    else
+                    $packageCreate = PackageInbound::find($package->Reference_Number_1);
+
+                    if(!$packageCreate)
                     {
                         $packageCreate = new PackageInbound();
                     }
                 }
                 else if($status == 'ReturnCompany')
                 {
-                    $packageCreate = new PackageReturnCompany();
+                    if($package->status == 'ReturnCompany')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in ReturnCompany.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageReturnCompany();
+                    }
                 }
 
                 $packageCreate->Reference_Number_1 = $package->Reference_Number_1;
@@ -391,39 +395,39 @@ class PackageInboundController extends Controller
 
                 if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier')
                 {
-                    Log::info('Reference_Number_1: '. $package->Reference_Number_1);
-                    Log::info('Delete->status: MMS: '. $package->status);
-
-                    if($package->status == 'Middle Mile Scan' && $status == 'Warehouse')
+                    if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
                     {
 
                     }
-                    else if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
+                    else if($package->status == 'Middle Mile Scan' && $status == 'Warehouse')
                     {
 
                     }
                     else
                     {
-                        $package->delete();
+                        if($package->status == 'Inbound' && $status == 'ReInbound')
+                        {
+
+                        }
+                        else
+                        {
+                            $package->delete();
+                        }
                     }
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound' || $status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'LM Carrier')
-                    {
+                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'ReturnCompany' || $package->status == 'ReturnCompany' || $package->status == 'LM Carrier')
+                    {                        
                         $package->delete();
                     }
                 }
 
-                if($package->company != 'INLAND LOGISTICS')
+                if($package->company != 'INLAND LOGISTICS' && $status != 'Warehouse' && $status != 'LM Carrier')
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
                 }
-
-                $servicePackageLmCarrier = new ServicePackageLmCarrier();
-
-                
 
                 DB::commit();
 
