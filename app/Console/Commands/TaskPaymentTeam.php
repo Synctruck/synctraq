@@ -53,11 +53,11 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if(1)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             $files     = [];
-            $nowDate   = date('Y-08-14');
-            $startDate = date('Y-08-06');
+            $nowDate   = date('Y-m-d');
+            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
             try
@@ -93,7 +93,8 @@ class TaskPaymentTeam extends Command
                         Log::info($listPackageDelivery);
                     }
 
-                    $totalTeam = 0;
+                    $totalPieces = 0;
+                    $totalTeam   = 0;
 
                     if($listPackageDelivery)
                     {
@@ -170,7 +171,8 @@ class TaskPaymentTeam extends Command
                                         $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
                                         $paymentTeamDetail->save();
 
-                                        $totalTeam = $totalTeam + $totalPrice;
+                                        $totalPieces = $totalPieces + 1;
+                                        $totalTeam   = $totalTeam + $totalPrice;
                                     }
                                 }
                             }
@@ -188,9 +190,11 @@ class TaskPaymentTeam extends Command
                                 $paymentTeamAdjustment->save();
                             }
 
+                            $paymentTeam->totalPieces   = $totalPieces;
                             $paymentTeam->totalDelivery = $totalTeam;
                             $paymentTeam->totalRevert   = $totalRevert;
                             $paymentTeam->total         = $totalTeam + $totalRevert;
+                            $paymentTeam->averagePrice  = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge     = $team->surcharge;
                             $paymentTeam->status        = 'TO APPROVE';
                             $paymentTeam->save();
