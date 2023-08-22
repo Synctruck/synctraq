@@ -246,6 +246,11 @@ class WHookController extends Controller
                     $packageHistory->save();
                     
                     $packageDispatch->delete();
+
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageDispatch, 'Failed', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                    //end data for inland
                 }
 
                 DB::commit();

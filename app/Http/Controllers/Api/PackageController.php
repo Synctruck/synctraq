@@ -418,7 +418,7 @@ class PackageController extends Controller
         $header_curl       = "";
         $sendStatusCompany = true;
 
-        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' || $status == 'NMI')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' || $status == 'Failed' || $status == 'NMI')
         {
             $company = Company::find($package->idCompany);
 
@@ -461,6 +461,10 @@ class PackageController extends Controller
             elseif($status == 'NMI')
             {
                 $statusCodeCompany = 'retry_address_not_found';
+            }
+            elseif($status == 'Failed')
+            {
+                $statusCodeCompany = 'attempted_delivery';
             }
 
             if($status == 'Delivery')
