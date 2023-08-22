@@ -247,10 +247,13 @@ class WHookController extends Controller
                     
                     $packageDispatch->delete();
 
-                    //data for INLAND
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Failed', explode(',', $photoUrl), date('Y-m-d H:i:s'));
-                    //end data for inland
+                    if($packageDispatch->idCompany == 1)
+                    {
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Failed', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                        //end data for inland
+                    }
                 }
 
                 DB::commit();
