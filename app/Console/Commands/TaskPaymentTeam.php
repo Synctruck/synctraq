@@ -57,8 +57,8 @@ class TaskPaymentTeam extends Command
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -9 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -10 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
 
             try
             {
@@ -294,34 +294,26 @@ class TaskPaymentTeam extends Command
 
     public function GetPriceTeamByCompany($idTeam, $idCompany, $route)
     {
-        $range = RangePriceTeamByCompany::where('idTeam', $idTeam)
-                                    ->where('idCompany', $idCompany)
-                                    ->where('route', $route)
-                                    ->first();
+        $rangeByCompanyTeam = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                                        ->where('idCompany', $idCompany)
+                                                        ->where('route', $route)
+                                                        ->first();
 
-        if($range == null)
-        {
-            $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
+        $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
                                     ->where('route', '')
                                     ->first();
 
-            $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
+        $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', 0)
                                     ->where('route', $route)
                                     ->first();
 
-            $rangePriceByCompany = $rangeByCompany ? $rangeByCompany->price : 0;
-            $rangePriceByRoute   = $rangeByRoute ? $rangeByRoute->price : 0;
+        $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
+        $priceCompany     = $rangeByCompany ? $rangeByCompany->price : 0;
+        $priceTeam        = $rangeByRoute ? $rangeByRoute->price : 0;
+        $totalPrices      = $priceCompanyTeam + $priceCompany + $priceTeam;
 
-            return $rangePriceByCompany + $rangePriceByRoute;
-        }
-
-        if($range)
-        {
-            return $range->price;
-        }
-
-        return 0;
+        return $totalPrices;
     }
 }
