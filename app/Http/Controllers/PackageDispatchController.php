@@ -1449,7 +1449,7 @@ class PackageDispatchController extends Controller
                     
                     //data for INLAND
                     $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, $statusReturn, $comment->statusCode, $created_at_ReInbound);
+                    $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
 
                     if($deleteDispatch)
                     {
