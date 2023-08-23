@@ -470,6 +470,10 @@ class PackageController extends Controller
             {
                 $statusCodeCompany = 'attempted_delivery';
             }
+            elseif($status == 'Terminal')
+            {
+                $statusCodeCompany = 'not_delivered';
+            }
 
             if($status == 'Delivery')
             {
