@@ -353,7 +353,7 @@ class ReportController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'LM CARRIER');
+        $listAll = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'LM Carrier');
 
         if($idCompany != 0)
         {
