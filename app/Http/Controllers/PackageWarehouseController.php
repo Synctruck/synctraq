@@ -300,7 +300,7 @@ class PackageWarehouseController extends Controller
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
                     //end data for inland
                 }
-                    
+
                 DB::commit();
 
                 return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse];
@@ -599,6 +599,14 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
+                if($packageWarehouse->idCompany == 1)
+                {
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                    //end data for inland
+                }
+                
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
