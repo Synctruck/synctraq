@@ -9,6 +9,7 @@ use App\Models\{ ChargeCompany, ChargeCompanyDetail, ChargeCompanyAdjustment, Pa
                 PeakeSeasonCompany, RangeDieselCompany, PackageReturnCompany };
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 use Auth;
 use DateTime;
@@ -73,6 +74,11 @@ class ChargeCompanyController extends Controller
         {
             $charge->idReceivable  = Auth::user()->id;
             $charge->status        = 'APPROVED';
+
+            if($charge->idCompany == 10)
+            {
+                $this->SendInvoiceToAmericanEagle($charge);
+            }
         }
         else if($status == 'PAID')
         {
@@ -83,6 +89,16 @@ class ChargeCompanyController extends Controller
         $charge->save();
 
         return ['stateAction' => true];
+    }
+
+    public function SendInvoiceToAmericanEagle($charge)
+    {
+        $filename = "INVOICE -" . $charge->id . ".csv";
+        $contents = public_path('american-eagle/'. $filename);
+
+        $this->Export($charge->id, 'saveInLocal', $contents);
+
+        Storage::disk('sftp')->putFileAs('inbox/invoice', $contents, $filename);
     }
 
     public function Import(Request $request)
@@ -162,13 +178,13 @@ class ChargeCompanyController extends Controller
         }
     }
 
-    public function Export($idCharge)
+    public function Export($idCharge, $typeExport, $contents = null)
     {
         $charge = ChargeCompany::with('company')->find($idCharge);
 
         $delimiter = ",";
         $filename  = "CHARGE - COMPANIES  " . date('Y-m-d H:i:s') . ".csv";
-        $file      = fopen('php://memory', 'w');
+        $file      = $typeExport == 'saveInLocal' ? fopen($contents, 'w') : fopen('php://memory', 'w');
 
         $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
         $fieldIdPayment   = array('ID CHARGE', $idCharge);
@@ -257,13 +273,21 @@ class ChargeCompanyController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
- 
-        fseek($file, 0);
+    
+        if($typeExport == 'saveInLocal')
+        {
+            rewind($file);
+            fclose($file);
+        }
+        else if($typeExport == 'download')
+        {
+            fseek($file, 0); 
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
     }
 
     public function ExportAll($dateStart, $dateEnd, $idCompany, $status)
