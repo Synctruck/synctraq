@@ -145,12 +145,13 @@ class PaymentTeamController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+    
+        fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
+
         $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
         if(count($paymentTeamDetailReturnList) > 0)
         {
-            fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
             fputcsv($file, [], $delimiter);
             fputcsv($file, [], $delimiter);
             fputcsv($file, ['REVERTS'], $delimiter);
@@ -270,11 +271,12 @@ class PaymentTeamController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
         
+        fputcsv($file, array('', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
+
         $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
         if(count($paymentTeamDetailReturnList) > 0)
         {
-            fputcsv($file, array('', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
             fputcsv($file, [], $delimiter);
             fputcsv($file, [], $delimiter);
             fputcsv($file, ['REVERTS'], $delimiter);
