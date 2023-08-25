@@ -129,10 +129,10 @@ class PackageAgeController extends Controller
         {
             $idsAll = PackageNeedMoreInformation::get('Reference_Number_1');
         }
-        else if($status == 'Lost')
+        /*else if($status == 'Lost')
         {
             $idsAll = PackageLost::get('Reference_Number_1');
-        }
+        }*/
         else if($status == 'Middle Mile Scan')
         {
             $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
