@@ -170,7 +170,7 @@ function Charge() {
 
             if(willDelete)
             {
-                LoadingShow();
+                LoadingShowMap();
 
                 fetch(url_general +'charge-company/confirm/'+ id +'/'+ status)
                 .then(response => response.json())
@@ -185,6 +185,8 @@ function Charge() {
 
                         listReportDispatch(1, RouteSearch, StateSearch);
                     }
+
+                    LoadingHideMap();
                 });
             }
         });
