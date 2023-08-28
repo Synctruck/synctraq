@@ -95,9 +95,9 @@ class ChargeCompanyController extends Controller
     {
         $filename = "INVOICE -" . $charge->id . ".csv";
         $contents = public_path('american-eagle/'. $filename);
-
+        
         $this->Export($charge->id, 'saveInLocal', $contents);
-
+        
         Storage::disk('sftp')->putFileAs('inbox/invoice', $contents, $filename);
     }
 
