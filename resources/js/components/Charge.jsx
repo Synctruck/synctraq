@@ -154,7 +154,7 @@ function Charge() {
 
     const handlerExportCharge = (id) => { 
 
-        location.href = url_general +'charge-company/export/'+ id;
+        location.href = url_general +'charge-company/export/'+ id +'/download';
     }
 
     const handlerChangeStatus = (id, status) => {
