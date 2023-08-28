@@ -112,6 +112,11 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
+    const handlerExportPaymentReceipt = (id) => {
+
+        location.href = url_general +'payment-team/export-receipt/'+ id;
+    }
+
     const handlerChangeStatus = (id, status) => {
 
         swal({
@@ -231,6 +236,9 @@ function Payments() {
                     }
                     
                     <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Export Payment">
+                        <i className="ri-file-excel-fill"></i>
+                    </button>
+                    <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Export Receipt">
                         <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>
