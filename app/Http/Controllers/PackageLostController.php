@@ -259,6 +259,8 @@ class PackageLostController extends Controller
                 $packageLost->comment                      = $request->get('comment') ? $request->get('comment') : '';
                 $packageLost->Weight                       = $packageInbound->Weight;
                 $packageLost->idUser                       = Auth::user()->id;
+                $packageLost->created_at                   = date('Y-m-d H:i:s');
+                $packageLost->updated_at                   = date('Y-m-d H:i:s');
                 $packageLost->status                       = 'Lost';
 
                 $packageLost->save();
@@ -432,7 +434,6 @@ class PackageLostController extends Controller
                     if($packageInbound)
                     {
                         $packageLost = new PackageLost();
-
                         $packageLost->Reference_Number_1           = $packageInbound->Reference_Number_1;
                         $packageLost->idCompany                    = $packageInbound->idCompany;
                         $packageLost->company                      = $packageInbound->company;
@@ -450,13 +451,11 @@ class PackageLostController extends Controller
                         $packageLost->Weight                       = $packageInbound->Weight;
                         $packageLost->idUser                       = Auth::user()->id;
                         $packageLost->status                       = 'Lost';
-
+                        $packageLost->created_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
+                        $packageLost->updated_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
                         $packageLost->save();
 
-                        //regsister history
-
                         $packageHistory = new PackageHistory();
-
                         $packageHistory->id                           = uniqid();
                         $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
                         $packageHistory->idCompany                    = $packageInbound->idCompany;
@@ -478,9 +477,8 @@ class PackageLostController extends Controller
                         $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
                         $packageHistory->status                       = 'Lost';
                         $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                        $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                        $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-                        
+                        $packageHistory->created_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
+                        $packageHistory->updated_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
                         $packageHistory->save();
 
                         $packageController = new PackageController();
