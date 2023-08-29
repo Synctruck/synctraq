@@ -164,7 +164,7 @@ class PackageDeliveryController extends Controller
                 $request->file('filePhoto1')->move(public_path('img/deliveries'), $filePhoto1);
 
                 $photoUrl1 = env('APP_URL') .'/img/deliveries/'. $filePhoto1;
-                $photoUrls = $filePhoto1;
+                $photoUrls = $photoUrl1;
             }
 
             if($request->hasFile('filePhoto2'))
