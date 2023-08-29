@@ -163,7 +163,7 @@ class PackageDeliveryController extends Controller
 
                 $request->file('filePhoto1')->move(public_path('img/deliveries'), $filePhoto1);
 
-                $photoUrl1 = env('APP_URL') .'/'. $filePhoto1;
+                $photoUrl1 = env('APP_URL') .'/img/deliveries/'. $filePhoto1;
                 $photoUrls = $filePhoto1;
             }
 
@@ -173,7 +173,7 @@ class PackageDeliveryController extends Controller
                 
                 $request->file('filePhoto2')->move(public_path('img/deliveries'), $filePhoto2);
 
-                $photoUrl2 = env('APP_URL') .'/'. $filePhoto2;
+                $photoUrl2 = env('APP_URL') .'/img/deliveries/'. $filePhoto2;
                 $photoUrls = $request->hasFile('filePhoto1') ? $photoUrl1 .','. $photoUrl2 : $photoUrl2;
             }
 
