@@ -155,12 +155,16 @@ class PackageDeliveryController extends Controller
 
             $filePhoto1 = '';
             $filePhoto2 = '';
+            $photoUrls  = '';
 
             if($request->hasFile('filePhoto1'))
             {
                 $filePhoto1 = $Reference_Number_1 .'-photo1.'. $request->file('filePhoto1')->getClientOriginalExtension();
 
                 $request->file('filePhoto1')->move(public_path('img/deliveries'), $filePhoto1);
+
+                $photoUrl1 = env('APP_URL') .'/img/deliveries/'. $filePhoto1;
+                $photoUrls = $photoUrl1;
             }
 
             if($request->hasFile('filePhoto2'))
@@ -168,6 +172,9 @@ class PackageDeliveryController extends Controller
                 $filePhoto2 = $Reference_Number_1 .'-photo2.'. $request->file('filePhoto2')->getClientOriginalExtension();
                 
                 $request->file('filePhoto2')->move(public_path('img/deliveries'), $filePhoto2);
+
+                $photoUrl2 = env('APP_URL') .'/img/deliveries/'. $filePhoto2;
+                $photoUrls = $request->hasFile('filePhoto1') ? $photoUrl1 .','. $photoUrl2 : $photoUrl2;
             }
 
             if($package->status != 'Dispatch' && $package->status != 'Delivery' && $package->status != 'Delete')
@@ -218,6 +225,11 @@ class PackageDeliveryController extends Controller
                 $package->status        = 'Delivery';
                 $package->save();
             }
+
+            //data for INLAND
+            $packageController = new PackageController();
+            $packageController->SendStatusToInland($package, 'Delivery', explode(',', $photoUrls), date('Y-m-d H:i:s'));
+            //end data for inland
 
             DB::commit();
 
