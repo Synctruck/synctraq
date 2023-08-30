@@ -922,7 +922,7 @@ function ReportDelivery() {
                                                                 <div className="form-group">
                                                                     <label className="form">PHOTO 1</label>
                                                                     <div id="Photo1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept="image/*"/>
+                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept=".jpg, .jpeg, .gif, .png"/>
                                                                     {
                                                                         filePhoto1 && (
                                                                             <div style={styles.preview}>
@@ -943,7 +943,7 @@ function ReportDelivery() {
                                                                 <div className="form-group">
                                                                     <label className="form">PHOTO 2</label>
                                                                     <div id="Photo2" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept="image/*"/>
+                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept=".jpg, .jpeg, .gif, .png"/>
                                                                     {
                                                                         filePhoto2 && (
                                                                             <div style={styles.preview}>
