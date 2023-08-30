@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -176,6 +176,7 @@ class PackageInboundController extends Controller
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
         $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
 
         try
         {
@@ -213,6 +214,22 @@ class PackageInboundController extends Controller
                     else
                     {
                         $packageCreate = new PackageTerminal();
+                    }
+                }
+                if($status == 'Lost')
+                {
+                    if($package->status == 'Lost')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Lost.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageLost();
                     }
                 }
                 else if($status == 'LM Carrier')
@@ -337,7 +354,7 @@ class PackageInboundController extends Controller
                 $packageCreate->idCompany          = $package->idCompany;
                 $packageCreate->company            = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
                 {
                     $packageCreate->idStore  = $package->idStore;
                     $packageCreate->store    = $package->store;
@@ -380,7 +397,7 @@ class PackageInboundController extends Controller
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
                 {
                     $packageHistory->idStore  = $package->idStore;
                     $packageHistory->store    = $package->store;
@@ -410,7 +427,7 @@ class PackageInboundController extends Controller
                 Log::info('$package->status: '. $package->status);
                 Log::info('$status: '. $status);
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal' || $package->status == 'Lost')
                 {
                     if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
                     {
@@ -434,7 +451,7 @@ class PackageInboundController extends Controller
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal')
+                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost')
                     {                        
                         $package->delete();
                     }
