@@ -276,8 +276,9 @@ class TaskPackageSendPreFactura extends Command
             fclose($file);
         }
 
-        $chargeCompany->total  = $totalCharge;
-        $chargeCompany->status = 'TO APPROVE';
+        $chargeCompany->totalDelivery  = $totalCharge;
+        $chargeCompany->total          = $totalCharge;
+        $chargeCompany->status         = 'TO APPROVE';
 
         $chargeCompany->save();
 
