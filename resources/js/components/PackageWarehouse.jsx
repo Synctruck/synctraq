@@ -857,6 +857,21 @@ function PackageWarehouse() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-lg-2">
+                                                <form onSubmit={ handlerImport }>
+                                                    <div className="form-group">
+                                                        <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                            <i className="bx bxs-file"></i> Import
+                                                        </button>
+                                                        <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                                    </div>
+                                                    <div className="form-group" style={ {display: viewButtonSave} }>
+                                                        <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                            <i className="bx  bxs-save"></i> Save
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                             <div className="col-2">
                                                 <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
@@ -927,22 +942,6 @@ function PackageWarehouse() {
                                             <label htmlFor="">LinaHaul Filter</label>
                                             <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />
                                         </div>
-                                    </div>
-                                    <div className="col-lg-2" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                                 <div className="row">

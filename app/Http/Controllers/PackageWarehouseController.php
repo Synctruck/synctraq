@@ -631,6 +631,44 @@ class PackageWarehouseController extends Controller
         return ['stateAction' => 'notExists'];
     }
 
+    public function Import(Request $request)
+    {
+        $file = $request->file('file');
+
+        $file->move(public_path() .'/file-import', 'warehouse-import.csv');
+
+        $handle = fopen(public_path('file-import/warehouse-import.csv'), "r");
+
+        $line = 0;
+
+        try
+        {
+            DB::beginTransaction();
+
+            while (($raw_string = fgets($handle)) !== false)
+            {
+                if($line > 0)
+                {
+                    $row = str_getcsv($raw_string);
+
+                    $request['Reference_Number_1'] = $row[0];
+
+                    $this->Insert($request);
+                }
+
+                $line++;
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
+    }
+
     public function ListInDelivery()
     {
         $listPackageWarehouse = PackageWarehouse::where('status', 'Warehouse')->get();

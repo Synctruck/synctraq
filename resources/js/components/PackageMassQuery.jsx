@@ -225,7 +225,7 @@ function PackageMassQuery() {
                                                             ''
                                                     )
                                                 }
-                                            </div>
+                                            </div> 
                                         </form>
                                     </div>
                                 </div>
