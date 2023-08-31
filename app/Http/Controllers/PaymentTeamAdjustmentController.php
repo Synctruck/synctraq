@@ -31,8 +31,8 @@ class PaymentTeamAdjustmentController extends Controller
             DB::beginTransaction();
 
             $paymentTeam = PaymentTeam::find($request->idPaymentTeam);
-            $paymentTeam->totalRevert = $paymentTeam->totalRevert + $request->amount;
-            $paymentTeam->total       = $paymentTeam->totalDelivery + $paymentTeam->totalRevert;
+            $paymentTeam->totalAdjustment = $paymentTeam->totalAdjustment + $request->amount;
+            $paymentTeam->total           = $paymentTeam->totalDelivery + $paymentTeam->totalRevert + $paymentTeam->totalAdjustment;
             $paymentTeam->save();
 
             $paymentTeamAdjustment = new PaymentTeamAdjustment();
