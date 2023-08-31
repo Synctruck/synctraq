@@ -410,7 +410,7 @@ class PackageWarehouseController extends Controller
                     }
                     else
                     {
-                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
+                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     }
 
                     $idOnfleet     = '';
