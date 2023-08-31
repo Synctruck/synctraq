@@ -85,6 +85,31 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldSurcharge, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
+        $paymentTeamReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)
+                                                                ->orderBy('created_at', 'asc')
+                                                                ->get();
+
+        if(count($paymentTeamReturnList) > 0)
+        {
+            fputcsv($file, array('REVERTS'), $delimiter);
+            fputcsv($file, array('TOTAL REVERTS', $payment->totalRevert .' $'), $delimiter);
+            fputcsv($file, array('DATE', 'PACKAGE ID', 'AMOUNT'), $delimiter);
+
+            foreach($paymentTeamReturnList as $paymentDetailReturn)
+            {
+                $lineDataRevert = array(
+                    date('m/d/y H:i:s', strtotime($paymentDetailReturn->created_at)),
+                    $paymentDetailReturn->Reference_Number_1,
+                    $paymentDetailReturn->totalPrice
+                );
+
+                fputcsv($file, $lineDataRevert, $delimiter);
+            }
+
+            fputcsv($file, $fielBlank, $delimiter);
+            fputcsv($file, $fielBlank, $delimiter);
+        }
+
         $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
                                                                 ->orderBy('created_at', 'asc')
                                                                 ->get();
@@ -92,7 +117,7 @@ class PaymentTeamController extends Controller
         if(count($paymentTeamAdjustmentList) > 0)
         {
             fputcsv($file, array('ADJUSTMENT'), $delimiter);
-            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalRevert .' $'), $delimiter);
+            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalAdjustment .' $'), $delimiter);
             fputcsv($file, array('DATE', 'DESCRIPTION', 'AMOUNT'), $delimiter);
 
             foreach($paymentTeamAdjustmentList as $chargeAdjustment)
@@ -148,7 +173,7 @@ class PaymentTeamController extends Controller
     
         fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
 
-        $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
+        /*$paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
         if(count($paymentTeamDetailReturnList) > 0)
         {
@@ -191,7 +216,7 @@ class PaymentTeamController extends Controller
             }
 
             fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL REVERT', $totalRevert), $delimiter);
-        }
+        }*/
 
         fseek($file, 0);
 
