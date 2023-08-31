@@ -404,7 +404,7 @@ class PackageWarehouseController extends Controller
                 {
                     $user = User::find($packageDispatch->idUserDispatch);
 
-                    if($user->nameTeam)
+                    if($user && $user->nameTeam)
                     {
                         $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                     }
