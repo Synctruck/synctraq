@@ -421,8 +421,8 @@ class PackageWarehouseController extends Controller
                     $statusOnfleet = '';
                     $onfleet       = '';
 
-                    $team       = $user->nameTeam;
-                    $workerName = $user->name .' '. $user->nameOfOwner;
+                    $team       = $user ? $user->nameTeam : '';
+                    $workerName = $user ? $user->name .' '. $user->nameOfOwner : '';
 
                     $Date_Return         = date('Y-m-d H:i:s');
                     $Description_Return  = $request->get('Description_Return');
