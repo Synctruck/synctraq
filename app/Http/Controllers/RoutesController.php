@@ -179,40 +179,52 @@ class RoutesController extends Controller
 
                     if($row[0] != '')
                     {
-                        $route = Routes::where('zipCode', $row[0])->first();
+                        $routesZipCode = RoutesZipCode::where('zipCode', $row[0])
+                                                        ->where('routeName', $row[5])
+                                                        ->first();
 
-                        if($route)
+                        if($routesZipCode)
                         {
-                            $route->name      = $row[5];
-
-                            $route->save();
-                            /*if($route->city != $row[1] || $route->county != $row[2] || $route->type != $row[3] || $route->state = $row[4] || $route->name != $row[5] || $route->latitude != $row[6] || $route->longitude != $row[7])
+                            if($routesZipCode->city != $row[1] || $routesZipCode->county != $row[2] || $routesZipCode->type != $row[3] || $routesZipCode->state = $row[4] || $routesZipCode->name != $row[5] || $routesZipCode->latitude != $row[6] || $routesZipCode->longitude != $row[7])
                             {
-                                $route->city      = $row[1];
-                                $route->county    = $row[2];
-                                $route->type      = $row[3];
-                                $route->state     = $row[4];
-                                $route->name      = $row[5];
-                                $route->latitude  = $row[6];
-                                $route->longitude = $row[7];
-
-                                $route->save();
-                            }*/
+                                $routesZipCode->city      = $row[1];
+                                $routesZipCode->county    = $row[2];
+                                $routesZipCode->type      = $row[3];
+                                $routesZipCode->state     = $row[4];
+                                $routesZipCode->routeName = $row[5];
+                                $routesZipCode->latitude  = $row[6];
+                                $routesZipCode->longitude = $row[7];
+                                $routesZipCode->save();
+                            }
                         }
                         else
                         {
-                            $route = new Routes();
+                            $routesAux = RoutesAux::where('name', $row[5])->first();
 
-                            $route->zipCode   = $row[0];
-                            $route->city      = $row[1];
-                            $route->county    = $row[2];
-                            $route->type      = $row[3];
-                            $route->state     = $row[4];
-                            $route->name      = $row[5];
-                            $route->latitude  = $row[6];
-                            $route->longitude = $row[7];
+                            if($routesAux == null)
+                            {
+                                $routesAux = new RoutesAux();
+                                $routesAux->name = $row[5];
+                                $routesAux->save();
+                            }
 
-                            $route->save();
+                            $routesZipCode = RoutesZipCode::find($row[0]);
+
+                            if($routesZipCode == null)
+                            {
+                                $routesZipCode = new RoutesZipCode();
+                            }
+                            
+                            $routesZipCode->zipCode   = $row[0];
+                            $routesZipCode->idRoute   = $routesAux->id;
+                            $routesZipCode->city      = $row[1];
+                            $routesZipCode->county    = $row[2];
+                            $routesZipCode->type      = $row[3];
+                            $routesZipCode->state     = $row[4];
+                            $routesZipCode->routeName = $row[5];
+                            $routesZipCode->latitude  = $row[6];
+                            $routesZipCode->longitude = $row[7];
+                            $routesZipCode->save();
                         }
                     }
                 }
