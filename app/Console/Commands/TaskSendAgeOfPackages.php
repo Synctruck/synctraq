@@ -48,6 +48,8 @@ class TaskSendAgeOfPackages extends Command
 
     public function handle()
     {
+        $nowHour = date('H');
+        
         if(date('l') == 'Monday' && $nowHour == 8)
         {
             Log::info('send age of package');
