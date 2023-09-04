@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ FileImport, PackageManifest, PackageHistory, Routes };
+use App\Models\{ FileImport, PackageManifest, PackageHistory, Routes, RoutesZipCode };
 
 use Log;
 
@@ -101,10 +101,9 @@ class TaskAmericanManifest extends Command
                                     $package->created_at                   = $created_at;
                                     $package->updated_at                   = $created_at;
 
-                                    $route = Routes::where('zipCode', $row[20])->first();
+                                    $routesZipCode = RoutesZipCode::find($row[20]);
                                     
-                                    $package->Route = $route ? $route->name : '';
-
+                                    $package->Route = $routesZipCode ? $routesZipCode->routeName : '';
                                     $package->save();
 
                                     $packageHistory = new PackageHistory();
