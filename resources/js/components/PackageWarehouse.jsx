@@ -586,7 +586,7 @@ function PackageWarehouse() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        LoadingShow();
+        LoadingShowMap();
 
         fetch(url_general +'package-warehouse/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -610,7 +610,7 @@ function PackageWarehouse() {
                     setViewButtonSave('none');
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }

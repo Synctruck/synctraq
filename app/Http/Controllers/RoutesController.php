@@ -24,9 +24,9 @@ class RoutesController extends Controller
     public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList, $LatitudeSearchList, $LongitudeSearchList)
     {
         $zipCode   = $request->get('zipCode');
-        $routeList = Routes::orderBy('zipCode', 'asc');
+        $routeList = RoutesAux::orderBy('name', 'asc')->paginate($this->paginate);
 
-        if($zipCode)
+        /*if($zipCode)
         {
             $routeList = $routeList->where('zipCode', 'like', '%'. $zipCode .'%');
         }
@@ -74,9 +74,7 @@ class RoutesController extends Controller
             {
                 $routeList = $routeList->whereIn('longitude', $LongitudeSearchList);
             }
-        }
-
-        $routeList = $routeList->with('teams')->paginate($this->paginate);
+        }*/
             
         return [
 
