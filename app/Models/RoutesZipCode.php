@@ -4,25 +4,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Routes extends Model implements Auditable
+class RoutesZipCode extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
-    protected $table      = 'routes';
-    protected $primaryKey = 'id';
-    protected $fillable   = ['id', 'zipCode', 'city', 'county', 'type', 'state', 'name', 'latitude', 'longitude'];
+    protected $table      = 'routes_zip_code';
+    protected $primaryKey = 'zipCode';
+    protected $keyType    = 'string';
 
-    public $timestamps   = false;
+    public $autoincrementting = true;
+    public $timestamps        = false;
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    public function teams()
-    {
-        return $this->hasMany('App\Models\TeamRoute', 'idRoute');
-    }
 
     //observers
     protected static function booted()

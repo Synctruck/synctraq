@@ -201,8 +201,8 @@ function Routes() {
                 method: 'post',
                 body: formData
             })
-            .then(res => res.json()).
-            then((response) => {
+            .then(res => res.json())
+            .then((response) => {
 
                 if(response.stateAction)
                 {
@@ -221,8 +221,6 @@ function Routes() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
-
-                LoadingHide();
             });
         }
     }
@@ -237,7 +235,7 @@ function Routes() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        LoadingShow();
+        LoadingShowMap();
 
         fetch(url_general +'routes/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -262,7 +260,7 @@ function Routes() {
                     setViewButtonSave('none');
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }

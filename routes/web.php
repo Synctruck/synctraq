@@ -386,6 +386,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('routes/delete/{id}', [RoutesController::class, 'Delete']);
 	Route::get('routes/update/package/manifest/inbound/warehouse', [RoutesController::class, 'UpdateRoutePackageManifestInboundWarehouse']);
 	Route::get('routes/update/package', [RoutesController::class, 'UpdateRoutePackage']);
+	Route::get('routes/pass/routes-aux', [RoutesController::class, 'UpdatePassRouteAux']);
+	Route::get('routes/pass/routes-zip-code', [RoutesController::class, 'UpdatePassRoutesZipCode']);
 
 	//============ Maintenance of teams
 	Route::get('team', [TeamController::class, 'Index'])->middleware('permission:team.index');
