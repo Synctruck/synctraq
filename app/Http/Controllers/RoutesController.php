@@ -5,10 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-
-
-use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User, LiveRoute};
-
+use App\Models\{ PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User, LiveRoute, RoutesAux, RoutesZipCode};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -186,7 +183,10 @@ class RoutesController extends Controller
 
                         if($route)
                         {
-                            if($route->city != $row[1] || $route->county != $row[2] || $route->type != $row[3] || $route->state = $row[4] || $route->name != $row[5] || $route->latitude != $row[6] || $route->longitude != $row[7])
+                            $route->name      = $row[5];
+
+                            $route->save();
+                            /*if($route->city != $row[1] || $route->county != $row[2] || $route->type != $row[3] || $route->state = $row[4] || $route->name != $row[5] || $route->latitude != $row[6] || $route->longitude != $row[7])
                             {
                                 $route->city      = $row[1];
                                 $route->county    = $row[2];
@@ -197,7 +197,7 @@ class RoutesController extends Controller
                                 $route->longitude = $row[7];
 
                                 $route->save();
-                            }
+                            }*/
                         }
                         else
                         {
@@ -435,5 +435,83 @@ class RoutesController extends Controller
         }
 
         dd('updated');
+    }
+
+    public function UpdatePassRouteAux()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $routesList = Routes::all();
+
+            foreach($routesList as $route)
+            {
+                $routesAux = RoutesAux::where('name', $route->name)->first();
+
+                if($routesAux == null)
+                {
+                    $routesAux = new RoutesAux();
+                    $routesAux->name = $route->name;
+                    $routesAux->save();
+                }
+            }
+
+            DB::commit();
+
+            echo 'update';  
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            echo 'failed';
+        }
+    }
+
+    public function UpdatePassRoutesZipCode()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $routesList = Routes::all();
+
+            foreach($routesList as $route)
+            {
+                $routesZipCode = RoutesZipCode::find($route->zipCode);
+
+                if($routesZipCode == null)
+                {
+                    $routes = Routes::where('name', $route->name)
+                                    ->where('zipCode', $route->zipCode)
+                                    ->first();
+
+                    $routesAux = RoutesAux::where('name', $route->name)->first();
+
+                    $routesZipCode = new RoutesZipCode();
+                    $routesZipCode->zipCode   = $route->zipCode;
+                    $routesZipCode->idRoute   = $routesAux->id;
+                    $routesZipCode->routeName = $routes->name;
+                    $routesZipCode->city      = $routes->city;
+                    $routesZipCode->county    = $routes->county;
+                    $routesZipCode->type      = $routes->type;
+                    $routesZipCode->state     = $routes->state;
+                    $routesZipCode->latitude  = $routes->latitude;
+                    $routesZipCode->longitude = $routes->longitude;
+                    $routesZipCode->save();
+                }
+            }
+
+            DB::commit();
+
+            echo 'update';  
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            echo 'failed';
+        }
     }
 }
