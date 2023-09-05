@@ -107,6 +107,8 @@ class TaskPaymentTeam extends Command
                             $weight      = $packageDelivery->Weight;
                             $weightRound = $team->roundWeight ? ceil($weight) : $weight;
 
+                            Log::info('$team->roundWeight => '. $team->roundWeight);
+
                             $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
                             if($dieselPrice)
