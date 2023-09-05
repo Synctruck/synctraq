@@ -57,8 +57,8 @@ class TaskPaymentTeam extends Command
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -10 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -9 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
 
             try
             {
@@ -87,12 +87,6 @@ class TaskPaymentTeam extends Command
                                                             ->where('status', 'Delivery')
                                                             ->get();
 
-                    if($team->id == 271)
-                    {
-                        Log::info('$listPackageDelivery => ');
-                        Log::info($listPackageDelivery);
-                    }
-
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
@@ -111,7 +105,7 @@ class TaskPaymentTeam extends Command
                         {
                             $dimFactor   = 200;
                             $weight      = $packageDelivery->Weight;
-                            $weightRound = ceil($weight);
+                            $weightRound = $team->roundWeight ? ceil($weight) : $weight;
 
                             $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
