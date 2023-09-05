@@ -106,7 +106,7 @@ function Package() {
 
         setListRoute([]);
 
-        fetch(url_general +'routes/filter/list')
+        fetch(url_general +'routes-aux/list')
         .then(res => res.json())
         .then((response) => {
 

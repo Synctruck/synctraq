@@ -379,6 +379,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('routes', [RoutesController::class, 'Index'])->middleware('permission:route.index');
 	Route::get('routes/list/{CitySearchList}/{CountySearchList}/{TypeSearchList}/{StateSearchList}/{RouteSearchList}/{LatitudeSearchList}/{LongitudeSearchList}', [RoutesController::class, 'List']);
 	Route::get('routes/filter/list', [RoutesController::class, 'FilterList']);
+	Route::get('routes-aux/list', [RoutesController::class, 'AuxList']);
 	Route::post('routes/insert', [RoutesController::class, 'Insert']);
 	Route::post('routes/import', [RoutesController::class, 'Import']);
 	Route::get('routes/get/{id}', [RoutesController::class, 'Get']);
