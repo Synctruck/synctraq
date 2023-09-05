@@ -259,6 +259,7 @@ class TeamController extends Controller
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->idOnfleet          = $request->get('idOnfleet');
                 $user->surcharge          = $request->get('surcharge');
+                $user->roundWeight        = $request->get('roundWeight');
                 $user->status             = $request->get('status');
                 $user->save();
 

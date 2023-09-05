@@ -15,6 +15,7 @@ function Team() {
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
     const [surcharge, setSurcharge]                   = useState(1);
+    const [roundWeight, setRoundWeight]               = useState(1);
     const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
@@ -168,6 +169,7 @@ function Team() {
         formData.append('email', email);
         formData.append('status', status);
         formData.append('surcharge', surcharge);
+        formData.append('roundWeight', roundWeight);
 
         clearValidation();
 
@@ -300,6 +302,7 @@ function Team() {
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
             setSurcharge(team.surcharge);
+            setRoundWeight(team.roundWeight);
             
             /*setTimeout( () => {
 
@@ -1213,6 +1216,17 @@ function Team() {
                 <td>
                     {
                         (
+                            user.roundWeight
+                            ?
+                                <div className="alert alert-success font-weight-bold">YES</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">NO</div>
+                        )
+                    }
+                </td>
+                <td>
+                    {
+                        (
                             user.surcharge
                             ?
                                 <div className="alert alert-success font-weight-bold">YES</div>
@@ -1557,6 +1571,18 @@ function Team() {
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
+                                                                    <label className="form">Round Weight</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ roundWeight } className="form-control" onChange={ (e) => setRoundWeight(e.target.value) } required>
+                                                                        <option value="1" >YES</option>
+                                                                        <option value="0" >NO</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
                                                                     <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
@@ -1596,12 +1622,12 @@ function Team() {
                                                                 <div className="col-lg-3 form-group">
                                                                     <label className="form">MIN. WEIGHT</label>
                                                                     <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                                    <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
                                                                 </div>
                                                                 <div className="col-lg-3 form-group">
                                                                     <label className="form">MAX WEIGHT</label>
                                                                     <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                                    <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
                                                                 </div>
                                                                 <div className="col-lg-3 form-group">
                                                                     <label className="form">Price $</label>
@@ -1820,6 +1846,7 @@ function Team() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>ROUND WEIGHT</th>
                                                 <th>SURCHARGE</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
