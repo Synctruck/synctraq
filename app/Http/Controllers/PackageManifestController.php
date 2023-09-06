@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes };
+use App\Models\{ Company, PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes, RoutesAux, RoutesZipCode };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -466,18 +466,27 @@ class PackageManifestController extends Controller
                             $package->created_at = $created_at;
                             $package->updated_at = $created_at;
 
-                            $route = Routes::where('zipCode', $row[24])->first();
+                            $routesZipCode = RoutesZipCode::find($row[24]);
 
-                            if(!$route)
+                            if(!$routesZipCode)
                             {
-                                $route = new Routes();
+                                $routesAux = RoutesAux::where('name', $row[31])->first();
 
-                                $route->zipCode = $row[24];
-                                $route->name    = $row[31];
-                                $route->save();
+                                if(!$routesAux)
+                                {
+                                    $routesAux = new RoutesAux();
+                                    $routesAux->name = $row[31];
+                                    $routesAux->save();
+                                }
+                                
+                                $routesZipCode = new RoutesZipCode();
+                                $routesZipCode->zipCode   = $route->zipCode;
+                                $routesZipCode->idRoute   = $routesAux->id;
+                                $routesZipCode->routeName = $routesAux->name;
+                                $routesZipCode->save();
                             }
 
-                            $package->Route = $route->name;
+                            $package->Route = $routesZipCode->routeName;
 
                             $package->save();
 

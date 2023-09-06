@@ -88,7 +88,7 @@ class RoutesController extends Controller
         $listCounty    = Routes::select('county')->groupBy('county')->get();
         $listType      = Routes::select('type')->groupBy('type')->get();
         $listState     = Routes::select('state')->groupBy('state')->get();
-        $listRoute     = Routes::select('name')->groupBy('name')->get();
+        $listRoute     = RoutesAux::orderBy('name', 'asc')->get();
         $listLatitude  = Routes::select('latitude')->groupBy('latitude')->get();
         $listLongitude = Routes::select('longitude')->groupBy('longitude')->get();
 
@@ -104,9 +104,14 @@ class RoutesController extends Controller
         ];
     }
 
+    public function AuxList()
+    {
+        return ['listRoute' => RoutesAux::orderBy('name', 'asc')->get()];
+    }
+
     public function GetAll(Request $request)
     {
-        $routeList = Routes::select('name')->groupBy('name')->get();
+        $routeList = RoutesAux::orderBy('name', 'asc')->get();
         
         return ['routeList' => $routeList];
     }
