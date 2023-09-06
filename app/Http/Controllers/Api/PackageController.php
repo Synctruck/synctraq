@@ -192,9 +192,9 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    $routesZipCode = RoutesZipCode::find($data['Dropoff_Postal_Code']);
 
-                    $routeName = $route ? $route->name : $data['Route'];
+                    $routeName = $routesZipCode ? $routesZipCode->routeName : $data['Route'];
 
                     $package = new PackageManifest();
 
