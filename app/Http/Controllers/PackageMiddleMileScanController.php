@@ -216,7 +216,7 @@ class PackageMiddleMileScanController extends Controller
 
         $stateValidate = $request->get('StateValidate');
         //$stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
-        $stateValidate = ['MD', 'DC', 'DE', 'VA'];
+        $stateValidate = ['MD', 'DC', 'DE', 'VA', 'PA', 'NJ'];
 
         if($packageWarehouse)
         {
