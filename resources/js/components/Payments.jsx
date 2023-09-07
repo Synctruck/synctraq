@@ -119,35 +119,95 @@ function Payments() {
 
     const handlerChangeStatus = (id, status) => {
 
-        swal({
-            title: "You want change the status to "+ status +"?",
-            text: "Change status!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
+        if(status != 'PAID')
+        {
+            swal({
+                title: "You want change the status to "+ status +"?",
+                text: "Change status!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
 
-            if(willDelete)
-            {
-                LoadingShow();
+                if(willDelete)
+                {
+                    LoadingShow();
 
-                fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
-                .then(response => response.json())
-                .then(response => {
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
+                    .then(response => response.json())
+                    .then(response => {
 
-                    if(response.stateAction)
-                    {
-                        swal("PAYMENT TEAM status changed!", {
+                        if(response.stateAction == true)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
 
-                            icon: "success",
-                        });
+                                icon: "success",
+                            });
 
-                        listReportDispatch(1, RouteSearch, StateSearch);
-                    }
-                });
-            }
-        });
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                        else
+                        {
+                            swal("There was an error, try again!", {
+
+                                icon: "error",
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else if(status == 'PAID')
+        {
+            swal({
+                text: 'Enter transaction number',
+                content: "input",
+                button: {
+                    text: "Save",
+                    closeModal: false,
+                },
+            })
+            .then(numberTransaction => {
+
+                if(numberTransaction != '')
+                {
+                    swal.close();
+
+                    LoadingShowMap();
+
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status +'?numberTransaction='+ numberTransaction)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction == true)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                        else
+                        {
+                            swal("There was an error, try again!", {
+
+                                icon: "error",
+                            });
+                        }
+
+                        LoadingHideMap();
+                    });
+                }
+                else
+                {
+                    swal.close();
+
+                    swal('Attention!', 'You have to enter the transaction number', 'warning');
+                }
+            });
+        }
     }
 
     const handlerChangeFormatPrice = (number) => {
@@ -240,10 +300,10 @@ function Payments() {
                         )
                     }
                     
-                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Export Payment">
+                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Download Detail">
                         <i className="ri-file-excel-fill"></i>
                     </button>
-                    <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Export Receipt">
+                    <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
                         <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>

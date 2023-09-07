@@ -296,7 +296,7 @@ function PaymentAdjustment() {
 
     const handlerChangeStatus = (id, status) => {
 
-        if(status =='')
+        if(status != 'PAID')
         {
             swal({
                 title: "You want change the status to "+ status +"?",

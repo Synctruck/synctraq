@@ -117,16 +117,24 @@ class PaymentTeamController extends Controller
         $filename  = "PAYMENT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
         
-        $fieldDate      = array('DATE', date('m/d/Y H:i:s'));
+        $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
+        $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
         $fieldTeam      = array('TEAM', $payment->team->name);
-        $fieldSurcharge = array('SURCHARGE', ($payment->surcharge ? 'YES' : 'NO'));
+        $fieldTeamTotal = array('INVOICE TOTAL', $payment->total);
         $fielBlank      = array('');
 
-        fputcsv($file, $fieldDate, $delimiter);
+        fputcsv($file, $fieldStartDate, $delimiter);
+        fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
-        fputcsv($file, $fieldSurcharge, $delimiter);
+
+        if($payment->surcharge)
+        {
+            fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
+        }
+        
+        fputcsv($file, $fieldTeamTotal, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
         $paymentTeamReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)
