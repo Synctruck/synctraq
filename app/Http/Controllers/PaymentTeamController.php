@@ -33,6 +33,43 @@ class PaymentTeamController extends Controller
         return ['paymentList' => $paymentList, 'totalPayments' => number_format($totalPayments, 4)];
     }
 
+    public function Edit($idPayment)
+    {
+        $payment = PaymentTeam::with('team')->find($idPayment);
+
+        return view('payment.edit', compact('payment'));
+    }
+
+    public function ListByRoute($idPayment)
+    {
+        $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                ->where('podFailed', 0)
+                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'))
+                                                ->groupBy('Route', 'totalPrice')
+                                                ->get();
+
+        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList];
+    }
+
+    public function InserPODFailed(Request $request)
+    {
+        $paymentDetail = PaymentTeamDetail::find($request->get('Reference_Number_1'));
+        $paymentDetail->podFailed = 1;
+        $paymentDetail->save();
+        
+        return ['statusCode' => true];
+    }
+
+    public function ListByPODFailed($idPayment)
+    {
+        $paymentTeamDetailPODFailedList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                ->where('podFailed', 1)
+                                                ->select('Reference_Number_1')
+                                                ->get();
+
+        return ['paymentTeamDetailPODFailedList' => $paymentTeamDetailPODFailedList];
+    }
+
     public function GetDataListExport($dateStart, $dateEnd, $idTeam, $status, $typeAction)
     {
         $dateStart = $dateStart .' 00:00:00';

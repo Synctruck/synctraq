@@ -177,7 +177,7 @@ function Payments() {
                 </td>
                 <td>
                     <b>{ payment.id }</b><br/>
-                    <b className="text-primary">{ payment.team.name }</b>
+                    <b className="text-primary">{ ( payment.team? payment.team.name : '') }</b>
                 </td>
                 <td>
                     <b className="text-warning">{ (payment.user_payable ? payment.user_payable.name : '' )}</b> <br/>
@@ -259,7 +259,9 @@ function Payments() {
 
     const handlerOpenModalEditPayment = (idPayment, totalDelivery) => {
 
-        setTotalDelivery(totalDelivery);
+        window.open(url_general +'payment-team/edit/'+ idPayment);
+
+        /*setTotalDelivery(totalDelivery);
         setidPayment(idPayment);
         setTitleModal('PAYMENT TEAM - ADJUSTMENT');
 
@@ -270,7 +272,7 @@ function Payments() {
             keyboard: true 
         });
 
-        myModal.show();
+        myModal.show();*/
     }
 
     const ListAdjustmentPayment = (idPayment) => {

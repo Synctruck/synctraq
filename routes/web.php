@@ -201,6 +201,14 @@ Route::group(['middleware' => 'auth'], function() {
 	//=========== Payment Team
 	Route::get('/payment-team', [PaymentTeamController::class, 'Index']);
 	Route::get('/payment-team/list/{dateInit}/{endDate}/{idteam}/{status}', [PaymentTeamController::class, 'List']);
+	Route::get('/payment-team/edit/{idPayment}', [PaymentTeamController::class, 'Edit']);
+
+	Route::get('/payment-team/list-by-route/{idPayment}', [PaymentTeamController::class, 'ListByRoute']);
+	Route::post('/payment-team/insert-pod-failed', [PaymentTeamController::class, 'InserPODFailed']);
+	Route::get('/payment-team/list-by-pod-failed/{idPayment}', [PaymentTeamController::class, 'ListByPODFailed']);
+
+
+	
 	Route::get('/payment-team/status-change/{idpayment}/{status}', [PaymentTeamController::class, 'StatusChange']);
 	Route::get('/payment-team/import', [PaymentTeamController::class, 'Import']);
 	Route::get('/payment-team/export/{id}', [PaymentTeamController::class, 'Export']);
