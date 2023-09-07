@@ -384,7 +384,7 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
-    public function StatusChange($idPayment, $status)
+    public function StatusChange(Request $request, $idPayment, $status)
     {
         $paymentTeam = PaymentTeam::find($idPayment);
 
@@ -395,8 +395,9 @@ class PaymentTeamController extends Controller
         }
         else if($status == 'PAID')
         {
-            $paymentTeam->idUserPaid = Auth::user()->id;
-            $paymentTeam->status     = 'PAID';
+            $paymentTeam->idUserPaid        = Auth::user()->id;
+            $paymentTeam->numberTransaction = $request->numberTransaction;
+            $paymentTeam->status            = 'PAID';
         }
 
         $paymentTeam->save();

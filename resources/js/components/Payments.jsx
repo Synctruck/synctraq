@@ -234,7 +234,7 @@ function Payments() {
                                     <i className="bx bx-edit-alt"></i>
                                 </button>
                             :
-                                <button className="btn btn-success btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="View Payment">
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="View Payment">
                                     <i className="bx bxs-detail"></i>
                                 </button>
                         )

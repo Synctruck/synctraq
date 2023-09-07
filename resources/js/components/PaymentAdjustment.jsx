@@ -9,6 +9,7 @@ function PaymentAdjustment() {
 
     const [teamName, setTeamName]   = useState(teamNameGeneral);
     const [paymentId, setPaymentId] = useState(paymentIdGeneral);
+    const [numberTransaction, setNumberTransaction] = useState(numberTransactionGeneral);
     const [paymentStatus, setPaymentStatus] = useState(paymentStatusGeneral); 
     const [startDate, setStartDate] = useState(startDateGeneral);
     const [endDate, setEndDate]     = useState(endDateGeneral);
@@ -295,35 +296,89 @@ function PaymentAdjustment() {
 
     const handlerChangeStatus = (id, status) => {
 
-        swal({
-            title: "You want change the status to "+ status +"?",
-            text: "Change status!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
+        if(status =='')
+        {
+            swal({
+                title: "You want change the status to "+ status +"?",
+                text: "Change status!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
 
-            if(willDelete)
-            {
-                LoadingShow();
+                if(willDelete)
+                {
+                    LoadingShow();
 
-                fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
-                .then(response => response.json())
-                .then(response => {
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
+                    .then(response => response.json())
+                    .then(response => {
 
-                    if(response.stateAction)
-                    {
-                        swal("PAYMENT TEAM status changed!", {
+                        if(response.stateAction)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
 
-                            icon: "success",
-                        });
+                                icon: "success",
+                            });
 
-                        setPaymentStatus(status);
-                    }
-                });
-            }
-        });
+                            setPaymentStatus(status);
+                        }
+                    });
+                }
+            });
+        }
+        else if(status == 'PAID')
+        {
+            swal({
+                text: 'Enter transaction number',
+                content: "input",
+                button: {
+                    text: "Save",
+                    closeModal: false,
+                },
+            })
+            .then(numberTransaction => {
+
+                if(numberTransaction != '')
+                {
+                    swal.close();
+
+                    LoadingShowMap();
+
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status +'?numberTransaction='+ numberTransaction)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction == true)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
+
+                                icon: "success",
+                            });
+
+                            setNumberTransaction(numberTransaction);
+                            setPaymentStatus(status);
+                        }
+                        else
+                        {
+                            swal("There was an error, try again!", {
+
+                                icon: "error",
+                            });
+                        }
+
+                        LoadingHideMap();
+                    });
+                }
+                else
+                {
+                    swal.close();
+
+                    swal('Attention!', 'You have to enter the transaction number', 'warning');
+                }
+            });
+        }
     }
 
     return (
@@ -338,6 +393,7 @@ function PaymentAdjustment() {
                                         <h3>PAYMENT TEAM - { teamName }</h3>
                                         <h5>WEEK: { startDate +' - '+ endDate}</h5>
                                         <h5>PAYMENT: { paymentId }</h5>
+                                        <h5 className="text-info">CONFIRMATION CODE: { numberTransaction }</h5>
                                     </div>
                                     <div className="col-lg-2 form-group text-info">
                                         <div className="row">
@@ -492,7 +548,7 @@ function PaymentAdjustment() {
                                         <button className="btn btn-primary btn-sm" style={ {display: 'none'} }>
                                             <i className="bi bi-plus-circle"></i>
                                         </button>
-                                        
+
                                         { 
                                             (
                                                 paymentStatus == 'TO APPROVE'

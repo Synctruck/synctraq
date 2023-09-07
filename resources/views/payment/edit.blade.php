@@ -6,6 +6,7 @@
 <script>
 	let idPaymentGeneral 	 = '{{ $payment->id }}';
 	let idUserGeneral 	 	 = '{{Auth::user()->id}}';
+	let numberTransactionGeneral = '{{ $payment->numberTransaction }}';
 	let teamNameGeneral  	 = '{{ $payment->team->name }}';
 	let paymentIdGeneral 	 = '{{ $payment->id }}';
 	let paymentStatusGeneral = '{{ $payment->status }}';
