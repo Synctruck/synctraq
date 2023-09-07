@@ -21,16 +21,18 @@ function PaymentAdjustment() {
     const [paymentTeamDetailPODFailedList, setPaymentTeamDetailPODFailedList] = useState([]);
     const [Reference_Number_1_POD_Failed, setReference_Number_1_POD_Failed] = useState('');
 
-    const [totalAdjustment, setTotalAdjustment] = useState(0);
-    const [totalDelivery, setTotalDelivery]     = useState('');
-    const [idPayment, setidPayment]             = useState('');
-    const [amount, setAmount]                   = useState('');
-    const [description, setDescription]         = useState('');
+    const[paymentTeamDetailRevertShipmentsList, setPaymentTeamDetailRevertShipmentsList] = useState([]);
+
+    const [totalInvoice, setTotalInvoice]   = useState(0.0000);
+    const [amount, setAmount]               = useState('');
+    const [description, setDescription]     = useState('');
 
     useEffect(() => {
 
         listByRoute(idPaymentGeneral);
         listByPODFailed(idPaymentGeneral);
+        listRevertShipments(idPaymentGeneral);
+        ListAdjustmentPayment(idPaymentGeneral);
     }, []);
 
     const listByRoute = (idPayment) => {
@@ -40,7 +42,6 @@ function PaymentAdjustment() {
         .then((response) => {
             
             setPaymentTeamDetailRouteList(response.paymentTeamDetailRouteList);
-            setTotalDelivery(response.totalDelivery);
 
             calculateTotalsDeliveries(response.paymentTeamDetailRouteList)
         });
@@ -74,7 +75,7 @@ function PaymentAdjustment() {
 
         const formData = new FormData();
 
-        formData.append('idPaymentTeam', idPayment);
+        formData.append('idPaymentTeam', paymentId);
         formData.append('amount', amount);
         formData.append('description', description);
 
@@ -94,7 +95,7 @@ function PaymentAdjustment() {
                     });
 
                     clearFormAdjustment();
-                    ListAdjustmentPayment(idPayment);
+                    ListAdjustmentPayment(paymentId);
                 }
                 else if(response.statusCode == false)
                 {
@@ -108,23 +109,7 @@ function PaymentAdjustment() {
             },
         );
     }
-
-    const ListAdjustmentPayment = (idPayment) => {
-
-        LoadingShowMap();
-
-        fetch(url_general +'payment-team-adjustment/'+ idPayment)
-        .then(response => response.json())
-        .then(response => {
-
-            LoadingHideMap();
-
-            //setListAdjustment(response.listAdjustment);
-
-            handlerCalculateTotalAdjustment(response.listAdjustment);
-        });
-    }
-
+    
     const clearFormAdjustment = () => {
 
         setAmount('');
@@ -198,6 +183,8 @@ function PaymentAdjustment() {
                     });
                 }
 
+                setReference_Number_1_POD_Failed('');
+
                 listByRoute(paymentId);
                 listByPODFailed(paymentId);
                 LoadingHideMap();
@@ -215,6 +202,129 @@ function PaymentAdjustment() {
             </tr>
         );
     });
+
+    const [totalRevertShipment, setTotalRevertShipment] = useState(0);
+
+    const listRevertShipments = (idPayment) => {
+
+        fetch(url_general +'payment-team/list-revert-shipments/'+ idPayment)
+        .then(res => res.json())
+        .then((response) => {
+            
+            setPaymentTeamDetailRevertShipmentsList(response.paymentTeamDetailRevertShipmentsList);
+            handlerCalculateTotalRevertShipments(response.paymentTeamDetailRevertShipmentsList);
+        });
+    }
+
+    const handlerCalculateTotalRevertShipments = (listReverts) => {
+
+        let total = 0;
+
+        listReverts.map((revert, i) => {
+
+            total = parseFloat(total) + parseFloat(revert.totalPrice);
+        });
+
+        setTotalRevertShipment(total.toFixed(4));
+    }
+
+    const listTableRevertShipments = paymentTeamDetailRevertShipmentsList.map( (paymentDetailReturn, i) => {
+
+        return (
+
+            <tr>
+                <td>{ paymentDetailReturn.Reference_Number_1 }</td>
+                <td className="text-right">$ { paymentDetailReturn.totalPrice }</td>
+            </tr>
+        );
+    });
+
+    const [listAdjustment, setListAdjustment] = useState([]);
+    const [totalAdjustment, setTotalAdjustment] = useState(0);
+
+    const ListAdjustmentPayment = (idPayment) => {
+
+        LoadingShowMap();
+
+        fetch(url_general +'payment-team-adjustment/'+ idPayment)
+        .then(response => response.json())
+        .then(response => {
+
+            LoadingHideMap();
+
+            setListAdjustment(response.listAdjustment);
+            handlerCalculateTotalAdjustment(response.listAdjustment);
+        });
+    }
+
+    const handlerCalculateTotalAdjustment = (listAdjustment) => {
+
+        let total = 0;
+
+        listAdjustment.map((adjustment, i) => {
+
+            total = parseFloat(total) + parseFloat(adjustment.amount);
+        });
+
+        setTotalAdjustment(total.toFixed(4));
+    }
+
+    const listTablePaymentAdjustment = listAdjustment.map( (adjustment, i) => {
+
+        return (
+
+            <tr>
+                <td>{ adjustment.description }</td>
+                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>{ adjustment.amount } $</h6></td>
+            </tr>
+        );
+    });
+
+    const calculateTotalInvoice = () => {
+
+        let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment);
+
+        setTotalInvoice(auxTotalInvoice.toFixed(4));
+    }
+
+    useEffect(() => {
+
+        calculateTotalInvoice();
+
+    }, [totalRoute, totalRevertShipment, totalAdjustment]);
+
+    const handlerChangeStatus = (id, status) => {
+
+        swal({
+            title: "You want change the status to "+ status +"?",
+            text: "Change status!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShow();
+
+                fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("PAYMENT TEAM status changed!", {
+
+                            icon: "success",
+                        });
+
+                        setPaymentStatus(status);
+                    }
+                });
+            }
+        });
+    }
 
     return (
         <section className="section">
@@ -235,7 +345,36 @@ function PaymentAdjustment() {
                                                 <h5>ACTIONS</h5>
                                             </div>
                                             <div className="col-lg-12  form-group">
-                                                <button className="btn btn-info btn-sm form-control">{ paymentStatus }</button>
+                                                { 
+                                                    (
+                                                        paymentStatus == 'TO APPROVE'
+                                                        ? 
+                                                            <button className="btn btn-info font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAYABLE') }>
+                                                                { paymentStatus }
+                                                            </button>
+                                                        : ''
+                                                    )
+                                                }
+                                                {
+                                                    (
+                                                        paymentStatus == 'PAYABLE'
+                                                        ? 
+                                                            <button className="btn btn-warning font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAID') }>
+                                                                { paymentStatus }
+                                                            </button>
+                                                        : ''
+                                                    )
+                                                }
+                                                { 
+                                                    (
+                                                        paymentStatus == 'PAID'
+                                                        ? 
+                                                            <span className="alert-success font-weight-bold form-control text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
+                                                                { paymentStatus }
+                                                            </span>
+                                                        : ''
+                                                    )
+                                                }
                                             </div>
                                             <div className="col-lg-4 form-group">
                                                 <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(paymentId) } title="Download Detail">
@@ -325,7 +464,7 @@ function PaymentAdjustment() {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                
+                                                { listTableRevertShipments }
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -366,7 +505,7 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL</th>
-                                                    <th></th>
+                                                    <th>$ 0.00</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -386,12 +525,12 @@ function PaymentAdjustment() {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                
+                                                { listTablePaymentAdjustment }
                                             </tbody>
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL</th>
-                                                    <th></th>
+                                                    <th>$ { totalAdjustment }</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -401,12 +540,12 @@ function PaymentAdjustment() {
                                 <div className="row">
                                     <div className="col-lg-12">
                                         <table className="table table-hover table-condensed table-bordered">
-                                            <thead>
+                                            <tfoot>
                                                 <tr>
                                                     <th>TOTAL FACTURA</th>
-                                                    <th></th>
+                                                    <th><h6 className="text-primary">$ { totalInvoice }</h6></th>
                                                 </tr>
-                                            </thead>
+                                            </tfoot>
                                         </table>
                                     </div>
                                     <hr/>

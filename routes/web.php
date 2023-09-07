@@ -206,7 +206,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/list-by-route/{idPayment}', [PaymentTeamController::class, 'ListByRoute']);
 	Route::post('/payment-team/insert-pod-failed', [PaymentTeamController::class, 'InserPODFailed']);
 	Route::get('/payment-team/list-by-pod-failed/{idPayment}', [PaymentTeamController::class, 'ListByPODFailed']);
-
+	Route::get('/payment-team/list-revert-shipments/{idPayment}', [PaymentTeamController::class, 'ListRevertShipments']);
 
 	
 	Route::get('/payment-team/status-change/{idpayment}/{status}', [PaymentTeamController::class, 'StatusChange']);

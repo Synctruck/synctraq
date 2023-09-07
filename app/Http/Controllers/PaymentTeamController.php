@@ -70,6 +70,13 @@ class PaymentTeamController extends Controller
         return ['paymentTeamDetailPODFailedList' => $paymentTeamDetailPODFailedList];
     }
 
+    public function ListRevertShipments($idPayment)
+    {
+        $paymentTeamDetailRevertShipmentsList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
+
+        return ['paymentTeamDetailRevertShipmentsList' => $paymentTeamDetailRevertShipmentsList];
+    }
+
     public function GetDataListExport($dateStart, $dateEnd, $idTeam, $status, $typeAction)
     {
         $dateStart = $dateStart .' 00:00:00';

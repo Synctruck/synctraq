@@ -25,7 +25,7 @@ class PaymentTeamAdjustmentController extends Controller
     }
 
     public function Insert(Request $request)
-    {
+    {        
         try
         {
             DB::beginTransaction();

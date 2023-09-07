@@ -309,7 +309,7 @@ function Payments() {
 
             <tr>
                 <td>{ adjustment.description }</td>
-                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>{ adjustment.amount } $</h6></td>
+                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>$ { adjustment.amount }</h6></td>
             </tr>
         );
     });
