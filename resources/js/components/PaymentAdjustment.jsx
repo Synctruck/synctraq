@@ -395,27 +395,36 @@ function PaymentAdjustment() {
                                     </div>
                                     <hr/>
                                 </div>
-                                <div className="row">
-                                    <div className="col-lg-12 form-group text-info">
-                                        ADD ADJUSTMENT
-                                    </div>
-                                    <form onSubmit={ handlerSaveAdjustment }>
-                                        <div className="row">
-                                            <div className="col-lg-3 mb-3">
-                                                <label htmlFor="" className="form">AMOUNT</label>
-                                                <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
+
+                                { 
+                                    (
+                                        paymentStatus == 'TO APPROVE'
+                                        ? 
+                                            <div className="row">
+                                                <div className="col-lg-12 form-group text-info">
+                                                    ADD ADJUSTMENT
+                                                </div>
+                                                <form onSubmit={ handlerSaveAdjustment }>
+                                                    <div className="row">
+                                                        <div className="col-lg-3 mb-3">
+                                                            <label htmlFor="" className="form">AMOUNT</label>
+                                                            <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
+                                                        </div>
+                                                        <div className="col-lg-9 mb-3">
+                                                            <label htmlFor="" className="form">DESCRIPTION</label>
+                                                            <input type="text" value={ description } onChange={ (e) => setDescription(e.target.value) } className="form-control" minLength="4" maxLength="500" required/>
+                                                        </div>
+                                                        <div className="col-lg-3 mb-3">
+                                                            <button className="btn btn-primary btn-sm form-control">SAVE</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <hr/>
                                             </div>
-                                            <div className="col-lg-9 mb-3">
-                                                <label htmlFor="" className="form">DESCRIPTION</label>
-                                                <input type="text" value={ description } onChange={ (e) => setDescription(e.target.value) } className="form-control" minLength="4" maxLength="500" required/>
-                                            </div>
-                                            <div className="col-lg-3 mb-3">
-                                                <button className="btn btn-primary btn-sm form-control">SAVE</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <hr/>
-                                </div>
+                                        : ''
+                                    )
+                                }
+                                
                                 <div className="row">
                                     <div className="col-lg-12 form-group text-info">
                                         RESUMEN
@@ -480,16 +489,27 @@ function PaymentAdjustment() {
                                 <div className="row">
                                     <div className="col-lg-12 form-group text-primary">
                                         INVALID POD&nbsp;
-                                        <button className="btn btn-primary btn-sm">
+                                        <button className="btn btn-primary btn-sm" style={ {display: 'none'} }>
                                             <i className="bi bi-plus-circle"></i>
                                         </button>
-                                        <br/>
-                                        <form onSubmit={ handlerInserPDOFailed } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="" className="text-success">PACKAGE ID</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1_POD_Failed } onChange={ (e) => setReference_Number_1_POD_Failed(e.target.value) } maxLength="24" required/>
-                                            </div>
-                                        </form>
+                                        
+                                        { 
+                                            (
+                                                paymentStatus == 'TO APPROVE'
+                                                ? 
+                                                    <>
+                                                        <br/>
+                                                            <form onSubmit={ handlerInserPDOFailed } autoComplete="off">
+                                                                <div className="form-group">
+                                                                    <label htmlFor="" className="text-success">PACKAGE ID</label>
+                                                                    <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1_POD_Failed } onChange={ (e) => setReference_Number_1_POD_Failed(e.target.value) } maxLength="24" required/>
+                                                                </div>
+                                                            </form>
+                                                    </>
+                                                : ''
+                                            )
+                                        }
+                                        
                                     </div>
                                     <div className="col-lg-12">
                                         <table className="table table-hover table-condensed table-bordered">
