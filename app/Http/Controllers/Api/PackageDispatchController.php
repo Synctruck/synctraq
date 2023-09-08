@@ -155,7 +155,7 @@ class PackageDispatchController extends Controller
             $validator = Validator::make($request->all(),
 
                 [
-                    "package_id" => ["required", "min:10", "max:40"],
+                    "package_id" => ["required", "min:4", "max:40"],
                     "status" => ["required", "min:6", "max:8", Rule::in(['Delivery', 'Failed'])],
                     "datetime" => ["required"],
                 ],
