@@ -17,6 +17,11 @@ class PaymentTeamDetail extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function payment()
+    {
+        return $this->belongsTo('App\Models\PaymentTeam', 'idPaymentTeam', 'id');
+    }
+
     //observers
     protected static function booted()
     {

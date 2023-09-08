@@ -249,7 +249,7 @@ function Payments() {
                     <b>{ payment.totalPieces }</b>
                 </td>
                 <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
-                <td className="text-danger text-right"><h5><b>{ totalRevert }</b></h5></td>
+                <td className="text-danger text-right" style={ {display: 'none'} }><h5><b>{ totalRevert }</b></h5></td>
                 <td className="text-warning text-right"><h5><b>{ totalAdjustment }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
                 <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
@@ -303,9 +303,18 @@ function Payments() {
                     <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Download Detail">
                         <i className="ri-file-excel-fill"></i>
                     </button>
-                    <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
-                        <i className="ri-file-excel-fill"></i>
-                    </button>
+
+                    { 
+                        (
+                            payment.status == 'PAID'
+                            ? 
+                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
+                                    <i className="ri-file-excel-fill"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );
@@ -538,6 +547,11 @@ function Payments() {
                                             <i className="ri-file-excel-fill"></i> EXPORT
                                         </button>
                                     </div>
+                                    <div className="col-lg-10 form-group">
+                                        <div className="alert alert-warning">
+                                            * Please note weekly invoices are generate Mondays for the previous week.
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
@@ -599,10 +613,10 @@ function Payments() {
                                                 <th><b>END DATE</b></th>
                                                 <th><b>PIECES</b></th>
                                                 <th><b>TOTAL DELIVERY</b></th>
-                                                <th><b>TOTAL REVERT</b></th>
+                                                <th style={ {display: 'none'} }><b>TOTAL REVERT</b></th>
                                                 <th><b>TOTAL ADJUSTMENT</b></th>
                                                 <th><b>TOTAL</b></th>
-                                                <th><b>AVERAGE PRICE</b></th>
+                                                <th><b>AVERAGE PIECE COST</b></th>
                                                 <th><b>STATUS</b></th>
                                                 <th>
                                                     <b>ACTION</b>&nbsp;

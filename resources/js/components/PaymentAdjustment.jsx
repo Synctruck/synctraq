@@ -121,7 +121,7 @@ function PaymentAdjustment() {
 
         location.href = url_general +'payment-team/export/'+ id;
     }
-
+    
     const handlerExportPaymentReceipt = (id) => {
 
         location.href = url_general +'payment-team/export-receipt/'+ id;
@@ -432,21 +432,25 @@ function PaymentAdjustment() {
                                                     )
                                                 }
                                             </div>
-                                            <div className="col-lg-4 form-group">
+                                            <div className="col-lg-6 form-group">
                                                 <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(paymentId) } title="Download Detail">
-                                                    <i className="ri-file-excel-fill"></i>
+                                                    <i className="ri-file-excel-fill"></i> Detail
                                                 </button>
                                             </div>
-                                            <div className="col-lg-4 form-group">
-                                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(paymentId) } title="Download Receipt">
-                                                    <i className="ri-file-excel-fill"></i>
-                                                </button>
-                                            </div>
-                                            <div className="col-lg-4 form-group">
-                                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(paymentId) } title="Recalculate">
-                                                    <i className="ri-file-excel-fill"></i>
-                                                </button>
-                                            </div>
+
+                                            { 
+                                                (
+                                                    paymentStatus == 'PAID'
+                                                    ? 
+                                                        <div className="col-lg-6 form-group">
+                                                            <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(paymentId) } title="Download Receipt">
+                                                                <i className="ri-file-excel-fill"></i> Receipt
+                                                            </button>
+                                                        </div>
+                                                    :
+                                                        ''
+                                                )
+                                            }
                                         </div>
                                     </div>
                                     <hr/>

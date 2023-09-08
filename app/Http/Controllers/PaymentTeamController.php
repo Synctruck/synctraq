@@ -259,16 +259,27 @@ class PaymentTeamController extends Controller
         $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
         
-        $fieldDate      = array('DATE', date('m/d/Y H:i:s'));
+        $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
+        $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
         $fieldTeam      = array('TEAM', $payment->team->name);
         $fieldSurcharge = array('SURCHARGE', ($payment->surcharge ? 'YES' : 'NO'));
+        $fieldNumberTransaction = array('PAYMENT CONFIRMATION CODE', $payment->numberTransaction);
+        $fieldTeamTotal = array('INVOICE TOTAL', $payment->total);
         $fielBlank      = array('');
 
-        fputcsv($file, $fieldDate, $delimiter);
+        fputcsv($file, $fieldStartDate, $delimiter);
+        fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
-        fputcsv($file, $fieldSurcharge, $delimiter);
+        
+        if($payment->surcharge)
+        {
+            fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
+        }
+
+        fputcsv($file, $fieldNumberTransaction, $delimiter);
+        fputcsv($file, $fieldTeamTotal, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
         $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
@@ -296,15 +307,17 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE DELIVERY', 'PACKAGE ID', 'ROUTE','DIM WEIGHT ROUND', 'TOTAL PRICE'), $delimiter);
+        //LIST DELIVERIES
+        fputcsv($file, array('DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'TOTAL PRICE'), $delimiter);
 
-        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->where('podFailed', 0)
+                                                    ->get();
 
         $totalDelivery = 0;
 
         foreach($paymentTeamDetailList as $paymentDetail)
         {
-            $date         = date('m-d-Y', strtotime($paymentDetail->created_at)) .' '. date('H:i:s', strtotime($paymentDetail->created_at));
             $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
 
             $lineData = array(
@@ -312,7 +325,6 @@ class PaymentTeamController extends Controller
                 $dateDelivery,
                 $paymentDetail->Reference_Number_1,
                 $paymentDetail->Route,
-                $paymentDetail->weightRound,
                 $paymentDetail->totalPrice,
             );
 
@@ -321,40 +333,55 @@ class PaymentTeamController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
         
-        fputcsv($file, array('', '', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
-
+        //LIST REVERTS
         $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
         if(count($paymentTeamDetailReturnList) > 0)
         {
-            fputcsv($file, [], $delimiter);
-            fputcsv($file, [], $delimiter);
-            fputcsv($file, ['REVERTS'], $delimiter);
-
-            fputcsv($file, array('DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'DIM WEIGHT ROUND', 'TOTAL PRICE'), $delimiter);
-            
-            $totalRevert = 0;
-
             foreach($paymentTeamDetailReturnList as $paymentDetailReturn)
             {
-                $date         = date('m-d-Y', strtotime($paymentDetailReturn->created_at)) .' '. date('H:i:s', strtotime($paymentDetailReturn->created_at));
-                $dateDelivery = date('m-d-Y', strtotime($paymentDetailReturn->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetailReturn->Date_Delivery));
+                $dateDelivery = date('m-d-Y H:i:s', strtotime($paymentDetailReturn->Date_Delivery));
 
                 $lineData = array(
 
                     $dateDelivery,
                     $paymentDetailReturn->Reference_Number_1,
                     $paymentDetailReturn->Route,
-                    $paymentDetailReturn->weightRound,
                     $paymentDetailReturn->totalPrice,
                 );
 
-                $totalRevert = $totalRevert + $paymentDetail->totalPrice;
+                $totalDelivery = $totalDelivery + $paymentDetailReturn->totalPrice;
 
                 fputcsv($file, $lineData, $delimiter);
             }
+        }
 
-            fputcsv($file, array('', '', '', 'TOTAL REVERT', $totalRevert), $delimiter);
+        fputcsv($file, array('', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+
+        //LIST POD FAILED
+        $paymentPODFailedList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->where('podFailed', 1)
+                                                    ->get();
+
+        if(count($paymentPODFailedList) > 0)
+        {
+            fputcsv($file, array('INVALID PODS'), $delimiter);
+
+            foreach($paymentPODFailedList as $paymentPODFailed)
+            {
+                $dateDelivery = date('m-d-Y', strtotime($paymentPODFailed->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentPODFailed->Date_Delivery));
+
+                $lineData = array(
+
+                    $dateDelivery,
+                    $paymentPODFailed->Reference_Number_1,
+                    $paymentPODFailed->Route,
+                    $paymentPODFailed->totalPrice,
+                );
+
+                fputcsv($file, $lineData, $delimiter);
+            }
         }
 
         fseek($file, 0);
