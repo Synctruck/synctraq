@@ -193,7 +193,7 @@ class TaskPaymentTeam extends Command
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
                             $paymentTeam->totalAdjustment = 0;
-                            $paymentTeam->total          = $totalTeam + $totalRevert;
+                            $paymentTeam->total          = $totalTeam;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->status         = 'TO APPROVE';
