@@ -248,7 +248,6 @@ function Payments() {
                     <b>{ payment.totalPieces }</b>
                 </td>
                 <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
-                <td className="text-danger text-right" style={ {display: 'none'} }><h5><b>{ totalRevert }</b></h5></td>
                 <td className="text-warning text-right"><h5><b>{ totalAdjustment }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
                 <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
@@ -612,7 +611,6 @@ function Payments() {
                                                 <th><b>END DATE</b></th>
                                                 <th><b>PIECES</b></th>
                                                 <th><b>TOTAL DELIVERY</b></th>
-                                                <th style={ {display: 'none'} }><b>TOTAL REVERT</b></th>
                                                 <th><b>TOTAL ADJUSTMENT</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>AVERAGE PIECE COST</b></th>
