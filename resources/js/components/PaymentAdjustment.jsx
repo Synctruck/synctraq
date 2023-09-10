@@ -62,8 +62,8 @@ function PaymentAdjustment() {
         let auxTotalAverageCost = auxTotalRoute / auxTotalPieces;
 
         setTotalPieces(auxTotalPieces);
-        setTotalRoute(auxTotalRoute.toFixed(2));
-        setTotalAverageCost(auxTotalAverageCost.toFixed(2));
+        setTotalRoute(auxTotalRoute.toFixed(4));
+        setTotalAverageCost(auxTotalAverageCost.toFixed(4));
     }
 
     const handlerSaveAdjustment = (e) => {
