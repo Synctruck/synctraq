@@ -160,6 +160,8 @@ function Reverts() {
         });
 
         myModal.show();
+
+        setReference_Number_1('');
     }
 
     const handlerInsertToReverts = (e) => {
@@ -184,7 +186,7 @@ function Reverts() {
 
                 if(response.statusCode === true)
                 {
-                    swal("The package was closed!", {
+                    swal("The package was registered as Revert!", {
 
                         icon: "success",
                     });
@@ -195,7 +197,14 @@ function Reverts() {
                 }
                 else if(response.statusCode == 'notExists')
                 {
-                    swal("The package was not invoiced!", {
+                    swal("The package was not INVOICED or was REVERTED!", {
+
+                        icon: "warning",
+                    });
+                }
+                else if(response.statusCode == 'notInPaid')
+                {
+                    swal("The INVOICE of the package entered, it's not is in status PAID.", {
 
                         icon: "warning",
                     });
@@ -227,8 +236,8 @@ function Reverts() {
                                                             <div className="col-lg-12 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">PACKAGE ID</label>
-                                                                    <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
+                                                                    <div id="divReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" id="Reference_Number_1" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
                                                                 </div>
                                                             </div>
                                                         </div>

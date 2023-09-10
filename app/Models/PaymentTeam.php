@@ -32,6 +32,11 @@ class PaymentTeam extends Model
         return $this->belongsTo('App\Models\User', 'idUserPaid', 'id');
     }
 
+    public function payments_detail()
+    {
+        return $this->hasMany('App\Models\PaymentTeamDetail', 'idPaymentTeam');
+    }
+
     //observers
     protected static function booted()
     {

@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if(1)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -9 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -10 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
 
             try
             {
@@ -87,13 +87,19 @@ class TaskPaymentTeam extends Command
                                                             ->where('status', 'Delivery')
                                                             ->get();
 
+                    if($team->id == 271)
+                    {
+                        Log::info('$listPackageDelivery => ');
+                        Log::info($listPackageDelivery);
+                    }
+
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
                     if($listPackageDelivery)
                     {
                         $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
-                        $totalRevert           = $toReversePackagesList->sum('priceToRevert');
+                        $totalAdjustment       = $toReversePackagesList->sum('priceToRevert');
 
                         foreach($toReversePackagesList as $revert)
                         {
@@ -105,9 +111,7 @@ class TaskPaymentTeam extends Command
                         {
                             $dimFactor   = 200;
                             $weight      = $packageDelivery->Weight;
-                            $weightRound = $team->roundWeight ? ceil($weight) : $weight;
-
-                            Log::info('$team->roundWeight => '. $team->roundWeight);
+                            $weightRound = ceil($weight);
 
                             $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
@@ -176,21 +180,20 @@ class TaskPaymentTeam extends Command
 
                         if($totalTeam > 0)
                         { 
-                            /*if($totalRevert != 0)
+                            if($totalAdjustment != 0)
                             {
                                 $paymentTeamAdjustment = new PaymentTeamAdjustment();
                                 $paymentTeamAdjustment->id            = uniqid();
                                 $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
-                                $paymentTeamAdjustment->amount        = $totalRevert;
+                                $paymentTeamAdjustment->amount        = $totalAdjustment;
                                 $paymentTeamAdjustment->description   = 'Reverts';
                                 $paymentTeamAdjustment->save();
-                            }*/
+                            }
 
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
-                            $paymentTeam->totalRevert    = $totalRevert;
-                            $paymentTeam->totalAdjustment = 0;
-                            $paymentTeam->total          = $totalTeam + $totalRevert;
+                            $paymentTeam->totalAdjustment = $totalAdjustment;
+                            $paymentTeam->total          = $totalTeam + $totalAdjustment;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->status         = 'TO APPROVE';
