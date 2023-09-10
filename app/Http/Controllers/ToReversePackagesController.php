@@ -91,10 +91,6 @@ class ToReversePackagesController extends Controller
             $toReversePackages->priceToRevert = -$paymentTeamDetail->totalPrice;
             $toReversePackages->save();
 
-            $paymentTeam->totalRevert = $paymentTeam->totalRevert - $paymentTeamDetail->totalPrice;
-            $paymentTeam->total       = $paymentTeam->totalDelivery + $paymentTeam->totalRevert + $paymentTeam->totalAdjustment;
-            $paymentTeam->save();
-
             $paymentTeamDetail->delete();
 
             DB::commit();

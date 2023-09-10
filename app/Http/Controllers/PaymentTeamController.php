@@ -53,11 +53,32 @@ class PaymentTeamController extends Controller
 
     public function InserPODFailed(Request $request)
     {
-        $paymentDetail = PaymentTeamDetail::find($request->get('Reference_Number_1'));
-        $paymentDetail->podFailed = 1;
-        $paymentDetail->save();
-        
-        return ['statusCode' => true];
+        try
+        {
+            DB::beginTransaction();
+
+            $paymentDetail = PaymentTeamDetail::find($request->get('Reference_Number_1'));
+
+            $payment = PaymentTeam::find($paymentDetail->idPaymentTeam);
+            $payment->totalDelivery = $payment->totalDelivery - $paymentDetail->totalPrice;
+            $payment->total = $payment->totalDelivery + $payment->totalAdjustment;
+            $payment->save();
+
+            $paymentDetail->podFailed = 1;
+            $paymentDetail->totalPricePODFailed = $paymentDetail->totalPrice;
+            $paymentDetail->totalPrice = 0.00;
+            $paymentDetail->save();
+
+            DB::commit();
+
+            return ['statusCode' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['statusCode' => true];
+        }
     }
 
     public function ListByPODFailed($idPayment)
@@ -289,7 +310,7 @@ class PaymentTeamController extends Controller
         if(count($paymentTeamAdjustmentList) > 0)
         {
             fputcsv($file, array('ADJUSTMENT'), $delimiter);
-            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalRevert .' $'), $delimiter);
+            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalAdjustment .' $'), $delimiter);
             fputcsv($file, array('DATE', 'DESCRIPTION', 'AMOUNT'), $delimiter);
 
             foreach($paymentTeamAdjustmentList as $chargeAdjustment)
@@ -432,7 +453,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fietotalPayments, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
         
-        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL DELIVERY', 'TOTAL REVERT', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
+        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL DELIVERY', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
 
         foreach($paymentList as $payment)
         {
@@ -445,7 +466,6 @@ class PaymentTeamController extends Controller
                 date('m-d-Y', strtotime($payment->endDate)),
                 $payment->totalPieces,
                 $payment->totalDelivery,
-                $payment->totalRevert,
                 $payment->total,
                 $payment->averagePrice,
                 $payment->status

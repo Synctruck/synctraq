@@ -180,7 +180,7 @@ class TaskPaymentTeam extends Command
 
                         if($totalTeam > 0)
                         { 
-                            /*if($totalRevert != 0)
+                            if($totalRevert != 0)
                             {
                                 $paymentTeamAdjustment = new PaymentTeamAdjustment();
                                 $paymentTeamAdjustment->id            = uniqid();
@@ -188,11 +188,10 @@ class TaskPaymentTeam extends Command
                                 $paymentTeamAdjustment->amount        = $totalRevert;
                                 $paymentTeamAdjustment->description   = 'Reverts';
                                 $paymentTeamAdjustment->save();
-                            }*/
+                            }
 
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
-                            $paymentTeam->totalRevert    = $totalRevert;
                             $paymentTeam->totalAdjustment = 0;
                             $paymentTeam->total          = $totalTeam + $totalRevert;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;

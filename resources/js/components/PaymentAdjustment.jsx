@@ -340,7 +340,7 @@ function PaymentAdjustment() {
             })
             .then(numberTransaction => {
 
-                if(numberTransaction != '')
+                if(numberTransaction != null && numberTransaction != '')
                 {
                     swal.close();
 
