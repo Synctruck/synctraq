@@ -83,6 +83,8 @@ class ToReversePackagesController extends Controller
             $paymentTeamDetailReturn->save();
 
             $paymentTeam = PaymentTeam::find($paymentTeamDetail->idPaymentTeam);
+            $paymentTeam->totalDelivery = $paymentTeam->totalDelivery - $paymentTeamDetail->totalPrice;
+            $paymentTeam->save();
 
             $toReversePackages = new ToReversePackages();
             $toReversePackages->shipmentId    = $paymentTeamDetail->Reference_Number_1;
