@@ -223,7 +223,6 @@ function Payments() {
     const listReportTable = listReport.map( (payment, i) => {
 
         let totalDelivery   = handlerChangeFormatPrice(payment.totalDelivery);
-        let totalRevert     = handlerChangeFormatPrice(payment.totalRevert);
         let totalAdjustment = handlerChangeFormatPrice(payment.totalAdjustment);
         let total           = handlerChangeFormatPrice(payment.total);
         let averagePrice    = handlerChangeFormatPrice(payment.averagePrice);
