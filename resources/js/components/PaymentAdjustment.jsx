@@ -135,7 +135,7 @@ function PaymentAdjustment() {
             <tr>
                 <td>{ paymentDetail.Route }</td>
                 <td className="text-right">{ paymentDetail.totalPieces }</td>
-                <td className="text-right">$ { paymentDetail.totalRoute / paymentDetail.totalPieces }</td>
+                <td className="text-right">$ { (paymentDetail.totalRoute / paymentDetail.totalPieces).toFixed(3) }</td>
                 <td className="text-right">$ { paymentDetail.totalRoute }</td>
             </tr>
         );
