@@ -77,6 +77,10 @@
         max-width: 1250px;
       }
     }
+
+    .text-right{
+       text-align: right; 
+    }
 </style>
 <body id="bodyAdmin">
 

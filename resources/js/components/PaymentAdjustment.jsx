@@ -63,7 +63,7 @@ function PaymentAdjustment() {
         let auxTotalAverageCost = auxTotalRoute / auxTotalPieces;
 
         setTotalPieces(auxTotalPieces);
-        setTotalRoute(auxTotalRoute.toFixed(2));
+        setTotalRoute(auxTotalRoute.toFixed(3));
         setTotalAverageCost(auxTotalAverageCost.toFixed(4));
     }
 
@@ -200,7 +200,7 @@ function PaymentAdjustment() {
 
             <tr>
                 <td>{ paymentDetail.Reference_Number_1 }</td>
-                <td className="text-right">$ 0.00</td>
+                <td className="text-right">$ 0.000</td>
             </tr>
         );
     });
@@ -227,7 +227,7 @@ function PaymentAdjustment() {
             total = parseFloat(total) + parseFloat(revert.totalPrice);
         });
 
-        setTotalRevertShipment(total.toFixed(2));
+        setTotalRevertShipment(total.toFixed(3));
     }
 
     const listTableRevertShipments = paymentTeamDetailRevertShipmentsList.map( (paymentDetailReturn, i) => {
@@ -269,7 +269,7 @@ function PaymentAdjustment() {
             total = parseFloat(total) + parseFloat(adjustment.amount);
         });
 
-        setTotalAdjustment(total.toFixed(2));
+        setTotalAdjustment(total.toFixed(3));
     }
 
     const listTablePaymentAdjustment = listAdjustment.map( (adjustment, i) => {
@@ -287,7 +287,7 @@ function PaymentAdjustment() {
 
         let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment);
 
-        setTotalInvoice(auxTotalInvoice.toFixed(2));
+        setTotalInvoice(auxTotalInvoice.toFixed(3));
     }
 
     useEffect(() => {
@@ -512,9 +512,9 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL DELIVERY</th>
-                                                    <th>{ totalPieces }</th>
-                                                    <th>$ { totalAverageCost }</th>
-                                                    <th>$ { totalRoute }</th>
+                                                    <th className="text-right">{ totalPieces }</th>
+                                                    <th className="text-right">$ { totalAverageCost }</th>
+                                                    <th className="text-right">$ { totalRoute }</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -552,7 +552,7 @@ function PaymentAdjustment() {
                                                 <tr>
                                                     <th></th>
                                                     <th>TOTAL REVERTED</th>
-                                                    <th>{ totalRevertShipment}</th>
+                                                    <th className="text-right">$ { totalRevertShipment}</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -598,7 +598,7 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL</th>
-                                                    <th>$ 0.00</th>
+                                                    <th className="text-right">$ 0.000</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -623,7 +623,7 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL</th>
-                                                    <th>$ { totalAdjustment }</th>
+                                                    <th className="text-right">$ { totalAdjustment }</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -636,7 +636,7 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL FACTURA</th>
-                                                    <th><h6 className="text-primary">$ { totalInvoice }</h6></th>
+                                                    <th><h6 className="text-primary text-right">$ { totalInvoice }</h6></th>
                                                 </tr>
                                             </tfoot>
                                         </table>
