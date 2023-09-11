@@ -528,7 +528,11 @@ function PaymentAdjustment() {
                                             id="myTooltipReverted1"
                                             place="top"
                                             variant="warning"
-                                            content="Reverted shipments are packages that were paid in error to the carrier and that were marked for a discount on the next invoice. The packages shown here are not discounts on the invoice, it is only to control which packages within this invoice are not valid."
+                                            content="Reverted shipments are packages 
+                                                    that were paid in error to the carrier and that 
+                                                    were marked for a discount on the next invoice. 
+                                                    The packages shown here are not discounts on the invoice,
+                                                     it is only to control which packages within this invoice are not valid."
                                           />
                                     </div>
                                     <div className="col-lg-12">
