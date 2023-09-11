@@ -170,7 +170,7 @@ function Payments() {
             })
             .then(numberTransaction => {
 
-                if(numberTransaction != '')
+                if(numberTransaction != null && numberTransaction != '')
                 {
                     swal.close();
 
