@@ -25,6 +25,7 @@ function Reverts() {
     const [idDriver, setIdDriver] = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
+    const [Reason, setReason] = useState('');
     const [disabledButton, setDisabledButton]         = useState(false);
 
     const [RouteSearch, setRouteSearch]   = useState('all');
@@ -162,6 +163,7 @@ function Reverts() {
         myModal.show();
 
         setReference_Number_1('');
+        setReason('');
     }
 
     const handlerInsertToReverts = (e) => {
@@ -171,6 +173,7 @@ function Reverts() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('Reason', Reason);
 
         LoadingShowMap();
 
@@ -192,6 +195,7 @@ function Reverts() {
                     });
 
                     setReference_Number_1('');
+                    setReason('');
 
                     listToReverseDispatch(1, RouteSearch, StateSearch);
                 }
@@ -237,7 +241,14 @@ function Reverts() {
                                                                 <div className="form-group">
                                                                     <label className="form">PACKAGE ID</label>
                                                                     <div id="divReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" id="Reference_Number_1" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
+                                                                    <input type="text" id="Reference_Number_1" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } minLength="4" maxLength="25" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">REASON</label>
+                                                                    <div id="divReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" id="Reason" value={ Reason } className="form-control" onChange={ (e) => setReason(e.target.value) } minLength="5" maxLength="150" required/>
                                                                 </div>
                                                             </div>
                                                         </div>
