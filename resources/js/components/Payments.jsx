@@ -370,7 +370,7 @@ function Payments() {
             total = parseFloat(total) + parseFloat(adjustment.amount);
         });
 
-        setTotalAdjustment(total.toFixed(4));
+        setTotalAdjustment(total.toFixed(2));
     }
 
     const listPaymentAdjustmentModal = listAdjustment.map( (adjustment, i) => {
@@ -491,7 +491,7 @@ function Payments() {
                                                                     </tr>
                                                                     <tr>
                                                                         <td><h6 className="text-success">TOTAL</h6></td>
-                                                                        <td className="text-right"><h6 className='text-success'>{ (parseFloat(totalDelivery) + parseFloat(totalAdjustment)).toFixed(4) } $</h6></td>
+                                                                        <td className="text-right"><h6 className='text-success'>{ (parseFloat(totalDelivery) + parseFloat(totalAdjustment)).toFixed(2) } $</h6></td>
                                                                     </tr>
                                                                 </tfoot>
                                                             </table>

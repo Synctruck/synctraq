@@ -63,7 +63,7 @@ function PaymentAdjustment() {
         let auxTotalAverageCost = auxTotalRoute / auxTotalPieces;
 
         setTotalPieces(auxTotalPieces);
-        setTotalRoute(auxTotalRoute.toFixed(4));
+        setTotalRoute(auxTotalRoute.toFixed(2));
         setTotalAverageCost(auxTotalAverageCost.toFixed(4));
     }
 
@@ -227,7 +227,7 @@ function PaymentAdjustment() {
             total = parseFloat(total) + parseFloat(revert.totalPrice);
         });
 
-        setTotalRevertShipment(total.toFixed(4));
+        setTotalRevertShipment(total.toFixed(2));
     }
 
     const listTableRevertShipments = paymentTeamDetailRevertShipmentsList.map( (paymentDetailReturn, i) => {
@@ -269,7 +269,7 @@ function PaymentAdjustment() {
             total = parseFloat(total) + parseFloat(adjustment.amount);
         });
 
-        setTotalAdjustment(total.toFixed(4));
+        setTotalAdjustment(total.toFixed(2));
     }
 
     const listTablePaymentAdjustment = listAdjustment.map( (adjustment, i) => {
@@ -287,7 +287,7 @@ function PaymentAdjustment() {
 
         let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment);
 
-        setTotalInvoice(auxTotalInvoice.toFixed(4));
+        setTotalInvoice(auxTotalInvoice.toFixed(2));
     }
 
     useEffect(() => {
