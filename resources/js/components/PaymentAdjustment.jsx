@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 function PaymentAdjustment() {
 
@@ -235,6 +236,7 @@ function PaymentAdjustment() {
 
             <tr>
                 <td>{ paymentDetailReturn.Reference_Number_1 }</td>
+                <td>{ paymentDetailReturn.reason }</td>
                 <td className="text-right">$ { paymentDetailReturn.totalPrice }</td>
             </tr>
         );
@@ -521,7 +523,13 @@ function PaymentAdjustment() {
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-12 form-group text-primary">
-                                        REVERTED SHIPMENTS <i className="bi bi-patch-question-fill text-danger" title=""></i>
+                                        REVERTED SHIPMENTS <i className="bi bi-patch-question-fill text-danger" data-tooltip-id="myTooltipReverted1"></i>
+                                        <ReactTooltip
+                                            id="myTooltipReverted1"
+                                            place="top"
+                                            variant="warning"
+                                            content="I'm a info tooltip"
+                                          />
                                     </div>
                                     <div className="col-lg-12">
                                         <table className="table table-hover table-condensed table-bordered">
@@ -539,7 +547,7 @@ function PaymentAdjustment() {
                                                 <tr>
                                                     <th></th>
                                                     <th>TOTAL REVERTED</th>
-                                                    <th></th>
+                                                    <th>{ totalRevertShipment}</th>
                                                 </tr>
                                             </tfoot>
                                         </table>

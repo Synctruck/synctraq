@@ -47,7 +47,7 @@ class ToReversePackagesController extends Controller
     }
 
     public function Insert(Request $request)
-    {
+    {        
         $paymentTeamDetail = PaymentTeamDetail::with('payment')->find($request->Reference_Number_1);
 
         if(!$paymentTeamDetail)
@@ -78,6 +78,7 @@ class ToReversePackagesController extends Controller
             $paymentTeamDetailReturn->priceByCompany      = $paymentTeamDetail->priceByCompany;
             $paymentTeamDetailReturn->totalPrice          = $paymentTeamDetail->totalPrice;
             $paymentTeamDetailReturn->Date_Delivery       = $paymentTeamDetail->Date_Delivery;
+            $paymentTeamDetailReturn->Reason              = $request->Reason;
             $paymentTeamDetailReturn->created_at          = date('Y-m-d H:i:s');
             $paymentTeamDetailReturn->updated_at          = date('Y-m-d H:i:s');
             $paymentTeamDetailReturn->save();
@@ -91,6 +92,7 @@ class ToReversePackagesController extends Controller
             $toReversePackages->idPaymentTeam = $paymentTeamDetail->idPaymentTeam;
             $toReversePackages->idTeam        = $paymentTeam->idTeam;
             $toReversePackages->priceToRevert = -$paymentTeamDetail->totalPrice;
+            $toReversePackages->reason        = $request->Reason;
             $toReversePackages->save();
 
             $paymentTeamDetail->delete();
