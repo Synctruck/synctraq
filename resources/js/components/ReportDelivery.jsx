@@ -494,6 +494,10 @@ function ReportDelivery() {
                     { packageDelivery.inboundDate.substring(5, 7) }-{ packageDelivery.inboundDate.substring(8, 10) }-{ packageDelivery.inboundDate.substring(0, 4) }<br/>
                     { packageDelivery.inboundDate.substring(11, 19) }
                 </td>
+                <td style={ { width: '100px'} }>
+                    { packageDelivery.created_at.substring(5, 7) }-{ packageDelivery.created_at.substring(8, 10) }-{ packageDelivery.created_at.substring(0, 4) }<br/>
+                    { packageDelivery.created_at.substring(11, 19) }
+                </td>
                 <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
                 <td><b>{ driver }</b></td>
@@ -1164,6 +1168,7 @@ function ReportDelivery() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>INBOUND DATE</th>
+                                                <th>DISPATCH DATE</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
