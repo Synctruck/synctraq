@@ -665,7 +665,8 @@ class ReportController extends Controller
                                     'arrivalLonLat',
                                     'Date_Delivery',
                                     'filePhoto1',
-                                    'filePhoto2'
+                                    'filePhoto2',
+                                    'created_at'
                                 )
                                 ->orderBy('Date_Delivery', 'desc')
                                 ->paginate(50);
@@ -707,6 +708,7 @@ class ReportController extends Controller
                 "taskOnfleet" => $packageDelivery->taskOnfleet,
                 "filePhoto1" => $packageDelivery->filePhoto1,
                 "filePhoto2" => $packageDelivery->filePhoto2,
+                "created_at" => $packageDelivery->created_at,
             ];
 
             array_push($packageHistoryListNew, $package);
@@ -1240,7 +1242,7 @@ class ReportController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
+        $fields = array('DATE', 'DELIVERY DATE', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1265,7 +1267,8 @@ class ReportController extends Controller
             
             $lineData = array(
                                 date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
-                                $packageDelivery['inboundDate'],
+                                date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])),
+                                date('m/d/Y H:i:s', strtotime($packageDelivery['created_at'])),
                                 $packageDelivery['company'],
                                 $team,
                                 $driver,
@@ -1282,6 +1285,7 @@ class ReportController extends Controller
                                 $packageDelivery['pieces'],
                                 $urlImage1,
                                 $urlImage2,
+                                $packageDelivery['created_at'],
                             );
 
             fputcsv($file, $lineData, $delimiter);
