@@ -105,6 +105,7 @@ class PackageController extends Controller
             $data['weight_unit']           = $request->get('shipment')['shipment_details']['weight_unit'];
             $data['width']                 = $request->get('shipment')['shipment_details']['width'];
             $data['height']                = $request->get('shipment')['shipment_details']['height'];
+            $data['length']                = $request->get('shipment')['shipment_details']['length'];
             $data['dimensions_unit']       = $request->get('shipment')['shipment_details']['dimensions_unit'];
             $data['signature_on_delivery'] = $request->get('shipment')['shipment_details']['signature_on_delivery'];
             $data['hazardous_goods']       = $request->get('shipment')['shipment_details']['hazardous_goods'];
@@ -165,6 +166,7 @@ class PackageController extends Controller
                     "weight_unit.required" => "The field is required",
                     "width.required" => "The field is required",
                     "height.required" => "The field is required",
+                    "length.required" => "The field is required",
 
                     "signature_on_delivery.required" => "The field is required",
                     "signature_on_delivery.boolean" => "The data to register must be true or false",
@@ -218,6 +220,7 @@ class PackageController extends Controller
                     $package->weight_unit                   = $data['weight_unit'];
                     $package->width                         = $data['width'];
                     $package->height                        = $data['height'];
+                    $package->length                        = $data['length'];
                     $package->dimensions_unit               = $data['dimensions_unit'];
                     $package->signature_on_delivery         = $data['signature_on_delivery'];
                     $package->hazardous_goods               = $data['hazardous_goods'];
@@ -255,6 +258,7 @@ class PackageController extends Controller
                     $packageHistory->weight_unit                   = $data['weight_unit'];
                     $packageHistory->width                         = $data['width'];
                     $packageHistory->height                        = $data['height'];
+                    $packageHistory->length                        = $data['length'];
                     $packageHistory->dimensions_unit               = $data['dimensions_unit'];
                     $packageHistory->signature_on_delivery         = $data['signature_on_delivery'];
                     $packageHistory->hazardous_goods               = $data['hazardous_goods'];
