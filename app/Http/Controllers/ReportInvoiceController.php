@@ -49,7 +49,10 @@ class ReportInvoiceController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])->where('status', 'Delivery');
+        $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
+                                    ->where('status', 'Delivery');
+                                    ->where('invoiced', 1)
+                                    ->where('paid', 1);
 
         if($idCompany && $idCompany != 0)
         {
