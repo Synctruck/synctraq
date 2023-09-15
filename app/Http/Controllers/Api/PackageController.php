@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
+use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
 
 use DateTime;
 use DB;
@@ -194,6 +194,15 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
+                    $dimFactorCompany = DimFactorCompany::where('idCompany', $company->id)->first();
+
+                    $dim_weight = 0;
+
+                    if($dimFactorCompany && $company->dimensions)
+                    {
+                        $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
+                    }
+
                     $routesZipCode = RoutesZipCode::find($data['Dropoff_Postal_Code']);
 
                     $routeName = $routesZipCode ? $routesZipCode->routeName : $data['Route'];
@@ -209,6 +218,7 @@ class PackageController extends Controller
                     $package->Dropoff_City                  = $data['Dropoff_City'];
                     $package->Dropoff_Province              = $data['Dropoff_Province'];
                     $package->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
+                    $package->dim_weight                    = $dim_weight;
                     $package->Weight                        = $data['Weight'];
                     $package->Route                         = $routeName;
                     $package->status                        = 'Manifest';
@@ -247,6 +257,7 @@ class PackageController extends Controller
                     $packageHistory->Dropoff_City                  = $data['Dropoff_City'];
                     $packageHistory->Dropoff_Province              = $data['Dropoff_Province'];
                     $packageHistory->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
+                    $packageHistory->dim_weight                    = $dim_weight;
                     $packageHistory->Weight                        = $data['Weight'];
                     $packageHistory->Route                         = $routeName;
                     $packageHistory->status                        = 'Manifest';
