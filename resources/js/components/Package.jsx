@@ -701,7 +701,7 @@ function Package() {
                                             )
                                         }
                                     </div>
-                                    <dvi className="col-lg-2">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -715,8 +715,8 @@ function Package() {
                                                 </select>
                                             </div>
                                         </div>
-                                    </dvi>
-                                    <dvi className="col-lg-2">
+                                    </div>
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -730,7 +730,7 @@ function Package() {
                                                 </select>
                                             </div>
                                         </div>
-                                    </dvi>
+                                    </div>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">

@@ -27,6 +27,7 @@ require('./components/Payments');
 require('./components/PaymentAdjustment');
 require('./components/Reverts');
 require('./components/Report');
+require('./components/ReportInvoices');
 require('./components/ReportDelivery');
 require('./components/ReportDispatch');
 require('./components/ReportInbound');
