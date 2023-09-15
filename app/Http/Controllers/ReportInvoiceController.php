@@ -50,7 +50,7 @@ class ReportInvoiceController extends Controller
         $states = explode(',', $state);
 
         $listAll = PackageDispatch::whereBetween('Date_Delivery', [$dateInit, $dateEnd])
-                                    ->where('status', 'Delivery');
+                                    ->where('status', 'Delivery')
                                     ->where('invoiced', 1)
                                     ->where('paid', 1);
 
