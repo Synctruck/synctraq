@@ -198,6 +198,12 @@ class PackageController extends Controller
 
                     $dim_weight = 0;
 
+                    Log::info('dimFactorCompany:');
+                    Log::info($dimFactorCompany);
+
+                    Log::info('company->dimensions:');
+                    Log::info($company->dimensions);
+                    
                     if($dimFactorCompany && $company->dimensions)
                     {
                         $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
