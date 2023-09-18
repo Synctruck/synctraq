@@ -281,10 +281,15 @@ function ReportInvoices() {
                 <td>{ packageDelivery.Dropoff_Postal_Code }</td>
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td>{ packageDelivery.Route }</td>
-                <td>{ '$ '+ packageDelivery.priceCompany }</td>
-                <td>{ '$ '+ packageDelivery.priceTeam }</td>
-                <td>{ '$ '+ packageDelivery.priceProfit }</td>
+                <td>
+                    <h5 className="text-primary">{ '$ '+ packageDelivery.priceCompany }</h5>
+                </td>
+                <td>
+                    <h5 className="text-danger">{ '$ '+ packageDelivery.priceTeam }</h5>
+                </td>
+                <td>
+                    <h5 className="text-success">{ '$ '+ packageDelivery.priceProfit }</h5>
+                </td>
             </tr>
         );
     });
@@ -590,9 +595,6 @@ function ReportInvoices() {
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
-                                                <th>CLIENT</th>
-                                                <th>CONTACT</th>
-                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
