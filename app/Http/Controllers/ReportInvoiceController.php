@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageAgeController;
 
-use App\Models\{ ChargeCompanyDetail, PaymentTeamDetail, PackageDispatch, PackageHistory };
+use App\Models\{ ChargeCompanyDetail, PaymentTeamDetail, PackagePriceCompanyTeam, PackageDispatch, PackageHistory };
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -121,32 +121,36 @@ class ReportInvoiceController extends Controller
         {
             $chargeDetail  = ChargeCompanyDetail::find($packageDelivery->Reference_Number_1);
             $paymentDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
-                
-            $validator = $packageDelivery->validator ? $packageDelivery->validator->name .' '. $packageDelivery->validator->nameOfOwner : '';
+            
+            if($chargeDetail && $paymentDetail)
+            {
+                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
-            $package = [
-                "idOnfleet" => $packageDelivery->idOnfleet,
-                "Date_Delivery" => $packageDelivery->Date_Delivery,
-                "company" => $packageDelivery->company,
-                "team" => $packageDelivery->team,
-                "driver" => $packageDelivery->driver,
-                "Reference_Number_1" => $packageDelivery->Reference_Number_1,
-                "Dropoff_Contact_Name" => $packageDelivery->Dropoff_Contact_Name,
-                "Dropoff_Contact_Phone_Number" => $packageDelivery->Dropoff_Contact_Phone_Number,
-                "Dropoff_Address_Line_1" => $packageDelivery->Dropoff_Address_Line_1,
-                "Dropoff_City" => $packageDelivery->Dropoff_City,
-                "Dropoff_Province" => $packageDelivery->Dropoff_Province,
-                "Dropoff_Postal_Code" => $packageDelivery->Dropoff_Postal_Code,
-                "Weight" => $packageDelivery->Weight,
-                "Route" => $packageDelivery->Route,
-                "pricePaymentTeam" => $packageDelivery->pricePaymentTeam,
-                "pieces" => $packageDelivery->pieces,
-                "taskOnfleet" => $packageDelivery->taskOnfleet,
-                "charge" => ($chargeDetail ? true : false),
-                "payment" => ($paymentDetail ? true : false),
-            ];
+                if($packagePriceCompanyTeam)
+                {
+                    $priceProfit = $packagePriceCompanyTeam->totalPriceCompany - $paymentDetail->totalPrice;
 
-            array_push($packageHistoryListNew, $package);
+                    $package = [
+                        "idOnfleet" => $packageDelivery->idOnfleet,
+                        "Date_Delivery" => $packageDelivery->Date_Delivery,
+                        "company" => $packageDelivery->company,
+                        "team" => $packageDelivery->team,
+                        "driver" => $packageDelivery->driver,
+                        "Reference_Number_1" => $packageDelivery->Reference_Number_1,
+                        "Dropoff_City" => $packageDelivery->Dropoff_City,
+                        "Dropoff_Province" => $packageDelivery->Dropoff_Province,
+                        "Dropoff_Postal_Code" => $packageDelivery->Dropoff_Postal_Code,
+                        "Weight" => $packageDelivery->Weight,
+                        "Route" => $packageDelivery->Route,
+                        "priceCompany" => $packageDelivery->pricePaymentTeam,
+                        "priceTeam" => $packageDelivery->pieces,
+                        "priceProfit" => $priceProfit,
+                    ];
+
+                    array_push($packageHistoryListNew, $package);
+                }
+            }
+            
         }
 
         return [
@@ -159,7 +163,7 @@ class ReportInvoiceController extends Controller
     public function Export($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename  = $typeExport == 'download' ? "Report Delivery " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Delivery.csv";
+        $filename  = $typeExport == 'download' ? "Report Invoice " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Invoice.csv";
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
@@ -226,7 +230,7 @@ class ReportInvoiceController extends Controller
             rewind($file);
             fclose($file);
 
-            SendGeneralExport('Report Delivery', $filename);
+            SendGeneralExport('Report Invoice', $filename);
 
             return ['stateAction' => true];
         }

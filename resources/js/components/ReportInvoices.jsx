@@ -276,32 +276,15 @@ function ReportInvoices() {
                 <td><b>{ team }</b></td>
                 <td><b>{ driver }</b></td>
                 <td><b>{ packageDelivery.Reference_Number_1 }</b></td>
-                <td>{ packageDelivery.Dropoff_Contact_Name }</td>
-                <td>{ packageDelivery.Dropoff_Contact_Phone_Number }</td>
-                <td>{ packageDelivery.Dropoff_Address_Line_1 }</td>
                 <td>{ packageDelivery.Dropoff_City }</td>
                 <td>{ packageDelivery.Dropoff_Province }</td>
                 <td>{ packageDelivery.Dropoff_Postal_Code }</td>
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td>
-                    {
-                        (packageDelivery.charge)
-                        ?
-                            <div className="alert alert-success"><b>Yes</b></div>
-                        :
-                            <div className="alert alert-danger"><b>Not</b></div>
-                    }
-                </td>
-                <td>
-                    {
-                        (packageDelivery.payment)
-                        ?
-                            <div className="alert alert-success"><b>Yes</b></div>
-                        :
-                            <div className="alert alert-danger"><b>Not</b></div>
-                    }
-                </td>
+                <td>{ packageDelivery.Route }</td>
+                <td>$ { packageDelivery.priceCompany }</td>
+                <td>$ { packageDelivery.priceTeam }</td>
+                <td>$ { packageDelivery.priceProfit }</td>
             </tr>
         );
     });
@@ -615,8 +598,9 @@ function ReportInvoices() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>CHARGE</th>
-                                                <th>PAYMENT</th>
+                                                <th>PRICE COMPANY</th>
+                                                <th>PRICE TEAM</th>
+                                                <th>PRICE PROFIT</th>
                                             </tr>
                                         </thead>
                                         <tbody>
