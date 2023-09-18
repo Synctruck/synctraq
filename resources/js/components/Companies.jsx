@@ -13,6 +13,7 @@ function Companies() {
     const [lengthField, setLengthField]   = useState('');
     const [typeServices, setTypeServices] = useState('');
     const [age21, setAge21]               = useState('');
+    const [dimensions, setDimensions]     = useState('');
     const [status, setStatus]             = useState('');
     const [keyWebhook, setKeyWebhook]     = useState('');
     const [urlWebhook, setUrlWebhook]     = useState('');
@@ -95,6 +96,7 @@ function Companies() {
         formData.append('password', password);
         formData.append('length_field', lengthField);
         formData.append('typeServices', typeServices);
+        formData.append('dimensions', dimensions);
         formData.append('age21', age21);
         formData.append('status', status);
         formData.append('key_webhook', keyWebhook);
@@ -226,6 +228,7 @@ function Companies() {
             setEmail(company.email);
             setPassword(company.email);
             setTypeServices(company.typeServices);
+            setDimensions(company.dimensions);
             setAge21(company.age21);
             setStatus(company.status);
             setLengthField(company.length_field);
@@ -667,6 +670,7 @@ function Companies() {
         setEmail('');
         setPassword('');
         setTypeServices('');
+        setDimensions('');
         setAge21('');
         setLengthField('');
         setStatus('');
@@ -691,6 +695,9 @@ function Companies() {
 
         document.getElementById('typeServices').style.display = 'none';
         document.getElementById('typeServices').innerHTML     = '';
+
+        document.getElementById('dimensions').style.display = 'none';
+        document.getElementById('dimensions').innerHTML     = '';
 
         document.getElementById('age21').style.display = 'none';
         document.getElementById('age21').innerHTML     = '';
@@ -834,6 +841,15 @@ function Companies() {
                     }
                 </td>
                 <td>{ company.typeServices }</td>
+                <td>
+                    {
+                        (company.dimensions)
+                        ?
+                            <div className="alert alert-success"><b>Yes</b></div>
+                        :
+                            <div className="alert alert-danger"><b>Not</b></div>
+                    }
+                </td>
                 <td>
                     {
                         (company.age21)
@@ -1015,6 +1031,15 @@ function Companies() {
                                                                     <option value="API" selected={ (typeServices == 'API' ? 'selected' : '' ) }>API</option>
                                                                     <option value="CSV" selected={ (typeServices == 'CSV' ? 'selected' : '' ) }>CSV</option>
                                                                     <option value="PICK & DROP" selected={ (typeServices == 'PICK & DROP' ? 'selected' : '' ) }>PICK & DROP</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Dimensions</label>
+                                                                <div id="dimensions" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setDimensions(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="1" selected={ (String(dimensions) == '1' ? 'selected' : '' ) }>Yes</option>
+                                                                    <option value="0" selected={ (String(dimensions) == '0' ? 'selected' : '' ) }>Not</option>
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
@@ -1289,6 +1314,7 @@ function Companies() {
                                                 <th>KEY WEBHOOK</th>
                                                 <th>URL WEBHOOK</th>
                                                 <th>TYPE SERVICES</th>
+                                                <th>DIMENSIONS</th>
                                                 <th>AGE 21</th>
                                                 <th>STATUS CODE</th>
                                                 <th>STATUS</th>

@@ -64,6 +64,7 @@ class CompanyController extends Controller
                 "password" => ["required", "max:250"],
                 "length_field" => ["required", "numeric", "max:50"],
                 "typeServices" => ["required"],
+                "dimensions" => ["required"],
                 "age21" => ["required"],
                 "status" => ["required"],
             ],
@@ -84,6 +85,8 @@ class CompanyController extends Controller
                 "length_field.max"  => "Debe ingresar máximo el número 50",
 
                 "typeServices.required" => "Select an item",
+
+                "dimensions.required" => "Select an item",
 
                 "age21.required" => "Select an item",
 
@@ -107,6 +110,7 @@ class CompanyController extends Controller
             $company->password     = Hash::make($request->get('password'));
             $company->length_field = $request->get('length_field');
             $company->typeServices = $request->get('typeServices');
+            $company->dimensions   = $request->get('dimensions');
             $company->age21        = $request->get('age21');
             $company->status       = $request->get('status');
             $company->key_webhook  = '';
@@ -239,6 +243,7 @@ class CompanyController extends Controller
             $company->email        = $request->get('email');
             $company->length_field = $request->get('length_field');
             $company->typeServices = $request->get('typeServices');
+            $company->dimensions   = $request->get('dimensions');
             $company->age21        = $request->get('age21');
             $company->status       = $request->get('status');
 
