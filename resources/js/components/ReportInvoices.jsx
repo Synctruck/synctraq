@@ -282,9 +282,9 @@ function ReportInvoices() {
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
                 <td>{ packageDelivery.Route }</td>
-                <td>$ { packageDelivery.priceCompany }</td>
-                <td>$ { packageDelivery.priceTeam }</td>
-                <td>$ { packageDelivery.priceProfit }</td>
+                <td>{ '$ '+ packageDelivery.priceCompany }</td>
+                <td>{ '$ '+ packageDelivery.priceTeam }</td>
+                <td>{ '$ '+ packageDelivery.priceProfit }</td>
             </tr>
         );
     });

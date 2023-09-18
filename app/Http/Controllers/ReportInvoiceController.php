@@ -142,9 +142,9 @@ class ReportInvoiceController extends Controller
                         "Dropoff_Postal_Code" => $packageDelivery->Dropoff_Postal_Code,
                         "Weight" => $packageDelivery->Weight,
                         "Route" => $packageDelivery->Route,
-                        "priceCompany" => $packageDelivery->pricePaymentTeam,
-                        "priceTeam" => $packageDelivery->pieces,
-                        "priceProfit" => $priceProfit,
+                        "priceCompany" => $packagePriceCompanyTeam->totalPriceCompany,
+                        "priceTeam" => $paymentDetail->totalPrice,
+                        "priceProfit" => number_format($priceProfit, 4),
                     ];
 
                     array_push($packageHistoryListNew, $package);
