@@ -400,6 +400,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('team', [TeamController::class, 'Index'])->middleware('permission:team.index');
 	Route::get('team/list', [TeamController::class, 'List']);
 	Route::get('team/listall', [TeamController::class, 'ListAll']);
+	Route::get('team/list-all-filter', [TeamController::class, 'ListAllFilter']);
 	Route::post('team/insert', [TeamController::class, 'Insert']);
 	Route::get('team/get/{id}', [TeamController::class, 'Get']);
 	Route::post('team/update/{id}', [TeamController::class, 'Update']);
