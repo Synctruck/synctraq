@@ -68,6 +68,15 @@ class TeamController extends Controller
         return ['listTeam' => $listTeam];
     }
 
+    public function ListAllFilter(Request $request)
+    {
+        $listTeam = User::where('idRole', 3)
+                        ->orderBy('name', 'asc')
+                        ->get();
+
+        return ['listTeam' => $listTeam];
+    }
+
     public function Insert(Request $request)
     {
         $validator = Validator::make($request->all(),

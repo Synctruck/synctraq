@@ -120,7 +120,7 @@ function ReportInvoices() {
 
     const listAllTeam = () => {
 
-        fetch(url_general +'team/listall')
+        fetch(url_general +'team/list-all-filter')
         .then(res => res.json())
         .then((response) => {
 
@@ -602,7 +602,7 @@ function ReportInvoices() {
                                                 <th>ROUTE</th>
                                                 <th>PRICE COMPANY</th>
                                                 <th>PRICE TEAM</th>
-                                                <th>PRICE PROFIT</th>
+                                                <th>CONTRIBUTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

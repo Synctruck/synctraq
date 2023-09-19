@@ -167,7 +167,7 @@ class ReportInvoiceController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'DELIVERY DATE', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
+        $fields = array('DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PRICE COMPANY', 'PRICE TEAM', 'CONTRIBUTION');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -176,44 +176,37 @@ class ReportInvoiceController extends Controller
 
         foreach($listPackageDelivery as $packageDelivery)
         {
-            $team   = isset($packageDelivery['team']) ? $packageDelivery['team']['name'] : '';
-            $driver = isset($packageDelivery['driver']) ? $packageDelivery['driver']['name'] .' '. $packageDelivery['driver']['nameOfOwner'] : '';
-
-            $urlImage1 = '';
-            $urlImage2 = '';
-
-            if($packageDelivery['photoUrl'] != '')
+            $chargeDetail  = ChargeCompanyDetail::find($packageDelivery['Reference_Number_1']);
+            $paymentDetail = PaymentTeamDetail::find($packageDelivery['Reference_Number_1']);
+            
+            if($chargeDetail && $paymentDetail)
             {
-                $imagesIds = explode(',', $packageDelivery['photoUrl']);
+                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery['Reference_Number_1'])->first();
 
-                $urlImage1 = count($imagesIds) > 0 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[0] .'/800x.png' : '';
-                $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
+                if($packagePriceCompanyTeam)
+                {
+                    $priceContribution = $packagePriceCompanyTeam->totalPriceCompany - $paymentDetail->totalPrice;
+
+                    $lineData = [
+                        "Date_Delivery" => date('m-d-Y', strtotime($packageDelivery['Date_Delivery'])),
+                        "company" => $packageDelivery['company'],
+                        "team" => ($packageDelivery['team'] ? $packageDelivery['team']['name'] : ''),
+                        "driver" => ($packageDelivery['driver'] ? $packageDelivery['driver']['name'] : ''),
+                        "Reference_Number_1" => $packageDelivery['Reference_Number_1'],
+                        "Dropoff_City" => $packageDelivery['Dropoff_City'],
+                        "Dropoff_Province" => $packageDelivery['Dropoff_Province'],
+                        "Dropoff_Postal_Code" => $packageDelivery['Dropoff_Postal_Code'],
+                        "Weight" => $packageDelivery['Weight'],
+                        "Route" => $packageDelivery['Route'],
+                        "priceCompany" => $packagePriceCompanyTeam->totalPriceCompany,
+                        "priceTeam" => $paymentDetail->totalPrice,
+                        "priceContribution" => number_format($priceContribution, 4),
+                    ];
+
+                    fputcsv($file, $lineData, $delimiter);
+                }
             }
             
-            $lineData = array(
-                                date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
-                                date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])),
-                                date('m/d/Y H:i:s', strtotime($packageDelivery['created_at'])),
-                                $packageDelivery['company'],
-                                $team,
-                                $driver,
-                                $packageDelivery['Reference_Number_1'],
-                                $packageDelivery['Dropoff_Contact_Name'],
-                                $packageDelivery['Dropoff_Contact_Phone_Number'],
-                                $packageDelivery['Dropoff_Address_Line_1'],
-                                $packageDelivery['Dropoff_City'],
-                                $packageDelivery['Dropoff_Province'],
-                                $packageDelivery['Dropoff_Postal_Code'],
-                                $packageDelivery['Weight'],
-                                $packageDelivery['Route'],
-                                $packageDelivery['pricePaymentTeam'],
-                                $packageDelivery['pieces'],
-                                $urlImage1,
-                                $urlImage2,
-                                $packageDelivery['created_at'],
-                            );
-
-            fputcsv($file, $lineData, $delimiter);
         }
 
         if($typeExport == 'download')
