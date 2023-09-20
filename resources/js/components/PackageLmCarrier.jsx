@@ -632,6 +632,50 @@ function PackageLmCarrier() {
     const [ReferenceLabel, setReferenceLabel] = useState('');
     const [RouteLabel, setRouteLabel]         = useState('QWE');
 
+    const handlerInsert = (e) => {
+
+        e.preventDefault();
+
+        console.log(sendInbound);
+
+        if(sendInbound)
+        {
+            const formData = new FormData();
+
+            formData.append('container_id', Reference_Number_1);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
+
+            if(latitude !=0 && longitude != 0)
+            {
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                setReadInput(true);
+                setSendInbound(0);
+
+                fetch(url_general +'package-lm-carrier/send-pallet', {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then((response) => {
+
+                    swal('Correct!', 'PALLET ID sent correctly', 'success');
+
+                    setNumberPackage('')
+                    
+                    setReadInput(false);
+                    setSendInbound(1);
+                });
+            }
+            else
+            {
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+            }
+        }
+    }
+
     return (
 
         <section className="section">
@@ -642,6 +686,20 @@ function PackageLmCarrier() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
+                                    <div className="col-lg-12">
+                                        <form onSubmit={ handlerInsert } autoComplete="off">
+                                            <div className="form-group">
+                                                <label htmlFor="">SCAN A PALLET</label>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
+                                            </div>
+                                            <div className="col-lg-2 form-group">
+                                                <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
+                                            </div>
+                                        </form>
+                                    </div>
                                     <div className="col-12 mb-4">
                                         <div className="row" style={ {display: 'none'} }>
                                             <div className="col-lg-2">

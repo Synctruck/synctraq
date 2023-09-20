@@ -271,6 +271,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-lm-carrier', [PackageLmCarrierController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/package-lm-carrier/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLmCarrierController::class, 'List']);
 	Route::get('/package-lm-carrier/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageLmCarrierController::class, 'Export']);
+	Route::post('/package-lm-carrier/send-pallet', [PackageLmCarrierController::class, 'SendPallet']);
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
