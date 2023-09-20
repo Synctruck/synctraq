@@ -836,7 +836,7 @@ class PackageController extends Controller
             $packageDispatchList = PackageDispatch::with(['package', 'driver.role', 'driver'])
                                                 ->where('status', 'Dispatch');
 
-            $roleUser = 'Administrador';
+            $roleUser = 'Master';
         }
 
         if($dataView == 'today')
@@ -882,7 +882,7 @@ class PackageController extends Controller
 
             if($package)
             {
-                if(Auth::user()->role->name == 'Administrador')
+                if(Auth::user()->role->name == 'Master')
                 {
                     $listTeamRoutes = TeamRoute::with('route')->where('idTeam', $request->get('idTeam'))->get();
                 }
@@ -910,7 +910,7 @@ class PackageController extends Controller
                     return ['stateAction' => 'notValidatedRoute'];
                 }
 
-                if($package->Dispatch && Auth::user()->role->name == 'Administrador')
+                if($package->Dispatch && Auth::user()->role->name == 'Master')
                 {
                     return ['stateAction' => 'validated'];
                 }
@@ -932,18 +932,18 @@ class PackageController extends Controller
 
                     $package->Dispatch = 1;
                     $package->Date_Dispatch = date('Y-m-d H:i:s');
-                    $package->idUserDispatch = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
+                    $package->idUserDispatch = Auth::user()->role->name == 'Master' ? $idUser : Auth::user()->id;
                     $package->status = 'Dispatch';
 
                     $package->save();
 
-                    if(Auth::user()->role->name == 'Administrador')
+                    if(Auth::user()->role->name == 'Master')
                     {
                         $packageDispatch = new PackageDispatch();
 
                         $packageDispatch->id            = date('YmdHis');
                         $packageDispatch->idPackage     = $package->Reference_Number_1;
-                        $packageDispatch->idUser        = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
+                        $packageDispatch->idUser        = Auth::user()->role->name == 'Master' ? $idUser : Auth::user()->id;
                         $packageDispatch->Date_Dispatch = date('Y-m-d H:i:s');
                         $packageDispatch->status        = 'Dispatch';
 
@@ -1149,7 +1149,7 @@ class PackageController extends Controller
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'desc');
 
-            $roleUser = 'Administrador';
+            $roleUser = 'Master';
         }
 
         if($idTeam && $idDriver)
@@ -1354,7 +1354,7 @@ class PackageController extends Controller
 
         if($packageDispatch)
         {
-            if($packageDispatch->idUser == Auth::user()->id || Auth::user()->role->name == 'Administrador')
+            if($packageDispatch->idUser == Auth::user()->id || Auth::user()->role->name == 'Master')
             {
                 try
                 {

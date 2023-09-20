@@ -178,7 +178,7 @@ class ServicePackageNeedMoreInformation{
 
             $packageListNMI = PackageNeedMoreInformation::whereBetween('created_at', [$dateStart, $dateEnd]);
 
-            if(Auth::user()->role->name != 'Administrador')
+            if(Auth::user()->role->name != 'Master')
             {
                 $packageListNMI = $packageListNMI->where('idUser', Auth::user()->id);
             }

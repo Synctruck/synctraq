@@ -229,7 +229,7 @@ function ReportDispatch() {
                 <td><b>{ packageDispatch.lateDays }</b></td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ team }</b></td>
@@ -455,7 +455,7 @@ function ReportDispatch() {
                                     </dvi>
 
                                     {
-                                        roleUser == 'Administrador'
+                                        roleUser == 'Master'
                                         ?
                                             <>
                                                 <div className="col-lg-2">
@@ -532,14 +532,14 @@ function ReportDispatch() {
                                                 <th>DAYS TO DISPATCH</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :

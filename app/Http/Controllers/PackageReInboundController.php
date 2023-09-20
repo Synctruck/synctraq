@@ -36,7 +36,7 @@ class PackageInboundController extends Controller
             $packageListInbound = PackageInbound::with('user')->where('idUser', Auth::user()->id)
                                                 ->where('status', 'Inbound');
         }
-        else if(Auth::user()->role->name == 'Administrador')
+        else if(Auth::user()->role->name == 'Master')
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
