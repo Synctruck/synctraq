@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\{ ServicePackageTerminal, ServicePackageNeedMoreInformation };
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User, PackageLmCarrier };
 
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
@@ -375,6 +375,11 @@ class PackageDispatchController extends Controller
            $package = PackageWarehouse::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
 
+        if(!$package)
+        {
+           $package = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        }
+        
         if(!$package)
         {
             $package = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -784,7 +789,7 @@ class PackageDispatchController extends Controller
 
             return ['stateAction' => false];
         }
-    }
+    } /*finaliza el insert*/
 
     public function CalculateHourDifferenceDispatch($packageHistoryDispatchList)
     {
