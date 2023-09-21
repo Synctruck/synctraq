@@ -152,7 +152,7 @@ class PackageInboundController extends Controller
     public function ShipmentInland(Request $request, $keyApi)
     {
         $company = Company::where('key_api', $keyApi)->first();
-
+        
         if(!$company)
         {
             return response()->json(['message' => "Authentication Failed"], 401);
@@ -169,7 +169,7 @@ class PackageInboundController extends Controller
         Log::info($request);
 
         $package = PackageManifest::find($Reference_Number_1);
-
+        
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
