@@ -3,22 +3,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-use \App\Service\ServicePackageTerminal;
+use App\Models\{ Company, Configuration, PackageLmCarrier, States };
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageLmCarrier, States, User };
-
-use Illuminate\Support\Facades\Validator;
-
-use App\Http\Controllers\Api\PackageController;
-
-use Barryvdh\DomPDF\Facade\PDF;
-
-use Picqer\Barcode\BarcodeGeneratorPNG;
-
+use Auth;
+use DateTime;
 use DB;
-
 use Session;
 
 class PackageLmCarrierController extends Controller
@@ -161,5 +151,62 @@ class PackageLmCarrierController extends Controller
 
             return ['stateAction' => true];
         }
+    }
+
+    public function SendPallet(Request $request)
+    {
+        $company = Company::find(1);
+
+        $key_webhook = $company->key_webhook;
+        $urlWebhook  = env('URL_INLAND_CREATE') .'api/v6/containers/'.  $request->container_id .'/update-status';
+
+        $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+        $created_at      = $created_at_temp->format(DateTime::ATOM);
+
+        $header_curl = array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
+        $dataSend =    '{
+                            "status" : "scan_in_last_mile_carrier",
+                            "datetime" : "'. $created_at .'",
+                            "location" : "'. $request->latitude .','. $request->longitude .'"
+                        }';
+
+        $curl = curl_init();
+
+        dd($urlWebhook);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $urlWebhook,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $dataSend,
+            CURLOPT_HTTPHEADER => $header_curl,
+        ));
+
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        dd($http_status);
+
+        curl_close($curl);
+
+        Log::info($response);
+
+        Log::info('===========  INLAND - STATUS UPDATE');
+        Log::info('http_status: '. $http_status);
+        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+        Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+        Log::info('REPONSE STATUS: '. $response['status']);
+        Log::info('============INLAND - END STATUS UPDATE');
+
+        dd($request->all());
     }
 }
