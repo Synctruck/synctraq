@@ -53,7 +53,7 @@ class DriverController extends Controller
 
     public function List(Request $request)
     {
-        if(Auth::user()->role->name == 'Administrador')
+        if(Auth::user()->role->name == 'Master')
         {
             $userList = Driver::with(['role'])
                                 ->with('package_not_exists')

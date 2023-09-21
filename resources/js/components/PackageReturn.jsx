@@ -118,7 +118,7 @@ function PackageReturn() {
             {
                 listOptionState(response.listState);
             }
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -697,7 +697,7 @@ function PackageReturn() {
                                                 </div>
 
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <>
                                                             <div className="col-lg-2">
@@ -859,14 +859,14 @@ function PackageReturn() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :

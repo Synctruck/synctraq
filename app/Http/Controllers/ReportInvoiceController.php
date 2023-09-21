@@ -188,7 +188,7 @@ class ReportInvoiceController extends Controller
                     $priceContribution = $packagePriceCompanyTeam->totalPriceCompany - $paymentDetail->totalPrice;
 
                     $lineData = [
-                        "Date_Delivery" => date('m-d-Y', strtotime($packageDelivery['Date_Delivery'])),
+                        "Date_Delivery" => date('m-d-Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
                         "company" => $packageDelivery['company'],
                         "team" => ($packageDelivery['team'] ? $packageDelivery['team']['name'] : ''),
                         "driver" => ($packageDelivery['driver'] ? $packageDelivery['driver']['name'] : ''),
