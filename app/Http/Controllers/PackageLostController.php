@@ -569,7 +569,7 @@ class PackageLostController extends Controller
         $messageContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards";
     
         Mail::raw($messageContent, function ($message) use ($teamEmail) {
-            $message->to($teamEmail, 'Lost Packages')->subject('Deductions');
+            $message->to(alvarogranillo16@gmail.com, 'Lost Packages')->subject('Deductions');
         });
     }
     
