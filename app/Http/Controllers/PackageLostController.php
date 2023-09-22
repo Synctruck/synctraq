@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\CustomEmail;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
 
@@ -560,14 +561,14 @@ class PackageLostController extends Controller
 
     public function sendCustomEmail()
     {
-    $message = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards.";
+    // Construye el contenido del correo
+    $emailContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards.";
 
-    Mail::raw($message, function ($email) {
-        $email->to('alvarogranillo16@gmail.com')
-              ->subject('Custom Email Subject');
-    });
+    // Envia el correo
+    Mail::to('alvarogranillo16@gmail.com')->send(new CustomEmail($emailContent));
 
-    return 'Email sent successfully';
+    // Retorna un mensaje de éxito o algún indicador de que el correo se envió correctamente
+    return 'Correo enviado con éxito';
     }
 }
 
