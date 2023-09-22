@@ -502,9 +502,9 @@ class PackageLostController extends Controller
             }
 
             fclose($handle);
-            $result = $this->sendCustomEmail();
+           
             DB::commit();
-
+            $result = $this->sendCustomEmail();
             return ['stateAction' => true];
         }
         catch(Exception $e)
