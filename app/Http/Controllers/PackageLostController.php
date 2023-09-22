@@ -561,10 +561,11 @@ class PackageLostController extends Controller
 
     public function sendCustomEmail($trackingID)
     {
+    $teamEmail = $package->team->email;
     $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
     Mail::raw($message, function ($msg) {
-        $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
+        $msg->to($teamEmail)->subject('Package Lost Notification');
     });
     }
 }
