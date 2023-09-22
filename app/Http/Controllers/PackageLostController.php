@@ -558,18 +558,7 @@ class PackageLostController extends Controller
 
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
-
-    public function sendCustomEmail()
-    {
-    // Construye el contenido del correo
-    $emailContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards.";
-
-    // Envia el correo
-    Mail::to('alvarogranillo16@gmail.com')->send(new CustomEmail($emailContent));
-
-    // Retorna un mensaje de éxito o algún indicador de que el correo se envió correctamente
-    return 'Correo enviado con éxito';
-    }
+    
 }
 
     
