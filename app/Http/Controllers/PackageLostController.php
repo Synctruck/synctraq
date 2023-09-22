@@ -567,7 +567,4 @@ class PackageLostController extends Controller
         $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
     });
     }
-
 }
-
-    
