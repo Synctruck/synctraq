@@ -305,7 +305,7 @@ class PackageLostController extends Controller
                 DB::commit();
                 
                 if ($package->status == 'Dispatch') {
-                    $this->sendEmailTeam(1);
+                    $this->sendEmailTeam();
                 }
                 
                 if ($package->company == 'EIGHTVAPE') {
@@ -557,19 +557,19 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendEmailTeam($IdTeam)
+    public function sendEmailTeam()
     {
-        $team = Team::find($IdTeam);
+       /* $team = Team::find($IdTeam);*/
     
-        if (!$team) {
+        /*if (!$team) {
             return 'Email not found';
         }
         
-        $teamEmail = $team->email;
+        $teamEmail = $team->email;*/
         $messageContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards";
     
         Mail::raw($messageContent, function ($message) use ($teamEmail) {
-            $message->to(alvarogranillo16@gmail.com, 'Lost Packages')->subject('Deductions');
+            $message->to('alvarogranillo16@gmail.com', 'Lost Packages')->subject('Deductions');
         });
     }
     
