@@ -432,7 +432,6 @@ class PackageLostController extends Controller
                     if($packageInbound == null)
                     {
                         $packageInbound = PackageDispatch::find($row[0]);
-                        $result = $this->sendCustomEmail();
                     }
 
                     if($packageInbound == null)
