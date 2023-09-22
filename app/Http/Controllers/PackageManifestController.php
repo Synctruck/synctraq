@@ -480,14 +480,13 @@ class PackageManifestController extends Controller
                                 }
                                 
                                 $routesZipCode = new RoutesZipCode();
-                                $routesZipCode->zipCode   = $route->zipCode;
+                                $routesZipCode->zipCode   = $routesAux->zipCode;
                                 $routesZipCode->idRoute   = $routesAux->id;
                                 $routesZipCode->routeName = $routesAux->name;
                                 $routesZipCode->save();
                             }
 
                             $package->Route = $routesZipCode->routeName;
-
                             $package->save();
 
                             $packageHistory = new PackageHistory();
@@ -507,7 +506,7 @@ class PackageManifestController extends Controller
                             $packageHistory->Dropoff_Postal_Code          = $row[24];
                             $packageHistory->Notes                        = $row[28];
                             $packageHistory->Weight                       = $row[30];
-                            $packageHistory->Route                        = $route->name;
+                            $packageHistory->Route                        = $routesZipCode->routeName;
                             $packageHistory->idUser                       = Auth::user()->id;
                             $packageHistory->idUserManifest               = Auth::user()->id;
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
