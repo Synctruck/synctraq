@@ -305,12 +305,11 @@ class PackageLostController extends Controller
                 $packageInbound->delete();
                 
                 DB::commit();
-                $this->sendCustomEmail($packageInbound->Reference_Number_1);
+                /*$this->sendCustomEmail($packageInbound->Reference_Number_1);*/
                 
                 if ($package->status == 'Dispatch') {
-                    $this->sendEmailTeam();
+                    $this->sendCustomEmail($packageInbound->Reference_Number_1);
                 }
-                
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
                 }
