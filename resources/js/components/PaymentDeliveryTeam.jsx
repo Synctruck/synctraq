@@ -95,7 +95,7 @@ function PaymentDeliveryTeam() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 //listAllTeam();
             }
@@ -536,7 +536,7 @@ function PaymentDeliveryTeam() {
                                         <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                     </div>
                                     {
-                                        roleUser == 'Administrador'
+                                        roleUser == 'Master'
                                         ?
                                             <>
                                                 <div className="col-lg-2">

@@ -57,7 +57,7 @@ function Driver() {
             setTotalUser(response.userList.total);
             setRoleUser(response.roleUser);
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -121,7 +121,7 @@ function Driver() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
@@ -380,7 +380,7 @@ function Driver() {
 
             <tr key={i}>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ user.nameTeam }</b></td>
@@ -514,7 +514,7 @@ function Driver() {
                                                         </div>
 
                                                         {
-                                                            roleUser == 'Administrador'
+                                                            roleUser == 'Master'
                                                             ?
                                                                 <>
                                                                     <div className="col-lg-12">
@@ -636,7 +636,7 @@ function Driver() {
                                         <thead>
                                             <tr>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <>
                                                             <th>TEAM</th>

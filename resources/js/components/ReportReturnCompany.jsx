@@ -139,7 +139,7 @@ function ReportReturnCompany() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 //listAllTeam();
             }

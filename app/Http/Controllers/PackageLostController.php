@@ -307,7 +307,7 @@ class PackageLostController extends Controller
                 if ($package->status == 'Dispatch') {
                     $this->sendEmailTeam();
                 }
-                 
+                
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
                 }
@@ -557,10 +557,10 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-   public function sendEmailTeam($output, $teamId)
+    public function sendEmailTeam($output, $teamId)
     {
         $userEmail = $this->getUserEmailByTeamId($teamId);
-        dd($userEmail);
+    
         if ($userEmail) {
             Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $userEmail) {
                 $message->to($userEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');

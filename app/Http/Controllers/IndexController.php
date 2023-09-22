@@ -20,7 +20,7 @@ class IndexController extends Controller
 
     public function Index()
     {
-        /*if(Auth::user()->role->name == 'Administrador')
+        /*if(Auth::user()->role->name == 'Master')
         {
             return redirect('dashboard');
         }
