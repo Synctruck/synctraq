@@ -573,25 +573,17 @@ class PackageLostController extends Controller
 
     public function sendEmailTeam($output, $IdTeam)
     {
-    // Obtén el correo electrónico del equipo (team) usando el $IdTeam
     $team = Team::find($IdTeam);
 
     if (!$team) {
-        // Maneja el caso en el que no se encuentre el equipo (team) con el $IdTeam
         return 'Email not found';
     }
-
     $teamEmail = $team->email;
     dd($teamEmail);
-    // Ahora puedes enviar el correo utilizando el correo electrónico del equipo
     Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $teamEmail) {
         $message->to($teamEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
     });
     }
-
-
-
-
 
     public function sendEmailCompany($output, $idCompany)
     {
