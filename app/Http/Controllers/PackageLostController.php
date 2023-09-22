@@ -303,7 +303,15 @@ class PackageLostController extends Controller
                 $packageInbound->delete();
 
                 DB::commit();
-
+                
+                if ($package->status == 'Dispatch') {
+                    $this->sendEmailTeam();
+                }
+                 
+                if ($package->company == 'EIGHTVAPE') {
+                    $this->sendEmailCompany();
+                }
+                
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
@@ -548,4 +556,58 @@ class PackageLostController extends Controller
 
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
+
+   /* public function sendEmailTeam($output, $teamId)
+    {
+        $userEmail = $this->getUserEmailByTeamId($teamId);
+        dd($userEmail);
+        if ($userEmail) {
+            Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $userEmail) {
+                $message->to($userEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
+            });
+        } else {
+            
+            return 'Email not found';
+        }
+    }*/
+
+    public function sendEmailTeam($output, $IdTeam)
+    {
+    // Obtén el correo electrónico del equipo (team) usando el $IdTeam
+    $team = Team::find($IdTeam);
+
+    if (!$team) {
+        // Maneja el caso en el que no se encuentre el equipo (team) con el $IdTeam
+        return 'Email not found';
+    }
+
+    $teamEmail = $team->email;
+    dd($teamEmail);
+    // Ahora puedes enviar el correo utilizando el correo electrónico del equipo
+    Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $teamEmail) {
+        $message->to($teamEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
+    });
+    }
+
+
+
+
+
+    public function sendEmailCompany($output, $idCompany)
+    {
+        // Obtén la dirección de correo electrónico de la compañía
+        $company = Company::find($idCompany);
+    
+        if ($company) {
+            $companyEmail = $company->email;
+    
+            Mail::send('mail.LostPackageCompany', ['data' => $output], function ($message) use ($output, $companyEmail) {
+                $message->to($companyEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
+            });
+        } else {
+            // Maneja el caso en el que no se encuentre la compañía
+            return 'Company not found';
+        }
+    }
+    
 }
