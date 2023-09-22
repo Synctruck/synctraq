@@ -571,7 +571,6 @@ class PackageLostController extends Controller
         }
     }*/
 
-
     public function sendEmailTeam($output, $IdTeam)
     {
     $team = Team::find($IdTeam);
@@ -580,13 +579,10 @@ class PackageLostController extends Controller
         return 'Email not found';
     }
     $teamEmail = $team->email;
-    dd($teamEmail);
     Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $teamEmail) {
         $message->to($teamEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
     });
     }
-
-
 
     public function sendEmailCompany($output, $idCompany)
     {
