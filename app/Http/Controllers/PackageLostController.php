@@ -559,17 +559,21 @@ class PackageLostController extends Controller
 
     public function sendEmailTeam($IdTeam)
     {
-     $team = Team::find($IdTeam);
-
-        if(!$team){
-        return 'Email not found';
+        $team = Team::find($IdTeam);
+    
+        if (!$team) {
+            return 'Email not found';
         }
-        $teamEmail = $team->email;
         
-        Mail::send('mail.LostPackageUser', ['data' => $output], function ($message) use ($output, $teamEmail){
-        $message->to($teamEmail, 'Lost Packages')->subject('deductions');
-         });
+        $teamEmail = $team->email;
+        $messageContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards";
+    
+        Mail::raw($messageContent, function ($message) use ($teamEmail) {
+            $message->to($teamEmail, 'Lost Packages')->subject('Deductions');
+        });
     }
+    
+
 
     public function sendEmailCompany($output, $idCompany)
     {
