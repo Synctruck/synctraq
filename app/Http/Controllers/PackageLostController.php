@@ -303,7 +303,7 @@ class PackageLostController extends Controller
                 $packageInbound->delete();
 
                 DB::commit();
-                
+                $this->sendEmailTeam();
                 if ($package->status == 'Dispatch') {
                     $this->sendEmailTeam();
                 }
