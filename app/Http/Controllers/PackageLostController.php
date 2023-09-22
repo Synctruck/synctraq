@@ -301,9 +301,9 @@ class PackageLostController extends Controller
                 $package = $packageInbound;
 
                 $packageInbound->delete();
-
-                DB::commit();
                 $this->sendEmailTeam();
+                DB::commit();
+                
                 if ($package->status == 'Dispatch') {
                     $this->sendEmailTeam();
                 }
@@ -568,7 +568,7 @@ class PackageLostController extends Controller
         $teamEmail = $team->email;*/
         $messageContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards";
     
-        Mail::raw($messageContent, function ($message) use ($teamEmail) {
+        Mail::raw($messageContent, function ($message){
             $message->to('alvarogranillo16@gmail.com', 'Lost Packages')->subject('Deductions');
         });
     }
