@@ -1162,7 +1162,7 @@ class PackageDispatchController extends Controller
 
         if($packageDispatch)
         {
-            if($packageDispatch->idUserDispatch == Auth::user()->id || Auth::user()->role->name == 'Administrador')
+            if($packageDispatch->idUserDispatch == Auth::user()->id || Auth::user()->role->name == 'Master')
             {
                 try
                 {

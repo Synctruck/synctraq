@@ -183,7 +183,7 @@ function PackageFailed() {
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ team }</b></td>
@@ -406,7 +406,7 @@ function PackageFailed() {
                                             </dvi>
 
                                             {
-                                                roleUser == 'Administrador'
+                                                roleUser == 'Master'
                                                 ?
                                                     <>
                                                         <div className="col-lg-1">
@@ -491,14 +491,14 @@ function PackageFailed() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :

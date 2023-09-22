@@ -68,7 +68,7 @@ class PackageWarehouseController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Auth::user()->role->name == 'Administrador')
+        if(Auth::user()->role->name == 'Master')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }

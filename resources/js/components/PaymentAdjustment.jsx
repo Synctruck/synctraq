@@ -64,7 +64,7 @@ function PaymentAdjustment() {
 
         setTotalPieces(auxTotalPieces);
         setTotalRoute(auxTotalRoute.toFixed(3));
-        setTotalAverageCost(auxTotalAverageCost.toFixed(4));
+        setTotalAverageCost(auxTotalAverageCost.toFixed(3));
     }
 
     const handlerSaveAdjustment = (e) => {
@@ -135,7 +135,7 @@ function PaymentAdjustment() {
             <tr>
                 <td>{ paymentDetail.Route }</td>
                 <td className="text-right">{ paymentDetail.totalPieces }</td>
-                <td className="text-right">$ { paymentDetail.totalRoute / paymentDetail.totalPieces }</td>
+                <td className="text-right">$ { (paymentDetail.totalRoute / paymentDetail.totalPieces).toFixed(3) }</td>
                 <td className="text-right">$ { paymentDetail.totalRoute }</td>
             </tr>
         );

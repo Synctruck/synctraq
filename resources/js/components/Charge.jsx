@@ -610,7 +610,7 @@ function Charge() {
                                         </div>
                                     </dvi>
                                     {
-                                        roleUser == 'Administrador'
+                                        roleUser == 'Master'
                                         ?
                                             <>
                                                 <div className="col-lg-2" style={ {display: 'none'} }>
