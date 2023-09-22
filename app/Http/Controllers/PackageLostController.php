@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
 
@@ -500,7 +501,7 @@ class PackageLostController extends Controller
             }
 
             fclose($handle);
-
+            $result = $this->sendCustomEmail();
             DB::commit();
 
             return ['stateAction' => true];
@@ -557,39 +558,17 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendEmailTeam()
+    public function sendCustomEmail()
     {
-       /* $team = Team::find($IdTeam);*/
-    
-        /*if (!$team) {
-            return 'Email not found';
-        }
-        
-        $teamEmail = $team->email;*/
-        $messageContent = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards";
-    
-        Mail::raw($messageContent, function ($message){
-            $message->to('alvarogranillo16@gmail.com', 'Lost Packages')->subject('Deductions');
-        });
-    }
-    
+    $message = "Greetings\n\nOur team is been asking information for the package #trackingID but since there is no update of the status of the package it will be close as lost, $50.00 will be deducted on your next payment\n\nRegards.";
 
+    Mail::raw($message, function ($email) {
+        $email->to('alvarogranillo16@gmail.com')
+              ->subject('Custom Email Subject');
+    });
 
-    public function sendEmailCompany($output, $idCompany)
-    {
-        // Obtén la dirección de correo electrónico de la compañía
-        $company = Company::find($idCompany);
-    
-        if ($company) {
-            $companyEmail = $company->email;
-    
-            Mail::send('mail.LostPackageCompany', ['data' => $output], function ($message) use ($output, $companyEmail) {
-                $message->to($companyEmail, 'Lost Packages')->subject('Lost Packages (' . $output['date'] . ')');
-            });
-        } else {
-            // Maneja el caso en el que no se encuentre la compañía
-            return 'Company not found';
-        }
+    return 'Email sent successfully';
     }
-    
 }
+
+    
