@@ -108,7 +108,7 @@
                 </li>
             @endif
 
-            {{-- @if(Auth::user()->role->name == 'Administrador')
+            {{-- @if(Auth::user()->role->name == 'Master')
                 <li >
                     <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
                         <i class="bx bx-user"></i>
@@ -125,7 +125,7 @@
             </li>
 
             {{-- <li class="nav-heading">* DESELECT</li> --}}
-            {{-- @if(Auth::user()->role->name == 'Administrador')
+            {{-- @if(Auth::user()->role->name == 'Master')
                 <li >
                     <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
                         <i class="bx bx-barcode-reader"></i>
@@ -188,7 +188,7 @@
                 </li>
             @endif
 
-                {{-- @if(Auth::user()->role->name == 'Administrador')
+                {{-- @if(Auth::user()->role->name == 'Master')
                     <li >
                         <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">
                             <i class="bx bx-user"></i>
