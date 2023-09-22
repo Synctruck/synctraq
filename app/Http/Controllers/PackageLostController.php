@@ -305,7 +305,7 @@ class PackageLostController extends Controller
                 DB::commit();
                 
                 if ($package->status == 'Dispatch') {
-                    $this->sendEmailTeam($IdTeam);
+                    $this->sendEmailTeam(1);
                 }
                 
                 if ($package->company == 'EIGHTVAPE') {
