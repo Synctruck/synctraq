@@ -561,31 +561,21 @@ class PackageLostController extends Controller
 
     public function sendCustomEmail($trackingID)
     {
-  
-    $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+    $package = Package::where('trackingID', $trackingID)->first();
 
-    Mail::raw($message, function ($msg) {
-        $msg->to('granilloronquillo16@gmail.com')->subject('Package Lost Notification');
-    });
-    }
-    /*public function sendCustomEmail($trackingID, $idTeam)
-    {
-        $packageDispatch = PackageDispatch::find($trackingID);
-    
-        if ($packageDispatch) {
-            $team = $packageDispatch->team;
-    
-            if ($team) {
-                $teamEmail = $team->email;
-    
-                $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
-    
-                Mail::raw($message, function ($msg) use ($teamEmail) {
-                    $msg->to($teamEmail)->subject('Package Lost Notification');
-                });
-            }
+    if ($package) {
+        $teamEmail = User::where('id', $package->idTeam)->value('email');
+
+        if ($teamEmail) {
+            $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+            Mail::raw($message, function ($msg) use ($teamEmail) {
+                $msg->to($teamEmail)->subject('Package Lost Notification');
+            });
         }
-    }*/
+    }
+    }
+
     
 
 }
