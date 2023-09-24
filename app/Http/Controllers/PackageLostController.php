@@ -559,15 +559,15 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendCustomEmail($trackingID)
+    public function sendCustomEmail($Reference_Number_1)
     {
-        $package = PackageDispatch::where('trackingID', $trackingID)->first();
+        $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
 
     if ($package) {
         $teamEmail = User::where('id', $package->idTeam)->value('email');
 
         if ($teamEmail) {
-            $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+            $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
             Mail::raw($message, function ($msg) use ($teamEmail) {
                 $msg->to($teamEmail)->subject('Package Lost Notification');
