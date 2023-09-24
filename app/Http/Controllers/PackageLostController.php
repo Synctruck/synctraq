@@ -306,7 +306,7 @@ class PackageLostController extends Controller
                 
                 DB::commit();
                 /*$this->sendCustomEmail($packageInbound->Reference_Number_1);*/
-                $this->sendCustomEmail($package->Reference_Number_1);
+                /*$this->sendCustomEmail($package->Reference_Number_1);*/
                 if ($package->status == 'Dispatch') {
                     $this->sendCustomEmail($package->Reference_Number_1);
                 }
