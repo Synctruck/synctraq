@@ -562,7 +562,7 @@ class PackageLostController extends Controller
     public function sendCustomEmail($Reference_Number_1)
     {
         $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
-    /*if ($package) {*/
+    if ($package) {
         /*$teamEmail = User::where('id', $package->idTeam)->value('email');
 
         if ($teamEmail) {*/
@@ -573,6 +573,7 @@ class PackageLostController extends Controller
             });
         
     }
+}
 
     
 
