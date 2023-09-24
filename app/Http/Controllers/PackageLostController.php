@@ -561,7 +561,7 @@ class PackageLostController extends Controller
 
     public function sendCustomEmail($trackingID)
     {
-    $package = Package::where('trackingID', $trackingID)->first();
+        $package = PackageDispatch::where('trackingID', $trackingID)->first();
 
     if ($package) {
         $teamEmail = User::where('id', $package->idTeam)->value('email');
