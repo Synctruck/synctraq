@@ -308,7 +308,8 @@ class PackageLostController extends Controller
                 /*$this->sendCustomEmail($packageInbound->Reference_Number_1);*/
                 
                 if ($package->status == 'Dispatch') {
-                    $this->sendCustomEmail($packageInbound->Reference_Number_1);
+                    // El paquete viene de Dispatch, llama a la función sendCustomEmail
+                    $this->sendCustomEmail($packageInbound->Reference_Number_1, $packageInbound->idTeam);
                 }
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
@@ -559,13 +560,32 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendCustomEmail($trackingID)
+    /*public function sendCustomEmail($trackingID)
     {
-    /*$teamEmail = $package->team->email;*/
+  
     $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
     Mail::raw($message, function ($msg) {
         $msg->to('granilloronquillo16@gmail.com')->subject('Package Lost Notification');
     });
+    }*/
+    public function sendCustomEmail($trackingID)
+    {
+    $packageDispatch = PackageDispatch::find($trackingID);
+
+    if ($packageDispatch) {
+        $team = $packageDispatch->team;
+
+        if ($team) {
+            $teamEmail = $team->email;
+
+            $message = "Greetings\n\nOur team has been inquiring about the package #$trackingID, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+            Mail::raw($message, function ($msg) use ($teamEmail) {
+                $msg->to($teamEmail)->subject('Package Lost Notification');
+            });
+        }
     }
+}
+
 }
