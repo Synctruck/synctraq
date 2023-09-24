@@ -309,6 +309,7 @@ class PackageLostController extends Controller
                 
                 if ($package->status == 'Dispatch') {
                     // El paquete viene de Dispatch, llama a la función sendCustomEmail
+                    Log::info('Llamando a sendCustomEmail para el paquete ' . $packageInbound->Reference_Number_1);
                     $this->sendCustomEmail($packageInbound->Reference_Number_1, $packageInbound->idTeam);
                 }
                 if ($package->company == 'EIGHTVAPE') {
