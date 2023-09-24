@@ -308,7 +308,7 @@ class PackageLostController extends Controller
                 /*$this->sendCustomEmail($packageInbound->Reference_Number_1);*/
                 
                 if ($package->status == 'Dispatch') {
-                    $this->sendCustomEmail($packageInbound->Reference_Number_1, $packageInbound->idTeam);
+                    $this->sendCustomEmail($package->Reference_Number_1, $package->idTeam);
                 }
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
@@ -569,7 +569,7 @@ class PackageLostController extends Controller
     });
     }*/
     public function sendCustomEmail($trackingID)
-    {
+{
     $packageDispatch = PackageDispatch::find($trackingID);
 
     if ($packageDispatch) {
