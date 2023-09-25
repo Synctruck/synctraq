@@ -570,13 +570,17 @@ class PackageLostController extends Controller
 
     public function sendCompanyTeam($Reference_Number_1, $idCompany){
 
-        $company = Company::find(11);
+
+        
+        $company = Company::find($idCompany);
+        if ($company) {
         $emails= $company->email;
         $message = "Greetings\n\nOur team has been inquiring about the package $emails but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
         Mail::raw($message, function ($msg) {
             $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
         });
+    }    
     }
 
 
