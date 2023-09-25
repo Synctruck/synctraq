@@ -301,13 +301,12 @@ class PackageLostController extends Controller
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
-                $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
                 $packageInbound->delete();
+                
+                DB::commit();
                 if ($package->status == 'Dispatch') {
                     $this->sendTeamEmail($package->Reference_Number_1);
                 }
-                DB::commit();
-
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
                 }
@@ -561,19 +560,14 @@ class PackageLostController extends Controller
     {
             $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
             $teamAssociatedWithPackage = $package->team;
-
-        if ($teamAssociatedWithPackage) {
             $teamEmail = $teamAssociatedWithPackage->email;
-        } else {
-             $teamEmail = null; 
-        }   
-            if ($teamEmail) {
+            
                 $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
     
                 Mail::raw($message, function ($msg){
                     $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
                 });
-            }
+            
         }
 
     
