@@ -558,7 +558,7 @@ class PackageLostController extends Controller
 
     public function sendEmailTeam($idTeam)
     {
-        dd($IdTeam);
+        dd($idTeam);
     }
 
 
