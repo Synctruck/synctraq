@@ -308,6 +308,9 @@ class PackageLostController extends Controller
                 if($package->status=='Dispatch'){
                     $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
                 }
+                if($package->company=='EIGHTVAPE'){
+                    $this->sendCompanyTeam($package->Reference_Number_1, $package->idCompany);
+                }
                
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
@@ -562,6 +565,17 @@ class PackageLostController extends Controller
 
         Mail::raw($message, function ($msg) use ($email) {
             $msg->to($email)->subject('Package Lost Notification');
+        });
+    }
+
+    public function sendCompanyTeam($Reference_Number_1, $idCompany){
+
+        /*$user = User::find($idTeam);
+        $email= $user->email;*/
+        $message = "Greetings\n\nOur team has been inquiring about the package $idCompany but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+        Mail::raw($message, function ($msg) {
+            $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
         });
     }
 
