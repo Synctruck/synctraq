@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CustomEmail;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
 
@@ -299,11 +301,16 @@ class PackageLostController extends Controller
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
-
                 $packageInbound->delete();
-
+                
                 DB::commit();
-
+                if ($package->status == 'Dispatch') {
+                    $this->sendTeamEmail($package->Reference_Number_1);
+                }
+                if ($package->company == 'Eightvape') {
+                    $this->sendEmailCompany();
+                }
+                
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
@@ -492,9 +499,9 @@ class PackageLostController extends Controller
             }
 
             fclose($handle);
-
+           
             DB::commit();
-
+            
             return ['stateAction' => true];
         }
         catch(Exception $e)
@@ -548,4 +555,52 @@ class PackageLostController extends Controller
 
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
-}
+
+    public function sendTeamEmail($Reference_Number_1)
+    {
+            $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+            $teamAssociatedWithPackage = $package->team;
+            if ($teamAssociatedWithPackage) {
+                $teamEmail = $teamAssociatedWithPackage->email;
+        
+                $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+        
+                Mail::raw($message, function ($msg) use ($teamEmail) {
+                    $msg->to($teamEmail)->subject('Package Lost Notification');
+                });
+            }
+            
+    }
+
+
+    public function sendCompanyEmail($Reference_Number_1)
+    {
+            $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+
+        if ($package) {
+        if ($package->company == 'Eightvape') {
+            $driver = $package->driver;
+            if ($driver) {
+                $companyEmail = $driver->email;
+                $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost. The total of the invoice will be deducted on your next payment.\n\nRegards.";
+                Mail::raw($message, function ($msg) use ($companyEmail) {
+                    $msg->to($companyEmail)->subject('Package Lost Notification');
+                });
+            }
+        }
+    }
+
+
+
+    } 
+
+   
+
+    
+
+    
+
+
+
+
+
