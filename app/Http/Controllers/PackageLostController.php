@@ -556,10 +556,7 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendEmailTeam($idTeam)
-    {
-        dd($idTeam);
-    }
+
 
 
 
