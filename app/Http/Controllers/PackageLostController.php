@@ -558,7 +558,6 @@ class PackageLostController extends Controller
 
     public function sendEmailTeam($Reference_Number_1, $IdTeam)
     {
-        dd($Reference_Number_1);
         dd($IdTeam);
     }
 
