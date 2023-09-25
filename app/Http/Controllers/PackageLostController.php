@@ -310,11 +310,6 @@ class PackageLostController extends Controller
                     $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
                 }
                 
-                if($package->company == 'EIGHTVAPE')
-                {
-                    $this->sendCompanyTeam($package->Reference_Number_1, $package->idCompany);
-                }
-               
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
