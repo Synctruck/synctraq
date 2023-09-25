@@ -580,9 +580,11 @@ class PackageLostController extends Controller
 
         if($company)
         {
-            $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost. The total of the invoice will be deducted from your next payment.\n\nRegards.";
+            $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, 
+                but since there have been no updates on the status of the package, it will be marked as lost. 
+                The total of the invoice will be deducted from your next payment.\n\nRegards.";
     
-             Mail::raw($message, function ($msg) use ($company) {
+            Mail::raw($message, function ($msg) use ($company) {
             $msg->to($company->email)->subject('Package Lost Notification');
             });
         }
