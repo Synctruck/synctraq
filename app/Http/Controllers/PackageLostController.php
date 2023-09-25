@@ -561,8 +561,15 @@ class PackageLostController extends Controller
 
     public function sendCustomEmail($Reference_Number_1)
     {
-            $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first(); 
-            $teamEmail = $package->email;
+            $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+            $teamAssociatedWithPackage = $package->team;
+
+        if ($teamAssociatedWithPackage) {
+            $teamEmail = $teamAssociatedWithPackage->email;
+        } else {
+            // Manejar el caso en el que no se encuentre un usuario asociado.
+             $teamEmail = null; // O cualquier otro valor por defecto.
+        }   
             if ($teamEmail) {
                 $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
     
@@ -570,10 +577,6 @@ class PackageLostController extends Controller
                     $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
                 });
             }
-            /*if ($package) {
-                $teamEmail = User::where('idTeam', $package->idTeam)->value('email');
-               
-            }*/
         }
 
     
