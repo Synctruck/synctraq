@@ -307,7 +307,7 @@ class PackageLostController extends Controller
                 if ($package->status == 'Dispatch') {
                     $this->sendTeamEmail($package->Reference_Number_1);
                 }
-                if ($package->company == 'EIGHTVAPE') {
+                if ($package->company == 'Eightvape') {
                     $this->sendEmailCompany();
                 }
                 
@@ -560,16 +560,47 @@ class PackageLostController extends Controller
     {
             $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
             $teamAssociatedWithPackage = $package->team;
-            $teamEmail = $teamAssociatedWithPackage->email;
-            
+            if ($teamAssociatedWithPackage) {
+                $teamEmail = $teamAssociatedWithPackage->email;
+        
                 $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
-    
-                Mail::raw($message, function ($msg){
-                    $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
+        
+                Mail::raw($message, function ($msg) use ($teamEmail) {
+                    $msg->to($teamEmail)->subject('Package Lost Notification');
                 });
+            }
             
+    }
+
+
+    public function sendCompanyEmail($Reference_Number_1)
+    {
+            $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+
+        if ($package) {
+        if ($package->company == 'Eightvape') {
+            $driver = $package->driver;
+            if ($driver) {
+                $companyEmail = $driver->email;
+                $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost. The total of the invoice will be deducted on your next payment.\n\nRegards.";
+                Mail::raw($message, function ($msg) use ($companyEmail) {
+                    $msg->to($companyEmail)->subject('Package Lost Notification');
+                });
+            }
         }
+    }
+
+
+
+    } 
+
+   
 
     
-    }
+
+    
+
+
+
+
 
