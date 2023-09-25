@@ -585,7 +585,7 @@ class PackageLostController extends Controller
                 The total of the invoice will be deducted from your next payment.\n\nRegards.";
     
             Mail::raw($message, function ($msg) use ($company) {
-            $msg->to($company->email)->subject('Package Lost Notification');
+                $msg->to($company->email)->subject('Package Lost Notification');
             });
         }
     }
