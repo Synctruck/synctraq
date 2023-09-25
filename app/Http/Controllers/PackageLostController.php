@@ -573,20 +573,18 @@ class PackageLostController extends Controller
 
         
         $company = Company::find($idCompany);
-        if ($company) {
         $emails= $company->email;
-        if($emails){
         $message = "Greetings\n\nOur team has been inquiring about the package $emails but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
-
-        Mail::raw($message, function ($msg) {
-            $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
+        Mail::raw($message, function ($msg) use ($emails) {
+            $msg->to($emails)->subject('Package Lost Notification');
         });
-        }
-    }    
     }
-
-
 }
+
+    
+
+
+
 
 
 
