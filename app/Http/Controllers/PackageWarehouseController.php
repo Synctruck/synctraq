@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
 
@@ -15,7 +18,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 use DB;
-use Illuminate\Support\Facades\Auth;
+
 use Session;
 
 class PackageWarehouseController extends Controller
@@ -65,7 +68,7 @@ class PackageWarehouseController extends Controller
         $routes = explode(',', $route);
         $states = explode(',', $state);
 
-        if(Auth::user()->role->name == 'Administrador')
+        if(Auth::user()->role->name == 'Master')
         {
             $packageListWarehouse = PackageWarehouse::with('user');
         }
@@ -75,7 +78,8 @@ class PackageWarehouseController extends Controller
                                                     ->where('idUser', Auth::user()->id);
         }
 
-        $packageListWarehouse = $packageListWarehouse->whereBetween('created_at', [$dateStart, $dateEnd]);
+        $packageListWarehouse = $packageListWarehouse->where('status', 'Warehouse')
+                                                    ->whereBetween('created_at', [$dateStart, $dateEnd]);
 
         if($idCompany != 0)
         {
@@ -123,20 +127,18 @@ class PackageWarehouseController extends Controller
         return $packageListWarehouse;
     }
 
-    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
@@ -159,12 +161,24 @@ class PackageWarehouseController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Warehouse', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function Insert(Request $request)
@@ -183,6 +197,14 @@ class PackageWarehouseController extends Controller
             return ['stateAction' => 'packageInPreDispatch'];
         }
         
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
+        }
+        
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
         if($packageLost)
@@ -197,32 +219,35 @@ class PackageWarehouseController extends Controller
         //VALIDATION OF PACKAGE IN WAREHOUSE AND UPDATE DATE CREATED
         if($packageWarehouse != null)
         {
-            if(count($stateValidate) > 0)
+            if($packageWarehouse->status == 'Warehouse')
             {
-                if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                if(count($stateValidate) > 0)
                 {
-                    return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                    if(!in_array($packageWarehouse->Dropoff_Province, $stateValidate))
+                    {
+                        return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
+                    }
                 }
-            } 
-            
-            /*$initDate = date('Y-m-d 00:00:00');
-            $endDate  = date('Y-m-d 23:59:59');
+                
+                /*$initDate = date('Y-m-d 00:00:00');
+                $endDate  = date('Y-m-d 23:59:59');
 
-            $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
-                                            ->whereBetween('created_at', [$initDate, $endDate])
-                                            ->where('idUser', Auth::user()->id)
-                                            ->where('status', 'Warehouse')
-                                            ->get()
-                                            ->count();
+                $countValidations = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                                ->whereBetween('created_at', [$initDate, $endDate])
+                                                ->where('idUser', Auth::user()->id)
+                                                ->where('status', 'Warehouse')
+                                                ->get()
+                                                ->count();
 
-            if($countValidations >= 2)
-            {
-                return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
-            }*/
+                if($countValidations >= 2)
+                {
+                    return ['stateAction' => 'countValidations', 'packageWarehouse' => $packageWarehouse];
+                }*/
 
-            if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
-            {
-                return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
+                if(date('Y-m-d', strtotime($packageWarehouse->created_at)) == date('Y-m-d'))
+                {
+                    return ['stateAction' => 'packageInWarehouse', 'packageWarehouse' => $packageWarehouse];
+                }
             }
 
             try
@@ -255,15 +280,26 @@ class PackageWarehouseController extends Controller
                 $packageHistory->quantity                     = $packageWarehouse->quantity;
                 $packageHistory->status                       = 'Warehouse';
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
 
+
                 // update warehouse
+                $packageWarehouse->status     = 'Warehouse';
                 $packageWarehouse->idUser     = Auth::user()->id;
                 $packageWarehouse->created_at = date('Y-m-d H:i:s');
 
                 $packageWarehouse->save();
+
+                if($packageWarehouse->idCompany == 1)
+                {
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                    //end data for inland
+                }
 
                 DB::commit();
 
@@ -352,6 +388,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $package->quantity;
                     $packageHistory->status                       = 'Inbound';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -367,13 +404,13 @@ class PackageWarehouseController extends Controller
                 {
                     $user = User::find($packageDispatch->idUserDispatch);
 
-                    if($user->nameTeam)
+                    if($user && $user->nameTeam)
                     {
                         $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->nameTeam .' / '. $user->name .' '. $user->nameOfOwner;
                     }
                     else
                     {
-                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner .' to '. $user->name;
+                        $description = 'Return - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     }
 
                     $idOnfleet     = '';
@@ -384,8 +421,8 @@ class PackageWarehouseController extends Controller
                     $statusOnfleet = '';
                     $onfleet       = '';
 
-                    $team       = $user->nameTeam;
-                    $workerName = $user->name .' '. $user->nameOfOwner;
+                    $team       = $user ? $user->nameTeam : '';
+                    $workerName = $user ? $user->name .' '. $user->nameOfOwner : '';
 
                     $Date_Return         = date('Y-m-d H:i:s');
                     $Description_Return  = $request->get('Description_Return');
@@ -488,6 +525,7 @@ class PackageWarehouseController extends Controller
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Return';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -553,6 +591,7 @@ class PackageWarehouseController extends Controller
                 $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->quantity                     = $package->quantity;
                 $packageHistory->status                       = 'Warehouse';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -560,6 +599,14 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
+                if($packageWarehouse->idCompany == 1)
+                {
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                    //end data for inland
+                }
+                
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
@@ -582,6 +629,93 @@ class PackageWarehouseController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function Import(Request $request)
+    {
+        $file = $request->file('file');
+
+        $file->move(public_path() .'/file-import', 'warehouse-import.csv');
+
+        $handle = fopen(public_path('file-import/warehouse-import.csv'), "r");
+
+        $line = 0;
+
+        try
+        {
+            DB::beginTransaction();
+
+            while (($raw_string = fgets($handle)) !== false)
+            {
+                if($line > 0)
+                {
+                    $row = str_getcsv($raw_string);
+
+                    $request['Reference_Number_1'] = $row[0];
+
+                    $this->Insert($request);
+                }
+
+                $line++;
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
+    }
+
+    public function ListInDelivery()
+    {
+        $listPackageWarehouse = PackageWarehouse::where('status', 'Warehouse')->get();
+
+        $packagesInDelivery = [];
+
+        foreach($listPackageWarehouse as $packageWarehouse)
+        {
+            $packageDelivery = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+
+            if($packageDelivery)
+            {
+                array_push($packagesInDelivery, $packageWarehouse->Reference_Number_1);
+            }
+        }
+
+        return $packagesInDelivery;
+    }
+
+    public function DeleteInDelivery()
+    {
+        $packagesListInDelivery = $this->ListInDelivery();
+
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($packagesListInDelivery as $Reference_Number_1)
+            {
+                $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')
+                                                    ->where('Reference_Number_1', $Reference_Number_1)
+                                                    ->first();
+
+                if($packageWarehouse)
+                {
+                    $packageWarehouse->delete();
+                }
+            }
+
+            DB::commit();
+
+            return ['message' => "packages deleted"];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 
     public function GetOnfleet($idOnfleet)

@@ -496,6 +496,14 @@ function PackageWarehouse() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'packageTerminal')
+                    {
+                        setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'validatedLost')
                     {
                         setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
@@ -578,7 +586,7 @@ function PackageWarehouse() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        LoadingShow();
+        LoadingShowMap();
 
         fetch(url_general +'package-warehouse/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -602,7 +610,7 @@ function PackageWarehouse() {
                     setViewButtonSave('none');
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }
@@ -624,7 +632,7 @@ function PackageWarehouse() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
+                <td><b>{ (pack.user ? pack.user.name +' '+ pack.user.nameOfOwner : '') }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
@@ -647,25 +655,45 @@ function PackageWarehouse() {
         );
     });
 
-    const exportAllPackageWarehouse = (route, state) => {
+    const exportAllPackageWarehouse = (route, state, type) => {
 
-        location.href = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        let url = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
-
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
-
-       // }
-       exportAllPackageWarehouse(RouteSearch, StateSearch);
+       exportAllPackageWarehouse(RouteSearch, StateSearch, type);
     }
 
     const handlerChangeRoute = (routes) => {
@@ -829,9 +857,29 @@ function PackageWarehouse() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-lg-2">
+                                                <form onSubmit={ handlerImport }>
+                                                    <div className="form-group">
+                                                        <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                            <i className="bx bxs-file"></i> Import
+                                                        </button>
+                                                        <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                                    </div>
+                                                    <div className="form-group" style={ {display: viewButtonSave} }>
+                                                        <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                            <i className="bx  bxs-save"></i> Save
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                             <div className="col-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
+                                            </div>
+                                            <div className="col-3">
+                                                <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
                                                 </button>
                                             </div>
                                         </div>
@@ -894,22 +942,6 @@ function PackageWarehouse() {
                                             <label htmlFor="">LinaHaul Filter</label>
                                             <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />
                                         </div>
-                                    </div>
-                                    <div className="col-lg-2" style={ {display: 'none'} }>
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -1067,7 +1099,7 @@ function PackageWarehouse() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

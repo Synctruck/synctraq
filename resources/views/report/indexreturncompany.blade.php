@@ -6,14 +6,15 @@
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Reports</a></li>
-			<li class="breadcrumb-item active">Return Company</li>
+			<li class="breadcrumb-item active">Return Company {{ $Reference_Number }}</li>
     	</ol>
   	</nav>
 </div><!-- End Page Title -->
 <script>
-	let idUserGeneral = '{{Auth::user()->id}}';
-	let auxDateInit   = '{{date('Y-m-d')}}';
-	let auxDateEnd    = '{{date('Y-m-t')}}';
+	let idUserGeneral 		= '{{Auth::user()->id}}';
+	let auxDateInit   		= '{{date('Y-m-d')}}';
+	let auxDateEnd    		= '{{date('Y-m-t')}}';
+	let auxReference_Number = '{{ $Reference_Number }}';
 </script>
 <div id="reportReturnCompany">
 </div>

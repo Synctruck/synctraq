@@ -84,13 +84,14 @@ class TaskGetDieselPrice extends Command
                     $historyDiesel = new historyDiesel();
 
                     $historyDiesel->changeDate = $changeDate;
-                    $historyDiesel->price = $price;
+                    $historyDiesel->price      = $price; 
+                    $historyDiesel->roundPrice = $this->RoundPrice($price);
 
                     $historyDiesel->save();
 
                     $configuration = Configuration::first();
 
-                    $configuration->diesel_price = $price;
+                    $configuration->diesel_price = $historyDiesel->roundPrice;
 
                     $configuration->save();
                 }
@@ -108,5 +109,10 @@ class TaskGetDieselPrice extends Command
             Log::info("==================== ERROR GET DIESEL PRICE ==============");
             Log::info("============================================================");
         }
+    }
+
+    public function RoundPrice($price)
+    {
+        return ceil($price * 100) / 100;
     }
 }

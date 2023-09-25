@@ -148,6 +148,13 @@ class PalletDispatchController extends Controller
         return ['stateAction' => true];
     }
 
+    public function Delete($numberPallet)
+    {
+        PalletDispatch::find($numberPallet)->delete();
+        
+        return ['stateAction' => true];
+    }
+
     public function Print($numberPallet)
     {
         $pallet = PalletDispatch::find($numberPallet);

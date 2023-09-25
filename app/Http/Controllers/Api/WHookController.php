@@ -35,6 +35,7 @@ class WHookController extends Controller
             $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
 
             Log::info("==== TASK COMPLETED");
+            Log::info("==== Reference_Number_1: ". $Reference_Number_1);
             
             if($completionDetailsStatus == true)
             {
@@ -87,6 +88,7 @@ class WHookController extends Controller
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Delivery';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -97,7 +99,7 @@ class WHookController extends Controller
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
                     $packageDispatch->recipientNotes     = $user->nameTeam;
 
-                    $photoUrl = ''; 
+                    $photoUrl = '';
 
                     foreach($photoUploadIds as $idPhoto)
                     {
@@ -113,17 +115,26 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->idCompany == 10 || $packageDispatch->idCompany == 11)
+                    if($packageDispatch->company == 'INLAND LOGISTICS' || $packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
                         //create or update price company team
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                        $packagePriceCompanyTeamController->Insert($packageDispatch);
+                        $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
-                    //data for INLAND
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
-                    //end data for inland
+                    if($packageDispatch->company != 'Smart Kargo')
+                    {
+                        Log::info($packageDispatch->company);
+
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                        //end data for inland
+                    }
+                    else
+                    {
+                        Log::info('Does not send status to '. $packageDispatch->company);
+                    }
                 }
             }
 
@@ -228,12 +239,21 @@ class WHookController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Failed';
+                    $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
 
                     $packageHistory->save();
                     
                     $packageDispatch->delete();
+
+                    if($packageDispatch->idCompany == 1)
+                    {
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
+                        //end data for inland
+                    }
                 }
 
                 DB::commit();
@@ -330,6 +350,7 @@ class WHookController extends Controller
                             $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] ';
                             $packageHistory->inbound                      = 1;
                             $packageHistory->status                       = 'Inbound';
+                            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -395,6 +416,7 @@ class WHookController extends Controller
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->Description                  = 'For Onfleet[ '. $userCreatorOnfleet .' ] '. $descriptionDispatch;
                         $packageHistory->status                       = 'Dispatch';
+                        $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                         $packageHistory->created_at                   = date('Y-m-d H:i:s');
                         $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -477,21 +499,21 @@ class WHookController extends Controller
 
                 $descriptionHistory = 'For: Onfleet[ '. $userCreatorOnfleet .' ]';
 
-                $nowDate    = date('Y-m-d H:i:s');
+                $nowDate    = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
                 $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
 
-                /*if(date('H:i:s') > date('20:00:00'))
+                if(date('H:i:s') > date('20:00:00'))
                 {
-                    $created_at = date('Y-m-d 04:00:15', strtotime($nowDate .'+1 day'));
+                    $created_at = date('Y-m-d 03:00:15', strtotime($nowDate .'+1 day'));
                 }
-                elseif(date('H:i:s') < date('04:00:00'))
+                elseif(date('H:i:s') < date('03:00:00'))
                 {
-                    $created_at = date('Y-m-d 04:00:15');
+                    $created_at = date('Y-m-d 03:00:15');
                 }
                 else
                 {
                     $created_at = date('Y-m-d H:i:s', strtotime('+2 second', strtotime(date('Y-m-d H:i:s'))));
-                }*/
+                }
 
                 $packageHistory = new PackageHistory();
 
@@ -515,6 +537,7 @@ class WHookController extends Controller
                 $packageHistory->Route                        = $package->Route;
                 $packageHistory->Description                  = $descriptionHistory;
                 $packageHistory->status                       = 'Delete';
+                $packageHistory->actualDate                   = $nowDate;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 
@@ -541,5 +564,18 @@ class WHookController extends Controller
                 DB::rollback();
             }
         }
+    }
+
+    public function EndPointTaskXcelerator(Request $request)
+    {
+        return response($request->check, 200)
+            ->header('Content-Type', 'text/plain');
+    }
+
+    public function TaskXcelerator(Request $request)
+    {
+        Log::info('=========== START - TASK Acelerator ===========');
+        Log::info($request);
+        Log::info('=========== END - TASK Acelerator ===========');
     }
 }

@@ -110,7 +110,6 @@ function PackageMassQuery() {
                 <td>
                     { packageInbound.created_at.substring(5, 7) }-{ packageInbound.created_at.substring(8, 10) }-{ packageInbound.created_at.substring(0, 4) }
                 </td>
-                <td className="text-center"><b>{ packageInbound.lateDays }</b></td>
                 <td><b>{ packageInbound.company }</b></td>
                 <td><b>{ packageInbound.Reference_Number_1 }</b></td>
                 <td>{ packageInbound.status }</td>
@@ -125,6 +124,7 @@ function PackageMassQuery() {
                 <td>{ packageInbound.Dropoff_Province }</td>
                 <td>{ packageInbound.Dropoff_Postal_Code }</td>
                 <td>{ packageInbound.Route }</td>
+                <td>{ packageInbound.Weight }</td>
             </tr>
         );
     });
@@ -225,7 +225,7 @@ function PackageMassQuery() {
                                                             ''
                                                     )
                                                 }
-                                            </div>
+                                            </div> 
                                         </form>
                                     </div>
                                 </div>
@@ -242,7 +242,6 @@ function PackageMassQuery() {
                                         <thead> 
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>LATE DAYS</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
@@ -255,6 +254,7 @@ function PackageMassQuery() {
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
                                                 <th>ROUTE</th>
+                                                <th>WEIGHT</th>
                                             </tr>
                                         </thead>
                                         <tbody>

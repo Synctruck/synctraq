@@ -15,6 +15,7 @@ function ReportReturnCompany() {
     const [listDriver, setListDriver]         = useState([]);
     const [roleUser, setRoleUser]             = useState([]);
     const [listCompany , setListCompany]      = useState([]);
+    const [listComment, setListComment]       = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -26,6 +27,8 @@ function ReportReturnCompany() {
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
     const [idCompany, setCompany]       = useState(0);
+    const [latitude, setLatitude]       = useState(0);
+    const [longitude, setLongitude]     = useState(0);
 
     const [Reference_Number_1, setReference_Number_1] = useState('');
     const [Description_Return, setDescriptionReturn]  = useState('');
@@ -54,6 +57,24 @@ function ReportReturnCompany() {
 
     useEffect( () => {
 
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is:", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'Browser does not support location sharing, please use another browser.', 'error');
+        }
+
         listAllCompany();
         listAllRoute();
     }, []);
@@ -72,6 +93,16 @@ function ReportReturnCompany() {
     }, [file]);
 
     useEffect(() => {
+
+        if(auxReference_Number)
+        {
+            let urlActual = window.location.href;
+
+            history.pushState(null, "", urlActual.split('?')[0]);
+
+            setReference_Number_1(auxReference_Number);
+            handlerOpenModal();
+        }
 
         listReturnCompany(1, RouteSearch, StateSearch);
 
@@ -108,7 +139,7 @@ function ReportReturnCompany() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 //listAllTeam();
             }
@@ -187,18 +218,53 @@ function ReportReturnCompany() {
         listReturnCompany(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch;
+
+        }
+        else
+        {
+            let url = url_general +'report/return-company/export/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -320,8 +386,17 @@ function ReportReturnCompany() {
         formData.append('Width', Width);
         formData.append('Length', Length);
         formData.append('Height', Height);
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
 
         //clearValidation();
+
+        if(latitude == 0 || longitude == 0)
+        {
+            swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+
+            return 0;
+        }
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -355,6 +430,15 @@ function ReportReturnCompany() {
                     
                     document.getElementById('soundPitidoBlocked').play();
                 }
+                else if(response.stateAction == 'commentNotExists')
+                {
+                    swal('The COMMENT does not exist #'+ Reference_Number_1, {
+
+                        icon: "warning",
+                    });
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
                 else if(response.stateAction == 'validatedLost')
                 {
                     swal('THE PACKAGE WAS RECORDED BEFORE AS LOST #'+ Reference_Number_1, {
@@ -378,6 +462,7 @@ function ReportReturnCompany() {
                         icon: "success",
                     });
 
+                    listAllComment('RTS');
                     listReturnCompany(1, RouteSearch, StateSearch);
                     clearForm();
                 }
@@ -396,13 +481,14 @@ function ReportReturnCompany() {
     const clearForm = () => {
 
         setReference_Number_1('');
-        setDescriptionReturn('');
         setClient('');
-        setMeasures('');
         setWeight('');
+        setWidth('');
+        setLength('');
+        setHeight('');
     }
 
-    const handlerOpenModal = (PACKAGE_ID) => {
+    const handlerOpenModal = () => {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalInsertReturn'), {
 
@@ -411,6 +497,7 @@ function ReportReturnCompany() {
         });
 
         myModal.show();
+        listAllComment('RTS');
     }
 
     const handlerImport = (e) => {
@@ -455,6 +542,26 @@ function ReportReturnCompany() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const listAllComment = (category) => {
+
+        fetch(url_general +'comments/get-all-by-category/'+ category)
+        .then(res => res.json())
+        .then((response) => { 
+
+            setListComment(response.commentList);
+        });
+    }
+
+    const optionsComment = listComment.map( (comment, i) => {
+
+        return (
+            (
+                <option key={ i } value={ comment.description }> { comment.description }</option>
+            )
+
+        );
+    });
+
     const modalInsertReturn = <React.Fragment>
                                     <div className="modal fade" id="modalInsertReturn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -479,14 +586,17 @@ function ReportReturnCompany() {
                                                                 <div className="form-group">
                                                                     <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Description_Return } className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required/>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
+                                                                        <option value="">Selection comment</option>
+                                                                        { optionsComment }
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label className="form">CLIENT</label>
                                                                     <div id="client" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) } required/>
+                                                                    <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -540,6 +650,34 @@ function ReportReturnCompany() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-lg-3">
+                                        <button className="btn btn-success form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <form onSubmit={ handlerImport }>
+                                            <div className="form-group">
+                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
+                                                    <i className="bx bxs-file"></i> Import
+                                                </button>
+                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
+                                            </div>
+                                            <div className="form-group" style={ {display: viewButtonSave} }>
+                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
+                                                    <i className="bx  bxs-save"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
@@ -601,27 +739,6 @@ function ReportReturnCompany() {
                                             )
                                         }
                                     </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <button className="btn btn-danger form-control" onClick={ () => handlerOpenModal() }> Return</button>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <form onSubmit={ handlerImport }>
-                                            <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
-                                                    <i className="bx bxs-file"></i> Import
-                                                </button>
-                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                            </div>
-                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                <button className="btn btn-primary form-control" onClick={ () => handlerImport() }>
-                                                    <i className="bx  bxs-save"></i> Save
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
                                 </div>
                                 <audio id="soundPitidoBlocked" src="../sound/pitido-blocked.mp3" preload="auto"></audio>
                             </h5>
@@ -636,7 +753,7 @@ function ReportReturnCompany() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

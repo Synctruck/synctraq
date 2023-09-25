@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, PackageHistory, PackageBlocked, PackageDispatch, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, 
+                PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageLost, 
+                PackageInbound, PackageManifest, PackageNeedMoreInformation, PackageNotExists, 
+                PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -30,9 +33,9 @@ class PackageAgeController extends Controller
         return view('package.age');
     }
 
-    public function List($idCompany, $states, $routes)
+    public function List($idCompany, $states, $routes, $status)
     {
-        $data = $this->GetData($idCompany, $states, $routes, 'paginate');
+        $data = $this->GetData($idCompany, $states, $routes, $status, 'paginate');
         
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
@@ -44,9 +47,9 @@ class PackageAgeController extends Controller
         ];
     }
 
-    public function Export($idCompany, $states, $routes)
+    public function Export($idCompany, $states, $routes, $status)
     {
-        $data           = $this->GetData($idCompany, $states, $routes, 'all');
+        $data           = $this->GetData($idCompany, $states, $routes, $status, 'all');
         $packageListOld = $data['listAll'];
 
         $delimiter = ",";
@@ -56,7 +59,7 @@ class PackageAgeController extends Controller
         $file = fopen('php://memory', 'w');
 
         //set column headers
-        $fields = array('DATE', 'LATE DAYS', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
+        $fields = array('DATE', 'LATE DAYS', 'COMPANY', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -65,6 +68,7 @@ class PackageAgeController extends Controller
             $lineData = array(
                                 date('m-d-Y', strtotime($package['created_at'])),
                                 $package['lateDays'],
+                                $package['company'],
                                 $package['Reference_Number_1'],
                                 $package['status'],
                                 $package['statusDate'],
@@ -89,13 +93,50 @@ class PackageAgeController extends Controller
         fpassthru($file);
     }
 
-    public function GetData($idCompany, $states, $routes, $typeData)
+    public function GetData($idCompany, $states, $routes, $status, $typeData) 
     {
-        $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
-        $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
-        $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+        if($status == 'all')
+        {
+            $idsPackageInbound   = PackageInbound::get('Reference_Number_1');
+            $idsPackageWarehouse = PackageWarehouse::get('Reference_Number_1');
+            $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
+            $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
+            $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
 
-        $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch);
+            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI);
+        }
+        else if($status == 'Inbound')
+        {
+            $idsAll = PackageInbound::get('Reference_Number_1');
+        }
+        else if($status == 'Warehouse')
+        {
+            $idsAll = PackageWarehouse::where('status', '=', 'Warehouse')->get('Reference_Number_1');
+        }
+        else if($status == 'Dispatch')
+        {
+            $idsAll = PackageDispatch::where('status', '=', 'Dispatch')->get('Reference_Number_1');
+        }
+        else if($status == 'Delete')
+        {
+            $idsAll = PackageDispatch::where('status', '=', 'Delete')->get('Reference_Number_1');
+        }
+        else if($status == 'Failed')
+        {
+            $idsAll = PackageFailed::get('Reference_Number_1');
+        }
+        else if($status == 'NMI')
+        {
+            $idsAll = PackageNeedMoreInformation::get('Reference_Number_1');
+        }
+        /*else if($status == 'Lost')
+        {
+            $idsAll = PackageLost::get('Reference_Number_1');
+        }*/
+        else if($status == 'Middle Mile Scan')
+        {
+            $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
+        }
 
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
@@ -132,6 +173,11 @@ class PackageAgeController extends Controller
             $packageHistoryList = $packageHistoryList->whereIn('Route', $routes);
         }
 
+        if($status != 0)
+        {
+            $packageHistoryList = $packageHistoryList->where('status', $status);
+        }
+
         if($typeData == 'paginate')
         {
             $packageHistoryList = $packageHistoryList->orderBy('created_at', 'asc')->paginate(50);
@@ -151,8 +197,8 @@ class PackageAgeController extends Controller
                 $initDate = date('Y-m-d', strtotime($packageHistory->created_at));
                 $endDate  = date('Y-m-d');
 
-                $lateDays = $this->CalculateDaysLate($initDate, $endDate);
-                $status   = $this->GetStatus($packageHistory->Reference_Number_1);
+                $lateDays     = $this->CalculateDaysLate($initDate, $endDate);
+                $statusActual = $this->GetStatus($packageHistory->Reference_Number_1);
 
                 $package = [
 
@@ -161,9 +207,9 @@ class PackageAgeController extends Controller
                     "lateDays" => $lateDays,
                     "company" => $packageHistory->company,
                     "Reference_Number_1" => $packageHistory->Reference_Number_1,
-                    "status" => $status['status'],
-                    "statusDate" => $status['statusDate'],
-                    "statusDescription" => $status['statusDescription'],
+                    "status" => $statusActual['status'],
+                    "statusDate" => $statusActual['statusDate'],
+                    "statusDescription" => $statusActual['statusDescription'],
                     "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
                     "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
                     "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
@@ -188,18 +234,27 @@ class PackageAgeController extends Controller
     public function GetStatus($Reference_Number_1)
     {
         $package = PackageInbound::find($Reference_Number_1);
-
-        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-        $package = $package != null ? $package : PackageDispatch::where('status', '!=', 'Delivery')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::where('status', '=', 'Warehouse')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::where('status', '=', 'Middle Mile Scan')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Dispatch')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::where('status', '=', 'Delete')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
         if($package)
         {
+            $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                        ->where('status', $package->status)
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+
             return [
                 'status' => $package->status,
-                'statusDate' => $packageLast->created_at,
-                'statusDescription' => $packageLast->Description
+                'statusDate' => ($packageLast ? $packageLast->created_at : ''), 
+                'statusDescription' => ($packageLast ? $packageLast->Description : ''),
             ];
         }
         else

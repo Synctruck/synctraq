@@ -24,8 +24,9 @@ function Payments() {
     const [idTeam, setIdTeam]     = useState(0);
     const [idDriver, setIdDriver] = useState(0);
 
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
+    const [RouteSearch, setRouteSearch]   = useState('all');
+    const [StateSearch, setStateSearch]   = useState('all');
+    const [StatusSearch, setStatusSearch] = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -61,14 +62,14 @@ function Payments() {
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
-    }, [dateInit, dateEnd, idTeam]);
+    }, [dateInit, dateEnd, idTeam, StatusSearch]);
 
 
     const listReportDispatch = (pageNumber, routeSearch, stateSearch) => {
 
         setListReport([]);
 
-        fetch(url_general +'payment-team/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'?page='+ pageNumber)
+        fetch(url_general +'payment-team/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -77,7 +78,7 @@ function Payments() {
             setTotalPage(response.paymentList.per_page);
             setPage(response.paymentList.current_page);
             setQuantityPayment(response.paymentList.total);
-            setTotalPaymentTeam(response.totalPayment);
+            setTotalPaymentTeam(response.totalPayments);
         });
     }
 
@@ -111,68 +112,391 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
+    const handlerExportPaymentReceipt = (id) => {
+
+        location.href = url_general +'payment-team/export-receipt/'+ id;
+    }
+
+    const handlerChangeStatus = (id, status) => {
+
+        if(status != 'PAID')
+        {
+            swal({
+                title: "You want change the status to "+ status +"?",
+                text: "Change status!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+
+                if(willDelete)
+                {
+                    LoadingShow();
+
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction == true)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                        else
+                        {
+                            swal("There was an error, try again!", {
+
+                                icon: "error",
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else if(status == 'PAID')
+        {
+            swal({
+                text: 'Enter transaction number',
+                content: "input",
+                button: {
+                    text: "Save",
+                    closeModal: false,
+                },
+            })
+            .then(numberTransaction => {
+
+                if(numberTransaction != null && numberTransaction != '')
+                {
+                    swal.close();
+
+                    LoadingShowMap();
+
+                    fetch(url_general +'payment-team/status-change/'+ id +'/'+ status +'?numberTransaction='+ numberTransaction)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.stateAction == true)
+                        {
+                            swal("PAYMENT TEAM status changed!", {
+
+                                icon: "success",
+                            });
+
+                            listReportDispatch(1, RouteSearch, StateSearch);
+                        }
+                        else
+                        {
+                            swal("There was an error, try again!", {
+
+                                icon: "error",
+                            });
+                        }
+
+                        LoadingHideMap();
+                    });
+                }
+                else
+                {
+                    swal.close();
+
+                    swal('Attention!', 'You have to enter the transaction number', 'warning');
+                }
+            });
+        }
+    }
+
+    const handlerChangeFormatPrice = (number) => {
+
+        const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+        const rep = '$1,';
+        let arr   = number.toString().split('.');
+        arr[0]    = arr[0].replace(exp,rep);
+
+        return arr[1] ? arr.join('.'): arr[0];
+    }
+
     const listReportTable = listReport.map( (payment, i) => {
+
+        let totalDelivery   = handlerChangeFormatPrice(payment.totalDelivery);
+        let totalAdjustment = handlerChangeFormatPrice(payment.totalAdjustment);
+        let total           = handlerChangeFormatPrice(payment.total);
+        let averagePrice    = handlerChangeFormatPrice(payment.averagePrice);
 
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { payment.created_at.substring(5, 7) }-{ payment.created_at.substring(8, 10) }-{ payment.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ payment.created_at.substring(5, 7) }-{ payment.created_at.substring(8, 10) }-{ payment.created_at.substring(0, 4) }</b><br/>
                     { payment.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ payment.idTeam }</b></td>
-                <td>{ payment.startDate }</td>
-                <td>{ payment.endDate }</td>
-                <td className="text-success text-right"><b>{ payment.totalDelivery +' $' }</b></td>
-                <td className="text-danger text-right"><b>{ payment.totalReturn +' $' }</b></td>
-                <td className="text-danger text-right"><b>{ payment.refund +' $' }</b></td>
-                <td className="text-primary text-right"><b>{ payment.total +' $' }</b></td>
                 <td>
-                    <button className="btn btn-primary form-control" onClick={ () => handlerExportPayment(payment.id) }>
-                        <i className="ri-file-excel-fill"></i> Export
+                    <b>{ payment.id }</b><br/>
+                    <b className="text-primary">{ ( payment.team? payment.team.name : '') }</b>
+                </td>
+                <td>
+                    <b className="text-warning">{ (payment.user_payable ? payment.user_payable.name : '' )}</b> <br/>
+                    <b className="text-success">{ (payment.user_paid ? payment.user_paid.name : '' )}</b> <br/>
+                </td>
+                <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
+                <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td>
+                <td className="text-center">
+                    <b>{ payment.totalPieces }</b>
+                </td>
+                <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
+                <td className="text-warning text-right"><h5><b>{ totalAdjustment }</b></h5></td>
+                <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
+                <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
+                <td>
+                    { 
+                        (
+                            payment.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAYABLE') }>
+                                    { payment.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    {
+                        (
+                            payment.status == 'PAYABLE'
+                            ? 
+                                <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAID') }>
+                                    { payment.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    { 
+                        (
+                            payment.status == 'PAID'
+                            ? 
+                                <span className="alert-success font-weight-bold text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
+                                    { payment.status }
+                                </span>
+                            : ''
+                        )
+                    }
+                </td>
+                <td>
+                    { 
+                        (
+                            payment.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="Edit Payment">
+                                    <i className="bx bx-edit-alt"></i>
+                                </button>
+                            :
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="View Payment">
+                                    <i className="bx bxs-detail"></i>
+                                </button>
+                        )
+                    }
+                    
+                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Download Detail">
+                        <i className="ri-file-excel-fill"></i>
                     </button>
+
+                    { 
+                        (
+                            payment.status == 'PAID'
+                            ? 
+                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
+                                    <i className="ri-file-excel-fill"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );
     });
 
-    const [listViewImages, setListViewImages] = useState([]);
+    const [titleModal, setTitleModal]         = useState('');
+    const [listAdjustment, setListAdjustment] = useState([]);
 
-    const viewImages = (urlImage) => {
+    const [totalAdjustment, setTotalAdjustment] = useState(0);
+    const [totalDelivery, setTotalDelivery]     = useState('');
+    const [idPayment, setidPayment]             = useState('');
+    const [amount, setAmount]                   = useState('');
+    const [description, setDescription]         = useState('');
 
-        setListViewImages(urlImage.split('https'));
+    const handlerOpenModalEditPayment = (idPayment, totalDelivery) => {
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+        window.open(url_general +'payment-team/edit/'+ idPayment);
 
-            keyboard: true
+        /*setTotalDelivery(totalDelivery);
+        setidPayment(idPayment);
+        setTitleModal('PAYMENT TEAM - ADJUSTMENT');
+
+        ListAdjustmentPayment(idPayment);
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
+
+            keyboard: true 
         });
 
-        myModal.show();
+        myModal.show();*/
     }
 
-    const listViewImagesModal = listViewImages.map( (image, i) => {
+    const ListAdjustmentPayment = (idPayment) => {
 
-        if(i > 0)
-        {
-            return (
+        LoadingShowMap();
 
-                <img src={ 'https'+ image } className="img-fluid mt-2"/>
-            );
-        }
+        fetch(url_general +'payment-team-adjustment/'+ idPayment)
+        .then(response => response.json())
+        .then(response => {
+
+            LoadingHideMap();
+
+            setListAdjustment(response.listAdjustment);
+
+            handlerCalculateTotalAdjustment(response.listAdjustment);
+        });
+    }
+
+    const handlerCalculateTotalAdjustment = (listAdjustment) => {
+
+        let total = 0;
+
+        listAdjustment.map((adjustment, i) => {
+
+            total = parseFloat(total) + parseFloat(adjustment.amount);
+        });
+
+        setTotalAdjustment(total.toFixed(3));
+    }
+
+    const listPaymentAdjustmentModal = listAdjustment.map( (adjustment, i) => {
+
+        return (
+
+            <tr>
+                <td>{ adjustment.description }</td>
+                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>$ { adjustment.amount }</h6></td>
+            </tr>
+        );
     });
 
-    const modalViewImages = <React.Fragment>
-                                    <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const handlerSaveAdjustment = (e) => {
+
+        LoadingShowMap();
+
+        e.preventDefault();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        const formData = new FormData();
+
+        formData.append('idPaymentTeam', idPayment);
+        formData.append('amount', amount);
+        formData.append('description', description);
+
+        fetch(url_general +'payment-team-adjustment/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+                if(response.statusCode == true)
+                {
+                    swal("Adjustment was registered!", {
+
+                        icon: "success",
+                    });
+
+                    clearFormAdjustment();
+                    ListAdjustmentPayment(idPayment);
+                }
+                else if(response.statusCode == false)
+                {
+                    swal("a problem occurred, please try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                LoadingHideMap();
+            },
+        );
+    }
+
+    const clearFormAdjustment = () => {
+
+        setAmount('');
+        setDescription('');
+    }
+
+    const modalEditPayment = <React.Fragment>
+                                    <div className="modal fade" id="modalEditPayment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <div className="modal-content">
                                                 <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div className="modal-body">
-                                                    { listViewImagesModal }
+                                                    <form onSubmit={ handlerSaveAdjustment }>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">PAYMENT: <span className="text-primary">{ idPayment }</span></label>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">TOTAL DELIVERY: <span className="text-primary">{ totalDelivery } $</span></label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            
+                                                            <div className="col-lg-3 mb-3">
+                                                                <label htmlFor="" className="form">AMOUNT</label>
+                                                                <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
+                                                            </div>
+                                                            <div className="col-lg-9 mb-3">
+                                                                <label htmlFor="" className="form">DESCRIPTION</label>
+                                                                <input type="text" value={ description } onChange={ (e) => setDescription(e.target.value) } className="form-control" minLength="4" maxLength="500" required/>
+                                                            </div>
+                                                            <div className="col-lg-3 mb-3">
+                                                                <button className="btn btn-primary btn-sm form-control">SAVE</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                            <table className="table table-hover table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>DESCRIPTION</th>
+                                                                        <th>AMOUNT</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    { listPaymentAdjustmentModal }
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL ADJUSTMENT</h6></td>
+                                                                        <td className="text-right"><h6 className={ (totalAdjustment >= 0 ? 'text-success' : 'text-danger') }>{ totalAdjustment } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL DELIVERY</h6></td>
+                                                                        <td className="text-right"><h6 className='text-primary'>{ totalDelivery } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6 className="text-success">TOTAL</h6></td>
+                                                                        <td className="text-right"><h6 className='text-success'>{ (parseFloat(totalDelivery) + parseFloat(totalAdjustment)).toFixed(3) } $</h6></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="modal-footer">
                                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -190,172 +514,43 @@ function Payments() {
         );
     });
 
-    const listDriverSelect = listDriver.map( (driver, i) => {
+    const handlerExport = () => {
 
-        return (
-
-            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
-        );
-    });
-
-    const handlerChangeRoute = (routes) => {
-
-        if(routes.length != 0)
-        {
-            let routesSearch = '';
-
-            routes.map( (route) => {
-
-                routesSearch = routesSearch == '' ? route.value : routesSearch +','+ route.value;
-            });
-
-            setRouteSearch(routesSearch);
-
-            listReportDispatch(1, routesSearch, StateSearch);
-        }
-        else
-        {
-            setRouteSearch('all');
-
-            listReportDispatch(1, 'all', StateSearch);
-        }
-    };
-
-    const [optionsRoleSearch, setOptionsRoleSearch] = useState([]);
-
-    const listOptionRoute = (listRoutes) => {
-
-        setOptionsRoleSearch([]);
-
-        listRoutes.map( (route, i) => {
-
-            optionsRoleSearch.push({ value: route.name, label: route.name });
-
-            setOptionsRoleSearch(optionsRoleSearch);
-        });
+        location.href = 'payment-team/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch;
     }
 
-    const handlerChangeState = (states) => {
+    const handlerExportListAll = () => {
 
-        if(states.length != 0)
-        {
-            let statesSearch = '';
+        listReport.forEach((payment, index) => {
 
-            states.map( (state) => {
+            setTimeout(() => {
 
-                statesSearch = statesSearch == '' ? state.value : statesSearch +','+ state.value;
-            });
-
-            setStateSearch(statesSearch);
-
-            listReportDispatch(page, RouteSearch, statesSearch);
-        }
-        else
-        {
-            setStateSearch('all');
-
-            listReportDispatch(page, RouteSearch, 'all');
-        }
-    };
-
-    const [optionsStateSearch, setOptionsStateSearch] = useState([]);
-
-    const listOptionState = (listState) => {
-
-        setOptionsStateSearch([]);
-
-        listState.map( (state, i) => {
-
-            optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
-
-            setOptionsStateSearch(optionsStateSearch);
+                handlerExportPayment(payment.id);
+            }, index * 1500);
         });
-    }
-
-    const handlerRegisterPayment = () => {
-
-        if(idTeam != 0)
-        {
-            swal({
-                title: "You want to register the payment of the TEAM: "+ team +" ?",
-                text: "Start Date: "+ dateInit +' | End Date: '+ dateEnd,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((confirmation) => {
-
-                if(confirmation)
-                {
-                    const formData = new FormData();
-
-                    formData.append('idTeam', idTeam);
-                    formData.append('startDate', dateInit);
-                    formData.append('endDate', dateEnd);
-
-                    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                    LoadingShow(); 
-
-                    fetch(url_general +'payment-delivery/insert', {
-                        headers: { "X-CSRF-TOKEN": token },
-                        method: 'post',
-                        body: formData
-                    })
-                    .then(res => res.json()).
-                    then((response) => {
-
-                            if(response.stateAction == 'incorrectDate')
-                            {
-                                swal("Select a correct date range!", {
-
-                                    icon: "error",
-                                });
-                            }
-                            else if(response.stateAction == 'paymentExists')
-                            {
-                                swal("There is already a payment for the selected filters!", {
-
-                                    icon: "warning",
-                                });
-                            }
-                            else if(response.stateAction)
-                            {
-                                swal("Payment was made correctly!", {
-
-                                    icon: "success",
-                                });
-
-                                document.getElementById('fileImport').value = '';
-
-                                listAllPackage();
-                                setbtnDisplay('none');
-                            }
-
-                            LoadingHide();
-                        },
-                    );
-                }
-            });
-        }
-        else
-        {
-            swal("You must select a TEAM for checkout registration!", {
-
-                icon: "warning",
-            });
-        }
     }
 
     return (
 
         <section className="section">
-            { modalViewImages }
+            { modalEditPayment }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
+                                    </div>
+                                    <div className="col-lg-10 form-group">
+                                        <div className="alert alert-warning">
+                                            * Please note weekly invoices are generate Mondays for the previous week.
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
                                         <label htmlFor="">Start date:</label>
@@ -374,6 +569,21 @@ function Payments() {
                                             </select>
                                         </div>
                                     </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                STATUS:
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
+                                                    <option value="all">All</option>
+                                                    <option value="TO APPROVE">TO APPROVE</option>
+                                                    <option value="PAYABLE">PAYABLE</option>
+                                                    <option value="PAID">PAID</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-4 mb-3">
@@ -389,16 +599,28 @@ function Payments() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>DATE</th>
-                                                <th>HOUR</th>
-                                                <th><b>TEAM</b></th>
-                                                <th>START DATE</th>
-                                                <th>END DATE</th>
-                                                <th>TOTAL DELIVERY</th>
-                                                <th>TOTAL RETURN</th>
-                                                <th>REFUND</th>
-                                                <th>TOTAL</th>
-                                                <th>ACTION</th>
+                                                <th><b>DATE</b></th>
+                                                <th>
+                                                    <b>N° PAYMENT</b><br/>
+                                                    <b>TEAM</b>
+                                                </th>
+                                                <th>
+                                                    <b>USERS</b><br/>
+                                                </th>
+                                                <th><b>START DATE</b></th>
+                                                <th><b>END DATE</b></th>
+                                                <th><b>PIECES</b></th>
+                                                <th><b>TOTAL DELIVERY</b></th>
+                                                <th><b>TOTAL ADJUSTMENT</b></th>
+                                                <th><b>TOTAL</b></th>
+                                                <th><b>AVERAGE PIECE COST</b></th>
+                                                <th><b>STATUS</b></th>
+                                                <th>
+                                                    <b>ACTION</b>&nbsp;
+                                                    <button className="btn btn-success btn-sm" onClick={  () => handlerExportListAll() }>
+                                                        <i className="ri-file-excel-fill"></i>
+                                                    </button>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -201,8 +201,8 @@ function Routes() {
                 method: 'post',
                 body: formData
             })
-            .then(res => res.json()).
-            then((response) => {
+            .then(res => res.json())
+            .then((response) => {
 
                 if(response.stateAction)
                 {
@@ -221,8 +221,6 @@ function Routes() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
-
-                LoadingHide();
             });
         }
     }
@@ -237,7 +235,7 @@ function Routes() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        LoadingShow();
+        LoadingShowMap();
 
         fetch(url_general +'routes/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -262,7 +260,7 @@ function Routes() {
                     setViewButtonSave('none');
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }
@@ -634,8 +632,18 @@ function Routes() {
     const listRouteTable = listRoute.map( (route, i) => {
 
         return (
-
-            <tr key={i}>
+            <tr key={ i }>
+                <td>{ route.name }</td>
+                <td>
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button> &nbsp;
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            /*<tr key={i} style={ {display : 'none'} }>
                 <td>{ route.zipCode }</td>
                 <td>{ route.city }</td>
                 <td>{ route.county }</td>
@@ -659,7 +667,7 @@ function Routes() {
                             ''
                     }
                 </td>
-            </tr>
+            </tr>*/
         );
     });
 
@@ -773,7 +781,7 @@ function Routes() {
                             <div className="row form-group">
                                 <div className="col-lg-12 table-responsive">
                                     <table className="table table-hover table-condensed">
-                                        <tr>
+                                        <tr style={ {display: 'none'} }>
                                             <td>
                                                 <div className="col-lg-12"> 
                                                     <input type="text" value={ zipCodeSearch } onChange={ (e) => setZipCodeSearch(e.target.value) } className="form-control" placeholder="Zip Code..."/>
@@ -817,14 +825,7 @@ function Routes() {
                                         </tr>
                                         <thead>
                                             <tr>
-                                                <th>ZIP CODE</th>
-                                                <th>CITY</th>
-                                                <th>COUNTY</th>
-                                                <th>TYPE</th>
-                                                <th>STATE</th>
                                                 <th>ROUTE</th>
-                                                <th>LATITUDE</th>
-                                                <th>LONGITUDE</th>
                                                 <th>ACTIONS</th>
                                             </tr>
                                         </thead>

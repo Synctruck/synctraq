@@ -124,17 +124,53 @@ function ReportInbound() {
         listReportInbound(pageNumber, RouteSearch, StateSearch,truckSearch);
     }
 
-    const handlerExport = () => {
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+    const handlerExport = (type) => {
+
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/export/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch;
+
+        }
+        else
+        {
+            let url = url_general +'report/export/inbound/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -293,7 +329,12 @@ function ReportInbound() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
                                     </div>
                                 </div>
 
@@ -386,7 +427,7 @@ function ReportInbound() {
                                                 <th>STATUS DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>

@@ -59,8 +59,8 @@ function PackageFailed() {
 
         setListReport([]);
 
-        const responseData = await fetch(url_general +'package-failed/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
-        .then(res =>  res.json())
+        const responseData = await fetch(url_general +'package-failed/list/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ stateSearch +'/'+ routeSearch +'?page='+ pageNumber)
+        .then(res =>  res.json()) 
         .then((response) => {
             setListReport(response.packageFailedList.data);
 
@@ -183,7 +183,7 @@ function PackageFailed() {
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ team }</b></td>
@@ -406,7 +406,7 @@ function PackageFailed() {
                                             </dvi>
 
                                             {
-                                                roleUser == 'Administrador'
+                                                roleUser == 'Master'
                                                 ?
                                                     <>
                                                         <div className="col-lg-1">
@@ -491,14 +491,14 @@ function PackageFailed() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
@@ -508,7 +508,7 @@ function PackageFailed() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>

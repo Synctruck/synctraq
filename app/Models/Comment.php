@@ -14,7 +14,7 @@ class Comment extends Model implements Auditable
     public $timestamps   = false;
     public $incrementing = true;
 
-    protected $fillable = ['id', 'description', 'statusCode', 'finalStatus'];
+    protected $fillable = ['id', 'description', 'statusCode', 'category'];
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',

@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ FileImport, PackageManifest, PackageHistory, Routes };
+use App\Models\{ FileImport, PackageManifest, PackageHistory, Routes, RoutesZipCode };
 
 use Log;
 
@@ -43,7 +43,7 @@ class TaskAmericanManifest extends Command
      */
     public function handle()
     {
-        $allFilesTrackingIn = Storage::disk('sftp')->allFiles('/manifest_out');
+        $allFilesTrackingIn = Storage::disk('sftp')->allFiles('/outbox/manifest');
 
         foreach($allFilesTrackingIn as $fileTracking)
         {
@@ -56,7 +56,7 @@ class TaskAmericanManifest extends Command
                 $handle = fopen(public_path('storage/'. $fileTracking), "r");
 
                 $lineNumber = 1;
-
+ 
                 Log::info('================');
                 Log::info('Upload Manifest');
                 Log::info($fileTracking);
@@ -71,9 +71,10 @@ class TaskAmericanManifest extends Command
                         {
                             $row = str_getcsv($raw_string);
 
-                            $packageHistory = PackageHistory::where('Reference_Number_1', $row[0])->first();
+                            $packageHistory  = PackageHistory::where('Reference_Number_1', $row[0])->get();
+                            $packageManifest = PackageManifest::find($row[0]);
 
-                            if(!$packageHistory)
+                            if(count($packageHistory) == 0 && !$packageManifest)
                             {
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
@@ -100,10 +101,9 @@ class TaskAmericanManifest extends Command
                                     $package->created_at                   = $created_at;
                                     $package->updated_at                   = $created_at;
 
-                                    $route = Routes::where('zipCode', $row[20])->first();
+                                    $routesZipCode = RoutesZipCode::find($row[20]);
                                     
-                                    $package->Route = $route ? $route->name : '';
-
+                                    $package->Route = $routesZipCode ? $routesZipCode->routeName : '';
                                     $package->save();
 
                                     $packageHistory = new PackageHistory();
@@ -128,6 +128,7 @@ class TaskAmericanManifest extends Command
                                     $packageHistory->Date_manifest                = $created_at;
                                     $packageHistory->Description                  = 'For: AMERICAN EAGLE (schedule task)';
                                     $packageHistory->Route                        = $route ? $route->name : '';
+                                    $packageHistory->actualDate                   = $created_at;
                                     $packageHistory->created_at                   = $created_at;
                                     $packageHistory->updated_at                   = $created_at;
 

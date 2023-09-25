@@ -22,6 +22,8 @@ function PackageInbound() {
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
+    const [latitude, setLatitude]                = useState(0);
+    const [longitude, setLongitude]              = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -52,6 +54,24 @@ function PackageInbound() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#fff3cd';
 
     useEffect(() => {
+
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is :", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'The browser does not support sharing your location, please use another browser.', 'error');
+        }
 
         listAllRoute();
         listAllCompany();
@@ -100,25 +120,45 @@ function PackageInbound() {
         });
     }
 
-    const exportAllPackageInbound = (route, state) => {
+    const exportAllPackageInbound = (route, state, type) => {
 
-        location.href = url_general +'package-inbound/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        let url = url_general +'package-inbound/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
-
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
-
-        // }
-        exportAllPackageInbound(RouteSearch, StateSearch);
+        exportAllPackageInbound(RouteSearch, StateSearch, type);
     }
 
     const handlerChangePage = (pageNumber) => {
@@ -432,163 +472,180 @@ function PackageInbound() {
             formData.append('Reference_Number_1', Reference_Number_1);
             formData.append('TRUCK', Truck);
             formData.append('CLIENT', Client);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
 
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if(latitude !=0 && longitude != 0)
+            {
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            setReadInput(true);
-            setSendInbound(0);
+                setReadInput(true);
+                setSendInbound(0);
 
-            fetch(url_general +'package-inbound/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
+                fetch(url_general +'package-inbound/insert', {
+                    headers: { "X-CSRF-TOKEN": token },
+                    method: 'post',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then((response) => {
 
-                    setTextMessageDate('');
-                    setTextMessage2('');
+                        setTextMessageDate('');
+                        setTextMessage2('');
 
-                    if(response.stateAction == 'validatedReturnCompany')
-                    {
-                        setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
-                    }
-                    else if(response.stateAction == 'validatedLost')
-                    {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                        setTypeMessage('warning'); 
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
+                        if(response.stateAction == 'validatedReturnCompany')
                         {
+                            setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                        }
+                        else if(response.stateAction == 'validatedLost')
+                        {
+                            setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                            setTypeMessage('warning'); 
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedFilterPackage')
+                        {
+                            let packageBlocked  = response.packageBlocked;
+                            let packageManifest = response.packageManifest;
+
+                            if(packageBlocked)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                                    text: packageBlocked.comment,
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                });
+                            }
+                            
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                            setTextMessage('');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoBlocked').play();
+                        }
+                        else if(response.stateAction == 'packageInPreDispatch')
+                        {
+                            setTextMessage('The package is in PRE DISPATCH #'+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'packageTerminal')
+                        {
+                            setTextMessage('The package is in TERMINAL STATUS#'+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'notExists')
+                        {
+                            setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                            setTypeMessage('error');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoError').play();
+                        }
+                        else if(response.stateAction == 'validatedInbound')
+                        {
+                            let packageInbound = response.packageInbound;
+
+                            setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
+                            setTextMessageDate(packageInbound.created_at);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedWarehouse')
+                        {
+                            let packageWarehouse = response.packageWarehouse;
+
+                            setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                            setTextMessageDate(packageWarehouse.created_at);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validatedFilterPackage')
+                        {
+                            let packageManifest = response.packageManifest;
+                            //setTextMessage(" LABEL #"+ Reference_Number_1);
+
                             Swal.fire({
                                 icon: 'error',
                                 title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
+                                text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
                                 showConfirmButton: false,
                                 timer: 2000,
-                            });
+                            })
+
+                            setTypeMessage('primary');
+                            setNumberPackage('');
+
+                            document.getElementById('soundPitidoBlocked').play();
                         }
-                        
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                        else if(response.stateAction == 'validatedFilterState')
+                        {
+                            setTextMessage("OTHER STATE "+ Reference_Number_1);
+                            setTypeMessage('primary');
+                            setNumberPackage('');
 
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction == 'validated')
+                        {
+                            setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                            setTypeMessage('warning');
+                            setNumberPackage('');
 
-                        setTextMessage('');
-                        setNumberPackage('');
+                            document.getElementById('soundPitidoWarning').play();
+                        }
+                        else if(response.stateAction)
+                        {
+                            setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
+                            setTypeMessage('success');
+                            setNumberPackage('');
 
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'packageInPreDispatch')
-                    {
-                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                            setWeightLabel(response.packageInbound.Weight);
+                            setStateLabel(response.packageInbound.Dropoff_Province);
+                            setRouteLabel(response.packageInbound.Route);
+                            setReferenceLabel(response.packageInbound.Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                        setTypeMessage('error');
-                        setNumberPackage('');
+                            listAllPackageInbound(1, RouteSearch, StateSearch);
 
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validatedInbound')
-                    {
-                        let packageInbound = response.packageInbound;
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoSuccess').play();
 
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                        setTextMessageDate(packageInbound.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                            //handlerPrint('labelPrint');
+                        }
+                        else
+                        {
+                            setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                            setTypeMessage('error');
+                            setNumberPackage('');
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedWarehouse')
-                    {
-                        let packageWarehouse = response.packageWarehouse;
+                            document.getElementById('Reference_Number_1').focus();
+                            document.getElementById('soundPitidoError').play();
+                        }
 
-                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                        setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageManifest = response.packageManifest;
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
-                            showConfirmButton: false,
-                            timer: 2000,
-                        })
-
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterState')
-                    {
-                        setTextMessage("OTHER STATE "+ Reference_Number_1);
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction)
-                    {
-                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route);
-                        setTypeMessage('success');
-                        setNumberPackage('');
-
-                        setWeightLabel(response.packageInbound.Weight);
-                        setStateLabel(response.packageInbound.Dropoff_Province);
-                        setRouteLabel(response.packageInbound.Route);
-                        setReferenceLabel(response.packageInbound.Reference_Number_1);
-
-                        listAllPackageInbound(1, RouteSearch, StateSearch);
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
-
-                        //handlerPrint('labelPrint');
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessage('error');
-                        setNumberPackage('');
-
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
-
-                    setReadInput(false);
-                    setSendInbound(1);
-                },
-            );
+                        setReadInput(false);
+                        setSendInbound(1);
+                    },
+                );
+            }
+            else
+            {
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+            }
         }
     }
 
@@ -808,6 +865,11 @@ function PackageInbound() {
         document.getElementById('Reference_Number_1').focus();
     }
 
+    const handlerDownloadRoadWarrior = () => {
+
+        location.href = url_general +'package-inbound/download/roadwarrior/'+ idCompany +'/'+ StateSearch+'/'+ RouteSearch +'/'+ dateStart +'/'+ dateEnd;
+    }
+
     return (
 
         <section className="section">
@@ -820,10 +882,24 @@ function PackageInbound() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
+                                                </div> 
+                                            </div>
                                             <div className="col-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
                                                 </button>
+                                            </div>
+                                            <div className="col-3">
+                                                <div className="row">
+                                                    <div className="col-12">
+                                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1043,7 +1119,7 @@ function PackageInbound() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{ PackageDispatch, RangePriceCompany };
+use App\Models\{ Company, PackageDispatch, PackageHistory, RangePriceCompany, RangePriceCompanyZipCode };
 
 use Illuminate\Support\Facades\Validator;
+
+use Log;
 
 class RangePriceCompanyController extends Controller
 {
@@ -81,18 +83,18 @@ class RangePriceCompanyController extends Controller
 
             [
                 "idCompany" => ["required"],
-                "minWeight" => ["required", "min:1", "max:126", "numeric"],
-                "maxWeight" => ["required", "min:1", "max:126", "numeric"],
+                "minWeight" => ["required", "min:0", "max:126", "numeric"],
+                "maxWeight" => ["required", "min:0", "max:126", "numeric"],
                 "price" => ["required", "max:999", "numeric"],
             ],
             [
                 "minWeight.required" => "The field is required",
-                "minWeight.min"  => "Enter minimum 1",
+                "minWeight.min"  => "Enter minimum 0",
                 "minWeight.max"  => "Enter maximum 126",
                 "minWeight.numeric"  => "Enter only numbers",
 
                 "maxWeight.required" => "The field is required",
-                "maxWeight.min"  => "Enter minimum 1",
+                "maxWeight.min"  => "Enter minimum 0",
                 "maxWeight.max"  => "Enter maximum 126",
                 "maxWeight.numeric"  => "Enter only numbers",
 
@@ -133,19 +135,104 @@ class RangePriceCompanyController extends Controller
         return ['stateAction' => true];
     }
 
-    public function GetPriceCompany($idCompany, $weight)
+    public function GetPriceCompany($idCompany, $weight, $Reference_Number_1)
     {
-        $range = RangePriceCompany::where('idCompany', $idCompany)
-                                ->where('minWeight', '<=', $weight)
-                                ->where('maxWeight', '>=', $weight)
-                                ->first();
+        $company = Company::find($idCompany);
 
+        if($company->name == 'Smart Kargo')
+        {
+            $range =  $this->GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1);
+        }
+        else
+        {
+            $searchRangePriceCompany = true;
+
+            Log::info('COMPANY: '. $company->name);
+
+            if($company->name == 'EIGHTVAPE')
+            {
+                Log::info('new ranfe EIGHTVAPE');
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                Log::info('postal code: '. $packageHistory->Dropoff_Postal_Code);
+
+                $range = RangePriceCompanyZipCode::where('zipCode', $packageHistory->Dropoff_Postal_Code)->first();
+
+                if($range == null)
+                {
+                    $searchRangePriceCompany = true;
+                }
+                else
+                {
+                    $searchRangePriceCompany = false;
+                }
+            }
+
+            if($searchRangePriceCompany)
+            {
+                $range = RangePriceCompany::where('idCompany', $idCompany)
+                                    ->where('minWeight', '<=', $weight)
+                                    ->where('maxWeight', '>=', $weight)
+                                    ->first();
+            }
+        }
+
+        Log::info('$Reference_Number_1: '. $Reference_Number_1);
+        Log::info('$weight: '. $weight);
+        Log::info($range);
         if($range == null)
         {
             $range = RangePriceCompany::orderBy('price', 'desc')->first();
         }
 
         return $range->price;
+    }
+
+    public function GetPriceCompanySmartKargo($idCompany, $weight, $Reference_Number_1)
+    {
+        $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                        ->where('status', 'Manifest')
+                                        ->first();
+
+        $date      = date('Y-m-d', strtotime($packageHistory->created_at));
+        $startDate = $date .' 00:00:00';
+        $endDate   = $date .' 23:59:59';
+
+        $quantityPackagesHistory = PackageHistory::whereBetween('created_at', [$startDate, $endDate])
+                                                ->where('status', 'Manifest')
+                                                ->where('idCompany', $idCompany)
+                                                ->get()
+                                                ->count();
+
+        Log::info('QuantityPackage SM');
+        Log::info($quantityPackagesHistory);
+        Log::info($Reference_Number_1);
+        
+        $range = RangePriceCompany::where('idCompany', $idCompany)
+                                ->where('minWeight', '<=', $weight)
+                                ->where('maxWeight', '>=', $weight)
+                                ->orderBy('price', 'desc')
+                                ->get();
+
+        Log::info($range);
+        
+        if($quantityPackagesHistory <= 500)
+        {
+            $priceBaseCompany = $range[0];
+        }
+        else if($quantityPackagesHistory > 500 && $quantityPackagesHistory < 1200)
+        {
+            $priceBaseCompany = $range[1];
+        }
+        else if($quantityPackagesHistory >= 1200)
+        {
+            $priceBaseCompany = $range[2];
+        }
+
+        return $priceBaseCompany;
     }
 
     public function CalculatePricePecercentaje($price, $fuelPercentage)

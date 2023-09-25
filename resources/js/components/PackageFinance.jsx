@@ -88,7 +88,7 @@ function PackageFinance() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -540,7 +540,7 @@ function PackageFinance() {
                                                 <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                             </div>
                                             {
-                                                roleUser == 'Administrador'
+                                                roleUser == 'Master'
                                                 ?
                                                     <>
                                                         <div className="col-lg-2">
@@ -635,7 +635,7 @@ function PackageFinance() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

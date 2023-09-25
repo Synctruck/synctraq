@@ -13,6 +13,7 @@ function Driver() {
     const [address, setAddress]         = useState('');
     const [phone, setPhone]             = useState('');
     const [email, setEmail]             = useState('');
+    const [usageApp, setUsageApp]       = useState('Onfleet');
     const [status, setStatus]           = useState('');
     const [roleUser, setRoleUser]       = useState([]);
     const [idTeam, setIdTeam]           = useState(0);
@@ -22,7 +23,7 @@ function Driver() {
 
     const [listUser, setListUser] = useState([]);
     const [listRole, setListRole] = useState([]);
-    const [listTeam, setListTeam] = useState([]);
+    const [listTeam, setListTeam] = useState([]); 
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -34,7 +35,7 @@ function Driver() {
     const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     useEffect(() => {
-
+ 
         listAllUser(page);
 
     }, [textSearch])
@@ -56,7 +57,7 @@ function Driver() {
             setTotalUser(response.userList.total);
             setRoleUser(response.roleUser);
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -120,12 +121,13 @@ function Driver() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('usageApp', usageApp);
         formData.append('status', status);
 
         clearValidation();
@@ -157,6 +159,13 @@ function Driver() {
                     else if(response.stateAction == 'phoneIncorrect')
                     {
                         swal("The phone number of the driver is wrong!", {
+
+                            icon: "warning",
+                        });
+                    }
+                    else if(response.stateAction == 'notRegisterPODApp')
+                    {
+                        swal('PODApp Message: '+ response.response.error, {
 
                             icon: "warning",
                         });
@@ -338,6 +347,7 @@ function Driver() {
         setPhone('');
         setEmail('');
         setStatus('Active');
+        setUsageApp('Onfleet');
     }
 
     const clearValidation = () => {
@@ -357,6 +367,9 @@ function Driver() {
         document.getElementById('email').style.display = 'none';
         document.getElementById('email').innerHTML     = '';
 
+        document.getElementById('usageApp').style.display = 'none';
+        document.getElementById('usageApp').innerHTML     = '';
+
         document.getElementById('status').style.display = 'none';
         document.getElementById('status').innerHTML     = '';
     }
@@ -367,7 +380,7 @@ function Driver() {
 
             <tr key={i}>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ user.nameTeam }</b></td>
@@ -379,6 +392,7 @@ function Driver() {
                 <td>{ user.phone }</td> 
                 <td>{ user.email }</td>
                 <td>{ user.idOnfleet }</td>
+                <td>{ user.usageApp }</td>
                 <td>
                     {
                         (
@@ -500,12 +514,12 @@ function Driver() {
                                                         </div>
 
                                                         {
-                                                            roleUser == 'Administrador'
+                                                            roleUser == 'Master'
                                                             ?
                                                                 <>
                                                                     <div className="col-lg-12">
                                                                         <div className="form-group">
-                                                                            <label htmlFor="">TEAM</label>
+                                                                            <label className="form">TEAM</label>
                                                                             <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
                                                                                 <option value="" style={ {display: 'none'} }>Select a team</option>
                                                                                 { listTeamSelect }
@@ -539,7 +553,7 @@ function Driver() {
                                                                 <div className="form-group">
                                                                     <label className="form">Phone</label>
                                                                     <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
+                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) }/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -547,6 +561,18 @@ function Driver() {
                                                                     <label className="form">Email</label>
                                                                     <div id="email" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">USAGE APP</label>
+                                                                    <div id="usageApp" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ usageApp } className="form-control" onChange={ (e) => setUsageApp(e.target.value) } required>
+                                                                        <option value="Onfleet" >Onfleet</option>
+                                                                        <option value="PODApp" >PODApp</option>
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -610,7 +636,7 @@ function Driver() {
                                         <thead>
                                             <tr>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <>
                                                             <th>TEAM</th>
@@ -622,6 +648,7 @@ function Driver() {
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>ID ONFLEET</th>
+                                                <th>USAGE APP</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

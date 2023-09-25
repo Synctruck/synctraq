@@ -13,9 +13,13 @@ function PackageDispatch() {
 
     const [listPackageDispatch, setListPackageDispatch] = useState([]);
     const [listTeam, setListTeam]                       = useState([]);
+    const [listTeamNow, setListTeamNow]                 = useState([]);
+    const [listTeamNew, setListTeamNew]                 = useState([]);
     const [listDriver, setListDriver]                   = useState([]);
+    const [listDriverNow, setListDriverNow]             = useState([]);
+    const [listDriverAssign, setListDriverAssign]       = useState([]);
     const [roleUser, setRoleUser]                       = useState([]);
-    const [listRoute, setListRoute]                     = useState([]);
+    const [listRoute, setListRoute]                     = useState([]); 
     const [listRole, setListRole]                       = useState([]);
     const [listState , setListState]                    = useState([]);
     const [listCompany , setListCompany]                = useState([]);
@@ -44,9 +48,15 @@ function PackageDispatch() {
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idTeam, setIdTeam] = useState(0);
+    const [idTeamNow, setIdTeamNow] = useState(0);
+    const [idTeamNew, setIdTeamNew] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
-    const [idDriverAsing, setIdDriverAsing] = useState(0);
+    const [idDriverNow, setIdDriverNow] = useState(0);
+    const [idDriverNew, setIdDriverNew] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
+    
+    const [latitude, setLatitude]   = useState(0);
+    const [longitude, setLongitude] = useState(0);
 
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate]         = useState('');
@@ -73,6 +83,24 @@ function PackageDispatch() {
     document.getElementById('bodyAdmin').style.backgroundColor = '#d1e7dd';
 
     useEffect(() => {
+
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is:", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+        }
 
         listAllCompany();
         listAllRoute();
@@ -131,7 +159,7 @@ function PackageDispatch() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -152,26 +180,50 @@ function PackageDispatch() {
         });
     }
 
-    const exportAllPackageDispatch = ( StateSearch, RouteSearchList) => {
+    const exportAllPackageDispatch = ( StateSearch, RouteSearchList, type) => {
+        
+        let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+type;
 
-        location.href = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList;
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
+    const handlerExport = (type) => {
 
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
+        exportAllPackageDispatch(StateSearch, RouteSearchList, type);
+    }
 
-        // }
+    const handlerRedirectToDebrief = () => {
 
-        exportAllPackageDispatch(StateSearch, RouteSearchList);
-
+        location.href = url_general +'driver/defrief';
     }
 
     const handlerChangePage = (pageNumber) => {
@@ -214,11 +266,12 @@ function PackageDispatch() {
     const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
     const [Weight, setWeight] = useState('');
     const [Route, setRoute] = useState('');
+    const [forcedDispatch, setForcedDispatch] = useState('NO');
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
 
-    const [textButtonSave, setTextButtonSave] = useState('Guardar');
+    const [textButtonSave, setTextButtonSave] = useState('Move Packages');
 
     const optionsRole = listRoute.map( (route, i) => {
 
@@ -488,6 +541,20 @@ function PackageDispatch() {
         }
     }
 
+    const listAllDriverByTeamAssign = (idTeam) => {
+
+        setIdTeamNew(idTeam);
+        setIdDriverNew(0);
+        setListDriverAssign([]);
+
+        fetch(url_general +'driver/team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListDriverAssign(response.listDriver);
+        });
+    }
+
     const [sendDispatch, setSendDispatch] = useState(1);
 
     const handlerValidation = (e) => {
@@ -498,6 +565,7 @@ function PackageDispatch() {
 
         if(sendDispatch)
         {
+            setTextMessage('');
             setIsLoading(true);
             setReadOnly(true);
             setSendDispatch(0);
@@ -509,6 +577,16 @@ function PackageDispatch() {
             formData.append('idDriver', idDriver);
             formData.append('RouteSearch', RouteSearch);
             formData.append('autorizationDispatch', autorizationDispatch);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
+            formData.append('forcedDispatch', forcedDispatch);
+
+            if(latitude == 0 || longitude == 0)
+            {
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+
+                return 0;
+            }
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -522,7 +600,13 @@ function PackageDispatch() {
 
                     setIsLoading(false);
 
-                    if(response.stateAction == 'notAutorization')
+                    if(response.stateAction == 'dispatchedMoreThanTwice')
+                    {
+                        setTextMessage('The package was dispatched more than twice, therefore it should be invoiced and registered as RTS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+                    }
+                    else if(response.stateAction == 'notAutorization')
                     {
                         setTextMessage('This driver has packages pending return. You must mark the authorization to make the dispatch #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
@@ -535,6 +619,22 @@ function PackageDispatch() {
                     else if(response.stateAction == 'packageInPreDispatch')
                     {
                         setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageTerminal')
+                    {
+                        setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageNMI')
+                    {
+                        setTextMessage('The package is in NMI STATUS #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
@@ -692,6 +792,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'errorXcelerator')
+                    {
+                        setTextMessage(response.response.Message +" #"+ Reference_Number_1);
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
                     else if(response.stateAction == 'assigned')
                     {
                         setTextMessage("PACKAGE ASSIGNED TO VIRTUAL OFFICE #"+ Reference_Number_1);
@@ -702,6 +810,7 @@ function PackageDispatch() {
                     }
                     else if(response.stateAction)
                     {
+                        setForcedDispatch('NO');
                         setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
@@ -867,7 +976,7 @@ function PackageDispatch() {
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ team }</b></td>
@@ -909,11 +1018,43 @@ function PackageDispatch() {
 
         return (
 
-            <option value={ team.id }>{ team.name }</option>
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const listTeamNowSelect = listTeamNow.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const listTeamNewSelect = listTeamNew.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
         );
     });
 
     const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
+    const listDriverSelectAssign = listDriverAssign.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
+
+    const listDriverSelectNow = listDriverNow.map( (driver, i) => {
 
         return (
 
@@ -1020,44 +1161,11 @@ function PackageDispatch() {
         }
     }
 
+    const [RouteSearchRoadWarrior, setRouteSearchRoadWarrior] = useState('');
+
     const handlerDownloadRoadWarrior = () => {
 
-        if(dayNight)
-        {
-            var checkboxes = document.getElementsByName('checkDispatch');
-
-            let countCheck = 0;
-
-            let valuesCheck = '';
-
-            for(var i = 0; i < checkboxes.length ; i++)
-            {
-                if(checkboxes[i].checked)
-                {
-                    valuesCheck = (valuesCheck == '' ? checkboxes[i].value : valuesCheck +','+ checkboxes[i].value);
-
-                    countCheck++;
-                }
-            }
-
-            let type = 'all';
-
-            if(countCheck)
-            {
-                type = 'check'
-            }
-
-            if(valuesCheck == '')
-            {
-                valuesCheck = 'all';
-            }
-
-            location.href = url_general +'package/download/roadwarrior/'+ idTeam +'/'+ idDriver +'/'+ type +'/'+ valuesCheck +'/'+ StateSearch +'/'+ dayNight;
-        }
-        else
-        {
-            swal('Attention!', 'Select a time', 'warning');
-        }
+        location.href = url_general +'package/download/roadwarrior/'+ idCompany +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch+'/'+ RouteSearchList +'/'+ dateStart +'/'+ dateEnd;
     }
 
     const clearForm = () => {
@@ -1122,36 +1230,6 @@ function PackageDispatch() {
 
             setListRole(response.roleList);
         });
-    }
-
-    const handlerOpenModalTeam = (id) => {
-
-        //clearValidationTeam();
-
-        /*if(id)
-        {
-            setTitleModal('Update Team')
-            setTextButtonSave('Update');
-        }
-        else
-        {
-            listAllRole();
-            listAllRoute();
-
-            //clearForm();
-            setTitleModal('Add Team');
-            setTextButtonSave('Save');
-        }*/
-
-        listAllRole();
-        clearFormTeam();
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalTeamInsert'), {
-
-            keyboard: true
-        });
-
-        myModal.show();
     }
 
     const handlerSaveTeam = (e) => {
@@ -1285,102 +1363,14 @@ function PackageDispatch() {
         setEmail('');
     }
 
-    const modalTeamInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalTeamInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveTeam }>
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Team</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Role</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
-                                                                        { listRoleSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Team Name</label>
-                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Name of owner</label>
-                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Phone</label>
-                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Email</label>
-                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Permission Dispatch</label>
-                                                                    <select value={ permissionDispatch } className="form-control" onChange={ (e) => setPermissionDispatch(e.target.value) } required>
-                                                                        <option value="0">No</option>
-                                                                        <option value="1">Yes</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Routes</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                </div>
-                                                                <div className="row form-group">
-                                                                    { optionsCheckRoute }
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button className="btn btn-primary">{ textButtonSave }</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </React.Fragment>;
-
-    const handlerOpenModalDriver = (id) => {
+    const handlerOpenOtherTeam = (id) => {
 
         listAllRole();
         clearFormTeam();
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalDriverInsert'), {
+        setListTeamNow(listTeam);
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalOtherTeam'), {
 
             keyboard: true
         });
@@ -1395,7 +1385,7 @@ function PackageDispatch() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
@@ -1455,88 +1445,295 @@ function PackageDispatch() {
         );
     });
 
-    const modalDriverInsert = <React.Fragment>
-                                    <div className="modal fade" id="modalDriverInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveUser }>
+    const handlerChangeTeamNow = (id) => {
+
+        setListTeamNew([]);
+        setIdTeamNow(id); 
+        setListDriverAssign([]);
+
+        //let auxListTeamNow = listTeamNow.filter( team => team.id != id);
+
+        setListTeamNew(listTeamNow);
+    }
+
+    const [listPackageInDispatch, setListPackageInDispatch] = useState([]);
+
+    const listAllDriverByTeamNow = (idTeam) => {
+
+        setIdTeamNew(idTeam);
+        setIdDriverNow(0);
+        setListDriverNow([]);
+
+        fetch(url_general +'driver/team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListDriverNow(response.listDriver);
+        });
+    }
+
+    const handlerGetPackagesInDispatch = (idTeamAux) => {
+
+        LoadingShowMap();
+        handlerChangeTeamNow(idTeamAux);
+        setListPackageInDispatch([]);
+
+        listAllDispatchByTeamDriver(idTeamAux, idDriverNow);
+        listAllDriverByTeamNow(idTeamAux);
+    }
+
+    const handlerChangeDriverNow = (idDriverAux) => {
+
+        setIdDriverNow(idDriverAux);
+
+        listAllDispatchByTeamDriver(idTeamNow, idDriverAux);
+    }
+
+    const listAllDispatchByTeamDriver = (idTeamAux, idDriverAux) => {
+
+        LoadingShowMap();
+
+        fetch(url_general +'package-dispatch/get-by-team-driver/'+ idTeamAux +'/'+ idDriverAux)
+        .then(res => res.json())
+        .then((response) => {
+
+                setListPackageInDispatch(response.listPackageInDispatch);
+
+                LoadingHideMap();
+            },
+        );
+    }
+
+    const [packagesMovedList, setPackagesMovedList]       = useState([]);
+    const [packagesNotMovedList, setPackagesNotMovedList] = useState([]);
+
+    const handlerChangeTeamOfPackages = (e) => {
+
+        LoadingShowMap();
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('References', References);
+        formData.append('idTeamNow', idTeamNow);
+        formData.append('idTeamNew', idTeamNew);
+        formData.append('idDriverNew', idDriverNew); 
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'package-dispatch/update/change-team', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+            if(response.statusCode == true)
+            {
+                setPackagesMovedList(response.packagesMovedList);
+                setPackagesNotMovedList(response.packagesNotMovedList);
+
+                handlerGetPackagesInDispatch(idTeamNow);
+
+                document.getElementById('Reference_Number_1_All').checked = false;
+
+                swal('Correct!', 'The packages was assigned to the new TEAM', 'success');
+            }
+            else if(response.statusCode == false)
+            {
+                swal('Error!', 'An error has occurred, please try again', 'warning');
+            }
+            else if(response.statusCode == 'notExists')
+            {
+                swal('Attention!', 'The team has not packages in DISPATCH', 'warning');
+            }
+            else
+            {
+                swal('Error!', 'A problem occurred, please try again', 'error');
+            }
+
+            LoadingHideMap();
+        });
+    }
+
+    const [References, setReferences] = useState('');
+
+    const handleChangeCheckAllReferences = () => {
+
+        if(document.getElementById('Reference_Number_1_All').checked)
+        {
+            listPackageInDispatch.forEach( packageDispatch => {
+
+                document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked = true;
+            });
+        }
+        else
+        {
+            listPackageInDispatch.forEach( packageDispatch => {
+
+                document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked = false;
+            });
+        }
+
+        handleChangeCheckReferences();
+    }
+
+    const handleChangeCheckReferences = () => {
+
+        let referencesAux = '';
+
+        listPackageInDispatch.forEach( packageDispatch => {
+
+            if(document.getElementById('Reference_Number_1'+ packageDispatch.Reference_Number_1).checked)
+            {
+                referencesAux = (referencesAux == '' ? packageDispatch.Reference_Number_1 : packageDispatch.Reference_Number_1 +','+ referencesAux);
+            }
+        });
+
+        setReferences(referencesAux);
+    };
+
+    const packagesListInDispatchTable = listPackageInDispatch.map((packageDispatch, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id={ 'Reference_Number_1'+ packageDispatch.Reference_Number_1 } value={ packageDispatch.Reference_Number_1 } onChange={ () => handleChangeCheckReferences() }/>
+                        <label class="form-check-label" for="gridCheck1">
+                            &nbsp;{ packageDispatch.Reference_Number_1  }
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <b>{ packageDispatch.team.name  }</b>
+                </td>
+                <td>
+                    { packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner  }
+                </td>
+            </tr>
+        );
+    });
+
+    const packagesMovedListTable = packagesMovedList.map((packageMoved, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>{ packageMoved }</td>
+            </tr>
+        );
+    });
+
+    const packagesNotMovedListTable = packagesNotMovedList.map((packageNotMoved, i) => {
+
+        return (
+
+            <tr key={ i }>
+                <td>{ packageNotMoved }</td>
+            </tr>
+        );
+    });
+
+    const modalOtherTeam = <React.Fragment>
+                                    <div className="modal fade" id="modalOtherTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-lg">
+                                            <form onSubmit={ handlerChangeTeamOfPackages }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Add Driver</h5>
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">MOVE PACKAGES OF A TEAM TO OTHER </h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
+                                                        <div className="row mb-3">
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group mb-3">
+                                                                    <label className="form">TEAM TO REMOVE PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerGetPackagesInDispatch(e.target.value) } required>
+                                                                        <option value="0">All</option>
+                                                                        { listTeamNowSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
                                                                 <div className="form-group">
-                                                                    <label>Role</label>
-                                                                    <div id="idRole" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
-                                                                        { listRoleDriverSelect }
+                                                                    <label className="form">DRIVER WITH ASSIGNED PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => handlerChangeDriverNow(e.target.value) } required>
+                                                                        <option value="0">All</option>
+                                                                        { listDriverSelectNow }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group mb-3">
+                                                                    <label className="form">TEAM TO ASSIGN PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeamAssign(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamNewSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-3">
+                                                                <div className="form-group">
+                                                                    <label className="form">DRIVER TO ASSIGN PACKAGES</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverNew(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listDriverSelectAssign }
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-
-                                                        {
-                                                            roleUser == 'Administrador'
-                                                            ?
-                                                                <>
-                                                                    <div className="col-lg-12">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
-                                                                                <option value="">All</option>
-                                                                                { listTeamSelect }
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            :
-                                                                ''
-                                                        }
-
                                                         <div className="row">
                                                             <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>First Name</label>
-                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ name } className="form-control" onChange={ (e) => setName(e.target.value) } required/>
-                                                                </div>
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th colspan="3">
+                                                                                <div class="form-check">
+                                                                                    <input class="form-check-input" type="checkbox" id="Reference_Number_1_All" value="all" onChange={ () => handleChangeCheckAllReferences() }/>
+                                                                                    <label class="form-check-label" for="gridCheck1">
+                                                                                        &nbsp;PACKAGES IN DISPATCH
+                                                                                    </label>
+                                                                                </div>
+                                                                            </th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>PACKAGE_ID</th>
+                                                                            <th>TEAM</th>
+                                                                            <th>DRIVER</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesListInDispatchTable }
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Last Name</label>
-                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ nameOfOwner } className="form-control" onChange={ (e) => setNameOfOwner(e.target.value) } required/>
-                                                                </div>
+                                                            <div className="col-lg-3">
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PACKAGES MOVED LIST</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesMovedListTable }
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
-                                                        </div>
-
-                                                        <div className="row">
-
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>Address</label>
-                                                                    <div id="address" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ address } className="form-control" onChange={ (e) => setAddress(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Phone</label>
-                                                                    <div id="phone" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ phone } className="form-control" onChange={ (e) => setPhone(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>Email</label>
-                                                                    <div id="email" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="email" value={ email } className="form-control" onChange={ (e) => setEmail(e.target.value) } required/>
-                                                                </div>
+                                                            <div className="col-lg-3">
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PACKAGES NOT MOVED LIST</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { packagesNotMovedListTable }
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1666,11 +1863,22 @@ function PackageDispatch() {
         setAutorizationDispatch(!autorizationDispatch);
     }
 
+    const handlerForcedDispatch = (forcedDispatch) => {
+
+        if(forcedDispatch == 'NO')
+        {
+            setForcedDispatch('YES');
+        }
+        else
+        {
+            setForcedDispatch('NO');
+        }
+    }
+
     return (
 
         <section className="section">
-            { modalTeamInsert }
-            { modalDriverInsert }
+            { modalOtherTeam }
             { modalPackageEdit }
             <div className="row">
                 <div className="col-lg-12">
@@ -1680,55 +1888,28 @@ function PackageDispatch() {
                                 <div className="row form-group">
                                     <div className="col-lg-12 form-group">
                                         <div className="row form-group">
-                                            <div className="col-lg-1" style={ {display: 'none'} }>
+                                            <div className="col-lg-1">
                                                 <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalTeam(0) }>C-TEAM</button>
-                                                </div>
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
+                                                </div> 
                                             </div>
-                                            <div className="col-lg-1" style={ {display: 'none'} }>
-                                                <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white'} } onClick={ () => handlerOpenModalDriver(0) }>C-DRIV</button>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2" style={ {display: 'none'} }>
-                                                <div className="row">
-                                                    <div className="col-lg-4" style={ {display: 'none'} }>
-                                                        <button className="btn btn-info btn-sm form-control" style={ {background: '#6b60ab', border: '1px solid #6b60ab', color: 'white', display: 'none'} }  onClick={ handlerDownloadOnFleet }>ONFLEET</button>
-                                                    </div>
-                                                    <div className="col-lg-4" style={ {display: 'none'} }>
-                                                        <button className="btn btn-danger btn-sm form-control" onClick={ handlerDownloadRoadWarrior }>ROADW</button>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <label class="form-check-label text-dark" for="gridRadios1">D</label>&nbsp;
-                                                                <input class="form-check-input form-check-input-success border-success" type="radio" name="gridRadios" value="Day" checked={ dayNight == 'Day' } onChange={ (e) => setDayNight(e.target.value) }/>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <label class="form-check-label text-dark" for="gridRadios1">N</label>&nbsp;
-                                                                <input class="form-check-input form-check-input-dark border-dark" type="radio" name="gridRadios" value="Night" checked={ dayNight == 'Night' } onChange={ (e) => setDayNight(e.target.value) }/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-warning btn-sm form-control" onClick={ () => handlerRedirectReturns() }>RETURNS</button>
-                                                </div>
-                                            </div>
-
-                                            <div className="col-lg-2">
-                                                <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                         <i className="ri-file-excel-fill"></i> EXPORT
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="col-3">
+                                                <div className="form-group">
+                                                    <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                                        <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
                                                     </button>
                                                 </div>
                                             </div>
 
                                             {
-                                                roleUser == 'Administrador'
+                                                roleUser == 'Master'
                                                 ?
                                                     <div className="col-lg-2">
                                                         <form onSubmit={ handlerImport }>
@@ -1748,8 +1929,22 @@ function PackageDispatch() {
                                                 :
                                                     ''
                                             }
-                                        </div>
 
+                                            <div className="col-2" style={ {display: 'block'} }>
+                                                <div className="form-group">
+                                                    <button className="btn btn-info btn-sm form-control text-white" onClick={  () => handlerRedirectToDebrief() }>
+                                                        DEBRIEF
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="col-2" style={ {display: 'block'} }>
+                                                <div className="form-group">
+                                                    <button className="btn btn-secondary btn-sm form-control text-white" onClick={  () => handlerOpenOtherTeam() }>
+                                                        OTHER TEAM
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1757,14 +1952,14 @@ function PackageDispatch() {
                                     <div className="col-lg-10">
                                         <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
                                             <div className="row form-group">
-                                                <div className={ roleUser == 'Administrador' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
+                                                <div className={ roleUser == 'Master' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
                                                     <div className="form-group">
                                                         <label htmlFor="">PACKAGE ID</label>
                                                         <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <>
                                                             <div className="col-lg-3">
@@ -1845,7 +2040,7 @@ function PackageDispatch() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-2 form-group">
+                                    <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <label htmlFor="">ROUTES</label>
@@ -1853,6 +2048,13 @@ function PackageDispatch() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col-lg-3">
+                                        <button className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} } onClick={ () => handlerForcedDispatch(forcedDispatch) }>
+                                            FORCED EV: { forcedDispatch }
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="row">
                                     <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>
                                         <div className="row">
                                             <div className="col-sm-12" style={ {display: 'none'} }>
@@ -1873,8 +2075,7 @@ function PackageDispatch() {
                                     </div>
                                 </div>
 
-
-                                <hr/><br/>
+                                <hr/>
 
                                 <div className="row">
                                     <div className="col-lg-3 mb-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
@@ -1979,14 +2180,14 @@ function PackageDispatch() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
@@ -1996,7 +2197,7 @@ function PackageDispatch() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

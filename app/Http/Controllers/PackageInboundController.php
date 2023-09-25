@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use \App\Service\ServicePackageTerminal;
 
 use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute };
 
@@ -34,26 +35,38 @@ class PackageInboundController extends Controller
 
     public function findRoute($barCode)
     {  
-        $packageInbound = PackageInbound::select('Dropoff_Postal_Code as packageZipCode','Route as packageRouteName')->where('Reference_Number_1', $barCode)->where('status', 'Inbound')->get();
-    
-        $packageZipCode     = $packageInbound[0]->packageZipCode;
-        $packageRouteName   = $packageInbound[0]->packageRouteName;
+        $packageRouteName = 'N/A';
+        $packageZipCode   = 'N/A';
 
-        $liveRoute = LiveRoute::select('route_name as routeName')->where('zip_code',$packageZipCode)->get();
+        $packageInbound = PackageInbound::select('Dropoff_Postal_Code as packageZipCode','Route as packageRouteName')->where('Reference_Number_1', $barCode)->where('status', 'Inbound')->get();
+       
+        if ($packageInbound->count()) {
+            
+            $packageZipCode     = $packageInbound[0]->packageZipCode;
+            $packageRouteName   = $packageInbound[0]->packageRouteName;
+
+             $liveRoute = LiveRoute::select('route_name as routeName')->where('zip_code',$packageZipCode)->get();
         
-        if($liveRoute->count())
-        {   
-            $packageRouteName =  $liveRoute->pluck('routeName')->implode(', ');     
+             if($liveRoute->count())
+            {   
+              $packageRouteName =  $liveRoute->pluck('routeName')->implode(', ');     
+            }
         } 
 
-        $html = '<table>
-                   <tr height="20px">
-                     <td></td>
-                     <td></td>
-                   </tr>
+        $html = '
+        <table cellspacing="0" cellpadding="0">
+                   
                    <tr>
                      <td width="1px"></td>
-                     <td><h1>Route: '.$packageRouteName.'</h1></td>
+                     <td><span style="font-size:17px;">Route: '.$packageRouteName.'</span></td>
+                   </tr>
+                   <tr>
+                   <tr>
+                     <td width="1px"></td>
+                     <td><span style="font-size:17px;">Zip Code: '.$packageZipCode.'</h1></td>
+                   </tr>
+                     <td width="1px"></td>
+                     <td><span style="font-size:15px;">Package: '.$barCode.'<span></td>
                    </tr>
                 </table>';
            
@@ -81,7 +94,7 @@ class PackageInboundController extends Controller
             $packageListInbound = PackageInbound::with('user')->where('idUser', Auth::user()->id)
                                                 ->where('status', 'Inbound');
         }
-        else if(Auth::user()->role->name == 'Administrador')
+        else if(Auth::user()->role->name == 'Master')
         {
             $packageListInbound = PackageInbound::with('user')->where('status', 'Inbound');
         }
@@ -118,20 +131,18 @@ class PackageInboundController extends Controller
         return $packageListInbound;
     }
 
-    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state)
+    public function Export(Request $request, $idCompany, $dateStart, $dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - INBOUND " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - INBOUND.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'VALIDATOR', 'TRUCK #', 'CLIENT', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state,$type='export');
+        $packageListInbound = $this->getDataInbound($idCompany, $dateStart,$dateEnd, $route, $state, $typeExport = 'export');
 
         foreach($packageListInbound as $packageInbound)
         {
@@ -164,12 +175,24 @@ class PackageInboundController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Inbound', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function Insert(Request $request)
@@ -186,6 +209,14 @@ class PackageInboundController extends Controller
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
+        }
+
+        $servicePackageTerminal = new ServicePackageTerminal();
+        $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+
+        if($package)
+        {
+            return ['stateAction' => 'packageTerminal'];
         }
 
         $packageInbound   = PackageInbound::find($request->get('Reference_Number_1'));
@@ -229,63 +260,6 @@ class PackageInboundController extends Controller
             {
                 DB::beginTransaction();
 
-                $dimensions = 0;
-                $weight     = $packageManifest->Weight;
-                $width      = 0;
-                $height     = 0;
-                $length     = 0;
-                $cuIn       = $length * $height * $width;
-
-                ////////// COMPANY ///////////////////////////////////////////////////
-                //calculando dimensiones y precios para company
-                /*$dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                $dimFactorCompany = $dimFactorCompany->factor;
-
-                $dimWeightCompany      = number_format($cuIn / $dimFactorCompany, 2);
-                $dimWeightCompanyRound = ceil($dimWeightCompany);
-
-                $weightCompany = $weight;
-
-                //precio base de cobro a compañia
-                $priceCompany = new RangePriceCompanyController();
-                $priceCompany = $priceCompany->GetPriceCompany($packageManifest->idCompany, $weightCompany);
-
-                //precio peakeseason
-                $companyController       = new CompanyController();
-                $peakeSeasonPriceCompany = $companyController->GetPeakeSeason($packageManifest->idCompany, $weightCompany);
-                
-                //precio base
-                $priceBaseCompany = number_format($priceCompany + $peakeSeasonPriceCompany, 2);
-
-                $dieselPrice = Configuration::first()->diesel_price;
-
-                $surchargePercentageCompany = $companyController->GetPercentage($packageManifest->idCompany, $dieselPrice);
-                $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
-                $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
-                ///////// END COMPANY
-
-                $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
-                $packagePriceCompanyTeam->id                         = date('YmdHis') .'-'. $packageManifest->Reference_Number_1;
-                $packagePriceCompanyTeam->Reference_Number_1         = $packageManifest->Reference_Number_1;
-                $packagePriceCompanyTeam->weight                     = $weightCompany;
-                $packagePriceCompanyTeam->length                     = 0;
-                $packagePriceCompanyTeam->height                     = 0;
-                $packagePriceCompanyTeam->width                      = 0;
-                $packagePriceCompanyTeam->dieselPriceCompany         = $dieselPrice;
-                $packagePriceCompanyTeam->cuIn                       = 0;
-                $packagePriceCompanyTeam->dimFactorCompany           = $dimFactorCompany;
-                $packagePriceCompanyTeam->dimWeightCompany           = $dimWeightCompany;
-                $packagePriceCompanyTeam->dimWeightCompanyRound      = $dimWeightCompanyRound;
-                $packagePriceCompanyTeam->priceWeightCompany         = $priceCompany;
-                $packagePriceCompanyTeam->peakeSeasonPriceCompany    = $peakeSeasonPriceCompany;
-                $packagePriceCompanyTeam->priceBaseCompany           = $priceBaseCompany;
-                $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
-                $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
-                $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
-
-                $packagePriceCompanyTeam->save();
-*/
                 $packageInbound = new PackageInbound();
 
                 $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
@@ -342,10 +316,14 @@ class PackageInboundController extends Controller
                 $packageHistory->inbound                      = 1;
                 $packageHistory->quantity                     = $packageManifest->quantity;
                 $packageHistory->status                       = 'Inbound';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageHistory->save();
+
+                $packageManifest['latitude']  = $request->get('latitude');
+                $packageManifest['longitude'] = $request->get('longitude');
 
                 //data for INLAND
                 $packageController = new PackageController();
@@ -588,6 +566,7 @@ class PackageInboundController extends Controller
                                     $packageHistory->inbound                      = 1;
                                     $packageHistory->quantity                     = $packageManifest->quantity;
                                     $packageHistory->status                       = 'Inbound';
+                                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -671,5 +650,72 @@ class PackageInboundController extends Controller
         $pdf->setPaper('A5', 'portrait');
 
         return $pdf->stream();
+    }
+
+    public function DownloadRoadWarrior($idCompany, $StateSearch, $routeSearch, $initDate, $endDate)
+    {
+        $initDate = $initDate .' 00:00:00';
+        $endDate  = $endDate .' 23:59:59';
+
+        $delimiter = ",";
+        $filename = "ROAD WARRIOR - INBOUND " . date('Y-m-d H:i:s') . ".csv";
+
+        //create a file pointer
+        $file = fopen('php://memory', 'w');
+
+        //set column headers
+        $fields = array('Name', 'building/house', 'Street Name', 'City', 'State', 'Postal', 'Country', 'Color', 'Phone', 'Note', 'Latitude', 'Longitude', 'Visit Time');
+
+
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageInbound = PackageInbound::whereBetween('created_at', [$initDate, $endDate]);
+
+        if($idCompany && $idCompany != 0)
+        {
+            $listPackageInbound = $listPackageInbound->where('idCompany', $idCompany);
+        }
+
+        if($StateSearch != 'all')
+        {
+            $StateSearch = explode(',', $StateSearch);
+
+            $listPackageInbound = $listPackageInbound->whereIn('Dropoff_Province', $StateSearch);
+        }
+
+        if($routeSearch != 'all')
+        {
+            $routeSearch = explode(',', $routeSearch);
+            $listPackageInbound = $listPackageInbound->whereIn('Route', $routeSearch);
+        }
+
+        $listPackageInbound = $listPackageInbound->get();
+
+        foreach($listPackageInbound as $packageInbound)
+        {
+            $lineData = array(
+                                $packageInbound->Dropoff_Address_Line_1,
+                                $packageInbound->Dropoff_Address_Line_2,
+                                $packageInbound->Dropoff_Address_Line_1,
+                                $packageInbound->Dropoff_City,
+                                $packageInbound->Dropoff_Province,
+                                $packageInbound->Dropoff_Postal_Code,
+                                'USA',
+                                '',
+                                $packageInbound->Dropoff_Contact_Phone_Number,
+                                $packageInbound->Reference_Number_1,
+                                '',
+                                '',
+                                '');
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 }

@@ -154,46 +154,59 @@ function Charge() {
 
     const handlerExportCharge = (id) => { 
 
-        location.href = url_general +'charge-company/export/'+ id;
+        location.href = url_general +'charge-company/export/'+ id +'/download';
     }
 
-    const handlerConfirmInvoiced = (id, status) => {
+    const handlerChangeStatus = (id, status) => {
 
-        if(status == 'DRAFT INVOICE')
-        {
-            swal({
-                title: "You want change the status DRAFT INVOICE to INVOICE?",
-                text: "Change status!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
+        swal({
+            title: "You want change the status to "+ status +"?",
+            text: "Change status!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
 
-                if(willDelete)
-                {
-                    LoadingShow();
+            if(willDelete)
+            {
+                LoadingShowMap();
 
-                    fetch(url_general +'charge-company/confirm/'+ id)
-                    .then(response => response.json())
-                    .then(response => {
+                fetch(url_general +'charge-company/confirm/'+ id +'/'+ status)
+                .then(response => response.json())
+                .then(response => {
 
-                        if(response.stateAction)
-                        {
-                            swal("DRAFT INVOICE status changed!", {
+                    if(response.stateAction)
+                    {
+                        swal("CHARGE COMPANY status changed!", {
 
-                                icon: "success",
-                            });
+                            icon: "success",
+                        });
 
-                            listReportDispatch(1, RouteSearch, StateSearch);
-                        }
-                    });
-                }
-            });
-        }
+                        listReportDispatch(1, RouteSearch, StateSearch);
+                    }
+
+                    LoadingHideMap();
+                });
+            }
+        });
+    }
+
+    const handlerChangeFormatPrice = (number) => {
+
+        const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+        const rep = '$1,';
+        let arr   = number.toString().split('.');
+        arr[0]    = arr[0].replace(exp,rep);
+
+        return arr[1] ? arr.join('.'): arr[0];
     }
 
     const listReportTable = listReport.map( (charge, i) => {
+
+        let totalDelivery = handlerChangeFormatPrice(charge.totalDelivery);
+        let totalRevert   = handlerChangeFormatPrice(charge.totalRevert);
+        let total         = handlerChangeFormatPrice(charge.total);
 
         return (
 
@@ -205,46 +218,247 @@ function Charge() {
                 <td><b>{ charge.id }</b></td>
                 <td><b>{ charge.company.name }</b></td>
                 <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
-                <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td> 
-                <td className="text-success text-right"><b>{ charge.total +' $' }</b></td>
+                <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td>
+                <td className="text-primary text-right"><h5><b>{ '$ '+ totalDelivery }</b></h5></td>
+                <td className="text-danger text-right"><h5><b>{ '$ '+ totalRevert }</b></h5></td>
+                <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
                 <td>
-                    <button className={ (charge.status == 'DRAFT INVOICE' ? 'btn btn-danger font-weight-bold text-center' : 'btn btn-success font-weight-bold')} onClick={ () => handlerConfirmInvoiced(charge.id, charge.status) }>
-                        { charge.status }
-                    </button>
+                    { 
+                        (
+                            charge.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(charge.id, 'APPROVED') }>
+                                    { charge.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    {
+                        (
+                            charge.status == 'APPROVED'
+                            ? 
+                                <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(charge.id, 'PAID') }>
+                                    { charge.status }
+                                </button>
+                            : ''
+                        )
+                    }
+                    { 
+                        (
+                            charge.status == 'PAID'
+                            ? 
+                                <span className="alert-success font-weight-bold text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
+                                    { charge.status }
+                                </span>
+                            : ''
+                        )
+                    }
                 </td>
                 <td>
-                    <button className="btn btn-primary form-control" onClick={ () => handlerExportCharge(charge.id) }>
-                        <i className="ri-file-excel-fill"></i> EXPORT DETAIL
+                    { 
+                        (
+                            charge.status == 'TO APPROVE'
+                            ? 
+                                <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditCharge(charge.id, charge.totalDelivery) } title="Export Payment">
+                                    <i className="bx bx-edit-alt"></i>
+                                </button>  
+                            : ''
+                        )
+                    }
+
+                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportCharge(charge.id) }>
+                        <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>
             </tr>
         );
     });
 
-    const [listViewImages, setListViewImages] = useState([]);
+    const [titleModal, setTitleModal]         = useState('');
+    const [listAdjustment, setListAdjustment] = useState([]);
 
-    const viewImages = (urlImage) => {
+    const [totalAdjustment, setTotalAdjustment] = useState(0);
+    const [totalDelivery, setTotalDelivery]     = useState('');
+    const [idCharge, setidCharge]               = useState('');
+    const [amount, setAmount]                   = useState('');
+    const [description, setDescription]         = useState('');
 
-        setListViewImages(urlImage.split('https'));
+    const handlerOpenModalEditCharge = (idCharge, totalDelivery) => {
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+        setTotalDelivery(totalDelivery);
+        setidCharge(idCharge);
+        setTitleModal('CHARGE COMPANY - ADJUSTMENT');
 
-            keyboard: true
+        ListAdjustmentCharge(idCharge);
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
+
+            keyboard: true 
         });
 
         myModal.show();
     }
 
-    const listViewImagesModal = listViewImages.map( (image, i) => {
+    const ListAdjustmentCharge = (idCharge) => {
 
-        if(i > 0)
-        {
-            return (
+        LoadingShowMap();
 
-                <img src={ 'https'+ image } className="img-fluid mt-2"/>
-            );
-        }
+        fetch(url_general +'charge-company-adjustment/'+ idCharge)
+        .then(response => response.json())
+        .then(response => {
+
+            LoadingHideMap();
+
+            setListAdjustment(response.listAdjustment);
+
+            handlerCalculateTotalAdjustment(response.listAdjustment);
+        });
+    }
+
+    const handlerCalculateTotalAdjustment = (listAdjustment) => {
+
+        let total = 0;
+
+        listAdjustment.map((adjustment, i) => {
+
+            total = parseFloat(total) + parseFloat(adjustment.amount);
+        });
+
+        setTotalAdjustment(total.toFixed(4));
+    }
+
+    const listPaymentAdjustmentModal = listAdjustment.map( (adjustment, i) => {
+
+        return (
+
+            <tr>
+                <td>{ adjustment.description }</td>
+                <td><h6 className={ (adjustment.amount >= 0 ? 'text-success text-right' : 'text-danger text-right') }>{ adjustment.amount } $</h6></td>
+            </tr>
+        );
     });
+
+    const handlerSaveAdjustment = (e) => {
+
+        LoadingShowMap();
+
+        e.preventDefault();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        const formData = new FormData();
+
+        formData.append('idCharge', idCharge);
+        formData.append('amount', amount);
+        formData.append('description', description);
+
+        fetch(url_general +'charge-company-adjustment/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+                if(response.statusCode == true)
+                {
+                    swal("Adjustment was registered!", {
+
+                        icon: "success",
+                    });
+
+                    clearFormAdjustment();
+                    ListAdjustmentCharge(idCharge);
+                }
+                else if(response.statusCode == false)
+                {
+                    swal("a problem occurred, please try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                LoadingHideMap();
+            },
+        );
+    }
+
+    const clearFormAdjustment = () => {
+
+        setAmount('');
+        setDescription('');
+    }
+
+    const modalEditPayment = <React.Fragment>
+                                    <div className="modal fade" id="modalEditPayment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <form onSubmit={ handlerSaveAdjustment }>
+                                                        <div className="row">
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">CHARGE: <span className="text-primary">{ idCharge }</span></label>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-3">
+                                                                <label htmlFor="" className="form">TOTAL DELIVERY: <span className="text-primary">{ totalDelivery } $</span></label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            
+                                                            <div className="col-lg-3 mb-3">
+                                                                <label htmlFor="" className="form">AMOUNT</label>
+                                                                <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
+                                                            </div>
+                                                            <div className="col-lg-9 mb-3">
+                                                                <label htmlFor="" className="form">DESCRIPTION</label>
+                                                                <input type="text" value={ description } onChange={ (e) => setDescription(e.target.value) } className="form-control" minLength="4" maxLength="500" required/>
+                                                            </div>
+                                                            <div className="col-lg-3 mb-3">
+                                                                <button className="btn btn-primary btn-sm form-control">SAVE</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                            <table className="table table-hover table-condensed table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>DESCRIPTION</th>
+                                                                        <th>AMOUNT</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    { listPaymentAdjustmentModal }
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL ADJUSTMENT</h6></td>
+                                                                        <td className="text-right"><h6 className={ (totalAdjustment >= 0 ? 'text-success' : 'text-danger') }>{ totalAdjustment } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6>TOTAL DELIVERY</h6></td>
+                                                                        <td className="text-right"><h6 className='text-primary'>{ totalDelivery } $</h6></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><h6 className="text-success">TOTAL</h6></td>
+                                                                        <td className="text-right"><h6 className='text-success'>{ (parseFloat(totalDelivery) + parseFloat(totalAdjustment)).toFixed(4) } $</h6></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
 
     const optionCompany = listCompany.map( (company, i) => {
 
@@ -341,14 +555,38 @@ function Charge() {
         });
     }
 
+    const handlerExport = () => {
+
+        location.href= 'charge-company/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch;
+    }
+
+    const handlerExportListAll = () => {
+
+        listReport.forEach((charge, index) => {
+
+            setTimeout(() => {
+
+                handlerExportCharge(charge.id);
+            }, index * 1500);
+        });
+    } 
+
     return (
 
         <section className="section">
+            { modalEditPayment }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
+                                <div className="row">
+                                    <div className="col-2 form-group">
+                                        <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
                                         <label htmlFor="">Start date:</label>
@@ -372,7 +610,7 @@ function Charge() {
                                         </div>
                                     </dvi>
                                     {
-                                        roleUser == 'Administrador'
+                                        roleUser == 'Master'
                                         ?
                                             <>
                                                 <div className="col-lg-2" style={ {display: 'none'} }>
@@ -444,8 +682,9 @@ function Charge() {
                                             <div className="col-lg-12">
                                                 <select name="" id="" className="form-control" onChange={ (e) => setStatusSearch(e.target.value) }>
                                                     <option value="all">All</option>
-                                                    <option value="DRAFT INVOICE">DRAFT INVOICE</option>
-                                                    <option value="INVOICE">INVOICE</option>
+                                                    <option value="TO APPROVE">TO APPROVE</option>
+                                                    <option value="APPROVED">APPROVED</option>
+                                                    <option value="PAID">PAID</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -470,9 +709,16 @@ function Charge() {
                                                 <th><b>COMPANY</b></th>
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
+                                                <th><b>TOTAL DELIVERY</b></th>
+                                                <th><b>TOTAL ADJUSTMENT</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>STATUS</b></th>
-                                                <th><b>ACTION</b></th>
+                                                <th>
+                                                    <b>ACTION</b>&nbsp;
+                                                    <button className="btn btn-success btn-sm" onClick={  () => handlerExportListAll() }>
+                                                        <i className="ri-file-excel-fill"></i>
+                                                    </button>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>

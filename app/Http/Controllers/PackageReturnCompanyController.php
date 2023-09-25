@@ -8,12 +8,20 @@ use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamCon
 
 use App\Http\Controllers\Api\{ PackageController };
 
-use App\Models\{Company, Configuration, PackageBlocked, PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost, PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
+use App\Service\ServicePackageTerminal;
+
+use App\Models\{
+                    Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageNeedMoreInformation,
+                    PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost,
+                    PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn,
+                    PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
+use DateTime;
 use DB;
+use Log;
 use Session;
 
 class PackageReturnCompanyController extends Controller
@@ -36,15 +44,16 @@ class PackageReturnCompanyController extends Controller
                     ];
     }
 
-    public function Index()
+    public function Index(Request $request)
     {
-        return view('report.indexreturncompany');
+        $Reference_Number = $request->get('Reference_Number');
+
+        return view('report.indexreturncompany', compact('Reference_Number'));
     }
 
     public function List($dateInit, $dateEnd, $idCompany, $route, $state)
     {
         $roleUser = Auth::user()->role->name;
-
 
         $packageReturnCompanyList = $this->getDataReturn($dateInit, $dateEnd, $idCompany, $route, $state, 'ReturnCompany');
 
@@ -52,7 +61,7 @@ class PackageReturnCompanyController extends Controller
 
         $listState = PackageReturnCompany::select('Dropoff_Province')
                                     ->groupBy('Dropoff_Province')
-                                    ->get(); 
+                                    ->get();
 
         return ['packageReturnCompanyList' => $packageReturnCompanyList, 'listState' => $listState, 'quantityReturn' => $quantityReturn, 'roleUser' => $roleUser];
     }
@@ -104,7 +113,7 @@ class PackageReturnCompanyController extends Controller
                                                                     'Height'
                                                                 )
                                                                 ->orderBy('created_at', 'desc')
-                                                                ->paginate(50); 
+                                                                ->paginate(50);
         }
         else
         {
@@ -116,6 +125,15 @@ class PackageReturnCompanyController extends Controller
 
     public function Insert(Request $request)
     {
+        $servicePackageTerminal = new ServicePackageTerminal();
+
+        $comment = Comment::where('description', $request->get('Description_Return'))->first();
+
+        if(!$comment)
+        {
+            return ['stateAction' => 'commentNotExists'];
+        }
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -129,7 +147,7 @@ class PackageReturnCompanyController extends Controller
         {
             return ['stateAction' => 'validatedLost'];
         }
-        
+
         $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
 
         if($packageInbound == null)
@@ -141,7 +159,17 @@ class PackageReturnCompanyController extends Controller
         {
             $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
         }
-        
+
+        if($packageInbound == null)
+        {
+            $packageInbound = PackageNeedMoreInformation::find($request->get('Reference_Number_1'));
+        }
+
+        if(!$packageInbound)
+        {
+            $packageInbound = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+        }
+
         if($packageInbound)
         {
             try
@@ -178,11 +206,28 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
+
+                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                    ->where('status', 'Dispatch')
+                                                    ->where('company', 'EIGHTVAPE')
+                                                    ->orderBy('created_at', 'asc')
+                                                    ->get();
+
+                if(count($packageHistoryDispatchList) > 1)
+                {
+                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+                    if($hourDifference >= 6)
+                    {
+                        $packageReturnCompany->invoice = 1;
+                    }
+                }
+
                 $packageReturnCompany->status                       = 'ReturnCompany';
                 $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
                 $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
 
-                $packageReturnCompany->save();
+                $packageReturnCompany->save(); 
 
                 //regsister history
 
@@ -210,13 +255,20 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'ReturnCompany';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-                
+
                 $packageHistory->save();
 
+                Log::info('ReturnCompany: send status: '. $comment->statusCode);
+
+                $packageInbound['latitude']            = $request->get('latitude');
+                $packageInbound['longitude']           = $request->get('longitude');
+                $packageInbound['Description_Return']  = $request->get('Description_Return');
+
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
                 $packageInbound->delete();
 
@@ -233,6 +285,19 @@ class PackageReturnCompanyController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function CalculateHourDifferenceDispatch($packageHistoryDispatchList)
+    {
+        $oneDispatch = $packageHistoryDispatchList[0];
+        $twoDispatch = $packageHistoryDispatchList[count($packageHistoryDispatchList) - 1];
+
+        $dateInit = new DateTime($oneDispatch->created_at);
+        $dateEnd  = new DateTime($twoDispatch->created_at);
+
+        $interval = $dateInit->diff($dateEnd);
+
+        return (int)$interval->format('%H');
     }
 
     public function Import(Request $request)
@@ -268,8 +333,8 @@ class PackageReturnCompanyController extends Controller
                         {
                             $packageInbound = PackageInbound::find($Reference_Number_1);
                         }
-                        
-                        if($packageInbound == null) 
+
+                        if($packageInbound == null)
                         {
                             $packageInbound = PackageWarehouse::find($Reference_Number_1);
                         }
@@ -298,7 +363,7 @@ class PackageReturnCompanyController extends Controller
                         {
                             $packageInbound = PackageReturnCompany::where('Reference_Number_1', $Reference_Number_1)->first();
                         }
-                        
+
                         if($packageInbound)
                         {
                             if($packageInbound->status == 'PreRts')
@@ -372,9 +437,10 @@ class PackageReturnCompanyController extends Controller
                                 $packageHistory->Description                  = 'Return Company - Import - for: user ('. Auth::user()->email .')';
                                 $packageHistory->Description_Return           = $description;
                                 $packageHistory->status                       = 'ReturnCompany';
+                                $packageHistory->actualDate                   = $created_at;
                                 $packageHistory->created_at                   = $created_at;
                                 $packageHistory->updated_at                   = $created_at;
-                                
+
                                 $packageHistory->save();
 
                                 $packageController = new PackageController();
@@ -387,12 +453,12 @@ class PackageReturnCompanyController extends Controller
                             {
                                 //create or update price company
                                 $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                                $packagePriceCompanyTeamController->Insert($packageInbound);
+                                $packagePriceCompanyTeamController->Insert($packageInbound, 'old');
                             }
                         }
                     }
                 }
-            }    
+            }
 
             DB::commit();
 
@@ -400,17 +466,15 @@ class PackageReturnCompanyController extends Controller
         }
         catch(Exception $e)
         {
-            DB::rollback();    
+            DB::rollback();
         }
     }
 
-    public function Export($dateInit, $dateEnd, $idCompany, $route, $state)
+    public function Export($dateInit, $dateEnd, $idCompany, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "Report Return Company " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "Report Return Company " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Return Company.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'DESCRIPTION RETURN', 'CLIENT', 'WEIGHT', 'MEASURES');
@@ -442,12 +506,24 @@ class PackageReturnCompanyController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Return Company', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function IndexPreRts()
@@ -456,7 +532,7 @@ class PackageReturnCompanyController extends Controller
     }
 
     public function ListPreRts($numberPallet)
-    { 
+    {
         $palletRts         = PalletRts::find($numberPallet);
         $packagePreRtsList = PackageReturnCompany::where('numberPallet', $numberPallet);
 
@@ -474,13 +550,15 @@ class PackageReturnCompanyController extends Controller
                                                 )
                                                 ->orderBy('created_at', 'desc')
                                                 ->get();
-        
+
 
         return ['packagePreRtsList' => $packagePreRtsList, 'palletRts' => $palletRts];
     }
 
     public function InsertPreRts(Request $request)
     {
+        $servicePackageTerminal = new ServicePackageTerminal();
+
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageBlocked)
@@ -516,7 +594,12 @@ class PackageReturnCompanyController extends Controller
                 return ['stateAction' => ($packageInbound->status == 'PreRts' ? 'packageInRts' : 'packageReturnCompany')];
             }
         }
- 
+
+        if(!$packageInbound)
+        {
+            $packageInbound = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
+        }
+
         if($packageInbound)
         {
             $palletRts = PalletRts::find($request->get('numberPallet'));
@@ -567,6 +650,8 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
                 $packageReturnCompany->status                       = 'PreRts';
+                $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
+                $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
 
                 $packageReturnCompany->save();
 
@@ -597,6 +682,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'PreRts';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
@@ -676,15 +762,16 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
                 $packageHistory->Description_Return           = $packagePreRts->Description_Return;
                 $packageHistory->status                       = 'ReturnCompany';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-                
+
                 $packageHistory->save();
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
             }
-            
+
             DB::commit();
 
             return ['stateAction' => true];
@@ -694,7 +781,7 @@ class PackageReturnCompanyController extends Controller
             DB::rollback();
 
             return ['stateAction' => false];
-        }  
+        }
     }
 
     public function UpdateCreatedAt()
@@ -714,7 +801,7 @@ class PackageReturnCompanyController extends Controller
 
                 $packageHistory->created_at = $packageReturnCompany->created_at;
                 $packageHistory->updated_at = $packageReturnCompany->created_at;
-                
+
                 $packageHistory->save();
             }
 
@@ -727,6 +814,83 @@ class PackageReturnCompanyController extends Controller
             DB::rollback();
 
             return ['stateAction' => false];
+        }
+    }
+
+    public function MoveToWarehouse($Reference_Number_1)
+    {
+        $packageReturnCompany = PackageReturnCompany::find($Reference_Number_1);
+
+        if(!$packageReturnCompany) return false;
+
+        try
+        {
+            DB::beginTransaction();
+
+            $created_at = date('Y-m-d H:i:s');
+
+            $packageWarehouse = new PackageWarehouse();
+
+            $packageWarehouse->Reference_Number_1           = $packageReturnCompany->Reference_Number_1;
+            $packageWarehouse->idCompany                    = $packageReturnCompany->idCompany;
+            $packageWarehouse->company                      = $packageReturnCompany->company;
+            $packageWarehouse->idStore                      = $packageReturnCompany->idStore;
+            $packageWarehouse->store                        = $packageReturnCompany->store;
+            $packageWarehouse->Dropoff_Contact_Name         = $packageReturnCompany->Dropoff_Contact_Name;
+            $packageWarehouse->Dropoff_Company              = $packageReturnCompany->Dropoff_Company;
+            $packageWarehouse->Dropoff_Contact_Phone_Number = $packageReturnCompany->Dropoff_Contact_Phone_Number;
+            $packageWarehouse->Dropoff_Contact_Email        = $packageReturnCompany->Dropoff_Contact_Email;
+            $packageWarehouse->Dropoff_Address_Line_1       = $packageReturnCompany->Dropoff_Address_Line_1;
+            $packageWarehouse->Dropoff_Address_Line_2       = $packageReturnCompany->Dropoff_Address_Line_2;
+            $packageWarehouse->Dropoff_City                 = $packageReturnCompany->Dropoff_City;
+            $packageWarehouse->Dropoff_Province             = $packageReturnCompany->Dropoff_Province;
+            $packageWarehouse->Dropoff_Postal_Code          = $packageReturnCompany->Dropoff_Postal_Code;
+            $packageWarehouse->Notes                        = $packageReturnCompany->Notes;
+            $packageWarehouse->Weight                       = $packageReturnCompany->Weight;
+            $packageWarehouse->Route                        = $packageReturnCompany->Route;
+            $packageWarehouse->idUser                       = Auth::user()->id;
+            $packageWarehouse->quantity                     = $packageReturnCompany->quantity;
+            $packageWarehouse->status                       = 'Warehouse';
+            $packageWarehouse->save();
+
+            $packageHistory = new PackageHistory();
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageReturnCompany->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageReturnCompany->idCompany;
+            $packageHistory->company                      = $packageReturnCompany->company;
+            $packageHistory->idStore                      = $packageReturnCompany->idStore;
+            $packageHistory->store                        = $packageReturnCompany->store;
+            $packageHistory->Dropoff_Contact_Name         = $packageReturnCompany->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageReturnCompany->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageReturnCompany->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageReturnCompany->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageReturnCompany->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageReturnCompany->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageReturnCompany->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageReturnCompany->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageReturnCompany->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageReturnCompany->Notes;
+            $packageHistory->Weight                       = $packageReturnCompany->Weight;
+            $packageHistory->Route                        = $packageReturnCompany->Route;
+            $packageHistory->idUser                       = Auth::user()->id;
+            $packageHistory->Description                  = '( RTS REMOVAL) For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $packageHistory->quantity                     = $packageReturnCompany->quantity;
+            $packageHistory->status                       = 'Warehouse';
+            $packageHistory->actualDate                   = $created_at;
+            $packageHistory->created_at                   = $created_at;
+            $packageHistory->updated_at                   = $created_at;
+            $packageHistory->save();
+
+            $packageReturnCompany->delete();
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            return response()->json(['message' => 'Error']);
         }
     }
 }

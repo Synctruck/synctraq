@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, PackagePriceCompanyTeam, PeakeSeasonCompany };
+use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany };
 
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 
@@ -16,7 +16,7 @@ use Session;
 
 class PackagePriceCompanyTeamController extends Controller
 {
-    public function Insert($packageDispatch)
+    public function Insert($packageDispatch, $from)
     {
         Log::info("==== REGISTER - PRICE COMPANY TEAM");
         $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDispatch->Reference_Number_1)->first();
@@ -30,11 +30,40 @@ class PackagePriceCompanyTeamController extends Controller
 
         $Reference_Number_1    = $packageDispatch->Reference_Number_1;
         $weight                = $packageDispatch->Weight;
-        $dieselPriceCompany    = Configuration::first()->diesel_price;
+
+        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+
+        if($from == 'today')
+        {
+            $dieselPriceCompany = Configuration::first()->diesel_price;
+        }
+        else
+        {
+            $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+
+            $dieselPriceCompany = 0;
+            $getDiesel          = 0;
+
+            foreach($historyDieselList as $historyDiesel)
+            {
+                $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+                $timeChangeDateStart = strtotime($nowDate);
+                $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+                $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDispatch->Date_Delivery)));
+
+                Log::info('Reference_Number_1: '. $packageDispatch->Reference_Number_1);
+
+                if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
+                {
+                    $dieselPriceCompany = $historyDiesel->roundPrice;
+                }
+            }
+        }
+
         $dimWeightCompanyRound = ceil($packageDispatch->Weight);
 
         $priceWeightCompany = new RangePriceCompanyController();
-        $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound);
+        $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound, $packageDispatch->Reference_Number_1);
 
         $peakeSeasonPriceCompany = PeakeSeasonCompany::where('idCompany', $packageDispatch->idCompany)->first();
 
@@ -75,6 +104,7 @@ class PackagePriceCompanyTeamController extends Controller
         $packagePriceCompanyTeam->surchargePercentageCompany = $surchargePercentageCompany;
         $packagePriceCompanyTeam->surchargePriceCompany      = $surchargePriceCompany;
         $packagePriceCompanyTeam->totalPriceCompany          = $totalPriceCompany;
+        $packagePriceCompanyTeam->Date_Delivery              = $packageDispatch->Date_Delivery;
 
         $packagePriceCompanyTeam->save();
 

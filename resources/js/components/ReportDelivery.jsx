@@ -18,6 +18,17 @@ function ReportDelivery() {
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
+    const [Reference_Number_1, setReference_Number_1] = useState('');
+    const [idTeamDelivery, setIdTeamDelivery]         = useState(0);
+    const [Photo1, setPhoto1]                         = useState('');
+    const [Photo2, setPhoto2]                         = useState('');
+    const [DateDelivery, setDateDelivery]             = useState('');
+    const [HourDelivery, setHourDelivery]             = useState(false);
+    const [filePhoto1, setFilePhoto1]                 = useState('');
+    const [filePhoto2, setFilePhoto2]                 = useState('');
+    const [arrivalLonLat, setArrivalLonLat]           = useState('');
+    const [disabledButton, setDisabledButton]         = useState(false);
+
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
 
@@ -45,6 +56,8 @@ function ReportDelivery() {
 
     const inputFileRef       = React.useRef();
     const inputFileRefPhotos = React.useRef();
+    const inputFilePhoto1    = React.useRef();
+    const inputFilePhoto2    = React.useRef();
 
     useEffect(() => {
 
@@ -86,6 +99,16 @@ function ReportDelivery() {
     }, []);
 
     useEffect(() => {
+
+        if(auxReference_Number)
+        {
+            let urlActual = window.location.href;
+
+            history.pushState(null, "", urlActual.split('?')[0]);
+
+            setReference_Number_1(auxReference_Number);
+            handlerOpenModalInsertDelivery(); 
+        }
 
         listReportDispatch(1, RouteSearch, StateSearch);
 
@@ -196,18 +219,53 @@ function ReportDelivery() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+
+        }
+        else
+        {
+            let url = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -255,111 +313,175 @@ function ReportDelivery() {
 
         let imgs = '';
         let urlImage = '';
-
         let photoHttp = false;
+        let reVerification = false
+        let urlImageAux = (packageDelivery.photoUrl == null ? '' : packageDelivery.photoUrl);
 
-        if(packageDelivery.photoUrl == '')
+        urlImageAux = urlImageAux.split(',')
+
+        console.log(urlImageAux);
+
+        if(urlImageAux.length == 1)
         {
-            if(!packageDelivery.idOnfleet)
+            if(urlImageAux[0].includes('https'))
             {
-                photoHttp = true;
+                imgs     = <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                urlImage = urlImageAux[0];
             }
-            else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+            else
             {
-                photoHttp = true;
+                reVerification = true;
+            }
+        }
+        else if(urlImageAux.length > 1)
+        {
+            if(urlImageAux[0].includes('https') && urlImageAux[1].includes('https'))
+            {
+                imgs =  <>
+                            <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ urlImageAux[1] } width="50" style={ {border: '2px solid red'} }/>
+                        </>
+
+                urlImage = urlImageAux[0] + urlImageAux[1];;
+            }
+            else
+            {
+                reVerification = true;
             }
         }
 
-        if(photoHttp)
+        if(reVerification)
         {
-            let team     = ''
-            let driver   = '';
-
-            listDeliveries.forEach( delivery => {
-
-                if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
+            if(packageDelivery.filePhoto1 == '' && packageDelivery.filePhoto2 == '')
+            {
+                if(packageDelivery.photoUrl == '')
                 {
-                    urlImage = delivery.photoUrl;
-
-                    if(urlImage)
+                    if(!packageDelivery.idOnfleet)
                     {
-                        urlImage = urlImage.split('https');
+                        photoHttp = true;
+                    }
+                    else if(packageDelivery.idOnfleet && packageDelivery.photoUrl == '')
+                    {
+                        photoHttp = true;
+                    }
+                }
 
-                        if(urlImage.length == 2)
+                if(photoHttp)
+                {
+                    let team     = ''
+                    let driver   = '';
+
+                    listDeliveries.forEach( delivery => {
+
+                        if(packageDelivery.Reference_Number_1 == delivery.taskDetails)
                         {
-                            imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                            urlImage = delivery.photoUrl;
+
+                            if(urlImage)
+                            {
+                                urlImage = urlImage.split('https');
+
+                                if(urlImage.length == 2)
+                                {
+                                    imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                                }
+                                else if(urlImage.length >= 3)
+                                {
+                                    imgs =  <>
+                                                <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
+                                                <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
+                                            </>
+                                }
+                            }
+
+                            urlImage = delivery.photoUrl;
                         }
-                        else if(urlImage.length >= 3)
+                    });
+
+                    if(packageDelivery.driver)
+                    {
+                        if(packageDelivery.driver.nameTeam)
                         {
-                            imgs =  <>
-                                        <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
-                                        <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
-                                    </>
+                            team   = packageDelivery.driver.nameTeam;
+                            driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
+                        }
+                        else
+                        {
+                            team   = packageDelivery.driver.name;
                         }
                     }
-
-                    urlImage = delivery.photoUrl;
                 }
-            });
-
-            if(packageDelivery.driver)
-            {
-                if(packageDelivery.driver.nameTeam)
+                else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
                 {
-                    team   = packageDelivery.driver.nameTeam;
-                    driver = packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner;
+                    let idsImages = packageDelivery.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
                 }
-                else
+                else if(packageDelivery.photoUrl != '' && packageDelivery.photoUrl != null)
                 {
-                    team   = packageDelivery.driver.name;
+                    let idsImages = packageDelivery.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
                 }
             }
-        }
-        else if(packageDelivery.idOnfleet && packageDelivery.photoUrl)
-        {
-            let idsImages = packageDelivery.photoUrl.split(',');
-
-            if(idsImages.length == 1)
+            else
             {
-                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+                if(packageDelivery.filePhoto1 != '' && packageDelivery.filePhoto2 != '')
+                {
+                    imgs =  <>
+                                <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="50" style={ {border: '2px solid red'} }/>
+                                <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="50" style={ {border: '2px solid red'} }/>
+                            </>
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-            }
-            else if(idsImages.length >= 2)
-            {
-                imgs =  <>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                        </>
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1 + url_general +'img/deliveries/'+ packageDelivery.filePhoto2
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
-            }
-        }
-        else if(packageDelivery.photoUrl != '')
-        {
-            let idsImages = packageDelivery.photoUrl.split(',');
+                    
+                }
+                else if(packageDelivery.filePhoto1 != '')
+                {
+                    imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto1 } width="100"/>;
 
-            if(idsImages.length == 1)
-            {
-                imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1;
+                }
+                else if(packageDelivery.filePhoto2 != '')
+                {
+                    imgs = <img src={ url_general +'img/deliveries/'+ packageDelivery.filePhoto2 } width="100"/>;
 
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
-            }
-            else if(idsImages.length >= 2)
-            {
-                imgs =  <>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                            <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
-                        </>
-
-                urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto2;
+                }
             }
         }
 
         let team   = (packageDelivery.team ? packageDelivery.team.name : '');
         let driver = (packageDelivery.driver ? packageDelivery.driver.name +' '+ packageDelivery.driver.nameOfOwner : '');
-
-        console.log(packageDelivery.Reference_Number_1 +': '+ urlImage);
 
         return (
 
@@ -371,6 +493,10 @@ function ReportDelivery() {
                 <td>
                     { packageDelivery.inboundDate.substring(5, 7) }-{ packageDelivery.inboundDate.substring(8, 10) }-{ packageDelivery.inboundDate.substring(0, 4) }<br/>
                     { packageDelivery.inboundDate.substring(11, 19) }
+                </td>
+                <td style={ { width: '100px'} }>
+                    { packageDelivery.created_at.substring(5, 7) }-{ packageDelivery.created_at.substring(8, 10) }-{ packageDelivery.created_at.substring(0, 4) }<br/>
+                    { packageDelivery.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ packageDelivery.company }</b></td>
                 <td><b>{ team }</b></td>
@@ -386,8 +512,14 @@ function ReportDelivery() {
                 <td>{ packageDelivery.Route }</td>
                 <td>
                     { packageDelivery.taskOnfleet }
-                    <br/><br/>
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
+                    <br/>
+                    {
+                        ( packageDelivery.taskOnfleet != '' || packageDelivery.arrivalLonLat != '')
+                        ?
+                            <button className="btn btn-success btn-sm" onClick={ () => handlerViewMap(packageDelivery.taskOnfleet, packageDelivery.arrivalLonLat) }>View Map</button>
+                        :
+                            ''
+                    }
                 </td>
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
@@ -416,7 +548,7 @@ function ReportDelivery() {
         {
             return (
 
-                <img src={ 'https'+ image } className="img-fluid mt-2"/>
+                <img src={ 'https'+ image } className="img-fluid mt-2" style={ {width: '100%'} }/>
             );
         }
     });
@@ -430,7 +562,11 @@ function ReportDelivery() {
                                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div className="modal-body">
-                                                    { listViewImagesModal }
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                            { listViewImagesModal }
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="modal-footer">
                                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -676,9 +812,195 @@ function ReportDelivery() {
                                     </div>
                                 </React.Fragment>;
 
+    const handlerOpenModalInsertDelivery = (PACKAGE_ID) => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalInsertDelivery'), {
+
+            keyboard: false,
+            backdrop: 'static',
+        });
+
+        myModal.show();
+    }
+
+    const handlerInsertDelivery = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idTeam', idTeamDelivery);
+        formData.append('filePhoto1', filePhoto1);
+        formData.append('filePhoto2', filePhoto2);
+        formData.append('DateDelivery', DateDelivery);
+        formData.append('HourDelivery', HourDelivery);
+        formData.append('arrivalLonLat', arrivalLonLat);
+
+        LoadingShowMap();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'package-delivery/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The package was closed!", {
+
+                        icon: "success",
+                    });
+
+                    setReference_Number_1('');
+                    setFilePhoto1('');
+                    setFilePhoto2('');
+                    setDateDelivery('');
+                    setHourDelivery('');
+                    setArrivalLonLat('');
+
+                    document.getElementById('fileImportPhoto1').value = '';
+                    document.getElementById('fileImportPhoto2').value = '';
+
+                    listReportDispatch(1, RouteSearch, StateSearch);
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    swal("The package does not exist!", {
+
+                        icon: "warning",
+                    });
+                }
+
+                LoadingHideMap();
+            },
+        );
+    }
+
+    const removeFilePhoto1 = () => {
+
+        document.getElementById('fileImportPhoto1').value = '';
+
+        setFilePhoto1();
+    };
+
+    const removeFilePhoto2 = () => {
+
+        document.getElementById('fileImportPhoto2').value = '';
+
+        setFilePhoto2();
+    };
+
+    const modalInsertDelivery = <React.Fragment>
+                                    <div className="modal fade" id="modalInsertDelivery" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-md">
+                                            <form onSubmit={ handlerInsertDelivery }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Register Forced Delivery</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">PACKAGE ID</label>
+                                                                    <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="25" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">TEAM</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdTeamDelivery(e.target.value) } required>
+                                                                       <option value="0">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">PHOTO 1</label>
+                                                                    <div id="Photo1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="file" id="fileImportPhoto1" className="form-control" onChange={ (e) => setFilePhoto1(e.target.files[0]) } accept=".jpg, .jpeg, .gif, .png"/>
+                                                                    {
+                                                                        filePhoto1 && (
+                                                                            <div style={styles.preview}>
+                                                                                <img
+                                                                                  src={URL.createObjectURL(filePhoto1)}
+                                                                                  style={styles.image}
+                                                                                  alt="Thumb"
+                                                                                />
+                                                                                <button onClick={removeFilePhoto1} style={styles.delete}>
+                                                                                    Remove this image
+                                                                                </button>
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </div> 
+                                                            <div className="col-lg-6 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">PHOTO 2</label>
+                                                                    <div id="Photo2" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="file" id="fileImportPhoto2" className="form-control" onChange={ (e) => setFilePhoto2(e.target.files[0]) } accept=".jpg, .jpeg, .gif, .png"/>
+                                                                    {
+                                                                        filePhoto2 && (
+                                                                            <div style={styles.preview}>
+                                                                                <img
+                                                                                  src={URL.createObjectURL(filePhoto2)}
+                                                                                  style={styles.image}
+                                                                                  alt="Thumb"
+                                                                                />
+                                                                                <button onClick={ removeFilePhoto2 } style={ styles.delete }>
+                                                                                    Remove this image
+                                                                                </button>
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">DATE</label>
+                                                                    <div id="DateDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="date" value={ DateDelivery } className="form-control" onChange={ (e) => setDateDelivery(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">HOUR</label>
+                                                                    <div id="HourDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="time" value={ HourDelivery } className="form-control" onChange={ (e) => setHourDelivery(e.target.value) } required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12 mb-2">
+                                                                <div className="form-group">
+                                                                    <label className="form">LATITUDE, LONGITUDE: <span className="text-success">-73.69878851,40.732870984</span></label>
+                                                                    <div id="HourDelivery" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ arrivalLonLat } className="form-control" onChange={ (e) => setArrivalLonLat(e.target.value) }/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button className="btn btn-primary" disabled={ disabledButton }>Register Delivery</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
+            { modalInsertDelivery }
             { modalViewImages }
             { modalViewMap }
             <div className="row">
@@ -688,7 +1010,12 @@ function ReportDelivery() {
                             <h5 className="card-title">
                                 <div className="row">
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport('download') }><i className="ri-file-excel-fill"></i> Export</button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
                                     </div>
                                     <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
@@ -708,7 +1035,7 @@ function ReportDelivery() {
                                     <div className="col-lg-2 mb-3">
                                         <form onSubmit={ handlerImportPhotos }>
                                             <div className="form-group">
-                                                <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFilePhotos() }>
+                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFilePhotos() }>
                                                     <i className="bx bxs-file"></i> Import
                                                 </button>
                                                 <input type="file" id="fileImportPhoto" className="form-control" ref={ inputFileRefPhotos } style={ {display: 'none'} } onChange={ (e) => setFilePhoto(e.target.files[0]) } accept=".csv" required/>
@@ -719,6 +1046,9 @@ function ReportDelivery() {
                                                 </button>
                                             </div>
                                         </form>
+                                    </div>
+                                    <div className="col-lg-3 mb-3">
+                                        <button className="btn btn-info btn-sm form-control text-white" onClick={ () => handlerOpenModalInsertDelivery() }>REGISTER DELIVERY</button>
                                     </div>
                                     <div className="col-lg-2 mb-3 text-warning">
                                         { messageUpdateOnfleet }
@@ -762,7 +1092,7 @@ function ReportDelivery() {
                                                 </div>
                                             </dvi>
                                             {
-                                                roleUser == 'Administrador'
+                                                roleUser == 'Master'
                                                 ?
                                                     <>
                                                         <div className="col-lg-2">
@@ -838,13 +1168,14 @@ function ReportDelivery() {
                                             <tr>
                                                 <th>DATE</th>
                                                 <th>INBOUND DATE</th>
+                                                <th>DISPATCH DATE</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
@@ -886,3 +1217,27 @@ if (document.getElementById('reportDelivery'))
 {
     ReactDOM.render(<ReportDelivery />, document.getElementById('reportDelivery'));
 }
+
+// Just some styles
+const styles = {
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: 20,
+    },
+    preview: {
+        marginTop: 20,
+        display: "flex",
+        flexDirection: "column",
+    },
+    image: { maxWidth: "100%", maxHeight: 320 },
+        delete: {
+        cursor: "pointer",
+        padding: 15,
+        background: "red",
+        color: "white",
+        border: "none",
+    },
+};

@@ -158,7 +158,7 @@ function PackageRts() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -685,7 +685,7 @@ function PackageRts() {
                 }
                 else if(response.stateAction == 'notExists')
                 {
-                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH] #"+ Reference_Number_1);
+                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH, TERMINAL] #"+ Reference_Number_1);
                     setTypeMessageDispatch('error');
                     setNumberPackage('');
 
@@ -1093,7 +1093,7 @@ function PackageRts() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Administrador' ? idTeam : idUserGeneral));
+        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);

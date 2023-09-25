@@ -8,6 +8,7 @@ function User() {
 
     const [id, setId]                   = useState(0);
     const [idRole, setIdRole]           = useState(0);
+    const [idCellar, setIdCellar] = useState('');
     const [idRoleFilter, setIdRoleFilter]  = useState('');
     const [name, setName]               = useState('');
     const [nameOfOwner, setNameOfOwner] = useState('');
@@ -22,6 +23,7 @@ function User() {
 
     const [listUser, setListUser] = useState([]);
     const [listRole, setListRole] = useState([]);
+    const [listCellar, setListCellar] = useState([]);
 
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
@@ -34,6 +36,7 @@ function User() {
 
     useEffect(()=> {
         listAllRole();
+        listAllCellar();
     },[]);
     useEffect(() => {
 
@@ -66,6 +69,16 @@ function User() {
         .then((response) => {
 
             setListRole(response.roleList);
+        });
+    }
+
+    const listAllCellar = () => {
+
+        fetch(url_general +'cellar/get-all')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCellar(response.cellarList);
         });
     }
 
@@ -102,6 +115,7 @@ function User() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
+        formData.append('idCellar', idCellar);
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
@@ -202,6 +216,7 @@ function User() {
 
             setId(user.id);
             setIdRole(user.idRole);
+            setIdCellar((user.idCellar != 0 ? user.idCellar : ''));
             setName(user.name);
             setNameOfOwner(user.nameOfOwner);
             setAddress(user.address);
@@ -248,6 +263,7 @@ function User() {
 
         setId(0);
         setIdRole(0);
+        setIdCellar('');
         setName('');
         setNameOfOwner('');
         setAddress('');
@@ -261,6 +277,9 @@ function User() {
 
         document.getElementById('idRole').style.display = 'none';
         document.getElementById('idRole').innerHTML     = '';
+
+        document.getElementById('idCellar').style.display = 'none';
+        document.getElementById('idCellar').innerHTML     = '';
 
         document.getElementById('name').style.display = 'none';
         document.getElementById('name').innerHTML     = '';
@@ -293,6 +312,17 @@ function User() {
                 <td>{ user.address }</td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
+                <td>
+                    {
+                        (
+                            user.cellar
+                            ?
+                                user.cellar.name
+                            :
+                                ''
+                        )
+                    }
+                </td>
                 <td>
                     {
                         (
@@ -340,6 +370,7 @@ function User() {
 
         );
     });
+
     const listRoleSelect = listRole.map( (role, i) => {
         console.log('dsf')
         return (
@@ -353,6 +384,13 @@ function User() {
                  ''
             )
 
+        );
+    });
+
+    const listCellarTable = listCellar.map( (cellar, i) => {
+
+        return (
+            <option value={ cellar.id }>{ cellar.name }</option>
         );
     });
 
@@ -417,6 +455,19 @@ function User() {
                                                                     <select value={ idRole } className="form-control" onChange={ (e) => setIdRole(e.target.value) } required>
                                                                         <option value="" style={ {display: 'none'} }>Seleccione un rol</option>
                                                                         { listRoleSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">Cellar</label>
+                                                                    <div id="idCellar" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) } required>
+                                                                        <option value="" style={ {display: 'none'} }>Select a cellar</option>
+                                                                        { listCellarTable }
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -536,6 +587,7 @@ function User() {
                                                 <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
+                                                <th>CELLAR</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

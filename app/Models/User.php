@@ -22,7 +22,7 @@ class User extends Authenticatable  implements Auditable
 
     protected $appends = ['url_image'];
 
-    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at','status'];
+    protected $fillable = ['id', 'idRole', 'idCellar', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'permissionDispatch','created_at','status'];
 
     //scopes
     public function scopeRole($query,$value)
@@ -43,6 +43,11 @@ class User extends Authenticatable  implements Auditable
     public function role()
     {
         return $this->belongsTo('App\Models\Role', 'idRole', 'id');
+    }
+
+    public function cellar()
+    {
+        return $this->belongsTo('App\Models\Cellar', 'idCellar', 'id');
     }
 
     public function aux_dispatch()
@@ -110,9 +115,34 @@ class User extends Authenticatable  implements Auditable
         return $this->hasMany('App\Models\Assigned', 'idTeam');
     }
 
+    public function blockeds()
+    {
+        return $this->hasMany('App\Models\PackageBlocked', 'idUser');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany('App\Models\PaymentTeam', 'idTeam');
+    }
+
     public function payments_team()
     {
         return $this->hasMany('App\Models\PaymentTeamReturn', 'idTeam');
+    }
+
+    public function reverts()
+    {
+        return $this->hasMany('App\Models\ToReversePackages', 'idTeam');
+    }
+
+    public function payments_payable()
+    {
+        return $this->hasMany('App\Models\PaymentTeam', 'idUserPayable');
+    }
+
+    public function payments_paid()
+    {
+        return $this->hasMany('App\Models\PaymentTeam', 'idUserPaid');
     }
 
     //obtiene todos los permisos por rol y por usuario

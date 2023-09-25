@@ -66,6 +66,7 @@ function PackageBlocked() {
         .then(res => res.json()).
         then((response) => {
 
+                console.log(response);
                 if(response.stateAction == true)
                 {
                     swal("Package saved!", {
@@ -152,8 +153,13 @@ function PackageBlocked() {
         return (
 
             <tr key={i}>
+                <td style={ { width: '100px'} }>
+                    <b>{ packageBlocked.created_at.substring(5, 7) }-{ packageBlocked.created_at.substring(8, 10) }-{ packageBlocked.created_at.substring(0, 4) }</b><br/>
+                    { packageBlocked.created_at.substring(11, 19) }
+                </td>
                 <td><b>{ packageBlocked.Reference_Number_1 }</b></td>
                 <td>{ packageBlocked.comment }</td>
+                <td>{ (packageBlocked.user ? packageBlocked.user.name +' '+ packageBlocked.user.nameOfOwner : '') }</td>
                 <td>
                     <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deletePakage(packageBlocked.id) }>
                         <i className="bx bxs-trash-alt"></i>
@@ -225,8 +231,10 @@ function PackageBlocked() {
                                     <table className="table table-hover table-condensed table-bordered">
                                         <thead> 
                                             <tr>
+                                                <th>DATE</th>
                                                 <th>PACKAGE #</th>
                                                 <th>COMMENT</th>
+                                                <th>USER</th>
                                                 <th>ACTION</th>
                                             </tr>
                                         </thead>

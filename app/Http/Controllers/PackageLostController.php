@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CustomEmail;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User};
+
+use App\Service\ServicePackageLost;
 
 use Illuminate\Support\Facades\Validator;
 
@@ -18,13 +22,19 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
-
 use DB;
 use Log;
 use Session;
 
 class PackageLostController extends Controller
 {
+    private $servicePackageLost;
+
+    public function __construct()
+    {
+        $this->servicePackageLost = new ServicePackageLost();
+    }
+
     public function Index()
     {
         return view('package.lost');
@@ -32,10 +42,39 @@ class PackageLostController extends Controller
 
     public function List($idCompany, $dateStart,$dateEnd, $route, $state)
     {
-        $packageListInbound = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state);
-        $quantityInbound = $packageListInbound->total();
+        $packageListInbound    = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state);
+        $quantityInbound       = $packageListInbound->total();
 
-        return ['packageList' => $packageListInbound, 'quantityInbound' => $quantityInbound];
+        $packageHistoryListNew = [];
+
+        foreach($packageListInbound as $packageLost)
+        {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
+                                            ->orderBy('actualDate', 'desc')
+                                            ->get();
+
+            $package = [
+
+                "created_at" => $packageLost->created_at,
+                "company" => $packageLost->company,
+                "Reference_Number_1" => $packageLost->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageLost->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageLost->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageLost->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageLost->Dropoff_City,
+                "Dropoff_Province" => $packageLost->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageLost->Dropoff_Postal_Code,
+                "Route" => $packageLost->Route,
+                "Weight" => $packageLost->Weight,
+                "comment" => $packageLost->comment,
+                "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
+                "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
+            ];
+
+            array_push($packageHistoryListNew, $package);
+        }
+
+        return ['packageList' => $packageHistoryListNew, 'quantityInbound' => $quantityInbound];
     }
 
     private function getDataLost($idCompany, $dateStart,$dateEnd, $route, $state,$type='list'){
@@ -66,7 +105,7 @@ class PackageLostController extends Controller
         if($type =='list')
         {
             $packageListLost = $packageListLost->orderBy('created_at', 'desc')
-                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'comment', 'created_at')
                                                 ->paginate(50);
         }
         else{
@@ -77,47 +116,63 @@ class PackageLostController extends Controller
         return $packageListLost;
     }
 
-    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state)
+    public function Export(Request $request,$idCompany, $dateStart,$dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - LOST " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - LOST " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - LOST.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
+        $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'LAST STATUS', 'LAST DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 
         fputcsv($file, $fields, $delimiter);
 
         $packageListInbound = $this->getDataLost($idCompany, $dateStart,$dateEnd, $route, $state,$type='export');
 
-        foreach($packageListInbound as $packageInbound)
+        foreach($packageListInbound as $packageLost)
         {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
+                                            ->orderBy('created_at', 'desc')
+                                            ->get();
+
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound->created_at)),
-                                date('H:i:s', strtotime($packageInbound->created_at)),
-                                $packageInbound->company,
-                                $packageInbound->Reference_Number_1,
-                                $packageInbound->Dropoff_Contact_Name,
-                                $packageInbound->Dropoff_Contact_Phone_Number,
-                                $packageInbound->Dropoff_Address_Line_1,
-                                $packageInbound->Dropoff_City,
-                                $packageInbound->Dropoff_Province,
-                                $packageInbound->Dropoff_Postal_Code,
-                                $packageInbound->Weight,
-                                $packageInbound->Route
+                                date('m-d-Y', strtotime($packageLost->created_at)),
+                                date('H:i:s', strtotime($packageLost->created_at)),
+                                $packageLost->company,
+                                $packageLost->Reference_Number_1,
+                                (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
+                                (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description),
+                                $packageLost->Dropoff_Contact_Name,
+                                $packageLost->Dropoff_Contact_Phone_Number,
+                                $packageLost->Dropoff_Address_Line_1,
+                                $packageLost->Dropoff_City,
+                                $packageLost->Dropoff_Province,
+                                $packageLost->Dropoff_Postal_Code,
+                                $packageLost->Weight,
+                                $packageLost->Route
                             );
 
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Lost', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function Insert(Request $request)
@@ -203,8 +258,11 @@ class PackageLostController extends Controller
                 $packageLost->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageLost->Notes                        = $packageInbound->Notes;
                 $packageLost->Route                        = $packageInbound->Route;
+                $packageLost->comment                      = $request->get('comment') ? $request->get('comment') : '';
                 $packageLost->Weight                       = $packageInbound->Weight;
                 $packageLost->idUser                       = Auth::user()->id;
+                $packageLost->created_at                   = date('Y-m-d H:i:s');
+                $packageLost->updated_at                   = date('Y-m-d H:i:s');
                 $packageLost->status                       = 'Lost';
 
                 $packageLost->save();
@@ -231,8 +289,9 @@ class PackageLostController extends Controller
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
+                $packageHistory->Description                  = $request->get('comment') ? $request->get('comment') : '';
                 $packageHistory->status                       = 'Lost';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
                 
@@ -242,11 +301,17 @@ class PackageLostController extends Controller
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
-
                 $packageInbound->delete();
-
+                
                 DB::commit();
 
+                if($package->status=='Dispatch'){
+                    $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
+                }
+                if($package->company=='EIGHTVAPE'){
+                    $this->sendCompanyTeam($package->Reference_Number_1, $package->idCompany);
+                }
+               
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
@@ -377,7 +442,6 @@ class PackageLostController extends Controller
                     if($packageInbound)
                     {
                         $packageLost = new PackageLost();
-
                         $packageLost->Reference_Number_1           = $packageInbound->Reference_Number_1;
                         $packageLost->idCompany                    = $packageInbound->idCompany;
                         $packageLost->company                      = $packageInbound->company;
@@ -395,13 +459,11 @@ class PackageLostController extends Controller
                         $packageLost->Weight                       = $packageInbound->Weight;
                         $packageLost->idUser                       = Auth::user()->id;
                         $packageLost->status                       = 'Lost';
-
+                        $packageLost->created_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
+                        $packageLost->updated_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
                         $packageLost->save();
 
-                        //regsister history
-
                         $packageHistory = new PackageHistory();
-
                         $packageHistory->id                           = uniqid();
                         $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
                         $packageHistory->idCompany                    = $packageInbound->idCompany;
@@ -422,9 +484,9 @@ class PackageLostController extends Controller
                         $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                         $packageHistory->Description                  = 'For: user ('. Auth::user()->email .')';
                         $packageHistory->status                       = 'Lost';
-                        $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                        $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-                        
+                        $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+                        $packageHistory->created_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
+                        $packageHistory->updated_at                   = date('Y-m-d H:i:s', strtotime($row[1]));
                         $packageHistory->save();
 
                         $packageController = new PackageController();
@@ -438,9 +500,9 @@ class PackageLostController extends Controller
             }
 
             fclose($handle);
-
+           
             DB::commit();
-
+            
             return ['stateAction' => true];
         }
         catch(Exception $e)
@@ -487,4 +549,51 @@ class PackageLostController extends Controller
 
         return $pdf->stream();
     }
+
+    public function MoveToWarehouse($Reference_Number_1)
+    {
+        $servicePackageLost = new ServicePackageLost();
+
+        return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
+    }
+    
+    public function sendEmailTeam($Reference_Number_1, $idTeam){
+
+        $user = User::find($idTeam);
+        $email= $user->email;
+        $message = "Greetings\n\nOur team has been inquiring about the package $Reference_Number_1 but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+        Mail::raw($message, function ($msg) use ($email) {
+            $msg->to($email)->subject('Package Lost Notification');
+        });
+    }
+
+    public function sendCompanyTeam($Reference_Number_1, $idCompany){
+        $company = Company::find($idCompany);
+        $emails = $company->email;
+        $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost. The total of the invoice will be deducted from your next payment.\n\nRegards.";
+    
+        Mail::raw($message, function ($msg) use ($emails) {
+            $msg->to($emails)->subject('Package Lost Notification');
+        });
+    }
 }
+
+    
+
+
+
+
+
+
+
+   
+
+    
+
+    
+
+
+
+
+

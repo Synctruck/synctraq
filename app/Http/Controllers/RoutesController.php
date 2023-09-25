@@ -5,10 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 
-
-
-use App\Models\{PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User, LiveRoute};
-
+use App\Models\{ PackageDelivery, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, TeamRoute, User, LiveRoute, RoutesAux, RoutesZipCode};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -27,9 +24,9 @@ class RoutesController extends Controller
     public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList, $LatitudeSearchList, $LongitudeSearchList)
     {
         $zipCode   = $request->get('zipCode');
-        $routeList = Routes::orderBy('zipCode', 'asc');
+        $routeList = RoutesAux::orderBy('name', 'asc')->paginate($this->paginate);
 
-        if($zipCode)
+        /*if($zipCode)
         {
             $routeList = $routeList->where('zipCode', 'like', '%'. $zipCode .'%');
         }
@@ -77,9 +74,7 @@ class RoutesController extends Controller
             {
                 $routeList = $routeList->whereIn('longitude', $LongitudeSearchList);
             }
-        }
-
-        $routeList = $routeList->with('teams')->paginate($this->paginate);
+        }*/
             
         return [
 
@@ -93,7 +88,7 @@ class RoutesController extends Controller
         $listCounty    = Routes::select('county')->groupBy('county')->get();
         $listType      = Routes::select('type')->groupBy('type')->get();
         $listState     = Routes::select('state')->groupBy('state')->get();
-        $listRoute     = Routes::select('name')->groupBy('name')->get();
+        $listRoute     = RoutesAux::orderBy('name', 'asc')->get();
         $listLatitude  = Routes::select('latitude')->groupBy('latitude')->get();
         $listLongitude = Routes::select('longitude')->groupBy('longitude')->get();
 
@@ -109,9 +104,14 @@ class RoutesController extends Controller
         ];
     }
 
+    public function AuxList()
+    {
+        return ['listRoute' => RoutesAux::orderBy('name', 'asc')->get()];
+    }
+
     public function GetAll(Request $request)
     {
-        $routeList = Routes::select('name')->groupBy('name')->get();
+        $routeList = RoutesAux::orderBy('name', 'asc')->get();
         
         return ['routeList' => $routeList];
     }
@@ -182,37 +182,52 @@ class RoutesController extends Controller
 
                     if($row[0] != '')
                     {
-                        $route = Routes::where('zipCode', $row[0])->first();
+                        $routesZipCode = RoutesZipCode::where('zipCode', $row[0])
+                                                        ->where('routeName', $row[5])
+                                                        ->first();
 
-                        if($route)
+                        if($routesZipCode)
                         {
-                            if($route->city != $row[1] || $route->county != $row[2] || $route->type != $row[3] || $route->state = $row[4] || $route->name != $row[5] || $route->latitude != $row[6] || $route->longitude != $row[7])
+                            if($routesZipCode->city != $row[1] || $routesZipCode->county != $row[2] || $routesZipCode->type != $row[3] || $routesZipCode->state = $row[4] || $routesZipCode->name != $row[5] || $routesZipCode->latitude != $row[6] || $routesZipCode->longitude != $row[7])
                             {
-                                $route->city      = $row[1];
-                                $route->county    = $row[2];
-                                $route->type      = $row[3];
-                                $route->state     = $row[4];
-                                $route->name      = $row[5];
-                                $route->latitude  = $row[6];
-                                $route->longitude = $row[7];
-
-                                $route->save();
+                                $routesZipCode->city      = $row[1];
+                                $routesZipCode->county    = $row[2];
+                                $routesZipCode->type      = $row[3];
+                                $routesZipCode->state     = $row[4];
+                                $routesZipCode->routeName = $row[5];
+                                $routesZipCode->latitude  = $row[6];
+                                $routesZipCode->longitude = $row[7];
+                                $routesZipCode->save();
                             }
                         }
                         else
                         {
-                            $route = new Routes();
+                            $routesAux = RoutesAux::where('name', $row[5])->first();
 
-                            $route->zipCode   = $row[0];
-                            $route->city      = $row[1];
-                            $route->county    = $row[2];
-                            $route->type      = $row[3];
-                            $route->state     = $row[4];
-                            $route->name      = $row[5];
-                            $route->latitude  = $row[6];
-                            $route->longitude = $row[7];
+                            if($routesAux == null)
+                            {
+                                $routesAux = new RoutesAux();
+                                $routesAux->name = $row[5];
+                                $routesAux->save();
+                            }
 
-                            $route->save();
+                            $routesZipCode = RoutesZipCode::find($row[0]);
+
+                            if($routesZipCode == null)
+                            {
+                                $routesZipCode = new RoutesZipCode();
+                            }
+                            
+                            $routesZipCode->zipCode   = $row[0];
+                            $routesZipCode->idRoute   = $routesAux->id;
+                            $routesZipCode->city      = $row[1];
+                            $routesZipCode->county    = $row[2];
+                            $routesZipCode->type      = $row[3];
+                            $routesZipCode->state     = $row[4];
+                            $routesZipCode->routeName = $row[5];
+                            $routesZipCode->latitude  = $row[6];
+                            $routesZipCode->longitude = $row[7];
+                            $routesZipCode->save();
                         }
                     }
                 }
@@ -435,5 +450,83 @@ class RoutesController extends Controller
         }
 
         dd('updated');
+    }
+
+    public function UpdatePassRouteAux()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $routesList = Routes::all();
+
+            foreach($routesList as $route)
+            {
+                $routesAux = RoutesAux::where('name', $route->name)->first();
+
+                if($routesAux == null)
+                {
+                    $routesAux = new RoutesAux();
+                    $routesAux->name = $route->name;
+                    $routesAux->save();
+                }
+            }
+
+            DB::commit();
+
+            echo 'update';  
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            echo 'failed';
+        }
+    }
+
+    public function UpdatePassRoutesZipCode()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $routesList = Routes::all();
+
+            foreach($routesList as $route)
+            {
+                $routesZipCode = RoutesZipCode::find($route->zipCode);
+
+                if($routesZipCode == null)
+                {
+                    $routes = Routes::where('name', $route->name)
+                                    ->where('zipCode', $route->zipCode)
+                                    ->first();
+
+                    $routesAux = RoutesAux::where('name', $route->name)->first();
+
+                    $routesZipCode = new RoutesZipCode();
+                    $routesZipCode->zipCode   = $route->zipCode;
+                    $routesZipCode->idRoute   = $routesAux->id;
+                    $routesZipCode->routeName = $routes->name;
+                    $routesZipCode->city      = $routes->city;
+                    $routesZipCode->county    = $routes->county;
+                    $routesZipCode->type      = $routes->type;
+                    $routesZipCode->state     = $routes->state;
+                    $routesZipCode->latitude  = $routes->latitude;
+                    $routesZipCode->longitude = $routes->longitude;
+                    $routesZipCode->save();
+                }
+            }
+
+            DB::commit();
+
+            echo 'update';  
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            echo 'failed';
+        }
     }
 }

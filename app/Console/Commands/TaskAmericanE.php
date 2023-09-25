@@ -61,7 +61,7 @@ class TaskAmericanE extends Command
 
         $this->ReportStatusHistory($company->startDateCSV, $company->endDateCSV, $contents);
 
-        Storage::disk('sftp')->putFileAs('tracking_in', $contents, $filename);
+        Storage::disk('sftp')->putFileAs('inbox/tracking', $contents, $filename);
 
         $company->save();
     }

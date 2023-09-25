@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageWarehouse, Routes };
+use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
 
 use DateTime;
 use DB;
@@ -37,7 +37,7 @@ class PackageController extends Controller
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
-            
+
         $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
@@ -70,7 +70,7 @@ class PackageController extends Controller
                     ]
                 , 400);
             }
-            
+
             if($request->get('manifest') == null || $request->get('shipment') == null)
             {
                 return response()->json(
@@ -105,6 +105,7 @@ class PackageController extends Controller
             $data['weight_unit']           = $request->get('shipment')['shipment_details']['weight_unit'];
             $data['width']                 = $request->get('shipment')['shipment_details']['width'];
             $data['height']                = $request->get('shipment')['shipment_details']['height'];
+            $data['length']                = $request->get('shipment')['shipment_details']['length'];
             $data['dimensions_unit']       = $request->get('shipment')['shipment_details']['dimensions_unit'];
             $data['signature_on_delivery'] = $request->get('shipment')['shipment_details']['signature_on_delivery'];
             $data['hazardous_goods']       = $request->get('shipment')['shipment_details']['hazardous_goods'];
@@ -165,6 +166,7 @@ class PackageController extends Controller
                     "weight_unit.required" => "The field is required",
                     "width.required" => "The field is required",
                     "height.required" => "The field is required",
+                    "length.required" => "The field is required",
 
                     "signature_on_delivery.required" => "The field is required",
                     "signature_on_delivery.boolean" => "The data to register must be true or false",
@@ -192,9 +194,24 @@ class PackageController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $route = Routes::where('zipCode', $data['Dropoff_Postal_Code'])->first();
+                    $dimFactorCompany = DimFactorCompany::where('idCompany', $company->id)->first();
+
+                    $dim_weight = 0;
+
+                    Log::info('dimFactorCompany:');
+                    Log::info($dimFactorCompany);
+
+                    Log::info('company->dimensions:');
+                    Log::info($company->dimensions);
                     
-                    $routeName = $route ? $route->name : $data['Route'];
+                    if($dimFactorCompany && $company->dimensions)
+                    {
+                        $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
+                    }
+
+                    $routesZipCode = RoutesZipCode::find($data['Dropoff_Postal_Code']);
+
+                    $routeName = $routesZipCode ? $routesZipCode->routeName : $data['Route'];
 
                     $package = new PackageManifest();
 
@@ -207,6 +224,7 @@ class PackageController extends Controller
                     $package->Dropoff_City                  = $data['Dropoff_City'];
                     $package->Dropoff_Province              = $data['Dropoff_Province'];
                     $package->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
+                    $package->dim_weight                    = $dim_weight;
                     $package->Weight                        = $data['Weight'];
                     $package->Route                         = $routeName;
                     $package->status                        = 'Manifest';
@@ -218,6 +236,7 @@ class PackageController extends Controller
                     $package->weight_unit                   = $data['weight_unit'];
                     $package->width                         = $data['width'];
                     $package->height                        = $data['height'];
+                    $package->length                        = $data['length'];
                     $package->dimensions_unit               = $data['dimensions_unit'];
                     $package->signature_on_delivery         = $data['signature_on_delivery'];
                     $package->hazardous_goods               = $data['hazardous_goods'];
@@ -228,8 +247,8 @@ class PackageController extends Controller
                     $package->insured_value                 = $data['insured_value'];
                     $package->service_code                  = $data['service_code'];
                     $package->created_at                    = date('Y-m-d H:i:s');
-                    $package->updated_at                    = date('Y-m-d H:i:s'); 
-                    
+                    $package->updated_at                    = date('Y-m-d H:i:s');
+
                     $package->save();
 
                     $packageHistory = new PackageHistory();
@@ -244,6 +263,7 @@ class PackageController extends Controller
                     $packageHistory->Dropoff_City                  = $data['Dropoff_City'];
                     $packageHistory->Dropoff_Province              = $data['Dropoff_Province'];
                     $packageHistory->Dropoff_Postal_Code           = $data['Dropoff_Postal_Code'];
+                    $packageHistory->dim_weight                    = $dim_weight;
                     $packageHistory->Weight                        = $data['Weight'];
                     $packageHistory->Route                         = $routeName;
                     $packageHistory->status                        = 'Manifest';
@@ -255,6 +275,7 @@ class PackageController extends Controller
                     $packageHistory->weight_unit                   = $data['weight_unit'];
                     $packageHistory->width                         = $data['width'];
                     $packageHistory->height                        = $data['height'];
+                    $packageHistory->length                        = $data['length'];
                     $packageHistory->dimensions_unit               = $data['dimensions_unit'];
                     $packageHistory->signature_on_delivery         = $data['signature_on_delivery'];
                     $packageHistory->hazardous_goods               = $data['hazardous_goods'];
@@ -265,11 +286,12 @@ class PackageController extends Controller
                     $packageHistory->insured_value                 = $data['insured_value'];
                     $packageHistory->service_code                  = $data['service_code'];
                     $packageHistory->Description                   = 'Not yet received: '. $company->name;
+                    $packageHistory->actualDate                    = date('Y-m-d H:i:s');
                     $packageHistory->created_at                    = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                    = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
- 
+
                     $packageNotExists = PackageNotExists::find($request->get('Reference_Number_1'));
 
                     if($packageNotExists)
@@ -413,8 +435,11 @@ class PackageController extends Controller
         $key_webhook       = '';
         $url_webhook       = '';
         $pod_url           = "";
+        $package_id        = "";
+        $header_curl       = "";
+        $sendStatusCompany = true;
 
-        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' ||  $status == 'Warehouse' || $status == 'Failed' || $status == 'NMI')
         {
             $company = Company::find($package->idCompany);
 
@@ -430,6 +455,8 @@ class PackageController extends Controller
                                                 ->where('status', $status)
                                                 ->first();
 
+            Log::info('companyStatus');
+            Log::info('===========');
             $statusCodeCompany = $companyStatus->statusCodeCompany;
             $key_webhook       = $companyStatus->company->key_webhook;
             $url_webhook       = $companyStatus->company->url_webhook;
@@ -438,27 +465,64 @@ class PackageController extends Controller
 
         if($typeServices == 'API')
         {
+            Log::info('SendStatusToInland: '. $package->company);
+
             if($status == 'ReturnCompany')
             {
-                $statusCodeCompany = 'scan_out_for_return';
+                $statusCodeCompany = $idPhoto;
             }
             elseif($status == 'Lost')
             {
                 $statusCodeCompany = 'not_delivered_lost';
+            }
+            elseif($status == 'Middle Mile Scan')
+            {
+                $statusCodeCompany = 'scan_pre_middle_mile';
+            }
+            elseif($status == 'Warehouse')
+            {
+                $statusCodeCompany = 'reprocessing_at_mc';
+            }
+            elseif($status == 'NMI')
+            {
+                $statusCodeCompany = 'retry_address_not_found';
+            }
+            elseif($status == 'Failed')
+            {
+                $statusCodeCompany = 'attempted_delivery';
             }
 
             if($status == 'Delivery')
             {
                 Log::info('idPhoto');
                 Log::info($idPhoto);
-                if(count($idPhoto) == 1)
+                if(count($idPhoto) == 0)
                 {
-                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                    $pod_url = '"pod_url": "",';
+                }
+                else if(count($idPhoto) == 1)
+                {
+                    if(strpos($idPhoto[0], 'http') === false)
+                    {
+                        $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                    }
+                    else
+                    {
+                        $pod_url = '"pod_url": "'. $idPhoto[0] .'",';
+                    }
                 }
                 else
                 {
-                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
-                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+                    if(strpos($idPhoto[0], 'http') === false)
+                    {
+                        $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                        $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+                    }
+                    else
+                    {
+                        $photo1 = $idPhoto[0];
+                        $photo2 = $idPhoto[1];
+                    }
 
                     $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
                 }
@@ -472,16 +536,16 @@ class PackageController extends Controller
 
             $curl = curl_init();
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $url_webhook . $package->Reference_Number_1 .'/update-status',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS =>'{
+            if($package->idCompany == 1)
+            {
+                $header_curl = array(
+                    'Authorization: '. $key_webhook,
+                    'Content-Type: application/json'
+                );
+
+                $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
+
+                $dataSend = '{
                     "status": "'. $statusCodeCompany .'",
                     '. $pod_url .'
                     "metadata": [
@@ -491,34 +555,319 @@ class PackageController extends Controller
                         }
                     ],
                     "datetime" : "'. $created_at .'"
-                }', 
-                CURLOPT_HTTPHEADER => array(
-                    'Authorization: '. $key_webhook,
-                    'Content-Type: application/json'
-                ),
-            ));
+                }';
+            }
+            else
+            {
+                if($status != 'Lost')
+                {
+                    $header_curl = array(
+                        'code: '. $key_webhook,
+                        'Content-Type: application/json'
+                    );
 
-            $response = curl_exec($curl);
-            $response = json_decode($response, true);
+                    $companyStatus = CompanyStatus::with('company')
+                                                    ->where('idCompany', $package->idCompany)
+                                                    ->where('status', $status)
+                                                    ->first();
 
-            curl_close($curl);
-            
-            Log::info('===========  INLAND - STATUS UPDATE');
-            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-            Log::info('REPONSE STATUS: '. $response['status']);
-            Log::info('============INLAND - END STATUS UPDATE');
+                    Log::info('companyStatus');
+                    Log::info($companyStatus);
+
+                    if($companyStatus)
+                    {
+                        $statusCodeCompany = $companyStatus->statusCodeCompany;
+                        $dataSend          = $this->GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto);
+                        $urlWebhook        = $url_webhook;
+                    }
+                    else
+                    {
+                        $sendStatusCompany = false;
+                    }
+                }
+                else
+                {
+                    $sendStatusCompany = false;
+                }
+                
+            }
+
+            if($sendStatusCompany)
+            {
+                Log::info('DATA SEND WEBHOOK- COMPANY');
+                Log::info($dataSend);
+                Log::info($urlWebhook);
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $urlWebhook,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => $dataSend,
+                    CURLOPT_HTTPHEADER => $header_curl,
+                ));
+
+                $response    = curl_exec($curl);
+                $response    = json_decode($response, true);
+                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                curl_close($curl);
+
+                Log::info($response);
+
+                Log::info('===========  INLAND - STATUS UPDATE');
+                Log::info('http_status: '. $http_status);
+                Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+                Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+                Log::info('REPONSE STATUS: '. $response['status']);
+                Log::info('============INLAND - END STATUS UPDATE');
+            }
         }
+    }
+
+    public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
+    {
+        $created_at_now = $created_at;
+        $created_at_rfc = $created_at;
+        $created_at_gdl = $created_at;
+        $created_at_adl = $created_at;
+        $created_at_rts = $created_at;
+
+        if($statusCodeCompany == 'RCF')
+        {
+            $dataStructure = '{
+                "shipment_number": "'. $package->Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'",
+                    }
+                }
+            }';
+        }
+        elseif($statusCodeCompany == 'GDL')
+        {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            if($packageHistory)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageHistory->created_at);
+                $created_at      = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            $dataStructure = '{
+                "shipment_number": "'. $package->Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at_now .'",
+                            "comment": "'. $status .'"
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'",
+                    }
+                }
+            }';
+        }
+        elseif($statusCodeCompany == 'DDL' || $statusCodeCompany == 'ADL')
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            $packageDispatch = PackageDispatch::find($package->Reference_Number_1);
+
+            if($packageInbound)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageInbound->created_at);
+                $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            if($packageDispatch)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->created_at);
+                $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            $contentPhoto = '';
+
+            if($statusCodeCompany == 'DDL')
+            {
+                Log::info('idPhoto:');
+                Log::info($idPhoto);
+
+
+                if(count($idPhoto) == 0)
+                {
+                    $photo1 = '';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    }';
+                }
+                else if(count($idPhoto) == 1)
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    }';
+                }
+                else
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+
+                    $contentPhoto = '{
+                                        "mimeType": "url",
+                                        "content": "'. $photo1 .'"
+                                    },
+                                    {
+                                        "mimeType": "url",
+                                        "content": "'. $photo2 .'"
+                                    }';
+                }
+            }
+
+            $dataStructure = '{
+                "shipment_number": "'. $package->Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at_rfc .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "GDL",
+                            "date": "'. $created_at_gdl .'",
+                            "comment": "Dispatch"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at_now .'",
+                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
+                        }
+                    ],
+                    "Pods":[
+                        '. $contentPhoto .'
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'"
+                    }
+                }
+            }';
+        }
+        elseif($statusCodeCompany == 'RTS')
+        {
+            $packageInbound = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                            ->where('status', 'Inbound')
+                                            ->first();
+
+            $packageDispatch = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)->where('status', 'Dispatch')->get();
+            $packageReturn   = PackageReturn::where('Reference_Number_1', $package->Reference_Number_1)->get();
+
+            if($packageInbound)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageInbound->created_at);
+                $created_at_rfc      = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            if(count($packageDispatch) > 0)
+            {
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageDispatch->last()->created_at);
+                $created_at_gdl  = $created_at_temp->format(DateTime::ATOM);
+            }
+
+            if(count($packageReturn) > 0)
+            {
+                $packageReturn   = $packageReturn->last();
+                $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $packageReturn->created_at);
+                $created_at_adl  = $created_at_temp->format(DateTime::ATOM);
+            }
+            else
+            {
+                $packageReturn = null;
+            }
+
+            $dataStructure = '{
+                "shipment_number": "'. $package->Reference_Number_1 .'",
+                "tracking": {
+                    "events": [
+                        {
+                            "name": "RCF",
+                            "date": "'. $created_at_rfc .'",
+                            "comment": "Inbound"
+                        },
+                        {
+                            "name": "GDL",
+                            "date": "'. $created_at_gdl .'",
+                            "comment": "Dispatch"
+                        },
+                        {
+                            "name": "ADL",
+                            "date": "'. $created_at_adl .'",
+                            "comment": "'. ( $packageReturn != null ? $packageReturn->Description_Return : 'ReInbound' ) .'"
+                        },
+                        {
+                            "name": "'. $statusCodeCompany .'",
+                            "date": "'. $created_at_now .'",
+                            "comment": "'. (isset($package->Description_Return) ? $package->Description_Return : $status) .'"
+                        }
+                    ],
+                    "Pods":[
+                        {
+                            "mimeType": "url",
+                            "content": ""
+                        }
+                    ],
+                    "status": {
+                        "to": "'. $statusCodeCompany .'",
+                        "latitude": "'. $package->latitude .'",
+                        "longitude": "'. $package->longitude .'",
+                    }
+                }
+            }';
+        }
+
+        return $dataStructure;
     }
 
     public function UpdateManifestRouteByZipCode()
     {
         $listPackageManifest = PackageManifest::all();
-        
+
         foreach($listPackageManifest as $packageManifest)
         {
             $route = Routes::where('zipCode', $packageManifest->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageManifest = PackageManifest::find($packageManifest->Reference_Number_1);
@@ -535,11 +884,11 @@ class PackageController extends Controller
     public function UpdateInboundRouteByZipCode()
     {
         $listPackageInbound = PackageInbound::all();
-        
+
         foreach($listPackageInbound as $packageInbound)
         {
             $route = Routes::where('zipCode', $packageInbound->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageInbound = PackageInbound::find($packageInbound->Reference_Number_1);
@@ -556,11 +905,11 @@ class PackageController extends Controller
     public function UpdateWarehouseRouteByZipCode()
     {
         $listPackageWarehouse = PackageWarehouse::all();
-        
+
         foreach($listPackageWarehouse as $packageWarehouse)
         {
             $route = Routes::where('zipCode', $packageWarehouse->Dropoff_Postal_Code)->first();
-            
+
             if($route)
             {
                 $packageWarehouse = PackageWarehouse::find($packageWarehouse->Reference_Number_1);

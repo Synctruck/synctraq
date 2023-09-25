@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam };
+use App\Models\{ Company, ChargeCompany, ChargeCompanyDetail, PackageDispatch, PackagePriceCompanyTeam, PackageReturnCompany };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -26,7 +26,7 @@ class TaskPackageSendPreFactura extends Command
      * The console command description.
      *
      * @var string
-     */ 
+     */
     protected $description = 'Enviar correo con paquetes para facturar(Pre factura)';
 
     /**
@@ -48,36 +48,72 @@ class TaskPackageSendPreFactura extends Command
     public function handle()
     {
         $dayName = date("l");
-        $nowHour = date('H'); 
+        $nowHour = date('H');
 
         Log::info('Hoy es: '. $dayName);
 
-        if($dayName == 'Monday')
+        /*try
+        {
+            DB::beginTransaction();
+
+            $files     = [];
+            $nowDate   = date('Y-08-14');
+            $startDate = date('Y-08-06');
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+
+            $companyList = Company::all();
+
+            foreach($companyList as $company)
+            {
+                if($company->id == 1 || $company->id == 10 || $company->id == 11 || $company->id == 13)
+                {
+                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                    $contents  = public_path($filename);
+
+                    array_push($files, $contents);
+                
+                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                }
+            }
+
+            $this->SendPreFactura($startDate, $endDate, $files);
+
+            DB::commit();
+        }
+        catch(Exception $e)
+        {
+            DB::rollback(); 
+        }*/
+
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-12');
-                $startDate = date('Y-m-d', strtotime($nowDate .' -7 day'));
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -1 day'));
+                $nowDate   = date('Y-m-d');
+                $startDate = date('Y-01-01');
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
                 $companyList = Company::all();
 
                 foreach($companyList as $company)
                 {
-                    $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
-                    $contents  = public_path($filename);
+                    if($company->id == 1 || $company->id == 10 || $company->id == 11 || $company->id == 13)
+                    {
+                        $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
+                        $contents  = public_path($filename);
 
-                    array_push($files, $contents);
-
-                    $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                        array_push($files, $contents);
+                    
+                        $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+                    }
                 }
 
                 $this->SendPreFactura($startDate, $endDate, $files);
 
-                DB::commit(); 
+                DB::commit();
             }
             catch(Exception $e)
             {
@@ -101,14 +137,20 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DATE and HOUR', 'COMPANY', 'TEAM', 'PACKAGE ID', 'DIESEL PRICE', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
         $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('idCompany', $idCompany)
+                                                ->where('invoiced', 0)
+                                                ->where('require_invoice', 1)
                                                 ->where('status', 'Delivery')
                                                 ->get();
+
+        $packageReturnCompanyList = PackageReturnCompany::where('invoice', 1)
+                                                        ->where('idCompany', $idCompany)
+                                                        ->get();
 
         Log::info('================');
         Log::info('SEND PRE FACTURA - EMAIL - COMPANY - '. $idCompany);
@@ -116,42 +158,33 @@ class TaskPackageSendPreFactura extends Command
 
         $totalCharge = 0;
 
-        if(count($listPackageDelivery) > 0)
+        if(count($listPackageDelivery) > 0 || count($packageReturnCompanyList) > 0)
         {
             foreach($listPackageDelivery as $packageDelivery)
             {
+                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
 
-                if($packagePriceCompanyTeam)
-                {
-                    if($packagePriceCompanyTeam->weight == 0.00)
-                    {
-                        $packagePriceCompanyTeam->delete();
-
-                        $packagePriceCompanyTeam = null;
-                    }
-                }
-
-                if($packagePriceCompanyTeam == null)
+                if($packagePriceCompanyTeam == null || date("l", strtotime($packageDelivery->Date_Delivery)) == 'Monday')
                 {
                     //create or update price company team
                     $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                    $packagePriceCompanyTeamController->Insert($packageDelivery);
+                    $packagePriceCompanyTeamController->Insert($packageDelivery, 'old');
 
                     $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                                     ->first();
                 }
 
-                if($packagePriceCompanyTeam) 
+                if($packagePriceCompanyTeam)
                 {
-                    $team                = $packageDelivery->team  ? $packageDelivery->team->name : '';
                     $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                     if($chargeCompanyDetail == null)
                     {
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
-                        
+
                         $chargeCompanyDetail = new ChargeCompanyDetail();
 
                         $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
@@ -160,23 +193,82 @@ class TaskPackageSendPreFactura extends Command
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
-                                        date('m-d-Y', strtotime($packageDelivery->updated_at)) .' '. date('H:i:s', strtotime($packageDelivery->updated_at)),
+                                        date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
                                         $packageDelivery->company,
-                                        $team,
                                         $packageDelivery->Reference_Number_1,
-                                        $packagePriceCompanyTeam->dieselPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
-                                        $packagePriceCompanyTeam->priceWeightCompany,
-                                        $packagePriceCompanyTeam->peakeSeasonPriceCompany,
-                                        $packagePriceCompanyTeam->priceBaseCompany,
-                                        $packagePriceCompanyTeam->surchargePercentageCompany,
-                                        $packagePriceCompanyTeam->surchargePriceCompany,
-                                        $packagePriceCompanyTeam->totalPriceCompany
+                                        '$'. $packagePriceCompanyTeam->priceWeightCompany,
+                                        '$'. $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->priceBaseCompany,
+                                        $packagePriceCompanyTeam->surchargePercentageCompany .'%',
+                                        '$'. $packagePriceCompanyTeam->surchargePriceCompany,
+                                        '$'. $packagePriceCompanyTeam->totalPriceCompany
                                     );
 
                         fputcsv($file, $lineData, $delimiter);
                     }
+                    
+                    $packageDelivery->invoiced = 1;
+                    $packageDelivery->save();
+                }
+            }
+
+            foreach($packageReturnCompanyList as $packageReturnCompany)
+            {
+                $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
+                
+                $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                                    ->first();
+
+                if($packagePriceCompanyTeam == null || date("l", strtotime($packageReturnCompany->created_at)) == 'Monday')
+                {
+                    //create or update price company team
+                    $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                    $packagePriceCompanyTeamController->Insert($packageReturnCompany, 'old');
+
+                    $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
+                                                                    ->first();
+                }
+
+                Log::info('$packagePriceCompanyTeam => '. $packagePriceCompanyTeam);
+
+                if($packagePriceCompanyTeam)
+                {
+                    $chargeCompanyDetail = ChargeCompanyDetail::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)->first();
+
+                    if($chargeCompanyDetail == null)
+                    {
+                        $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
+
+                        $chargeCompanyDetail = new ChargeCompanyDetail();
+
+                        $chargeCompanyDetail->Reference_Number_1 = $packageReturnCompany->Reference_Number_1;
+                        $chargeCompanyDetail->idChargeCompany    = $idCharge;
+
+                        $chargeCompanyDetail->save();
+
+                        $lineData = array(
+                                        date('m-d-Y', strtotime($packageReturnCompany->created_at)),
+                                        $packageReturnCompany->company,
+                                        $packageReturnCompany->Reference_Number_1,
+                                        '$'. $packagePriceCompanyTeam->dieselPriceCompany,
+                                        $packagePriceCompanyTeam->weight,
+                                        $packagePriceCompanyTeam->dimWeightCompanyRound,
+                                        '$'. $packagePriceCompanyTeam->priceWeightCompany,
+                                        '$'. $packagePriceCompanyTeam->peakeSeasonPriceCompany,
+                                        '$'. $packagePriceCompanyTeam->priceBaseCompany,
+                                        $packagePriceCompanyTeam->surchargePercentageCompany .'%',
+                                        '$'. $packagePriceCompanyTeam->surchargePriceCompany,
+                                        '$'. $packagePriceCompanyTeam->totalPriceCompany
+                                    );
+
+                        fputcsv($file, $lineData, $delimiter);
+                    }
+
+                    $packageReturnCompany->invoice = 2;
+                    $packageReturnCompany->save();
                 }
             }
 
@@ -184,8 +276,9 @@ class TaskPackageSendPreFactura extends Command
             fclose($file);
         }
 
-        $chargeCompany->total  = $totalCharge;
-        $chargeCompany->status = 'DRAFT INVOICE';
+        $chargeCompany->totalDelivery  = $totalCharge;
+        $chargeCompany->total          = $totalCharge;
+        $chargeCompany->status         = 'TO APPROVE';
 
         $chargeCompany->save();
 
@@ -197,6 +290,20 @@ class TaskPackageSendPreFactura extends Command
     {
         $files = $files;
         $data  = ['startDate' => $startDate, 'endDate' => $endDate];
+
+        if(ENV('APP_ENV') == 'production')
+        {
+            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
+
+                $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
+                ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+
+                foreach ($files as $file)
+                {
+                    $message->attach($file);
+                }
+            });
+        }
 
         Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
 

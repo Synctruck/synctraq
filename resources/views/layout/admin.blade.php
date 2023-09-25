@@ -31,7 +31,7 @@
     <link href="{{asset('admin/assets/css/style.css')}}?{{time()}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="{{asset('js/barcode.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -76,6 +76,10 @@
     .modal-xl {
         max-width: 1250px;
       }
+    }
+
+    .text-right{
+       text-align: right; 
     }
 </style>
 <body id="bodyAdmin">
@@ -334,6 +338,7 @@
                             <div class="col-lg-12">
                                 <h5 class="text-primary" id="titleModalHistory">Historial Package</h5>
                                 <h6 class="text-primary" id="subTitleModalHistory"></h6>
+                                <button id="btnReturnToDebrief" class="btn btn-warning mt-2" style="display: none;" onclick="ReturnToDebrief()">RETURN TO DEBRIEF</button>
                             </div>
                         </div>
                         <div class="row">
@@ -357,6 +362,10 @@
                                 <div class="col-lg-3 form-group">
                                     <label for="contactAddress">ADDREESS</label>
                                     <input type="text" id="contactAddress" name="contactAddress" class="form-control" required>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="contactAddress2">ADDREESS 2</label>
+                                    <input type="text" id="contactAddress2" name="contactAddress2" class="form-control">
                                 </div>
                                 <div class="col-lg-3 form-group">
                                     <label for="contactCity">CITY</label>
@@ -386,6 +395,22 @@
                                         <option value="High">HIGH</option>
                                     </select>
                                 </div>
+                                <div class="col-lg-2 form-group">
+                                    <label for="lengthSearch">LENGTH</label>
+                                    <input type="text" id="lengthSearch" name="lengthSearch" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-2 form-group">
+                                    <label for="heightSearch">HEIGHT</label>
+                                    <input type="text" id="heightSearch" name="heightSearch" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-2 form-group">
+                                    <label for="widthSearch">WIDTH</label>
+                                    <input type="text" id="widthSearch" name="widthSearch" class="form-control" readonly>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label for="volumeSearch">VOLUME</label>
+                                    <input type="text" id="volumeSearch" name="volumeSearch" class="form-control" readonly>
+                                </div>
                                 <div class="col-lg-12 form-group">
                                     <label for="contactState">INTERNAL COMMENT</label>
                                     <textarea name="internalComment" id="internalComment" cols="10" rows="2" class="form-control"></textarea>
@@ -406,19 +431,55 @@
                                     <br>
                                     <button class="btn btn-primary form-control">Updated</button>
                                 </div>
+                                <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
+                                    @if(Auth::user()->role->name == 'Master')
+                                    <br>
+                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                    @endif
+                                </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-3 form-group">
                                     <label for="" class="form">Actual Status</label>
                                     <input type="text" id="actualStatus" class="form-control">
+                                    <div id="divActualStatus" class="alert alert-danger">
+                                        <b>This package was delete of the manifest</b>
+                                    </div>
+                                </div>
+                                <div id="divBtnHistoryNMI" class="col-lg-3 form-group" style="display: none;">
+                                    <label for="" class="text-white">--</label>
+                                    <button type="button" id="btnHistoryNMI" class="btn btn-success form-control" onclick="ShowHistoryNMI();">Show History NMI</button>
+                                </div>
+                            </div>
+                            <div id="divTableHistoryNMI" class="row" style="display: none;">
+                                <div class="col-lg-12">
+                                    <h3 class="text-primary text-center">PROCESS HISTORY - NMI</h3>
+                                </div>
+                                <div class="col-lg-12">
+                                    <table id="tableHistoryPackage" class="table table-condensed table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DATE</th>
+                                                <th>USER</th>
+                                                <th>PACKAGE ID</th>
+                                                <th>INTERNAL COMMENT</th>
+                                                <th>STATUS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableHistoryNMITbody"></tbody>
+                                    </table>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col-lg-12">
+                                    <h3 class="text-success text-center">PROCESS HISTORY</h3>
+                                </div>
+                                <div class="col-lg-12">
                                     <table id="tableHistoryPackage" class="table table-condensed table-bordered">
                                         <thead>
                                             <tr>
+                                                <th>DATE SYNTRUCK</th>
                                                 <th>DATE</th>
                                                 <th>USER</th>
                                                 <th>STATUS</th>
@@ -613,6 +674,39 @@
         var limitToExport = 60;
         var url_general = '{{url('/')}}/';
 
+        function ReturnToDebrief()
+        {
+            document.getElementById('btnCloseHistorialPackage').click();
+
+            let myModal = new bootstrap.Modal(document.getElementById('modalPackagesListDebrief'), {
+
+                keyboard: true
+            });
+
+            myModal.show();
+        }
+
+        function RegisterInland()
+        {
+            let Reference_Number_1 = document.getElementById('searchPackage').value;
+
+            fetch("{{url('package/insert-inland')}}/"+ Reference_Number_1)
+            .then(response => response.json())
+            .then(response => {
+
+                if(response.status == 201)
+                {
+                    document.getElementById('divSynchronizePackage').style.display = 'none';
+                    
+                    swal('Correct', 'The package was registered', 'success');
+                }
+                else
+                {
+                    swal('Error', response.output.error, 'error');
+                }
+            });
+        }
+
         function LoadingShow()
         {
             //document.getElementById('loader').style.display = 'block';
@@ -649,27 +743,104 @@
             SearchPackageReferenceId();
         }
 
+        function ShowHistoryNMI()
+        {
+            document.getElementById('divTableHistoryNMI').style.display = 'block';
+            document.getElementById('btnHistoryNMI').innerHTML          = 'Hide History NMI';
+
+            document.getElementById('btnHistoryNMI').setAttribute('onclick', 'HideHistoryNMI()');
+            document.getElementById('btnHistoryNMI').setAttribute('class', 'btn btn-danger form-control');
+        }
+
+        function HideHistoryNMI()
+        {
+            document.getElementById('divTableHistoryNMI').style.display = 'none';
+            document.getElementById('btnHistoryNMI').innerHTML          = 'Show History NMI';
+
+            document.getElementById('btnHistoryNMI').setAttribute('onclick', 'ShowHistoryNMI()');
+            document.getElementById('btnHistoryNMI').setAttribute('class', 'btn btn-success form-control');
+        }
+
+        function ListHistoryNMI(packageHistoryNMIList)
+        {
+            let tableHistoryNMITbody       = document.getElementById('tableHistoryNMITbody');
+
+            tableHistoryNMITbody.innerHTML = '';
+
+            let tr = '';
+
+            packageHistoryNMIList.forEach( historyNMI =>  {
+
+                tr =    '<tr>'+
+                            '<td><b>'+ historyNMI.created_at.substring(5, 7) +'-'+ historyNMI.created_at.substring(8, 10) +'-'+ historyNMI.created_at.substring(0, 4) +'</b><br>'+ historyNMI.created_at.substring(11, 19) +
+                            '</td>'+
+                            '<td><b>'+ historyNMI.user.name +' '+ historyNMI.user.nameOfOwner +'</b><br>'+ historyNMI.user.email +'</td>'+
+                            '<td><b>'+ historyNMI.Reference_Number_1 +'</b></td>'+
+                            '<td><b>'+ historyNMI.internalComment +'</b></td>'+
+                            '<td>'+ historyNMI.status +'</td>'+
+                        '</tr>';
+
+                tableHistoryNMITbody.insertRow(-1).innerHTML = tr;
+            });
+        }
+
         function SearchPackageReferenceId()
         {
+            document.getElementById('btnReturnToDebrief').style.display    = 'none';
+            document.getElementById('divTableHistoryNMI').style.display    = 'none';
+            document.getElementById('divBtnHistoryNMI').style.display      = 'none';
+            document.getElementById('divSynchronizePackage').style.display = 'none';
+
+            document.getElementById('actualStatus').style.display    = 'none';
+            document.getElementById('divActualStatus').style.display = 'none';
+
             let PACKAGE_ID = document.getElementById('searchPackage').value;
 
             fetch(url_general +'package-history/search/'+ PACKAGE_ID)
             .then(response => response.json())
             .then(response => {
 
-                let packageBlocked     = response.packageBlocked;
-                let packageHistoryList = response.packageHistoryList;
-                let packageDelivery    = response.packageDelivery;
-                let packageDispatch    = response.packageDispatch;
-                let notesOnfleet       = response.notesOnfleet;
-                let latitudeLongitude  = response.latitudeLongitude;
-                let actualStatus       = response.actualStatus;
+                let packageBlocked        = response.packageBlocked;
+                let packageDelete         = response.packageDelete;
+                let packageHistoryList    = response.packageHistoryList;
+                let packageHistoryNMIList = response.packageHistoryNeeMoreInformation;
+                let packageDelivery       = response.packageDelivery;
+                let packageDispatch       = response.packageDispatch;
+                let notesOnfleet          = response.notesOnfleet;
+                let latitudeLongitude     = response.latitudeLongitude;
+                let actualStatus          = response.actualStatus;
+                let existsInInland        = response.existsInInland;
+
+                if(packageHistoryList.length > 0)
+                {
+                    if(packageHistoryList[0].company != 'INLAND LOGISTICS' && existsInInland == false)
+                    {
+                        document.getElementById('divSynchronizePackage').style.display = 'block';
+
+                    }
+                }
+
+                if(packageHistoryNMIList.length > 0)
+                {
+                    document.getElementById('divBtnHistoryNMI').style.display   = 'block';
+                }
+
+                ListHistoryNMI(packageHistoryNMIList);
 
                 document.getElementById('taskOnfleetHistory').value           = '';
                 document.getElementById('notesOnfleetHistory').value          = notesOnfleet;
                 document.getElementById('latitudeLongitude').value            = latitudeLongitude[1] +', '+ latitudeLongitude[0];
                 document.getElementById('tableHistoryPackageTbody').innerHTML = '';
                 document.getElementById('actualStatus').value                 = actualStatus;
+
+                if(packageDelete)
+                {
+                    document.getElementById('divActualStatus').style.display = 'block';
+                }
+                else
+                {
+                    document.getElementById('actualStatus').style.display = 'block';
+                }
 
                 if(packageDispatch)
                 {
@@ -683,6 +854,7 @@
                 if(packageBlocked)
                 {
                     tr =    '<tr>'+
+                                '<td></td>'+
                                 '<td>'+ packageBlocked.created_at.substring(5, 7) +'-'+ packageBlocked.created_at.substring(8, 10) +'-'+ packageBlocked.created_at.substring(0, 4) +'</td>'+
                                 '<td>PACKAGE BLOCKED</td>'+
                                 '<td>'+ packageBlocked.comment +'</td>'+
@@ -690,6 +862,11 @@
 
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 }
+
+                document.getElementById('lengthSearch').value = '';
+                document.getElementById('heightSearch').value = '';
+                document.getElementById('widthSearch').value  = '';
+                document.getElementById('volumeSearch').value = '';
 
                 packageHistoryList.forEach( package =>  {
 
@@ -702,8 +879,25 @@
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
- 
-                    if(package.status == 'Delivery')
+                    
+                    if(package.status == 'Inbound')
+                    {
+                        if(package.Notes)
+                        {
+                            let dimensions = package.Notes.split('|');
+
+                            if(dimensions.length == 3)
+                            {
+                                document.getElementById('lengthSearch').value = dimensions[0];
+                                document.getElementById('heightSearch').value = dimensions[1];
+                                document.getElementById('widthSearch').value  = dimensions[2];
+                                document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
+                            } 
+                        }
+
+                        Description = package.Description;
+                    }
+                    else if(package.status == 'Delivery')
                     {
                         Description = package.Description;
                         user        = (package.driver ? package.driver.name +' '+ package.driver.nameOfOwner : '');
@@ -717,7 +911,10 @@
                         Description = package.Description;
                     }
 
+                    let actualDate = (package.actualDate != null ? package.actualDate :  package.created_at);
+
                     tr =    '<tr>'+
+                                '<td><b>'+ actualDate.substring(5, 7) +'-'+ actualDate.substring(8, 10) +'-'+ actualDate.substring(0, 4) +'</b><br>'+ actualDate.substring(11, 19) +
                                 '<td><b>'+ package.created_at.substring(5, 7) +'-'+ package.created_at.substring(8, 10) +'-'+ package.created_at.substring(0, 4) +'</b><br>'+ package.created_at.substring(11, 19) +
                                 '</td>'+
                                 '<td>'+ user +'</td>'+
@@ -730,37 +927,84 @@
 
                 if(packageDispatch)
                 {
-                    if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                    if(packageDispatch.filePhoto1 == '' && packageDispatch.filePhoto2 == '')
                     {
-                        let urlsPhoto = packageDispatch.photoUrl.split(',')
+                        if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                        {
+                            let urlsPhoto = packageDispatch.photoUrl.includes('https:')
 
-                        urlsPhoto.forEach( photoCode => {
+                            console.log('https: '+ urlsPhoto);
+                            console.log(packageDispatch.photoUrl);
 
-                            let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
-
-                            tr =    '<tr>'+
-                                        '<td colspan="4"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
-                                    '</tr>';
-
-                            tableHistoryPackage.insertRow(-1).innerHTML = tr;
-                        });
-                    }
-                    else if(packageDelivery)
-                    {
-                        let urlsPhoto = packageDelivery.photoUrl.split('https:')
-
-                        urlsPhoto.forEach( url => {
-
-                            if(url)
+                            if(urlsPhoto)
                             {
-                                tr =    '<tr>'+
-                                            '<td colspan="4"><img src="'+ url +'" class="img-fluid"/></td>'+
-                                        '</tr>';
+                                urlsPhoto = packageDispatch.photoUrl.split(',');
 
-                                tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                urlsPhoto.forEach( url => {
+
+                                    if(url)
+                                    {
+                                        tr =    '<tr>'+
+                                                    '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                                '</tr>';
+
+                                        tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                    }
+                                });
                             }
+                            else
+                            {
+                                urlsPhoto = packageDispatch.photoUrl.split(',')
 
-                        });
+                                urlsPhoto.forEach( photoCode => {
+
+                                    let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+
+                                    tr =    '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                });
+                            }
+                        }
+                        else if(packageDelivery)
+                        {
+                            let urlsPhoto = packageDelivery.photoUrl.split('https:')
+
+                            urlsPhoto.forEach( url => {
+
+                                if(url)
+                                {
+                                    tr =    '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                }
+
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if(packageDispatch.filePhoto1 != '')
+                        {
+                            let trPhoto1 =  '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url_general +'img/deliveries/'+ packageDispatch.filePhoto1 +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                            tableHistoryPackage.insertRow(-1).innerHTML = trPhoto1;
+                        }
+
+                        if(packageDispatch.filePhoto2 != '')
+                        {
+                            let trPhoto2 =  '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ url_general +'img/deliveries/'+ packageDispatch.filePhoto2 +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                            tableHistoryPackage.insertRow(-1).innerHTML = trPhoto2;
+                        }
                     }
                 }
 
@@ -769,6 +1013,7 @@
                 document.getElementById('contactName').value           = '';
                 document.getElementById('contactPhone').value          = '';
                 document.getElementById('contactAddress').value        = '';
+                document.getElementById('contactAddress2').value       = '';
                 document.getElementById('highPriority').value          = 'Normal';
 
                 if(packageHistoryList.length > 0)
@@ -777,6 +1022,7 @@
                     document.getElementById('contactName').value     = packageHistoryList[0].Dropoff_Contact_Name;
                     document.getElementById('contactPhone').value    = packageHistoryList[0].Dropoff_Contact_Phone_Number;
                     document.getElementById('contactAddress').value  = packageHistoryList[0].Dropoff_Address_Line_1;
+                    document.getElementById('contactAddress2').value = packageHistoryList[0].Dropoff_Address_Line_2;
                     document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
                     document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
                     document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;
@@ -878,6 +1124,7 @@
             formData.append('Dropoff_Contact_Name', document.getElementById('contactName').value);
             formData.append('Dropoff_Contact_Phone_Number', document.getElementById('contactPhone').value);
             formData.append('Dropoff_Address_Line_1', document.getElementById('contactAddress').value);
+            formData.append('Dropoff_Address_Line_2', document.getElementById('contactAddress2').value);
             formData.append('Dropoff_City', document.getElementById('contactCity').value);
             formData.append('Dropoff_Province', document.getElementById('contactState').value);
             formData.append('Dropoff_Postal_Code', document.getElementById('contactZipCode').value);
@@ -902,6 +1149,26 @@
                 if(response.stateAction == true)
                 {
                     swal('Correct!', 'The package was updated', 'success');
+                }
+                else if(response.stateAction == 'notUpdated')
+                {
+                    if(response.response)
+                    {
+                        swal({
+                            title: "Package not updated!",
+                            text: response.response.error +"!",
+                            icon: "error",
+                            button: "Ok!",
+                        });
+                    }
+                    else
+                    {
+                        swal({
+                            title: "The package not exists in INLAND!",
+                            icon: "warning",
+                            button: "Ok!",
+                        });
+                    }
                 }
                 else
                 {

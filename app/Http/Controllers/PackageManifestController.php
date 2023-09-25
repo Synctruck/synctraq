@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes };
+use App\Models\{ Company, PackageAux, PackageBlocked, PackageHistory, PackageManifest, PackageNotExists, Routes, RoutesAux, RoutesZipCode };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -16,8 +16,9 @@ use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
 use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
 
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Session;
+use Mail;
 
 class PackageManifestController extends Controller
 {
@@ -127,6 +128,7 @@ class PackageManifestController extends Controller
                 $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Manifest - for: '.Auth::user()->name .' '. Auth::user()->nameOfOwner;
                 $packageHistory->status                       = 'Manifest';
+                $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
 
@@ -155,13 +157,11 @@ class PackageManifestController extends Controller
         return ['stateAction' => 'exists'];
     } 
 
-    public function Export($status, $idCompany, $route, $state)
+    public function Export($status, $idCompany, $route, $state, $type)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $type == 'download' ? "PACKAGES - MANIFEST " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - MANIFEST.csv";
+        $file      = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
@@ -190,13 +190,25 @@ class PackageManifestController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
+    
+        if($type == 'download')
+        {
+            fseek($file, 0);
 
-        fseek($file, 0);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
 
-        fpassthru($file);
+            SendGeneralExport('Packages Manifest', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function GetData($status, $idCompany, $route, $state, $type)
@@ -454,19 +466,27 @@ class PackageManifestController extends Controller
                             $package->created_at = $created_at;
                             $package->updated_at = $created_at;
 
-                            $route = Routes::where('zipCode', $row[24])->first();
+                            $routesZipCode = RoutesZipCode::find($row[24]);
 
-                            if(!$route)
+                            if(!$routesZipCode)
                             {
-                                $route = new Routes();
+                                $routesAux = RoutesAux::where('name', $row[31])->first();
 
-                                $route->zipCode = $row[24];
-                                $route->name    = $row[31];
-                                $route->save();
+                                if(!$routesAux)
+                                {
+                                    $routesAux = new RoutesAux();
+                                    $routesAux->name = $row[31];
+                                    $routesAux->save();
+                                }
+                                
+                                $routesZipCode = new RoutesZipCode();
+                                $routesZipCode->zipCode   = $routesAux->zipCode;
+                                $routesZipCode->idRoute   = $routesAux->id;
+                                $routesZipCode->routeName = $routesAux->name;
+                                $routesZipCode->save();
                             }
 
-                            $package->Route = $route->name;
-
+                            $package->Route = $routesZipCode->routeName;
                             $package->save();
 
                             $packageHistory = new PackageHistory();
@@ -486,12 +506,13 @@ class PackageManifestController extends Controller
                             $packageHistory->Dropoff_Postal_Code          = $row[24];
                             $packageHistory->Notes                        = $row[28];
                             $packageHistory->Weight                       = $row[30];
-                            $packageHistory->Route                        = $route->name;
+                            $packageHistory->Route                        = $routesZipCode->routeName;
                             $packageHistory->idUser                       = Auth::user()->id;
                             $packageHistory->idUserManifest               = Auth::user()->id;
                             $packageHistory->Date_manifest                = date('Y-m-d H:s:i');
                             $packageHistory->Description                  = 'Manifest: Not yet received: '. $company->name;
                             $packageHistory->status                       = 'Manifest';
+                            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                             $packageHistory->created_at                   = date('Y-m-d H:i:s');
                             $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 

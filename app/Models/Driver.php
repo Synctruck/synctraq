@@ -12,7 +12,7 @@ class Driver extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $timestamps   = false;
-    public $incrementing = true;
+    public $incrementing = false;
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',

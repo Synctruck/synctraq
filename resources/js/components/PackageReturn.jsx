@@ -33,6 +33,9 @@ function PackageReturn() {
     const [descriptionReturn, setDescriptionReturn] = useState('');
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [CategoryReturn, setCategoryReturn]    = useState('');
+    const [latitude, setLatitude]                = useState(0);
+    const [longitude, setLongitude]              = useState(0);
 
     const [showReturnPackage, setShowReturnPackage] = useState('none');
     const [iconReturnPackage, setIconReturnPackage] = useState('bi bi-eye-fill');
@@ -55,7 +58,24 @@ function PackageReturn() {
 
     useEffect(() => {
 
-        listAllComment();
+        if("geolocation" in navigator)
+        {
+            console.log("Available");
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+
+                console.log("Latitude is:", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+            });
+        }
+        else
+        {
+            swal('Error', 'El navegador no soporta compartir su ubicación, por favor use otro navegador,', 'error');
+        }
+
         listAllRoute();
         listAllCompany();
 
@@ -98,7 +118,7 @@ function PackageReturn() {
             {
                 listOptionState(response.listState);
             }
-            if(response.roleUser == 'Administrador')
+            if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -110,13 +130,13 @@ function PackageReturn() {
         });
     }
 
-    const listAllComment = () => {
+    const listAllComment = (category) => {
 
-        fetch(url_general +'comments/getAll/0')
+        fetch(url_general +'comments/get-all-by-category/'+ category)
         .then(res => res.json())
         .then((response) => { 
 
-            setListComment(response.commentList);
+            setListComment(response.commentList); 
         });
     }
 
@@ -407,8 +427,18 @@ function PackageReturn() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', returnReference_Number_1);
+        formData.append('CategoryReturn', CategoryReturn);
         formData.append('Description_Return', descriptionReturn);
+        formData.append('latitude', latitude);
+        formData.append('longitude', longitude);
 
+        if(latitude == 0 || longitude == 0)
+        {
+            swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+
+            return 0;
+        }
+            
         clearValidation();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -494,7 +524,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notDispatch')
                 {
-                    setTextMessage("The package #"+ returnReference_Number_1 +" no fue validado como Dispatch!");
+                    setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch!");
                     setTypeMessage('warning');
                     setNumberPackage('');
 
@@ -534,25 +564,45 @@ function PackageReturn() {
             },
         );
     }
-    const exportAllPackageReturn = (  route, state) => {
+    const exportAllPackageReturn = (route, state, type) => {
 
-        location.href = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state
+        let url = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'/'+type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
+    const handlerExport = (type) => {
 
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
-
-        // }
-
-        exportAllPackageReturn(RouteSearch, StateSearch);
+        exportAllPackageReturn(RouteSearch, StateSearch, type);
     }
     const clearForm = () => {
 
@@ -581,6 +631,13 @@ function PackageReturn() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const hanlderGetComment = (category) => {
+
+        setListComment([]);
+        setCategoryReturn(category);
+        listAllComment(category);
+    }
+
     return (
 
         <section className="section">
@@ -594,22 +651,40 @@ function PackageReturn() {
                                 <div className="row form-group">
                                     <div className="col-lg-2 mb-2">
                                         <div className="form-group">
-                                            <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                            <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
                                                 <i className="ri-file-excel-fill"></i> EXPORT
                                             </button>
                                         </div>
                                     </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
+                                    </div>
                                     <div className="col-lg-12 mb-2">
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
-                                                <div className="col-lg-4">
+                                                <div className="col-lg-3">
                                                     <div className="form-group">
                                                         <label>PACKAGE ID</label>
                                                         <div id="returnReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                         <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
-                                                <div className="col-lg-4">
+
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label>RETURN CATEGORY</label>
+                                                        <div id="returnCategory" className="text-danger" style={ {display: 'none'} }></div>
+                                                        <select value={ CategoryReturn } className="form-control" onChange={ (e) => hanlderGetComment(e.target.value) } required>
+                                                            <option value="" >Select item</option>
+                                                            <option value="Retry" >Retry</option>
+                                                            <option value="Terminal" >Terminal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-lg-3">
                                                     <div className="form-group">
                                                         <label>RETURN COMMENT</label>
                                                         <div id="descriptionReturn" className="text-danger" style={ {display: 'none'} }></div>
@@ -620,8 +695,9 @@ function PackageReturn() {
                                                     </div>
                                                     <br/>
                                                 </div>
+
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <>
                                                             <div className="col-lg-2">
@@ -783,14 +859,14 @@ function PackageReturn() {
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
@@ -803,7 +879,7 @@ function PackageReturn() {
                                                 <th>DESCRIPTION ONFLEET</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>

@@ -161,18 +161,52 @@ function ReportDispatch() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        let date1= moment(dateInit);
-        let date2 = moment(dateEnd);
+        let date1      = moment(dateInit);
+        let date2      = moment(dateEnd);
         let difference = date2.diff(date1,'days');
 
-        if(difference> limitToExport){
+        if(difference > limitToExport)
+        {
             swal(`Maximum limit to export is ${limitToExport} days`, {
                 icon: "warning",
             });
-        }else{
-            location.href = url_general +'report/export/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch;
+        }
+        else
+        {
+            let url = url_general +'report/export/dispatch/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+
+            if(type == 'download')
+            {
+                location.href = url;
+            }
+            else
+            {
+                setIsLoading(true);
+
+                fetch(url)
+                .then(res => res.json())
+                .then((response) => {
+
+                    if(response.stateAction == true)
+                    {
+                        swal("The export was sended to your mail!", {
+
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal("There was an error, try again!", {
+
+                            icon: "error",
+                        });
+                    }
+
+                    setIsLoading(false);
+                });
+            }
         }
     }
 
@@ -185,18 +219,17 @@ function ReportDispatch() {
 
             <tr key={i}>
                 <td>
-                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    { packageDispatch.created_at.substring(5, 7) }-{ packageDispatch.created_at.substring(8, 10) }-{ packageDispatch.created_at.substring(0, 4) }<br/>
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 <td>
                     { packageDispatch.inboundDate.substring(5, 7) }-{ packageDispatch.inboundDate.substring(8, 10) }-{ packageDispatch.inboundDate.substring(0, 4) }<br/>
                     { packageDispatch.inboundDate.substring(11, 19) }
                 </td>
+                <td><b>{ packageDispatch.lateDays }</b></td>
                 <td><b>{ packageDispatch.company }</b></td>
                 {
-                    roleUser == 'Administrador'
+                    roleUser == 'Master'
                     ?
                         <>
                             <td><b>{ team }</b></td>
@@ -223,7 +256,6 @@ function ReportDispatch() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td>{ packageDispatch.taskOnfleet }</td>
             </tr>
         );
     });
@@ -376,7 +408,14 @@ function ReportDispatch() {
                                         </div>
                                     </div>
                                     <div className="col-lg-2 mb-3">
-                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport() }><i className="ri-file-excel-fill"></i> Export</button>
+                                        <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport('download') }>
+                                            <i className="ri-file-excel-fill"></i> Export
+                                        </button>
+                                    </div>
+                                    <div className="col-3 form-group">
+                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={ () => handlerExport('send') }>
+                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -416,7 +455,7 @@ function ReportDispatch() {
                                     </dvi>
 
                                     {
-                                        roleUser == 'Administrador'
+                                        roleUser == 'Master'
                                         ?
                                             <>
                                                 <div className="col-lg-2">
@@ -489,18 +528,18 @@ function ReportDispatch() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>INBOUND DATE</th>
+                                                <th>DAYS TO DISPATCH</th>
                                                 <th>COMPANY</th>
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>TEAM</b></th>
                                                     :
                                                         ''
                                                 }
                                                 {
-                                                    roleUser == 'Administrador'
+                                                    roleUser == 'Master'
                                                     ?
                                                         <th><b>DRIVER</b></th>
                                                     :
@@ -510,13 +549,12 @@ function ReportDispatch() {
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th>TASK ONFLEET</th>
                                             </tr>
                                         </thead>
                                         <tbody>

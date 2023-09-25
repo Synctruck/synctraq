@@ -2,21 +2,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
-
-use App\Models\{Configuration, Driver, Package, PackageBlocked, PackageDelivery, PackageDispatch, PackagePreDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageHighPriority, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User};
-
 use Illuminate\Support\Facades\Validator;
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-use PhpOffice\PhpOfficePhpSpreadsheetSpreadsheet;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderCsv;
-use PhpOffice\PhpOfficePhpSpreadsheetReaderXlsx;
-
-use DB;
 use Illuminate\Support\Facades\Auth;
+
+use App\Models\{
+        Configuration, Driver, Package, PackageBlocked, PackageTerminal, 
+        PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch, 
+        PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
+        PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
+        PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
+        PackageWarehouse, TeamRoute, User
+    };
+
+use App\External\ExternalServiceInland;
+
+use DB; 
 use Session;
 
 class PackageController extends Controller
@@ -44,7 +46,7 @@ class PackageController extends Controller
     }
 
     public function List(Request $request)
-    {
+    { 
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
@@ -52,6 +54,15 @@ class PackageController extends Controller
         $quantityPackage = Package::where('status', 'Manifest')->get()->count();
 
         return ['packageList' => $packageList, 'quantityPackage' => $quantityPackage];
+    }
+
+    public function InsertInland($Reference_Number_1)
+    {
+        $package = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
+
+        $externalServiceInland = new ExternalServiceInland();
+        
+        return $externalServiceInland->RegisterPackage($package);
     }
 
     public function Insert(Request $request)
@@ -169,6 +180,11 @@ class PackageController extends Controller
                 $package = PackageWarehouse::find($request->get('Reference_Number_1'));
             }
 
+            if($package == null)
+            {
+                $package = PackageNeedMoreInformation::find($request->get('Reference_Number_1'));
+            }
+
             if($package)
             {
                 $package->Dropoff_Contact_Name         = $request->get('Dropoff_Contact_Name');
@@ -181,6 +197,19 @@ class PackageController extends Controller
                 $package->Weight                       = $request->get('Weight');
                 $package->Route                        = $request->get('Route');
                 $package->save();
+            }
+
+            $externalServiceInland = [];
+
+            if($package && $package->company == 'INLAND LOGISTICS')
+            {
+                $externalServiceInland = new ExternalServiceInland();
+                $externalServiceInland = $externalServiceInland->PackageUpdate($request);
+
+                if($externalServiceInland['status'] != 200)
+                {
+                    return response()->json(["stateAction" => 'notUpdated', 'response' => $externalServiceInland['response']]);
+                }
             }
 
             $packageHistoryList  = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))->get();
@@ -226,7 +255,7 @@ class PackageController extends Controller
 
             DB::commit();
 
-            return response()->json(["stateAction" => true], 200);
+            return response()->json(["stateAction" => true, 'externalServiceInland' => $externalServiceInland], 200);
         }
         catch(Exception $e)
         {
@@ -238,8 +267,8 @@ class PackageController extends Controller
 
     public function Search($Reference_Number_1)
     {
-
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+        $packageDelete  = PackageDelete::find($Reference_Number_1);
 
         $packageHistoryList = PackageHistory::with([
                                                 'driver',
@@ -248,7 +277,7 @@ class PackageController extends Controller
                                                 }
                                             ])
                                             ->where('Reference_Number_1', $Reference_Number_1)
-                                            ->orderBy('created_at', 'asc')
+                                            ->orderBy('actualDate', 'asc')
                                             ->get();
 
         $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
@@ -258,24 +287,46 @@ class PackageController extends Controller
         $noteOnfleet       = '';
         $latitudeLongitude = [0, 0];
 
-        if($packageDispatch && $packageDispatch->status == 'Delivery')
+        if($packageDispatch && $packageDispatch->taskOnfleet != '' && $packageDispatch->status == 'Delivery')
         {
             $responseOnfleet   = $this->SearchTask($packageDispatch->taskOnfleet);
             $noteOnfleet       = $responseOnfleet['stateAction'] == false ? null : $responseOnfleet['onfleet']['destination']['notes'];
             $latitudeLongitude = $responseOnfleet['stateAction'] == false ? $latitudeLongitude : $responseOnfleet['onfleet']['completionDetails']['lastLocation'];
         }
+        else if($packageDispatch && $packageDispatch->arrivalLonLat != '')
+        {
+            $localization = explode(',', $packageDispatch->arrivalLonLat);
+
+            if(count($localization) > 1)
+            {
+                $latitudeLongitude = [$localization[0] , $localization[1]];
+            }
+        }
 
         $actualStatus = $this->GetStatus($Reference_Number_1);
+
+        $packageHistoryNeeMoreInformation = PackageHistoryNeeMoreInformation::with(['user' => function($query){
+
+                                                                                $query->select('id', 'name', 'nameOfOwner', 'email');
+                                                                            }])
+                                                                            ->where('Reference_Number_1', $Reference_Number_1)
+                                                                            ->orderBy('created_at', 'desc')
+                                                                            ->get();
+
+        $externalServiceInland = new ExternalServiceInland();
 
         return [
 
             'packageBlocked' => $packageBlocked,
+            'packageDelete' => $packageDelete,
             'packageHistoryList' => $packageHistoryList,
+            'packageHistoryNeeMoreInformation' => $packageHistoryNeeMoreInformation,
             'packageDelivery' => $packageDelivery,
             'packageDispatch' => $packageDispatch,
             'actualStatus' => $actualStatus['status'],
             'notesOnfleet' => $noteOnfleet,
             'latitudeLongitude' => $latitudeLongitude,
+            'existsInInland' => $externalServiceInland->GetPackage($Reference_Number_1),
         ];
     }
 
@@ -303,7 +354,7 @@ class PackageController extends Controller
             }
             else
             {
-                $idOnfleet = $output['container']['worker'];
+                $idOnfleet = isset($output['container']['worker']) ? $output['container']['worker'] : '';
             }
 
             $driverUser = User::where('idOnfleet', $idOnfleet)->first();
@@ -426,16 +477,15 @@ class PackageController extends Controller
         $package = PackageManifest::find($Reference_Number_1);
 
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
-
         $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
 
         if($package)
         {
@@ -786,7 +836,7 @@ class PackageController extends Controller
             $packageDispatchList = PackageDispatch::with(['package', 'driver.role', 'driver'])
                                                 ->where('status', 'Dispatch');
 
-            $roleUser = 'Administrador';
+            $roleUser = 'Master';
         }
 
         if($dataView == 'today')
@@ -832,7 +882,7 @@ class PackageController extends Controller
 
             if($package)
             {
-                if(Auth::user()->role->name == 'Administrador')
+                if(Auth::user()->role->name == 'Master')
                 {
                     $listTeamRoutes = TeamRoute::with('route')->where('idTeam', $request->get('idTeam'))->get();
                 }
@@ -860,7 +910,7 @@ class PackageController extends Controller
                     return ['stateAction' => 'notValidatedRoute'];
                 }
 
-                if($package->Dispatch && Auth::user()->role->name == 'Administrador')
+                if($package->Dispatch && Auth::user()->role->name == 'Master')
                 {
                     return ['stateAction' => 'validated'];
                 }
@@ -882,18 +932,18 @@ class PackageController extends Controller
 
                     $package->Dispatch = 1;
                     $package->Date_Dispatch = date('Y-m-d H:i:s');
-                    $package->idUserDispatch = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
+                    $package->idUserDispatch = Auth::user()->role->name == 'Master' ? $idUser : Auth::user()->id;
                     $package->status = 'Dispatch';
 
                     $package->save();
 
-                    if(Auth::user()->role->name == 'Administrador')
+                    if(Auth::user()->role->name == 'Master')
                     {
                         $packageDispatch = new PackageDispatch();
 
                         $packageDispatch->id            = date('YmdHis');
                         $packageDispatch->idPackage     = $package->Reference_Number_1;
-                        $packageDispatch->idUser        = Auth::user()->role->name == 'Administrador' ? $idUser : Auth::user()->id;
+                        $packageDispatch->idUser        = Auth::user()->role->name == 'Master' ? $idUser : Auth::user()->id;
                         $packageDispatch->Date_Dispatch = date('Y-m-d H:i:s');
                         $packageDispatch->status        = 'Dispatch';
 
@@ -1099,7 +1149,7 @@ class PackageController extends Controller
                                                 ->whereBetween('Date_Return', [$dateStart, $dateEnd])
                                                 ->orderBy('created_at', 'desc');
 
-            $roleUser = 'Administrador';
+            $roleUser = 'Master';
         }
 
         if($idTeam && $idDriver)
@@ -1163,13 +1213,11 @@ class PackageController extends Controller
     }
 
 
-    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state)
+    public function ListReturnExport($idCompany, $dateStart,$dateEnd,$idTeam,$idDriver,$route, $state, $typeExport)
     {
         $delimiter = ",";
-        $filename = "PACKAGES - RETURN " . date('Y-m-d H:i:s') . ".csv";
-
-        //create a file pointer
-        $file = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - REINBOUND " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - REINBOUND.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
         $fields = array('DATE' ,'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION RETURN', 'DESCRIPTION ONFLEET', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE','TASK ONFLEET');
@@ -1278,12 +1326,24 @@ class PackageController extends Controller
             fputcsv($file, $lineData, $delimiter);
         }
 
-        fseek($file, 0);
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        fpassthru($file);
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Packages Re-Inbound', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function ReturnDispatch(Request $request)
@@ -1294,7 +1354,7 @@ class PackageController extends Controller
 
         if($packageDispatch)
         {
-            if($packageDispatch->idUser == Auth::user()->id || Auth::user()->role->name == 'Administrador')
+            if($packageDispatch->idUser == Auth::user()->id || Auth::user()->role->name == 'Master')
             {
                 try
                 {

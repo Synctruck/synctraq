@@ -13,6 +13,7 @@ function Companies() {
     const [lengthField, setLengthField]   = useState('');
     const [typeServices, setTypeServices] = useState('');
     const [age21, setAge21]               = useState('');
+    const [dimensions, setDimensions]     = useState('');
     const [status, setStatus]             = useState('');
     const [keyWebhook, setKeyWebhook]     = useState('');
     const [urlWebhook, setUrlWebhook]     = useState('');
@@ -95,6 +96,7 @@ function Companies() {
         formData.append('password', password);
         formData.append('length_field', lengthField);
         formData.append('typeServices', typeServices);
+        formData.append('dimensions', dimensions);
         formData.append('age21', age21);
         formData.append('status', status);
         formData.append('key_webhook', keyWebhook);
@@ -226,6 +228,7 @@ function Companies() {
             setEmail(company.email);
             setPassword(company.email);
             setTypeServices(company.typeServices);
+            setDimensions(company.dimensions);
             setAge21(company.age21);
             setStatus(company.status);
             setLengthField(company.length_field);
@@ -386,7 +389,7 @@ function Companies() {
                 {
                     listAllRange(idCompany);
 
-                    swal("Store updated!", {
+                    swal("Range updated!", {
 
                         icon: "success",
                     });
@@ -395,8 +398,8 @@ function Companies() {
                 {
                     for(const index in response.errors)
                     {
-                        document.getElementById(index +'Store').style.display = 'block';
-                        document.getElementById(index +'Store').innerHTML     = response.errors[index][0];
+                        document.getElementById(index +'Range').style.display = 'block';
+                        document.getElementById(index +'Range').innerHTML     = response.errors[index][0];
                     }
                 }
 
@@ -667,6 +670,7 @@ function Companies() {
         setEmail('');
         setPassword('');
         setTypeServices('');
+        setDimensions('');
         setAge21('');
         setLengthField('');
         setStatus('');
@@ -691,6 +695,9 @@ function Companies() {
 
         document.getElementById('typeServices').style.display = 'none';
         document.getElementById('typeServices').innerHTML     = '';
+
+        document.getElementById('dimensions').style.display = 'none';
+        document.getElementById('dimensions').innerHTML     = '';
 
         document.getElementById('age21').style.display = 'none';
         document.getElementById('age21').innerHTML     = '';
@@ -834,6 +841,15 @@ function Companies() {
                     }
                 </td>
                 <td>{ company.typeServices }</td>
+                <td>
+                    {
+                        (company.dimensions)
+                        ?
+                            <div className="alert alert-success"><b>Yes</b></div>
+                        :
+                            <div className="alert alert-danger"><b>Not</b></div>
+                    }
+                </td>
                 <td>
                     {
                         (company.age21)
@@ -1018,6 +1034,15 @@ function Companies() {
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
+                                                                <label className="form">Dimensions</label>
+                                                                <div id="dimensions" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setDimensions(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="1" selected={ (String(dimensions) == '1' ? 'selected' : '' ) }>Yes</option>
+                                                                    <option value="0" selected={ (String(dimensions) == '0' ? 'selected' : '' ) }>Not</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
                                                                 <label className="form">Age 21</label>
                                                                 <div id="age21" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <select className="form-control" onChange={ (e) => setAge21(e.target.value) }  required>
@@ -1048,7 +1073,7 @@ function Companies() {
                                                             </div>
                                                             <div className="col-lg-12 form-group" style={ {display: (id == 0 || typeServices == 'CSV' ? 'none' : 'block')} }>
                                                                 <label className="form">URL WEBHOOK</label>
-                                                                <input type="text" className="form-control" value={ urlWebhook } maxLength="100" onChange={ (e) => setUrlWebhook(e.target.value) }/>
+                                                                <input type="text" className="form-control" value={ urlWebhook } maxLength="250" onChange={ (e) => setUrlWebhook(e.target.value) }/>
                                                             </div>
                                                             <div className="col-lg-6 form-group" style={ {display: (id == 0 ? 'none' : 'block')} }>
                                                                 <label className="form">Manifest</label>
@@ -1105,12 +1130,12 @@ function Companies() {
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">MIN. WEIGHT</label>
                                                                 <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ minWeightRange } min="1" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">MAX WEIGHT</label>
                                                                 <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="number" className="form-control" value={ maxWeightRange } min="1" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                                <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-3 form-group">
                                                                 <label className="form">Price $</label>
@@ -1289,6 +1314,7 @@ function Companies() {
                                                 <th>KEY WEBHOOK</th>
                                                 <th>URL WEBHOOK</th>
                                                 <th>TYPE SERVICES</th>
+                                                <th>DIMENSIONS</th>
                                                 <th>AGE 21</th>
                                                 <th>STATUS CODE</th>
                                                 <th>STATUS</th>

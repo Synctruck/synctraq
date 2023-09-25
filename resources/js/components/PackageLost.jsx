@@ -19,6 +19,7 @@ function PackageLost() {
     const [quantityInbound, setQuantityInbound] = useState(0);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [Comment, setComment] = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
 
@@ -91,33 +92,53 @@ function PackageLost() {
         .then((response) => {
 
             setIsLoading(false);
-            setListPackageInbound(response.packageList.data);
-            setTotalPackage(response.packageList.total);
+            setListPackageInbound(response.packageList);
+            setTotalPackage(response.quantityInbound);
             setTotalPage(response.packageList.per_page);
             setPage(response.packageList.current_page);
             setQuantityInbound(response.quantityInbound);
         });
     }
 
-    const exportAllPackageInbound = (route, state) => {
+    const exportAllPackageInbound = (route, state, type) => {
 
-        location.href = url_general +'package-lost/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state
+        let url = url_general +'package-lost/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+ type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            setIsLoading(true);
+
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
     }
 
-    const handlerExport = () => {
+    const handlerExport = (type) => {
 
-        // let date1= moment(dateStart);
-        // let date2 = moment(dateEnd);
-        // let difference = date2.diff(date1,'days');
-
-        // if(difference> limitToExport){
-        //     swal(`Maximum limit to export is ${limitToExport} days`, {
-        //         icon: "warning",
-        //     });
-        // }else{
-
-        // }
-        exportAllPackageInbound(RouteSearch, StateSearch);
+        exportAllPackageInbound(RouteSearch, StateSearch, type);
     }
 
     const handlerChangePage = (pageNumber) => {
@@ -426,177 +447,204 @@ function PackageLost() {
 
         if(sendInbound)
         {
-            const formData = new FormData();
+            if(Comment == '')
+            {
+                swal({
+                    title: "Register the package?",
+                    text: "The package will be registered without comment!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
 
-            formData.append('Reference_Number_1', Reference_Number_1);
-
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            setReadInput(true);
-            setSendInbound(0);
-
-            fetch(url_general +'package-lost/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
-
-                    setTextMessageDate('');
-                    setTextMessage2('');
-
-                    if(response.stateAction == 'validatedLost')
+                    if(willDelete)
                     {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
+                        handlerRegister();
                     }
-                    else if(response.stateAction == 'validatedPreDispatch')
+                });
+            }
+            else
+            {
+                handlerRegister();
+            }
+        }
+    }
+
+    const handlerRegister = () => {
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('comment', Comment);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        setReadInput(true);
+        setSendInbound(0);
+
+        fetch(url_general +'package-lost/insert', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+                setTextMessageDate('');
+                setTextMessage2('');
+
+                if(response.stateAction == 'validatedLost')
+                {
+                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedPreDispatch')
+                {
+                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS PRE-DISPATCH #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedReturnCompany')
+                {
+                    setTextMessage("THE PACKAGE WAS REGISTERED AS A RETURN COMPANY #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageBlocked  = response.packageBlocked;
+                    let packageManifest = response.packageManifest;
+
+                    if(packageBlocked)
                     {
-                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS PRE-DISPATCH #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedReturnCompany')
-                    {
-                        setTextMessage("THE PACKAGE WAS REGISTERED AS A RETURN COMPANY #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageBlocked  = response.packageBlocked;
-                        let packageManifest = response.packageManifest;
-
-                        if(packageBlocked)
-                        {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                                text: packageBlocked.comment,
-                                showConfirmButton: false,
-                                timer: 2000,
-                            });
-                        }
-                        
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
-                        setTextMessage('');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
-                    }
-                    else if(response.stateAction == 'packageInPreDispatch')
-                    {
-                        setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'notExists')
-                    {
-                        setTextMessage("NO MANIFEST #"+ Reference_Number_1);
-                        setTypeMessage('error');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoError').play();
-                    }
-                    else if(response.stateAction == 'validatedInbound')
-                    {
-                        let packageInbound = response.packageInbound;
-
-                        setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
-                        setTextMessageDate(packageInbound.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedWarehouse')
-                    {
-                        let packageWarehouse = response.packageWarehouse;
-
-                        setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
-                        setTextMessageDate(packageWarehouse.created_at);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validatedFilterPackage')
-                    {
-                        let packageManifest = response.packageManifest;
-                        //setTextMessage(" LABEL #"+ Reference_Number_1);
-
                         Swal.fire({
                             icon: 'error',
                             title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
-                            text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                            text: packageBlocked.comment,
                             showConfirmButton: false,
                             timer: 2000,
-                        })
-
-                        setTypeMessage('primary');
-                        setNumberPackage('');
-
-                        document.getElementById('soundPitidoBlocked').play();
+                        });
                     }
-                    else if(response.stateAction == 'validatedFilterState')
-                    {
-                        setTextMessage("OTHER STATE "+ Reference_Number_1);
-                        setTypeMessage('primary');
-                        setNumberPackage('');
+                    
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction == 'validated')
-                    {
-                        setTextMessage("The package was already validated before #"+ Reference_Number_1);
-                        setTypeMessage('warning');
-                        setNumberPackage('');
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
 
-                        document.getElementById('soundPitidoWarning').play();
-                    }
-                    else if(response.stateAction)
-                    {
-                        setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route +' / '+ response.packageInbound.status);
-                        setTypeMessage('success');
-                        setNumberPackage('');
+                    setTextMessage('');
+                    setNumberPackage('');
 
-                        setWeightLabel(response.packageInbound.Weight);
-                        setStateLabel(response.packageInbound.Dropoff_Province);
-                        setRouteLabel(response.packageInbound.Route);
-                        setReferenceLabel(response.packageInbound.Reference_Number_1);
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'packageInPreDispatch')
+                {
+                    setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
 
-                        listAllPackageInbound(1, RouteSearch, StateSearch);
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExists')
+                {
+                    setTextMessage("NO MANIFEST #"+ Reference_Number_1);
+                    setTypeMessage('error');
+                    setNumberPackage('');
 
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoSuccess').play();
+                    document.getElementById('soundPitidoError').play();
+                }
+                else if(response.stateAction == 'validatedInbound')
+                {
+                    let packageInbound = response.packageInbound;
 
-                        //handlerPrint('labelPrint');
-                    }
-                    else
-                    {
-                        setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
-                        setTypeMessage('error');
-                        setNumberPackage('');
+                    setTextMessage("VALIDATE:  #"+ Reference_Number_1 +' / '+ packageInbound.Route);
+                    setTextMessageDate(packageInbound.created_at);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
 
-                        document.getElementById('Reference_Number_1').focus();
-                        document.getElementById('soundPitidoError').play();
-                    }
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedWarehouse')
+                {
+                    let packageWarehouse = response.packageWarehouse;
 
-                    setReadInput(false);
-                    setSendInbound(1);
-                },
-            );
-        }
+                    setTextMessage("PACKAGE IN WAREHOUSE  #"+ Reference_Number_1 +' / '+ packageWarehouse.Route);
+                    setTextMessageDate(packageWarehouse.created_at);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validatedFilterPackage')
+                {
+                    let packageManifest = response.packageManifest;
+                    //setTextMessage(" LABEL #"+ Reference_Number_1);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'PACKAGE BLOCKED #'+ Reference_Number_1,
+                        text: ( packageManifest.blockeds.length > 0 ? packageManifest.blockeds[0].comment : '' ),
+                        showConfirmButton: false,
+                        timer: 2000,
+                    })
+
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoBlocked').play();
+                }
+                else if(response.stateAction == 'validatedFilterState')
+                {
+                    setTextMessage("OTHER STATE "+ Reference_Number_1);
+                    setTypeMessage('primary');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'validated')
+                {
+                    setTextMessage("The package was already validated before #"+ Reference_Number_1);
+                    setTypeMessage('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction)
+                {
+                    setTextMessage("VALID / "+ Reference_Number_1 +' / '+ response.packageInbound.Route +' / '+ response.packageInbound.status);
+                    setTypeMessage('success');
+                    setNumberPackage('');
+                    setComment('');
+
+                    setWeightLabel(response.packageInbound.Weight);
+                    setStateLabel(response.packageInbound.Dropoff_Province);
+                    setRouteLabel(response.packageInbound.Route);
+                    setReferenceLabel(response.packageInbound.Reference_Number_1);
+
+                    listAllPackageInbound(1, RouteSearch, StateSearch);
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoSuccess').play();
+
+                    //handlerPrint('labelPrint');
+                }
+                else
+                {
+                    setTextMessage("El paquete N° "+ Reference_Number_1 +" no existe!");
+                    setTypeMessage('error');
+                    setNumberPackage('');
+
+                    document.getElementById('Reference_Number_1').focus();
+                    document.getElementById('soundPitidoError').play();
+                }
+
+                setReadInput(false);
+                setSendInbound(1);
+            },
+        );
     }
 
     const handlerImport = (e) => {
@@ -645,19 +693,56 @@ function PackageLost() {
         handlerPrintSecondary(printText);
     }
 
+    const handlerMoveToWarehouse = (Reference_Number) => {
+
+        setIsLoading(true);
+
+        fetch(url_general +'package-lost/move-to-warehouse/'+ Reference_Number)
+        .then(res => res.json())
+        .then((response) => {
+
+            if(response.stateAction == true)
+            {
+                swal("The package has been moved to WAREHOUSE!", {
+
+                    icon: "success",
+                });
+
+                listAllPackageInbound(page, RouteSearch, StateSearch);
+            }
+            else if(response.stateAction == false)
+            {
+                swal("The package does not exists in LOST!", {
+
+                    icon: "warning",
+                });
+            }
+            else
+            {
+                swal("A problem has occurred, please try again.!", {
+
+                    icon: "error",
+                });
+            }
+
+            setIsLoading(false);
+        });
+    }
+
     const listPackageTable = listPackageInbound.map( (pack, i) => {
 
         return (
 
             <tr key={i} className="alert-danger">
                 <td>
-                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
-                </td>
-                <td>
+                    <b>{ pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }</b><br/>
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
+                <td>{ pack.comment }</td>
+                <td>{ pack.Last_Status }</td>
+                <td>{ pack.Last_Description }</td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>
                 <td>{ pack.Dropoff_Address_Line_1 }</td>
@@ -666,13 +751,9 @@ function PackageLost() {
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
-                <td style={ {display: 'none'} }>
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
-
-                    <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1,pack.Weight,pack.Dropoff_Province,pack.Route) }>
-                        PDF
+                <td>
+                    <button className="btn btn-primary btn-sm m-2" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
+                        RETRIEVE
                     </button>
                 </td>
             </tr>
@@ -826,8 +907,13 @@ function PackageLost() {
                                     <div className="col-lg-12 mb-4">
                                         <div className="row">
                                             <div className="col-lg-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                <button className="btn btn-success btn-sm form-control" onClick={ () => handlerExport('download') }>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
+                                                </button>
+                                            </div>
+                                            <div className="col-3 form-group">
+                                                <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                                    <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
                                                 </button>
                                             </div>
                                             <div className="col-lg-2">
@@ -886,7 +972,13 @@ function PackageLost() {
                                                 ''
                                         }
                                     </div>
-                                    <div className="col-lg-12 form-group">
+                                    <div className="col-lg-6 form-group">
+                                        <div className="form-group">
+                                            <label htmlFor="">COMMENT</label>
+                                            <input id="Comment" type="text" className="form-control" value={ Comment } onChange={ (e) => setComment(e.target.value) } maxLength="250"/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PACKAGE ID</label>
@@ -1034,18 +1126,20 @@ function PackageLost() {
                                         <thead>
                                             <tr>
                                                 <th>DATE</th>
-                                                <th>HOUR</th>
                                                 <th>COMPANY</th>
                                                 <th>PACKAGE ID</th>
+                                                <th>COMMENT</th>
+                                                <th>LAST STATUS</th>
+                                                <th>LAST DESCRIPTION</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>CITY</th>
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                <th style={ {display: 'none'} }>ACTION</th>
+                                                <th>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>
