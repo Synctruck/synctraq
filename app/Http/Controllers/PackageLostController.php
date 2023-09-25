@@ -558,10 +558,10 @@ class PackageLostController extends Controller
 
         $user = User::find($idTeam);
         $email= $user->email;
-        $message = "Greetings\n\nOur team has been inquiring about the package $email but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+        $message = "Greetings\n\nOur team has been inquiring about the package $Reference_Number_1 but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
-        Mail::raw($message, function ($msg) {
-            $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
+        Mail::raw($message, function ($msg) use ($email) {
+            $msg->to($email)->subject('Package Lost Notification');
         });
     }
 
