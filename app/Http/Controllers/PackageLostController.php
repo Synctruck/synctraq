@@ -306,7 +306,7 @@ class PackageLostController extends Controller
                 DB::commit();
 
                 if($package->status=='Dispatch'){
-                    $this->sendEmailTeam($package->Reference_number_1, $package->idTeam);
+                    $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
                 }
                
                 return ['stateAction' => true, 'packageInbound' => $package];
@@ -555,8 +555,10 @@ class PackageLostController extends Controller
     }
     
     public function sendEmailTeam($Reference_Number_1, $idTeam){
-        
-        $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1 but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+        $user = User::find($idTeam);
+        $email= $user->email;
+        $message = "Greetings\n\nOur team has been inquiring about the package $email but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
         Mail::raw($message, function ($msg) {
             $msg->to('alvarogranillo16@gmail.com')->subject('Package Lost Notification');
