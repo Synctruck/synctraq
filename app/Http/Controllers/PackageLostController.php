@@ -301,15 +301,13 @@ class PackageLostController extends Controller
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
-
+                $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
                 $packageInbound->delete();
-                
-                DB::commit();
-                /*$this->sendCustomEmail($packageInbound->Reference_Number_1);*/
-                $this->sendCustomEmail($package->Reference_Number_1);
                 if ($package->status == 'Dispatch') {
-                    $this->sendCustomEmail($package->Reference_Number_1);
+                    $this->sendTeamEmail($package->Reference_Number_1);
                 }
+                DB::commit();
+
                 if ($package->company == 'EIGHTVAPE') {
                     $this->sendEmailCompany();
                 }
@@ -559,7 +557,7 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendCustomEmail($Reference_Number_1)
+    public function sendTeamEmail($Reference_Number_1)
     {
             $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
             $teamAssociatedWithPackage = $package->team;
@@ -567,8 +565,7 @@ class PackageLostController extends Controller
         if ($teamAssociatedWithPackage) {
             $teamEmail = $teamAssociatedWithPackage->email;
         } else {
-            // Manejar el caso en el que no se encuentre un usuario asociado.
-             $teamEmail = null; // O cualquier otro valor por defecto.
+             $teamEmail = null; 
         }   
             if ($teamEmail) {
                 $message = "Greetings\n\nOur team has been inquiring about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
