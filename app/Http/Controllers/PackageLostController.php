@@ -305,7 +305,7 @@ class PackageLostController extends Controller
                 
                 DB::commit();
                 if ($package->status == 'Dispatch') {
-                    $this->sendEmailTeam($package->Reference_Number_1,$package->idTeam);
+                    $this->sendEmailTeam($package->idTeam);
                 }
                 if ($package->company == 'Eightvape') {
                     $this->sendEmailCompany();
@@ -556,7 +556,7 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
 
-    public function sendEmailTeam($Reference_Number_1, $IdTeam)
+    public function sendEmailTeam($idTeam)
     {
         dd($IdTeam);
     }
