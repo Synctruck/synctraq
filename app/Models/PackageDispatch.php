@@ -27,7 +27,7 @@ class PackageDispatch extends Model
 
     public function company()
     {
-        return $this->belongsTo('App\Models\idCompany', 'idTeam', 'id');
+        return $this->belongsTo('App\Models\Company', 'idCompany', 'id');
     }
 
     public function driver()
