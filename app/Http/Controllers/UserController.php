@@ -40,6 +40,7 @@ class UserController extends Controller
         $userList = User::with('role')
                                 ->with('package_not_exists')
                                 ->with('routes_team')
+                                ->with('cellar')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->whereNotIn('idRole', [3,4])
@@ -56,6 +57,7 @@ class UserController extends Controller
 
             [
                 "idRole" => ["required"],
+                "idCellar" => ["required"],
                 "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
                 "phone" => ["required"],
@@ -63,6 +65,8 @@ class UserController extends Controller
                 "password" => ["required", "max:100"],
             ],
             [
+                "idCellar.required" => "Selected a cellar",
+
                 "idRole.required" => "Seleccione un rol",
 
                 "name.required" => "El campo es requerido",
@@ -106,6 +110,7 @@ class UserController extends Controller
 
             [
                 "idRole" => ["required"],
+                "idCellar" => ["required"],
                 "name" => ["required","max:100"],
                 "nameOfOwner" => ["required", "unique:user,nameOfOwner,$id", "max:100"],
                 "address" => ["required"],
@@ -113,6 +118,8 @@ class UserController extends Controller
                 "email" => ["required", "unique:user,email,$id", "max:100"],
             ],
             [
+                "idCellar.required" => "Selected a cellar",
+
                 "idRole.required" => "Seleccione un rol",
 
                 "name.required" => "El campo es requerido",
@@ -145,6 +152,7 @@ class UserController extends Controller
         $user->email       = $request->get('email');
         $user->status       = $request->get('status');
         $user->idRole       = $request->get('idRole');
+        $user->idCellar       = $request->get('idCellar');
 
         $user->save();
 
