@@ -301,8 +301,6 @@ class PackageLostController extends Controller
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $package = $packageInbound;
-                $idTeam = $package->idTeam;
-                dd($idTeam);
                 $packageInbound->delete();
                 
                 DB::commit();
