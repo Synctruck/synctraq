@@ -572,7 +572,6 @@ class PackageLostController extends Controller
             
     }
 
-
     public function sendCompanyEmail($Reference_Number_1)
     {
             $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
@@ -590,9 +589,8 @@ class PackageLostController extends Controller
         }
     }
 
-
-
-    } 
+    }
+}
 
    
 
