@@ -304,13 +304,7 @@ class PackageLostController extends Controller
                 $packageInbound->delete();
                 
                 DB::commit();
-                if ($package->status == 'Dispatch') {
-                    $this->sendEmailTeam($package->idTeam);
-                }
-                if ($package->company == 'Eightvape') {
-                    $this->sendEmailCompany();
-                }
-                
+               
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
