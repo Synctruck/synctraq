@@ -673,7 +673,7 @@ function PackageLmCarrier() {
                     }
                     else if(response.statusCode == 'userNotLocation')
                     {
-                        swal('Attention!', 'You are not assigned a location');
+                        swal('Attention!', 'You are not assigned a location', 'warning');
                     }
                     
                     setReadInput(false);
