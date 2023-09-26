@@ -568,7 +568,6 @@ function PackageLmCarrier() {
 
         setOptionsRouteSearch([]);
 
-        console.log(listRoutes);
         listRoutes.map( (route, i) => {
 
             optionsRouteSearch.push({ value: route.name, label: route.name });
