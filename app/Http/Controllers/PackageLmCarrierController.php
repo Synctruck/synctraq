@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, Configuration, PackageLmCarrier, States };
+use App\Models\{ Cellar, Company, Configuration, PackageLmCarrier, States };
 
 use Auth;
 use DateTime;
@@ -155,6 +155,8 @@ class PackageLmCarrierController extends Controller
 
     public function SendPallet(Request $request)
     {
+        $cellar = Cellar::find(Auth::user()->idCellar);
+
         $company = Company::find(1);
 
         $key_webhook = $company->key_webhook;
@@ -171,12 +173,11 @@ class PackageLmCarrierController extends Controller
         $dataSend =    '{
                             "status" : "scan_in_last_mile_carrier",
                             "datetime" : "'. $created_at .'",
-                            "location" : "'. $request->latitude .','. $request->longitude .'"
+                            "location" : "'. $cellar->state .','. $cellar->city .'"
                         }';
 
         $curl = curl_init();
 
-        dd($urlWebhook);
         curl_setopt_array($curl, array(
             CURLOPT_URL => $urlWebhook,
             CURLOPT_RETURNTRANSFER => true,
@@ -207,6 +208,6 @@ class PackageLmCarrierController extends Controller
         Log::info('REPONSE STATUS: '. $response['status']);
         Log::info('============INLAND - END STATUS UPDATE');
 
-        dd($request->all());
+        
     }
 }
