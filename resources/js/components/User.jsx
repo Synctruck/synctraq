@@ -587,7 +587,7 @@ function User() {
                                                 <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>CELLAR</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
