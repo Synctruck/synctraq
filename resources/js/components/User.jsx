@@ -463,10 +463,10 @@ function User() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label className="form">Cellar</label>
+                                                                    <label className="form">Warehouse</label>
                                                                     <div id="idCellar" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Select a cellar</option>
+                                                                    <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) }>
+                                                                        <option value="">Select a cellar</option>
                                                                         { listCellarTable }
                                                                     </select>
                                                                 </div>
