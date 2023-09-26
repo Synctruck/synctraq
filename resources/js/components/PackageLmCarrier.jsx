@@ -661,9 +661,16 @@ function PackageLmCarrier() {
                 .then(res => res.json())
                 .then((response) => {
 
-                    swal('Correct!', 'PALLET ID sent correctly', 'success');
+                    if(response.statusCode == true)
+                    {
+                        swal('Correct!', 'PALLET ID sent correctly', 'success');
 
-                    setNumberPackage('')
+                        setNumberPackage('')
+                    }
+                    else
+                    {
+                        swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'success');
+                    }
                     
                     setReadInput(false);
                     setSendInbound(1);
