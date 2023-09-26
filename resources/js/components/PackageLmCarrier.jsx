@@ -671,6 +671,10 @@ function PackageLmCarrier() {
                     {
                         swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'success');
                     }
+                    else if(response.statusCode == 'userNotLocation')
+                    {
+                        swal('Attention!', 'You are not assigned a location');
+                    }
                     
                     setReadInput(false);
                     setSendInbound(1);

@@ -157,6 +157,11 @@ class PackageLmCarrierController extends Controller
     {
         $cellar = Cellar::find(Auth::user()->idCellar);
 
+        if(!$cellar)
+        {
+            return ['statusCode' => 'userNotLocation'];
+        }
+
         $company = Company::find(1);
 
         $key_webhook = $company->key_webhook;
