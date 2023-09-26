@@ -195,19 +195,13 @@ class PackageLmCarrierController extends Controller
         $response    = json_decode($response, true);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        dd($http_status);
-
-        curl_close($curl);
-
-        Log::info($response);
-
-        Log::info('===========  INLAND - STATUS UPDATE');
-        Log::info('http_status: '. $http_status);
-        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-        Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-        Log::info('REPONSE STATUS: '. $response['status']);
-        Log::info('============INLAND - END STATUS UPDATE');
-
-        
+        if($http_status >= 200 && $http_status <= 299)
+        {
+            return ['statusCode' => true];
+        }
+        else
+        {
+            return ['statusCode' => false];
+        }
     }
 }

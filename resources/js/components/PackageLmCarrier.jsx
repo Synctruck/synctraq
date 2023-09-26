@@ -667,7 +667,7 @@ function PackageLmCarrier() {
 
                         setNumberPackage('')
                     }
-                    else
+                    else if(response.statusCode == false)
                     {
                         swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'success');
                     }
