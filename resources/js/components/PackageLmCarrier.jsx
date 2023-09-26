@@ -668,7 +668,7 @@ function PackageLmCarrier() {
                     }
                     else if(response.statusCode == false)
                     {
-                        swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'success');
+                        swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'error');
                     }
                     else if(response.statusCode == 'userNotLocation')
                     {
