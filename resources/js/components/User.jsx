@@ -466,7 +466,7 @@ function User() {
                                                                     <label className="form">Warehouse</label>
                                                                     <div id="idCellar" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) }>
-                                                                        <option value="">Select a cellar</option>
+                                                                        <option value="">Select a Warehouse</option>
                                                                         { listCellarTable }
                                                                     </select>
                                                                 </div>
