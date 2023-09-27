@@ -537,7 +537,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->updated_at                   = $created_at;
 
                         if($cellar){
-                            $packageHistory->idCellar         = $cellar->id;
+                            $packageHistory->idCellar                    = $cellar->id;
                             $packageHistory->nameCellar                  = $cellar->name;
                             $packageHistory->stateCellar                 = $cellar->state;
                             $packageHistory->cityCellar                  = $cellar->city;
