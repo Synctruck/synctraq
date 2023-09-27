@@ -913,6 +913,7 @@
                         let stateCellar = package.stateCellar;
                         let cityCellar  = package.cityCellar;
                         Description_Return = idCellar + nameCellar + stateCellar + cityCellar;
+                        Description = package.Description;
                     }
                     else
                     {
