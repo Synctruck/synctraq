@@ -1094,6 +1094,17 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->status                       = 'Dispatch';
                                 $packageDispatch->created_at                   = $created_at;
                                 $packageDispatch->updated_at                   = $created_at;
+
+                                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                                if($cellar)
+                                {    
+                                    $packageDispatch->idCellar    = $cellar->id;
+                                    $packageDispatch->nameCellar  = $cellar->name;
+                                    $packageDispatch->stateCellar = $cellar->state;
+                                    $packageDispatch->cityCellar  = $cellar->city;
+                                }
+
                                 $packageDispatch->save();
 
                                 $packageHistory = new PackageHistory();
@@ -1126,6 +1137,15 @@ class PackageDispatchController extends Controller
                                 $packageHistory->actualDate                   = $created_at;
                                 $packageHistory->created_at                   = $created_at;
                                 $packageHistory->updated_at                   = $created_at;
+                                
+                                if($cellar)
+                                {
+                                    $packageHistory->idCellar    = $cellar->id;
+                                    $packageHistory->nameCellar  = $cellar->name;
+                                    $packageHistory->stateCellar = $cellar->state;
+                                    $packageHistory->cityCellar  = $cellar->city;
+                                }
+
                                 $packageHistory->save();
 
                                 //data for INLAND
