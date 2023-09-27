@@ -874,6 +874,17 @@
                     let Description        = '';
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
+                    let idCellar           = package.idCellar; 
+                    let nameCellar         = package.nameCellar; 
+                    let stateCellar        = package.stateCellar;
+                    let cityCellar         = package.cityCellar;
+
+                    if(package.status=='Dispatch')
+                    {   
+                        
+                        Description_Return = idCellar + nameCellar + stateCellar + cityCellar;
+                        Description = package.Description;
+                    }
 
                     if(package.Description_Return != '' && package.Description_Return != null)
                     {
@@ -905,15 +916,6 @@
                     else if(package.status == 'Failed')
                     {
                         Description = package.Description_Onfleet;
-                    }
-                    else if(package.status=='Dispatch')
-                    {   
-                        let idCellar    = package.idCellar; 
-                        let nameCellar  = package.nameCellar; 
-                        let stateCellar = package.stateCellar;
-                        let cityCellar  = package.cityCellar;
-                        Description_Return = idCellar + nameCellar + stateCellar + cityCellar;
-                        Description = package.Description;
                     }
                     else
                     {
