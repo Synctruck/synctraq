@@ -537,10 +537,10 @@ class PackageDispatchController extends Controller
                         $packageHistory->updated_at                   = $created_at;
 
                         if($cellar){
-                            $packageHistory->idCellar                    = $cellar->id;
-                            $packageHistory->nameCellar                  = $cellar->name;
-                            $packageHistory->stateCellar                 = $cellar->state;
-                            $packageHistory->cityCellar                  = $cellar->city;
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
                         }
 
                         if($driver->usageApp == 'PODApp')
@@ -677,10 +677,10 @@ class PackageDispatchController extends Controller
 
                    
                         if($cellar){
-                            $packageHistory->idCellar                    = $cellar->id;
-                            $packageHistory->nameCellar                  = $cellar->name;
-                            $packageHistory->stateCellar                 = $cellar->state;
-                            $packageHistory->cityCellar                  = $cellar->city;
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
                         }
                     
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
@@ -699,6 +699,13 @@ class PackageDispatchController extends Controller
 
                         $package->save();
                         $packageHistory->save();
+
+                        if($cellar){
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
 
                         $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
 
