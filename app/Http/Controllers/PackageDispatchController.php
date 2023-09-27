@@ -491,7 +491,6 @@ class PackageDispatchController extends Controller
                         $packageDispatch->quantity                     = $package->quantity;
                         $packageDispatch->idPaymentTeam                = '';
                         $packageDispatch->status                       = 'Dispatch';
-                        $packageDispatch->idCellar                     = Auth::user()->idCellar;
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
 
