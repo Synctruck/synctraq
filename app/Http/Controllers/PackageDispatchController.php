@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\{ ServicePackageTerminal, ServicePackageNeedMoreInformation };
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User, PackageLmCarrier };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User, PackageLmCarrier, Cellar };
 
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
@@ -283,7 +283,6 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'notAutorization'];
         }*/
-
         $packageDispatch = PackageDispatch::with('driver')
                                         ->where('Reference_Number_1', $request->Reference_Number_1)
                                         ->where('status', '!=', 'Delete')
@@ -493,6 +492,16 @@ class PackageDispatchController extends Controller
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
+                        
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                        if($cellar)
+                        {    
+                            $packageDispatch->idCellar    = $cellar->id;
+                            $packageDispatch->nameCellar  = $cellar->name;
+                            $packageDispatch->stateCellar = $cellar->state;
+                            $packageDispatch->cityCellar  = $cellar->city;
+                        }
 
                         $packageHistory = new PackageHistory();
 
@@ -527,6 +536,13 @@ class PackageDispatchController extends Controller
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
 
+                        if($cellar){
+                            $packageHistory->idCellar         = $cellar->id;
+                            $packageHistory->nameCellar                  = $cellar->name;
+                            $packageHistory->stateCellar                 = $cellar->state;
+                            $packageHistory->cityCellar                  = $cellar->city;
+                        }
+
                         if($driver->usageApp == 'PODApp')
                         {
                             $registerTask['status'] = 200;
@@ -552,7 +568,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->save();
                             $package->delete();
 
-                            if($driver->usageApp == 'PODApp')
+                           if($driver->usageApp == 'PODApp')
                             {
                                 $warnings = [];
                             }
@@ -658,6 +674,14 @@ class PackageDispatchController extends Controller
                     $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
+
+                   
+                        if($cellar){
+                            $packageHistory->idCellar                    = $cellar->id;
+                            $packageHistory->nameCellar                  = $cellar->name;
+                            $packageHistory->stateCellar                 = $cellar->state;
+                            $packageHistory->cityCellar                  = $cellar->city;
+                        }
                     
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
