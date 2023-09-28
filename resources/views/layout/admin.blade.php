@@ -881,7 +881,14 @@
 
                     if(package.status == 'Dispatch')
                     {   
+                        if(idCellar != 0)
+                        {
                         Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
+                        }
+                        else
+                        {
+                            Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
+                        }
                         Description = package.Description;
                     }
                     else if(package.Description_Return != '' && package.Description_Return != null)
