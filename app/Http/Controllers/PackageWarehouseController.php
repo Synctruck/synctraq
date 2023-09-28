@@ -575,13 +575,13 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->status                       = 'Warehouse';
 
                 $cellar = Cellar::find(Auth::user()->idCellar);
-                
+
                 if($cellar)
                 {
-                    $packageHistory->idCellar    = $cellar->id;
-                    $packageHistory->nameCellar  = $cellar->name;
-                    $packageHistory->stateCellar = $cellar->state;
-                    $packageHistory->cityCellar  = $cellar->city;
+                    $packageWarehouse->idCellar    = $cellar->id;
+                    $packageWarehouse->nameCellar  = $cellar->name;
+                    $packageWarehouse->stateCellar = $cellar->state;
+                    $packageWarehouse->cityCellar  = $cellar->city;
                 }
 
                 $packageWarehouse->save();
