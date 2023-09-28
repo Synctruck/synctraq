@@ -9,7 +9,8 @@ import moment from 'moment';
 function Routes() {
 
     const [id, setId]               = useState(0);
-    const [name, setName]           = useState('');
+    const [idRoute, setIdRoute]     = useState(0);
+    const [routeName, setRouteName] = useState('');
     const [zipCode, setZipCode]     = useState('');
     const [city, setCity]           = useState('');
     const [county, setCounty]       = useState('');
@@ -110,14 +111,14 @@ function Routes() {
         });
     }
 
-    const handlerOpenModal = (id) => {
+    const handlerOpenModal = (id, routeName) => {
 
         clearValidation();
 
         if(id)
         {
-            setTitleModal('Update Route')
-            setTextButtonSave('Update');
+            setTitleModal('Update Zip Codes: ' + routeName)
+            setTextButtonSave('Save');
         }
         else
         {
@@ -135,7 +136,6 @@ function Routes() {
     }
 
     const handlerSaveRoute = (e) => {
-
         e.preventDefault();
 
         const formData = new FormData();
@@ -147,82 +147,43 @@ function Routes() {
         formData.append('state', state);
         formData.append('latitude', latitude);
         formData.append('longitude', longitude);
-        formData.append('name', name);
+        formData.append('idRoute', idRoute);
 
         clearValidation();
 
-        if(id == 0)
-        {
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        LoadingShow();
 
-            LoadingShow();
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch(url_general +'routes/insert', {
-                headers: { "X-CSRF-TOKEN": token },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json()).
-            then((response) => {
+        fetch(url_general +'routes/update/'+ id, {
+            headers: {
+                "X-CSRF-TOKEN": token
+            },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
 
-                    if(response.stateAction)
-                    {
-                        swal("Route was recorded!", {
+            if(response.stateAction)
+            {
+                getRoute(idRoute, 'other')
+                clearForm()
 
-                            icon: "success",
-                        });
+                swal("The route has been updated!", {
 
-                        listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
-                        clearForm();
-                    }
-                    else(response.status == 422)
-                    {
-                        for(const index in response.errors)
-                        {
-                            document.getElementById(index).style.display = 'block';
-                            document.getElementById(index).innerHTML     = response.errors[index][0];
-                        }
-                    }
-
-                    LoadingHide();
-                },
-            );
-        }
-        else
-        {
-            LoadingShow();
-
-            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch(url_general +'routes/update/'+ id, {
-                headers: {
-                    "X-CSRF-TOKEN": token
-                },
-                method: 'post',
-                body: formData
-            })
-            .then(res => res.json())
-            .then((response) => {
-
-                if(response.stateAction)
+                    icon: "success",
+                });
+            }
+            else(response.status == 422)
+            {
+                for(const index in response.errors)
                 {
-                    listAllRoute(page, CitySearchList, CountySearchList, TypeSearchList, StateSearchList, RouteSearchList, LatitudeSearchList, LongitudeSearchList);
-
-                    swal("The route has been updated!", {
-
-                        icon: "success",
-                    });
+                    document.getElementById(index).style.display = 'block';
+                    document.getElementById(index).innerHTML     = response.errors[index][0];
                 }
-                else(response.status == 422)
-                {
-                    for(const index in response.errors)
-                    {
-                        document.getElementById(index).style.display = 'block';
-                        document.getElementById(index).innerHTML     = response.errors[index][0];
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 
     const handlerImport = (e) => {
@@ -265,7 +226,66 @@ function Routes() {
         );
     }
 
-    const getRoute = (id) => {
+    const [buttonAddZipCode, setButtonAddZipCode] = useState('block');
+    const [listZipCodes, setListZipCodes] = useState([]);
+
+    const listZipCodesTable = listZipCodes.map( (zipCode, i) => {
+        return (
+
+            <tr key={i}>
+                <td><b>{ zipCode.zipCode }</b></td>
+                <td><b>{ zipCode.city }</b></td>
+                <td><b>{ zipCode.county }</b></td>
+                <td><b>{ zipCode.type }</b></td>
+                <td><b>{ zipCode.state }</b></td>
+                <td><b>{ zipCode.latitude }</b></td>
+                <td><b>{ zipCode.longitude }</b></td>
+                <td className="text-center">
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteZipCode(zipCode.idRoute, zipCode.zipCode) }>
+                        <i className="bx bxs-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        );
+    });
+
+    const deleteZipCode = (idRoute, zipCode) => {
+        swal({
+            title: "You want to delete?",
+            text: "The ZipCode "+ zipCode +" will be removed!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShowMap()
+
+                fetch(url_general +'routes/zip-code-delete/'+ zipCode)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("Route was successfully removed!", {
+
+                            icon: "success",
+                        });
+
+                        getRoute(idRoute);
+                    }
+
+                    LoadingHideMap()
+                });
+            } 
+        });
+    }
+
+    const getRoute = (id, type) => {
+        clearForm()
+        handlerCloseAddZipCode()
 
         fetch(url_general +'routes/get/'+ id)
         .then(response => response.json())
@@ -281,9 +301,12 @@ function Routes() {
             setState(route.state);
             setLatitude(route.latitude);
             setLongitude(route.longitude);
-            setName(route.name);
+            setIdRoute(route.id);
+            setRouteName(route.name);
+            setListZipCodes(route.zip_codes);
 
-            handlerOpenModal(route.id);
+            if(type == 'Button')
+                handlerOpenModal(route.id, route.name);
         });
     }
 
@@ -321,7 +344,13 @@ function Routes() {
     const clearForm = () => {
 
         setId(0);
-        setName('');
+        setZipCode('')
+        setCity('')
+        setCounty('')
+        setType('')
+        setState('')
+        setLatitude('')
+        setLongitude('')
     }
 
     const clearValidation = () => { 
@@ -341,8 +370,8 @@ function Routes() {
         document.getElementById('state').style.display = 'none';
         document.getElementById('state').innerHTML     = ''
 
-        document.getElementById('name').style.display = 'none';
-        document.getElementById('name').innerHTML     = '';
+        document.getElementById('idRoute').style.display = 'none';
+        document.getElementById('idRoute').innerHTML     = '';
 
         document.getElementById('latitude').style.display = 'none';
         document.getElementById('latitude').innerHTML     = ''
@@ -635,7 +664,7 @@ function Routes() {
             <tr key={ i }>
                 <td>{ route.name }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
+                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id, 'Button') }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
                     <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
@@ -643,99 +672,119 @@ function Routes() {
                     </button>
                 </td>
             </tr>
-            /*<tr key={i} style={ {display : 'none'} }>
-                <td>{ route.zipCode }</td>
-                <td>{ route.city }</td>
-                <td>{ route.county }</td>
-                <td>{ route.type }</td>
-                <td>{ route.state }</td>
-                <td>{ route.name }</td>
-                <td>{ route.latitude }</td>
-                <td>{ route.longitude }</td>
-                <td>
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id) }>
-                        <i className="bx bx-edit-alt"></i>
-                    </button> &nbsp;
-
-                    {
-                        route.teams.length == 0 
-                        ?
-                            <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
-                                <i className="bx bxs-trash-alt"></i>
-                            </button>
-                        :
-                            ''
-                    }
-                </td>
-            </tr>*/
         );
     });
 
+    const [viewForm, setViewForm] = useState('none');
+
+    const handlerAddZipCode = () => {
+        clearForm()
+        setButtonAddZipCode('none')
+        setViewForm('block')
+    }
+
+    const handlerCloseAddZipCode = () => {
+        setButtonAddZipCode('block')
+        setViewForm('none')
+    }
+
     const modalRouteInsert = <React.Fragment>
                                     <div className="modal fade" id="modalRouteInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <form onSubmit={ handlerSaveRoute }>
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <div className="modal-dialog modal-lg">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModal }</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddZipCode } }>
+                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddZipCode() }>
+                                                                <i className="bx bxs-plus-square"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div className="modal-body">
+                                                    <form onSubmit={ handlerSaveRoute } className="form-group" style={ {display: viewForm} }>
                                                         <div className="row">
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Zip Code</label>
+                                                                <label className="form">Zip Code</label>
                                                                 <div id="zipCode" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="text" className="form-control" value={ zipCode } maxLength="100" onChange={ (e) => setZipCode(e.target.value) } required/>
+                                                                <input type="text" className="form-control" value={ zipCode } minLength="5" maxLength="5" onChange={ (e) => setZipCode(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>City</label>
+                                                                <label className="form">City</label>
                                                                 <div id="city" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ city } maxLength="100" onChange={ (e) => setCity(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-6 form-group">
-                                                                <label>County</label>
+                                                                <label className="form">County</label>
                                                                 <div id="county" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ county } maxLength="100" onChange={ (e) => setCounty(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Type</label>
+                                                                <label className="form">Type</label>
                                                                 <div id="type" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ type } maxLength="100" onChange={ (e) => setType(e.target.value) } required/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-6 form-group">
-                                                                <label>State</label>
+                                                                <label className="form">State</label>
                                                                 <div id="state" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ state } maxLength="100" onChange={ (e) => setState(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Route</label>
-                                                                <div id="name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                <input type="text" className="form-control" value={ name } maxLength="100" onChange={ (e) => setName(e.target.value) } required/>
+                                                                <label className="form">Route</label>
+                                                                <div id="idRoute" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ routeName } maxLength="100" onChange={ (e) => setRouteName(e.target.value) } readOnly/>
                                                             </div>
                                                         </div>
                                                         <div className="row">
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Latitude</label>
+                                                                <label className="form">Latitude</label>
                                                                 <div id="latitude" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ latitude } maxLength="100" onChange={ (e) => setLatitude(e.target.value) } required/>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
-                                                                <label>Longitude</label>
+                                                                <label className="form">Longitude</label>
                                                                 <div id="longitude" className="text-danger" style={ {display: 'none'} }></div>
                                                                 <input type="text" className="form-control" value={ longitude } maxLength="100" onChange={ (e) => setLongitude(e.target.value) } required/>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button className="btn btn-primary">{ textButtonSave }</button>
-                                                    </div>
+                                                        <div className="row">
+                                                            <div className="col-lg-3">
+                                                                <button type="button" className="btn btn-secondary form-control" onClick={ () => handlerCloseAddZipCode() }>Cancel</button>
+                                                            </div>
+                                                            <div className="col-lg-3">
+                                                                <button className="btn btn-primary form-control">{ textButtonSave }</button>
+                                                            </div>
+                                                        </div>
+                                                        <hr/>
+                                                    </form>
+                                                    <table className="table table-condensed table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ZIP CODE</th>
+                                                                <th>CITY</th>
+                                                                <th>COUNTY</th>
+                                                                <th>TYPE</th>
+                                                                <th>STATE</th>
+                                                                <th>LATITUDE</th>
+                                                                <th>LONGITUDE</th>
+                                                                <th>ACTIONS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            { listZipCodesTable }
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                            </form>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </React.Fragment>;

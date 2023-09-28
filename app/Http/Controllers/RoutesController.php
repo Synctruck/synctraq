@@ -24,7 +24,7 @@ class RoutesController extends Controller
     public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList, $LatitudeSearchList, $LongitudeSearchList)
     {
         $zipCode   = $request->get('zipCode');
-        $routeList = RoutesAux::orderBy('name', 'asc')->paginate($this->paginate);
+        $routeList = RoutesAux::with('zip_codes')->orderBy('name', 'asc')->paginate($this->paginate);
 
         /*if($zipCode)
         {
@@ -301,29 +301,30 @@ class RoutesController extends Controller
 
     public function Get($id)
     {
-        $route = Routes::find($id);
+        $route = RoutesAux::with('zip_codes')->find($id);
         
         return ['route' => $route];
     }
 
     public function Update(Request $request, $id)
-    {        
+    {
         $validator = Validator::make($request->all(),
 
             [
-                "zipCode" => ["required", "unique:routes,zipCode,$id", "max:20"],
+                "zipCode" => ["required", "unique:routes_zip_code", "min:5", "max:5"],
                 "city" => ["required", "max:40"],
                 "county" => ["required", "max:40"],
                 "type" => ["required", "max:40"],
                 "state" => ["required", "max:20"],
-                "name" => ["required", "max:20"],
+                "idRoute" => ["required"],
                 "latitude" => ["required", "numeric"],
                 "longitude" => ["required", "numeric"],
             ],
             [
                 "zipCode.unique" => "The zip code exists",
                 "zipCode.required" => "The field is required",
-                "zipCode.max"  => "You must enter a maximum of 20 digits",
+                "zipCode.max"  => "You must enter a minimum of 5 digits",
+                "zipCode.max"  => "You must enter a maximum of 5 digits",
 
                 "city.required" => "The field is required",
                 "city.max"  => "You must enter a maximum of 40 digits",
@@ -337,8 +338,7 @@ class RoutesController extends Controller
                 "state.required" => "The field is required",
                 "state.max"  => "You must enter a maximum of 20 digits",
 
-                "name.required" => "The field is required",
-                "name.max"  => "You must enter a maximum of 20 digits",
+                "idRoute.required" => "The field is required",
 
                 "latitude.required" => "The field is required",
                 "latitude.numeric"  => "Enter a numeric value",
@@ -353,9 +353,19 @@ class RoutesController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $route = Routes::find($id);
-        
-        $route->update($request->all()); 
+        $route = RoutesAux::find($request->idRoute);
+
+        $zipCode = new RoutesZipCode();
+        $zipCode->zipCode   = $request->zipCode;
+        $zipCode->idRoute   = $request->idRoute;
+        $zipCode->routeName = $route->name;
+        $zipCode->city      = $request->city;
+        $zipCode->county    = $request->county;
+        $zipCode->type      = $request->type;
+        $zipCode->state     = $request->state;
+        $zipCode->latitude  = $request->latitude;
+        $zipCode->longitude = $request->longitude;
+        $zipCode->save();
 
         return ['stateAction' => true];
     }
@@ -369,6 +379,14 @@ class RoutesController extends Controller
         return ['stateAction' => true];
     }
 
+    public function DeleteZipCode($zipCode)
+    {
+        $zipCode = RoutesZipCode::find($zipCode);
+        $zipCode->delete();
+
+        return ['stateAction' => true];
+    }
+    
     public function UpdateRoutePackageManifestInboundWarehouse()
     {        
         $listPackageManifest = PackageManifest::all();

@@ -391,6 +391,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('routes-aux/list', [RoutesController::class, 'AuxList']);
 	Route::post('routes/insert', [RoutesController::class, 'Insert']);
 	Route::post('routes/import', [RoutesController::class, 'Import']);
+	Route::get('routes/zip-code-delete/{zipCode}', [RoutesController::class, 'DeleteZipCode']);
 	Route::get('routes/get/{id}', [RoutesController::class, 'Get']);
 	Route::post('routes/update/{id}', [RoutesController::class, 'Update']);
 	Route::get('routes/delete/{id}', [RoutesController::class, 'Delete']);
