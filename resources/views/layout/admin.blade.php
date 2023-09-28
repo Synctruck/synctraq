@@ -31,7 +31,7 @@
     <link href="{{asset('admin/assets/css/style.css')}}?{{time()}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="{{asset('js/barcode.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -79,7 +79,7 @@
     }
 
     .text-right{
-       text-align: right; 
+       text-align: right;
     }
 </style>
 <body id="bodyAdmin">
@@ -697,7 +697,7 @@
                 if(response.status == 201)
                 {
                     document.getElementById('divSynchronizePackage').style.display = 'none';
-                    
+
                     swal('Correct', 'The package was registered', 'success');
                 }
                 else
@@ -874,21 +874,25 @@
                     let Description        = '';
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
-                    let idCellar           = package.idCellar; 
-                    let nameCellar         = package.nameCellar; 
-                    let stateCellar        = package.stateCellar;
-                    let cityCellar         = package.cityCellar;
+                    let idCellar           = package.idCellar;
 
                     if(package.status == 'Dispatch')
                     {
-                        Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
+                        if(idCellar > 0)
+                        {
+                            let nameCellar     = package.nameCellar;
+                            let stateCellar    = package.stateCellar;
+                            let cityCellar     = package.cityCellar;
+                            Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
+                        }
+
                         Description = package.Description;
                     }
                     else if(package.Description_Return != '' && package.Description_Return != null)
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
-                    
+
                     if(package.status == 'Inbound')
                     {
                         if(package.Notes)
@@ -901,7 +905,7 @@
                                 document.getElementById('heightSearch').value = dimensions[1];
                                 document.getElementById('widthSearch').value  = dimensions[2];
                                 document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
-                            } 
+                            }
                         }
 
                         Description = package.Description;
