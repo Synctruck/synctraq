@@ -879,14 +879,12 @@
                     let stateCellar        = package.stateCellar;
                     let cityCellar         = package.cityCellar;
 
-                    if(package.status=='Dispatch')
+                    if(package.status == 'Dispatch')
                     {   
-                        
-                        Description_Return = `<br>Warehouse: ${nameCellar} - ${cityCellar}, ${stateCellar}`;
+                        Description_Return = `<br><b class="text-danger">Warehouse: ${nameCellar}: ${cityCellar}, ${stateCellar}</b>`;
                         Description = package.Description;
                     }
-
-                    if(package.Description_Return != '' && package.Description_Return != null)
+                    else if(package.Description_Return != '' && package.Description_Return != null)
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
