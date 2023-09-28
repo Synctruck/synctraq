@@ -312,7 +312,7 @@ function Routes() {
 
     const deleteRoute = (id) => {
 
-        swal({
+        /*swal({
             title: "You want to delete?",
             text: "The path will be removed!",
             icon: "warning",
@@ -338,7 +338,7 @@ function Routes() {
                     }
                 });
             } 
-        });
+        });*/
     }
 
     const clearForm = () => {
@@ -667,7 +667,7 @@ function Routes() {
                     <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRoute(route.id, 'Button') }>
                         <i className="bx bx-edit-alt"></i>
                     </button> &nbsp;
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }>
+                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRoute(route.id) }  style={ {display: 'none'} }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
