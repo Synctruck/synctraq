@@ -892,7 +892,24 @@
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
-                    
+
+                    if(package.status == 'Warehouse')
+                    {   
+                        if(idCellar > 0)
+                        {
+                            let nameCellar     = package.nameCellar; 
+                            let stateCellar    = package.stateCellar;
+                            let cityCellar     = package.cityCellar;
+                            Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
+                        }
+
+                        Description = package.Description;
+                    }
+                    else if(package.Description_Return != '' && package.Description_Return != null)
+                    {
+                        Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
+                    }
+
                     if(package.status == 'Inbound')
                     {
                         if(package.Notes)
