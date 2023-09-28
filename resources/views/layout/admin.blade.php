@@ -881,7 +881,7 @@
 
                     if(package.status == 'Dispatch')
                     {   
-                        if(idCellar != 0)
+                        if(idCellar > 0)
                         {
                         Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
