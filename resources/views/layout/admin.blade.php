@@ -882,7 +882,7 @@
                     if(package.status=='Dispatch')
                     {   
                         
-                        Description_Return = idCellar + nameCellar + stateCellar + cityCellar;
+                        Description_Return = `Warehouse: ${nameCellar} - ${cityCellar}, ${stateCellar}`;
 
                         Description = package.Description;
                     }
