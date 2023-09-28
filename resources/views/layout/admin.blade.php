@@ -887,7 +887,7 @@
                         }
                         else
                         {
-                            Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
+                            Description_Return = '<br>';
                         }
                         Description = package.Description;
                     }
