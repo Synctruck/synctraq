@@ -159,9 +159,8 @@ class RoutesController extends Controller
     }
 
     public function Import(Request $request)
-    {
+    {        
         $file = $request->file('file');
-
         $file->move(public_path() .'/file-import', 'routes.csv');
 
         $handle = fopen(public_path('file-import/routes.csv'), "r");
@@ -386,7 +385,7 @@ class RoutesController extends Controller
 
         return ['stateAction' => true];
     }
-    
+
     public function UpdateRoutePackageManifestInboundWarehouse()
     {        
         $listPackageManifest = PackageManifest::all();
