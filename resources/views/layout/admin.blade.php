@@ -875,15 +875,15 @@
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
                     let idCellar           = package.idCellar; 
-                    let nameCellar         = package.nameCellar; 
-                    let stateCellar        = package.stateCellar;
-                    let cityCellar         = package.cityCellar;
-
+                    
                     if(package.status == 'Dispatch')
                     {   
  
                         if(idCellar > 0)
                         {
+                            let nameCellar    = package.nameCellar; 
+                            let stateCellar   = package.stateCellar;
+                            let cityCellar    = package.cityCellar;
                             Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
                         
