@@ -158,15 +158,16 @@ function PackageRts() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Master')
+            listAllTeam();
+            /*if(response.roleUser == 'Master')
             {
-                listAllTeam();
+                
             }
             else
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
-            }
+            }*/
 
             if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
             {
@@ -1093,7 +1094,7 @@ function PackageRts() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
+        formData.append('idTeam', idTeam);
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);

@@ -221,25 +221,8 @@ function ReportFailed() {
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
-                {
-                    roleUser == 'Master'
-                    ?
-                        <>
-                            <td><b>{ team }</b></td>
-                            <td><b>{ driver }</b></td>
-                        </>
-
-
-                    :
-                        ''
-                }
-                {
-                    roleUser == 'Team'
-                    ?
-                        <td><b>{ driver }</b></td>
-                    :
-                        ''
-                }
+                <td><b>{ team }</b></td>
+                <td><b>{ driver }</b></td>
                 <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
                 <td>{ packageDispatch.description }</td>
                 <td>{ packageDispatch.status }</td>
@@ -443,52 +426,24 @@ function ReportFailed() {
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {
-                                                roleUser == 'Master'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Team</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">Driver</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                    <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <label htmlFor="">Team</label>
+                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                       <option value="0">All</option>
+                                                        { listTeamSelect }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <label htmlFor="">Driver</label>
+                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                       <option value="0">All</option>
+                                                        { listDriverSelect }
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -535,21 +490,8 @@ function ReportFailed() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>TEAM</b></th>
-                                                    :
-                                                        ''
-                                                }
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>DRIVER</b></th>
-                                                    :
-
-                                                        roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
-                                                }
+                                                <th><b>TEAM</b></th>
+                                                <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>DESCRIPTION ONFLEET</th>
                                                 <th>ACTUAL STATUS</th>

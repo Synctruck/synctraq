@@ -433,8 +433,8 @@
                                 </div>
                                 <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
                                     @if(Auth::user()->role->name == 'Master')
-                                    <br>
-                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                        <br>
+                                        <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
                                     @endif
                                 </div>
                             </div>
@@ -876,7 +876,7 @@
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
                     let idCellar           = package.idCellar;
 
-                    if(package.status == 'Dispatch')
+                    if(package.status == 'Dispatch' || package.status == 'Warehouse')
                     {
                         if(idCellar > 0)
                         {

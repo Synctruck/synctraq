@@ -317,7 +317,7 @@ class PackageController extends Controller
                         [
                             'message' => 'Something went wrong with the registration process, please try again',
                         ]
-                    , 500);
+                    , 400);
                 }
             }
 

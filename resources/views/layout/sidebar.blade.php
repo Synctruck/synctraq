@@ -108,32 +108,12 @@
                 </li>
             @endif
 
-            {{-- @if(Auth::user()->role->name == 'Master')
-                <li >
-                    <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
-                        <i class="bx bx-user"></i>
-                        <span>Assigned Team</span>
-                    </a>
-                </li>
-            @endif --}}
-
             <li style="display: none;">
                 <a class="nav-link {{Request::is('package-delivery') ? 'show' : 'collapsed'}}" href="{{url('package-delivery')}}">
                     <i class="bx bx-car"></i>
                     <span>DELIVERIES</span>
                 </a>
             </li>
-
-            {{-- <li class="nav-heading">* DESELECT</li> --}}
-            {{-- @if(Auth::user()->role->name == 'Master')
-                <li >
-                    <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
-                        <i class="bx bx-barcode-reader"></i>
-                        <span>Not Exists</span>
-                    </a>
-                </li>
-            @endif --}}
-
             @if(hasPermission('reinbound.index'))
                 <li >
                     <a class="nav-link {{Request::is('package/return') ? 'show' : 'collapsed'}}" href="{{url('/package/return')}}">
@@ -187,16 +167,6 @@
                     </a>
                 </li>
             @endif
-
-                {{-- @if(Auth::user()->role->name == 'Master')
-                    <li >
-                        <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">
-                            <i class="bx bx-user"></i>
-                            <span>Unssigned Team</span>
-                        </a>
-                    </li>
-                @endif --}}
-
 
             @if(hasPermission('assigned.index'))
             <li style="display: none;">

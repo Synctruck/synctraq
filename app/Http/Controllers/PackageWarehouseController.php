@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User };
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User, Cellar};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -282,9 +282,18 @@ class PackageWarehouseController extends Controller
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                
+                $cellar = Cellar::find(Auth::user()->idCellar);
+                
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
 
                 $packageHistory->save();
-
 
                 // update warehouse
                 $packageWarehouse->status     = 'Warehouse';
@@ -565,6 +574,16 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->quantity                     = $package->quantity;
                 $packageWarehouse->status                       = 'Warehouse';
 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {
+                    $packageWarehouse->idCellar    = $cellar->id;
+                    $packageWarehouse->nameCellar  = $cellar->name;
+                    $packageWarehouse->stateCellar = $cellar->state;
+                    $packageWarehouse->cityCellar  = $cellar->city;
+                }
+
                 $packageWarehouse->save();
 
                 $packageHistory = new PackageHistory();
@@ -594,6 +613,14 @@ class PackageWarehouseController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
 
                 $packageHistory->save();
 
