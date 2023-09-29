@@ -118,7 +118,8 @@ function PackageReturn() {
             {
                 listOptionState(response.listState);
             }
-            if(response.roleUser == 'Master')
+
+            /*if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -126,7 +127,9 @@ function PackageReturn() {
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
-            }
+            }*/
+
+            listAllTeam();
         });
     }
 
@@ -695,51 +698,24 @@ function PackageReturn() {
                                                     </div>
                                                     <br/>
                                                 </div>
-
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <>
-                                                            <div className="col-lg-2">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">TEAM</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) }>
-                                                                        <option value="">All</option>
-                                                                        { listTeamSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-2">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
-                                                                        <option value="0">All</option>
-                                                                        { listDriverSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    :
-                                                        ''
-                                                }
-
-                                                {
-                                                    roleUser == 'Team'
-                                                    ?
-                                                        <>
-                                                            <div className="col-lg-2">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) }>
-                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option>
-                                                                        { listDriverSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    :
-                                                        ''
-                                                }
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">TEAM</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) }>
+                                                            <option value="">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-2">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">DRIVER</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
+                                                            <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </form>
                                         <audio id="soundPitidoSuccess" src="../sound/pitido-success.mp3" preload="auto"></audio>
@@ -858,22 +834,8 @@ function PackageReturn() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>TEAM</b></th>
-                                                    :
-                                                        ''
-                                                }
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>DRIVER</b></th>
-                                                    :
-
-                                                        roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
-                                                }
-
+                                                <th><b>TEAM</b></th>
+                                                <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>DESCRIPTION RETURN</th>
                                                 <th>DESCRIPTION ONFLEET</th>

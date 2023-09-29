@@ -53,26 +53,13 @@ class DriverController extends Controller
 
     public function List(Request $request)
     {
-        if(Auth::user()->role->name == 'Master')
-        {
-            $userList = Driver::with(['role'])
+        $userList = Driver::with(['role'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
                                 ->where('name', 'like', '%'. $request->get('textSearch') .'%')
                                 ->where('idRole', 4)
                                 ->paginate($this->paginate);
-        }
-        else
-        {
-            $userList = Driver::with(['role'])
-                                ->with('package_not_exists')
-                                ->with('routes_team')
-                                ->orderBy('name', 'asc')
-                                ->where('name', 'like', '%'. $request->get('textSearch') .'%')
-                                ->where('idTeam', Auth::user()->id)
-                                ->paginate($this->paginate);
-        }
 
         $roleUser = Auth::user()->role->name;
 
