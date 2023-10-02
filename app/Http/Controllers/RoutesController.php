@@ -182,7 +182,6 @@ class RoutesController extends Controller
                     if($row[0] != '')
                     {
                         $routesZipCode = RoutesZipCode::where('zipCode', $row[0])
-                                                        ->where('routeName', $row[5])
                                                         ->first();
 
                         if($routesZipCode)
