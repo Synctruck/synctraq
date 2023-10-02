@@ -169,6 +169,15 @@
                     </a>
                 </li>
             @endif
+            
+            @if(hasPermission('packageLmCarrier.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-dispatch-to-middlemile') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch-to-middlemile')}}">
+                        <i class="bx bx-car"></i>
+                        <span>Dispatch To MiddleMile</span>
+                    </a>
+                </li>
+            @endif
 
             @if(hasPermission('lost.index'))
                 <li >

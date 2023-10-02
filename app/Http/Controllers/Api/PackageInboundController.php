@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -12,6 +12,7 @@ use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
 use App\Service\ServicePackageLmCarrier;
+use App\Service\ServicePackageDispatchToMiddleMile;
 
 use DB;
 use Log;
@@ -177,6 +178,7 @@ class PackageInboundController extends Controller
         $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
 
         try
         {
@@ -246,6 +248,23 @@ class PackageInboundController extends Controller
                     else
                     {
                         $packageCreate = new PackagelmCarrier();
+                    }
+                    
+                }
+                else if($status == 'Dispatch To MiddleMile')
+                {
+                    if($package->status == 'Dispatch To MiddleMile')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Inbound.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageDispatchToMiddleMile();
                     }
                     
                 }
@@ -354,7 +373,7 @@ class PackageInboundController extends Controller
                 $packageCreate->idCompany          = $package->idCompany;
                 $packageCreate->company            = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageCreate->idStore  = $package->idStore;
                     $packageCreate->store    = $package->store;
@@ -397,7 +416,7 @@ class PackageInboundController extends Controller
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageHistory->idStore  = $package->idStore;
                     $packageHistory->store    = $package->store;
@@ -427,7 +446,7 @@ class PackageInboundController extends Controller
                 Log::info('$package->status: '. $package->status);
                 Log::info('$status: '. $status);
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal' || $package->status == 'Lost')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal' || $package->status == 'Lost' || $package->$status == 'Dispatch To MiddleMile')
                 {
                     if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
                     {
@@ -457,7 +476,7 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                if($package->company != 'INLAND LOGISTICS' && $status != 'Warehouse' && $status != 'LM Carrier')
+                if($package->company != 'INLAND LOGISTICS' && $status != 'Warehouse' && $status != 'LM Carrier' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));
