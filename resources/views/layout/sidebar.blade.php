@@ -154,7 +154,7 @@
                 <li >
                     <a class="nav-link {{Request::is('package-dispatch-to-middlemile') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch-to-middlemile')}}">
                         <i class="bx bx-car"></i>
-                        <span>Dispatch To MiddleMile</span>
+                        <span>DISPATCH TO MIDDLEMILE</span>
                     </a>
                 </li>
             @endif
