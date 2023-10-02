@@ -845,6 +845,10 @@ function PackageWarehouse() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const handlerGoToInventory = () => {
+        window.open(url_general +'inventory-tool')
+    }
+
     return (
 
         <section className="section">
@@ -857,6 +861,11 @@ function PackageWarehouse() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-2">
+                                                <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerGoToInventory() }>
+                                                    Inventory Tool
+                                                </button>
+                                            </div>
                                             <div className="col-lg-2">
                                                 <form onSubmit={ handlerImport }>
                                                     <div className="form-group">
