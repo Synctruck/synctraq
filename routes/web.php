@@ -277,19 +277,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-lm-carrier/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageLmCarrierController::class, 'Export']);
 	Route::post('/package-lm-carrier/send-pallet', [PackageLmCarrierController::class, 'SendPallet']);
 
-<<<<<<< HEAD
 	//============ Validation Package DispatchToMiddleMile
 	Route::get('/package-dispatch-to-middlemile', [PackageDispatchToMiddleMileController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/package-dispatch-to-middlemile/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageDispatchToMiddleMileController::class, 'List']);
 	Route::get('/package-dispatch-to-middlemile/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageDispatchToMiddleMileController::class, 'Export']);
 	Route::post('/package-dispatch-to-middlemile/send-pallet', [PackageDispatchToMiddleMileController::class, 'SendPallet']);
-=======
-	//============ Validation INVENTORY TOOL
-	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:mms.index');
-	Route::get('/inventory-tool/list/{dateStart}/{dateEnd}', [InventoryToolController::class, 'List']);
-	Route::get('/inventory-tool/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [InventoryToolController::class, 'Export']);
-	Route::post('/inventory-tool/send-pallet', [InventoryToolController::class, 'SendPallet']);
->>>>>>> 06176eae62e854b231fd418a03151feab9841824
 
 	//============ Maintenance of users
 	Route::get('role/list', [RoleController::class, 'List']);
