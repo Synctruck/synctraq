@@ -781,8 +781,8 @@ function PackageDispatchToMiddleMile() {
                                                 ? 
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
-                                                <b className="alert-success" style={{ borderRadius: '5px', padding: '5px', fontSize: '12px' }}>
-                                                DispatchToMiddleMile: {totalPackage}  </b>
+                                                <b className="alert-success" style={{ borderRadius: '5px', padding: '5px', fontSize: '13px' }}>
+                                                Dispatch To MiddleMile: {totalPackage}  </b>
                                             )
                                         }
                                     </div>
