@@ -1,8 +1,8 @@
 @extends('layout.admin')
-@section('title', 'Packages - Lm Carrier')
+@section('title', 'Packages - DispatchToMiddleMile')
 @section('content')
 <div class="pagetitle">
-  	<h1><b>PACKAGES - DispatchToMiddleMile</b></h1>
+  	<h1><b>PACKAGES - Dispatch To MiddleMile</b></h1>
   	<nav>
     	<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="#">Home</a></li>
