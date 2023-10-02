@@ -9,7 +9,7 @@ import ReactLoading from 'react-loading';
 
 function InventoryTool() {
 
-    const [listPackageInbound, setListPackageInbound] = useState([]);
+    const [listPackage, setListPackage] = useState([]);
     const [listPackageTotal, setListPackageTotal]     = useState([]);
     const [pageNumber, setPackageNumber] = useState(1);
     const [listRoute, setListRoute]     = useState([]);
@@ -86,17 +86,17 @@ function InventoryTool() {
     const listAllInventoryTool = () => {
 
         setIsLoading(true);
-        setListPackageInbound([]);
+        setListPackage([]);
 
         fetch(url_general +'inventory-tool/list/'+ dateStart+'/'+ dateEnd +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
             setIsLoading(false);
-            setListPackageInbound(response.packageList.data);
-            setTotalPackage(response.packageList.total);
-            setTotalPage(response.packageList.per_page);
-            setPage(response.packageList.current_page);
+            setListPackage(response.inventoryToolList.data);
+            setTotalPackage(response.inventoryToolList.total);
+            setTotalPage(response.inventoryToolList.per_page);
+            setPage(response.inventoryToolList.current_page);
             setQuantityInbound(response.quantityInbound);
         });
     }
@@ -135,6 +135,16 @@ function InventoryTool() {
                 setIsLoading(false);
             });
         }
+    }
+
+    const handlerOpenModal = (idInventory = null) => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
     }
 
     const handlerExport = (type) => {
@@ -195,7 +205,7 @@ function InventoryTool() {
 
         setReadOnlyInput(true);
 
-        let myModal = new bootstrap.Modal(document.getElementById('modalPackageEdit'), {
+        let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
 
             keyboard: true
         });
@@ -306,13 +316,13 @@ function InventoryTool() {
         setRoute(0);
     }
 
-    const modalPackageEdit = <React.Fragment>
-                                    <div className="modal fade" id="modalPackageEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const modalInventoryPackages = <React.Fragment>
+                                    <div className="modal fade" id="modalInventoryPackages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
                                             <form onSubmit={ handlerUpdatePackage }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Update Package</h5>
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Inventory</h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
@@ -410,25 +420,24 @@ function InventoryTool() {
                                     </div>
                                 </React.Fragment>;
 
-    const listPackageTable = listPackageInbound.map( (pack, i) => {
+    const listPackageTable = listPackage.map( (inventory, i) => {
 
         return (
 
-            <tr key={i} className="alert-success">
+            <tr key={i} className={ inventory.status == 'New' ? 'alert-warning' : 'alert-success' }>
                 <td>
-                    { pack.created_at.substring(5, 7) }-{ pack.created_at.substring(8, 10) }-{ pack.created_at.substring(0, 4) }
+                    <b>{ inventory.created_at.substring(5, 7) }-{ inventory.created_at.substring(8, 10) }-{ inventory.created_at.substring(0, 4) }</b><br/>
+                    { inventory.created_at.substring(11, 19) }
                 </td>
+                <td><b>{ inventory.userName }</b></td>
+                <td>{ inventory.nf }</td>
+                <td>{ inventory.ov }</td>
                 <td>
-                    { pack.created_at.substring(11, 19) }
-                </td>
-                <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.Reference_Number_1 }</b></td>
-                <td>{ pack.Dropoff_Contact_Name }</td>
-                <td>{ pack.Dropoff_Contact_Phone_Number }</td>
-                <td>{ pack.Dropoff_Address_Line_1 }</td>
-                <td style={ {display: 'none'} }>
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerDownload(pack.Reference_Number_1) } style={ {margin: '3px'}}>
+                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(inventory.id) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
+                    </button>
+                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerDownload(inventory.id) }>
+                        <i className="ri-file-excel-fill"></i>
                     </button>
                 </td>
             </tr>
@@ -493,26 +502,19 @@ function InventoryTool() {
     return (
 
         <section className="section">
-            { modalPackageEdit }
+            { modalInventoryPackages }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-12">
-                                        <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="">SCAN A PALLET</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
-                                            </div>
-                                            <div className="col-lg-2 form-group">
-                                                <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
-                                            </div>
-                                        </form>
+                                    <div className="row">
+                                        <div className="col-2 form-group">
+                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerOpenModal() }>
+                                                NEW
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="col-12 mb-4">
                                         <div className="row" style={ {display: 'none'} }>
@@ -585,7 +587,7 @@ function InventoryTool() {
                                                 ? 
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
-                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Lm Carrier: { totalPackage }</b>
+                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inventory Tool: { totalPackage }</b>
                                             )
                                         }
                                     </div>
@@ -626,7 +628,6 @@ function InventoryTool() {
                                                 <th>NF</th>
                                                 <th>OV</th>
                                                 <th>REPORT</th>
-                                                <th>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>

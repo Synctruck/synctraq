@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{ AssignedController, CellarController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, ChargeCompanyAdjustmentController, DriverController, IndexController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController, ToReversePackagesController, RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController, PaymentTeamAdjustmentController, ReportInvoiceController, PackageDispatchToMiddleMileController };
+use App\Http\Controllers\{ AssignedController, CellarController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, ChargeCompanyAdjustmentController, DriverController, IndexController, InventoryToolController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController, ToReversePackagesController, RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController, PaymentTeamAdjustmentController, ReportInvoiceController, PackageDispatchToMiddleMileController };
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +112,12 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
 	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
+
+	//============ Validation INVENTORY TOOL
+	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:mms.index');
+	Route::get('/inventory-tool/list/{dateStart}/{dateEnd}', [InventoryToolController::class, 'List']);
+	Route::get('/inventory-tool/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [InventoryToolController::class, 'Export']);
+	Route::post('/inventory-tool/send-pallet', [InventoryToolController::class, 'SendPallet']);
 
 	//============ PACKAGE NMI
 	Route::get('/package-nmi', [PackageNeedMoreInformationController::class, 'Index'])->middleware('permission:nmi.index');
