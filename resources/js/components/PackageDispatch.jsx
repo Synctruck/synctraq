@@ -159,7 +159,9 @@ function PackageDispatch() {
                 listOptionState(response.listState);
             }
 
-            if(response.roleUser == 'Master')
+            listAllTeam();
+
+            /*if(response.roleUser == 'Master')
             {
                 listAllTeam();
             }
@@ -167,7 +169,7 @@ function PackageDispatch() {
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
-            }
+            }*/
 
             if(response.quantityDispatchAll > 0 || response.quantityFailed > 0)
             {
@@ -975,25 +977,8 @@ function PackageDispatch() {
                     { packageDispatch.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.company }</b></td>
-                {
-                    roleUser == 'Master'
-                    ?
-                        <>
-                            <td><b>{ team }</b></td>
-                            <td><b>{ driver }</b></td>
-                        </>
-
-
-                    :
-                        ''
-                }
-                {
-                    roleUser == 'Team'
-                    ?
-                        <td><b>{ driver }</b></td>
-                    :
-                        ''
-                }
+                <td><b>{ team }</b></td>
+                <td><b>{ driver }</b></td>
                 <td><b>{ packageDispatch.Reference_Number_1 }</b></td>
                 <td>{ packageDispatch.Dropoff_Contact_Name }</td>
                 <td>{ packageDispatch.Dropoff_Contact_Phone_Number }</td>
@@ -1385,7 +1370,7 @@ function PackageDispatch() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
+        formData.append('idTeam', idTeam);
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
@@ -1908,27 +1893,21 @@ function PackageDispatch() {
                                                 </div>
                                             </div>
 
-                                            {
-                                                roleUser == 'Master'
-                                                ?
-                                                    <div className="col-lg-2">
-                                                        <form onSubmit={ handlerImport }>
-                                                            <div className="form-group">
-                                                                <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
-                                                                    IMPORT CSV
-                                                                </button>
-                                                                <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
-                                                            </div>
-                                                            <div className="form-group" style={ {display: viewButtonSave} }>
-                                                                <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerImport() }>
-                                                                    <i className="bx  bxs-save"></i> Save
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                            <div className="col-lg-2">
+                                                <form onSubmit={ handlerImport }>
+                                                    <div className="form-group">
+                                                        <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFile() }>
+                                                            IMPORT CSV
+                                                        </button>
+                                                        <input type="file" id="fileImport" className="form-control" ref={ inputFileRef } style={ {display: 'none'} } onChange={ (e) => setFile(e.target.files[0]) } accept=".csv" required/>
                                                     </div>
-                                                :
-                                                    ''
-                                            }
+                                                    <div className="form-group" style={ {display: viewButtonSave} }>
+                                                        <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerImport() }>
+                                                            <i className="bx  bxs-save"></i> Save
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
 
                                             <div className="col-2" style={ {display: 'block'} }>
                                                 <div className="form-group">
@@ -1952,56 +1931,30 @@ function PackageDispatch() {
                                     <div className="col-lg-10">
                                         <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
                                             <div className="row form-group">
-                                                <div className={ roleUser == 'Master' ? 'col-lg-6' : roleUser == 'Team' ? 'col-lg-10' : 'col-lg-12' }>
+                                                <div className="col-lg-6">
                                                     <div className="form-group">
                                                         <label htmlFor="">PACKAGE ID</label>
                                                         <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <>
-                                                            <div className="col-lg-3">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">TEAM</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                        <option value="">All</option>
-                                                                        { listTeamSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-3">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                        <option value="0">All</option>
-                                                                        { listDriverSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    :
-                                                        ''
-                                                }
-
-                                                {
-                                                    roleUser == 'Team'
-                                                    ?
-                                                        <>
-                                                            <div className="col-lg-2">
-                                                                <div className="form-group">
-                                                                    <label htmlFor="">DRIVER</label>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriverAsing(e.target.value) } required>
-                                                                       <option value="" style={ {display: 'none'} }>Seleccione Driver</option>
-                                                                        { listDriverSelect }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    :
-                                                        ''
-                                                }
+                                                <div className="col-lg-3">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">TEAM</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                            <option value="">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg-3">
+                                                    <div className="form-group">
+                                                        <label htmlFor="">DRIVER</label>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                            <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div className="row">
                                                 <div className="col-lg-12 text-center">
@@ -2179,21 +2132,8 @@ function PackageDispatch() {
                                                 <th>DATE</th>
                                                 <th>HOUR</th>
                                                 <th>COMPANY</th>
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>TEAM</b></th>
-                                                    :
-                                                        ''
-                                                }
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <th><b>DRIVER</b></th>
-                                                    :
-
-                                                        roleUser == 'Team' ? <th><b>DRIVER</b></th> : ''
-                                                }
+                                                <th><b>TEAM</b></th>
+                                                <th><b>DRIVER</b></th>
                                                 <th>PACKAGE ID</th>
                                                 <th>CLIENT</th>
                                                 <th>CONTACT</th>

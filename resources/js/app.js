@@ -10,6 +10,7 @@ require('./components/ChargeCompany');
 require('./components/Driver');
 require('./components/Debrief');
 require('./components/Home');
+require('./components/InventoryTool');
 require('./components/Dashboard');
 require('./components/Package');
 require('./components/PackageCheck');
