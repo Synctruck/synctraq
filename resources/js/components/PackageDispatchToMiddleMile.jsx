@@ -696,20 +696,6 @@ function PackageDispatchToMiddleMile() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="col-lg-12">
-                                        <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="">SCAN A PALLET</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
-                                            </div>
-                                            <div className="col-lg-2 form-group">
-                                                <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
-                                                <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
-                                            </div>
-                                        </form>
-                                    </div>
                                     <div className="col-12 mb-4">
                                         <div className="row" style={ {display: 'none'} }>
                                             <div className="col-lg-2">
