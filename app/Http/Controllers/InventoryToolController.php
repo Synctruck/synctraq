@@ -24,8 +24,10 @@ class InventoryToolController extends Controller
         return ['inventoryToolList' => InventoryTool::orderBy('created_at', 'desc')->paginate(50)];
     }
 
-    public function MoveToWarehouse($Reference_Number_1)
+    public function Insert(Request $request)
     {
+        dd($request->all());
+        
         try
         {
             DB::beginTransaction();

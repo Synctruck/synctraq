@@ -6,6 +6,7 @@ import swal from 'sweetalert'
 import Select from 'react-select'
 import moment from 'moment';
 import ReactLoading from 'react-loading';
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 function InventoryTool() {
 
@@ -13,15 +14,11 @@ function InventoryTool() {
     const [listPackageTotal, setListPackageTotal]     = useState([]);
     const [pageNumber, setPackageNumber] = useState(1);
     const [listRoute, setListRoute]     = useState([]);
-
+    const [dateInventory, setDateInventory] = useState(dateGeneral);
     const [quantityInbound, setQuantityInbound] = useState(0);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
-    const [Truck, setTruck]                      = useState('');
-    const [Client, setClient]                    = useState('');
-    const [idCompany, setCompany]                = useState(0);
-    const [latitude, setLatitude]                = useState(0);
-    const [longitude, setLongitude]              = useState(0);
+    const [idInventory, setIdInventory]          = useState('');
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -53,31 +50,9 @@ function InventoryTool() {
 
     useEffect(() => {
 
-        if("geolocation" in navigator)
-        {
-            console.log("Available");
-
-            navigator.geolocation.getCurrentPosition(function(position) {
-
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
-
-                console.log("Latitude is :", position.coords.latitude);
-                console.log("Longitude is :", position.coords.longitude);
-            });
-        }
-        else
-        {
-            swal('Error', 'The browser does not support sharing your location, please use another browser.', 'error');
-        }
-
-    }, []);
-
-    useEffect(() => {
-
         listAllInventoryTool();
 
-    }, [idCompany, dateStart,dateEnd]);
+    }, [dateStart,dateEnd]);
 
     useEffect(() => {
 
@@ -137,7 +112,7 @@ function InventoryTool() {
         }
     }
 
-    const handlerOpenModal = (idInventory = null) => {
+    const handlerOpenModal = (idInventory) => {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
 
@@ -157,23 +132,7 @@ function InventoryTool() {
         listAllInventoryTool(pageNumber, RouteSearch, StateSearch);
     }
 
-    const [Reference_Number_1_Edit, setReference_Number_1] = useState('');
-    const [Dropoff_Contact_Name, setDropoff_Contact_Name] = useState('');
-    const [Dropoff_Contact_Phone_Number, setDropoff_Contact_Phone_Number] = useState('');
-    const [Dropoff_Address_Line_1, setDropoff_Address_Line_1] = useState('');
-    const [Dropoff_Address_Line_2, setDropoff_Address_Line_2] = useState('');
-    const [Dropoff_City, setDropoff_City] = useState('');
-    const [Dropoff_Province, setDropoff_Province] = useState('');
-    const [Dropoff_Postal_Code, setDropoff_Postal_Code] = useState('');
-    const [Weight, setWeight] = useState('');
-    const [Route, setRoute] = useState('');
-    const [RouteSearch, setRouteSearch] = useState('all');
-    const [StateSearch, setStateSearch] = useState('all');
-
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
-    const [disabledButton, setDisabledButton] = useState(false);
-
-    const [textButtonSave, setTextButtonSave] = useState('Guardar');
 
     const optionsRole = listRoute.map( (route, i) => {
 
@@ -213,32 +172,14 @@ function InventoryTool() {
         myModal.show();
     }
 
-    const handlerUpdatePackage = (e) => {
-
+    const handlerInsert = (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-
-        formData.append('Reference_Number_1', Reference_Number_1_Edit);
-        formData.append('Dropoff_Contact_Name', Dropoff_Contact_Name);
-        formData.append('Dropoff_Contact_Phone_Number', Dropoff_Contact_Phone_Number);
-        formData.append('Dropoff_Address_Line_1', Dropoff_Address_Line_1);
-        formData.append('Dropoff_Address_Line_2', Dropoff_Address_Line_2);
-        formData.append('Dropoff_City', Dropoff_City);
-        formData.append('Dropoff_Province', Dropoff_Province);
-        formData.append('Dropoff_Postal_Code', Dropoff_Postal_Code);
-        formData.append('Weight', Weight);
-        formData.append('Route', Route);
-        formData.append('status', true);
-
-        clearValidation();
+        LoadingShowMap()
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        setDisabledButton(true);
-        setTextButtonSave('Loading...');
-
-        let url = 'package-lm-carrier/update'
+        let url = 'inventory-tool/insert'
 
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
@@ -248,8 +189,39 @@ function InventoryTool() {
         .then(res => res.json()).
         then((response) => {
 
-                setTextButtonSave('Guardar');
-                setDisabledButton(false);
+                swal('The inventory was created!', {
+
+                    icon: "success",
+                });
+
+                LoadingHideMap()
+                listAllInventoryTool();
+            },
+        );
+    }
+
+    const handlerRegisterPackage = (e) => {
+
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('Reference_Number_1', Reference_Number_1);
+        formData.append('idInventory', idInventory);
+
+        clearValidation();
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let url = 'inventory-tool/insert-package'
+
+        fetch(url_general + url, {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
 
                 if(response.stateAction)
                 {
@@ -274,145 +246,75 @@ function InventoryTool() {
 
     const clearValidation = () => {
 
-        document.getElementById('Reference_Number_1_Edit').style.display = 'none';
-        document.getElementById('Reference_Number_1_Edit').innerHTML     = '';
-
-        document.getElementById('Dropoff_Contact_Name').style.display = 'none';
-        document.getElementById('Dropoff_Contact_Name').innerHTML     = '';
-
-        document.getElementById('Dropoff_Contact_Phone_Number').style.display = 'none';
-        document.getElementById('Dropoff_Contact_Phone_Number').innerHTML     = '';
-
-        document.getElementById('Dropoff_Address_Line_1').style.display = 'none';
-        document.getElementById('Dropoff_Address_Line_1').innerHTML     = '';
-
-        document.getElementById('Dropoff_City').style.display = 'none';
-        document.getElementById('Dropoff_City').innerHTML     = '';
-
-        document.getElementById('Dropoff_Province').style.display = 'none';
-        document.getElementById('Dropoff_Province').innerHTML     = '';
-
-        document.getElementById('Dropoff_Postal_Code').style.display = 'none';
-        document.getElementById('Dropoff_Postal_Code').innerHTML     = '';
-
-        document.getElementById('Weight').style.display = 'none';
-        document.getElementById('Weight').innerHTML     = '';
-
-        document.getElementById('Route').style.display = 'none';
-        document.getElementById('Route').innerHTML     = '';
+        document.getElementById('Reference_Number_1').style.display = 'none';
+        document.getElementById('Reference_Number_1').innerHTML     = '';
     }
 
     const clearForm = () => {
 
-        setReference_Number_1('');
-        setDropoff_Contact_Name('');
-        setDropoff_Contact_Phone_Number('');
-        setDropoff_Address_Line_1('');
-        setDropoff_Address_Line_2('');
-        setDropoff_City('');
-        setDropoff_Province('');
-        setDropoff_Postal_Code('');
-        setWeight('');
-        setRoute(0);
+        setReference_Number_1('')
+        setIdInventory(0)
     }
 
     const modalInventoryPackages = <React.Fragment>
                                     <div className="modal fade" id="modalInventoryPackages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
-                                            <form onSubmit={ handlerUpdatePackage }>
+                                            <form onSubmit={ handlerRegisterPackage }>
                                                 <div className="modal-content">
                                                     <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Inventory</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        <div className="row" style={ {width: '100%'} }>
+                                                            <div className="col-lg-10">
+                                                                <h5 className="modal-title text-primary" id="exampleModalLabel">Inventory { dateInventory }</h5>
+                                                            </div>
+                                                            <div className="col-lg-2">
+                                                                <button className="btn btn-success btn-sm form-control">FINISH</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div className="modal-body">
                                                         <div className="row">
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-12 form-group">
                                                                 <div className="form-group">
-                                                                    <label>PACKAGE ID</label>
-                                                                    <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
+                                                                    <label className="form">PACKAGE ID</label>
+                                                                    <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setNumberPackage(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>CLIENT</label>
-                                                                    <div id="Dropoff_Contact_Name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Contact_Name } className="form-control" onChange={ (e) => setDropoff_Contact_Name(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>CONTACT</label>
-                                                                    <div id="Dropoff_Contact_Phone_Number" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Contact_Phone_Number } className="form-control" onChange={ (e) => setDropoff_Contact_Phone_Number(e.target.value) } required/>
-                                                                </div>
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PENDING</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
                                                             </div>
                                                             <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ADDRESS 1</label>
-                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_1 } className="form-control" onChange={ (e) => setDropoff_Address_Line_1(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ADDRESS 2</label>
-                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>CITY</label>
-                                                                    <div id="Dropoff_City" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_City } className="form-control" onChange={ (e) => setDropoff_City(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>STATE</label>
-                                                                    <div id="Dropoff_Province" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Province } className="form-control" onChange={ (e) => setDropoff_Province(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ZIP C</label>
-                                                                    <div id="Dropoff_Postal_Code" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Postal_Code } className="form-control" onChange={ (e) => setDropoff_Postal_Code(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>WEIGHT</label>
-                                                                    <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ROUTE</label>
-                                                                    <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setRoute(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
-                                                                        { optionsRole }
-                                                                    </select>
-                                                                </div>
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>
+                                                                                OVERAGE <i className="bi bi-patch-question-fill text-danger" data-tooltip-id="myTooltipReverted1"></i>
+                                                                                <ReactTooltip
+                                                                                    id="myTooltipReverted1"
+                                                                                    place="top"
+                                                                                    variant="dark"
+                                                                                    content="Reverted shipments are packages 
+                                                                                            that were paid in error to the carrier and that 
+                                                                                            were marked for a discount on the next invoice. 
+                                                                                            The packages shown here are not discounts on the invoice,
+                                                                                             it is only to control which packages within this invoice are not valid."
+                                                                                    style={ {width: '40%'} }
+                                                                                  />
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="modal-footer">
                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                        <button className="btn btn-primary" disabled={ disabledButton }>Actualizar</button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -444,61 +346,6 @@ function InventoryTool() {
         );
     });
 
-    const handlerInsert = (e) => {
-
-        e.preventDefault();
-
-        console.log(sendInbound);
-
-        if(sendInbound)
-        {
-            const formData = new FormData();
-
-            formData.append('container_id', Reference_Number_1);
-            formData.append('latitude', latitude);
-            formData.append('longitude', longitude);
-
-            if(latitude !=0 && longitude != 0)
-            {
-                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                setReadInput(true);
-                setSendInbound(0);
-
-                fetch(url_general +'package-lm-carrier/send-pallet', {
-                    headers: { "X-CSRF-TOKEN": token },
-                    method: 'post',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then((response) => {
-
-                    if(response.statusCode == true)
-                    {
-                        swal('Correct!', 'PALLET ID sent correctly', 'success');
-
-                        setNumberPackage('')
-                    }
-                    else if(response.statusCode == false)
-                    {
-                        swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'error');
-                    }
-                    else if(response.statusCode == 'userNotLocation')
-                    {
-                        swal('Attention!', 'You are not assigned a location', 'warning');
-                    }
-                    
-                    setReadInput(false);
-                    setSendInbound(1);
-                });
-            }
-            else
-            {
-                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
-            }
-        }
-    }
-
     return (
 
         <section className="section">
@@ -511,7 +358,7 @@ function InventoryTool() {
                                 <div className="row form-group">
                                     <div className="row">
                                         <div className="col-2 form-group">
-                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerOpenModal() }>
+                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerInsert() }>
                                                 NEW
                                             </button>
                                         </div>

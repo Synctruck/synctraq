@@ -12,6 +12,7 @@
   	</nav>
 </div><!-- End Page Title -->
 <script>
+	let dateGeneral = '{{ date('d/m/Y') }}';
 	let auxDateInit = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
 </script>

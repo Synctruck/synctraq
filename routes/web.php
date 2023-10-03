@@ -116,7 +116,9 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Validation INVENTORY TOOL
 	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/inventory-tool/list/{dateStart}/{dateEnd}', [InventoryToolController::class, 'List']);
-	Route::get('/inventory-tool/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [InventoryToolController::class, 'Export']);
+	Route::post('/inventory-tool/insert', [InventoryToolController::class, 'Insert']);
+	Route::post('/inventory-tool/insert-package', [InventoryToolController::class, 'InsertPackage']);
+	Route::get('/inventory-tool/export/{dateStart}/{dateEnd}', [InventoryToolController::class, 'Export']);
 	Route::post('/inventory-tool/send-pallet', [InventoryToolController::class, 'SendPallet']);
 
 	//============ PACKAGE NMI
