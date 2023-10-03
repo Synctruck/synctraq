@@ -16,6 +16,8 @@ function InventoryTool() {
     const [listRoute, setListRoute]     = useState([]);
     const [dateInventory, setDateInventory] = useState(dateGeneral);
     const [quantityInbound, setQuantityInbound] = useState(0);
+    const [listInventoryToolDetailPending, setListInventoryToolDetailPending] = useState([]);
+    const [listInventoryToolDetailOverage, setListInventoryToolDetailOverage] = useState([]);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idInventory, setIdInventory]          = useState('');
@@ -112,6 +114,25 @@ function InventoryTool() {
         }
     }
 
+    const handlerInventoryDetailList = (idInventory) => {
+
+        setIdInventory(idInventory);
+
+        LoadingShowMap()
+
+        let url = url_general +'inventory-tool/list-detail/'+ idInventory;
+
+        fetch(url)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListInventoryToolDetailPending(response.listInventoryToolDetailPending);
+            setListInventoryToolDetailOverage(response.listInventoryToolDetailOverage);
+
+            LoadingHideMap()
+        });
+    }
+
     const handlerOpenModal = (idInventory) => {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
@@ -120,6 +141,8 @@ function InventoryTool() {
         });
 
         myModal.show();
+
+        handlerInventoryDetailList(idInventory)
     }
 
     const handlerExport = (type) => {
@@ -134,11 +157,19 @@ function InventoryTool() {
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
 
-    const optionsRole = listRoute.map( (route, i) => {
-
+    const listInventoryToolDetailPendingTable = listInventoryToolDetailPending.map( (inventoryToolDetail, i) => {
         return (
+            <tr>
+                <td key={ i }>{ inventoryToolDetail.Reference_Number_1 }</td>
+            </tr>
+        );
+    });
 
-            <option key={ i } value={ route.name } selected={ Route == route.name ? true : false }> {route.name}</option>
+    const listInventoryToolDetailOverageTable = listInventoryToolDetailOverage.map( (inventoryToolDetail, i) => {
+        return (
+            <tr>
+                <td key={ i }>{ inventoryToolDetail.Reference_Number_1 }</td>
+            </tr>
         );
     });
 
@@ -172,9 +203,7 @@ function InventoryTool() {
         myModal.show();
     }
 
-    const handlerInsert = (e) => {
-        e.preventDefault();
-
+    const handlerInsert = () => {
         LoadingShowMap()
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -184,10 +213,13 @@ function InventoryTool() {
         fetch(url_general + url, {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
-            body: formData
+            body: []
         })
-        .then(res => res.json()).
-        then((response) => {
+        .then(res => res.json())
+        .then((response) => {
+
+                setIdInventory(response.idInventory)
+                handlerInventoryDetailList(response.idInventory)
 
                 swal('The inventory was created!', {
 
@@ -201,14 +233,14 @@ function InventoryTool() {
     }
 
     const handlerRegisterPackage = (e) => {
-
         e.preventDefault();
 
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
-        formData.append('idInventory', idInventory);
+        formData.append('idInventoryTool', idInventory);
 
+        LoadingShowMap()
         clearValidation();
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -223,14 +255,29 @@ function InventoryTool() {
         .then(res => res.json()).
         then((response) => {
 
-                if(response.stateAction)
+                if(response.statusCode == true)
                 {
-                    swal('Se actualizó el Package!', {
+                    swal('Package added to inventory!', {
 
                         icon: "success",
                     });
 
-                    listAllInventoryTool(1, RouteSearch, StateSearch);
+                    handlerInventoryDetailList(idInventory)
+                    setNumberPackage('')
+                }
+                else if(response.statusCode == 'exists')
+                {
+                    swal('The package has already been added to this inventory!', {
+
+                        icon: "warning",
+                    });
+                }
+                else if(response.statusCode == 'notExists')
+                {
+                    swal('The package does not exist!', {
+
+                        icon: "warning",
+                    });
                 }
                 else(response.status == 422)
                 {
@@ -240,6 +287,8 @@ function InventoryTool() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
+
+                LoadingHideMap()
             },
         );
     }
@@ -256,6 +305,42 @@ function InventoryTool() {
         setIdInventory(0)
     }
 
+    const handlerFinishInventoryTool = () => {
+        swal({
+            title: "You want to finalize the inventory?",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShowMap();
+
+                fetch(url_general +'inventory-tool/finish/'+ idInventory)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.statusCode == true)
+                    {
+                        swal("The inventory was finalized!", {
+
+                            icon: "success",
+                        });
+
+                        listAllInventoryTool();
+
+                        document.getElementById('btnCloseModal').click()
+                    }
+
+                    LoadingHideMap()
+                });
+            }
+        });
+    }
+
     const modalInventoryPackages = <React.Fragment>
                                     <div className="modal fade" id="modalInventoryPackages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog">
@@ -267,7 +352,7 @@ function InventoryTool() {
                                                                 <h5 className="modal-title text-primary" id="exampleModalLabel">Inventory { dateInventory }</h5>
                                                             </div>
                                                             <div className="col-lg-2">
-                                                                <button className="btn btn-success btn-sm form-control">FINISH</button>
+                                                                <button type="button" className="btn btn-success btn-sm form-control" onClick={ () => handlerFinishInventoryTool() }>FINISH</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -284,9 +369,12 @@ function InventoryTool() {
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PENDING</th>
+                                                                            <th>PENDING ({ listInventoryToolDetailPending.length })</th>
                                                                         </tr>
                                                                     </thead>
+                                                                    <tbody>
+                                                                        { listInventoryToolDetailPendingTable }
+                                                                    </tbody>
                                                                 </table>
                                                             </div>
                                                             <div className="col-lg-6">
@@ -294,7 +382,7 @@ function InventoryTool() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th>
-                                                                                OVERAGE <i className="bi bi-patch-question-fill text-danger" data-tooltip-id="myTooltipReverted1"></i>
+                                                                                OVERAGE ({ listInventoryToolDetailOverage.length }) <i className="bi bi-patch-question-fill text-danger" data-tooltip-id="myTooltipReverted1"></i>
                                                                                 <ReactTooltip
                                                                                     id="myTooltipReverted1"
                                                                                     place="top"
@@ -309,12 +397,15 @@ function InventoryTool() {
                                                                             </th>
                                                                         </tr>
                                                                     </thead>
+                                                                    <tbody>
+                                                                        { listInventoryToolDetailOverageTable }
+                                                                    </tbody>
                                                                 </table>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button type="button" id="btnCloseModal" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -335,12 +426,17 @@ function InventoryTool() {
                 <td>{ inventory.nf }</td>
                 <td>{ inventory.ov }</td>
                 <td>
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(inventory.id) } style={ {margin: '3px'}}>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>
-                    <button className="btn btn-success btn-sm m-1" onClick={ () => handlerDownload(inventory.id) }>
-                        <i className="ri-file-excel-fill"></i>
-                    </button>
+                    {
+                        inventory.status == 'New'
+                        ?
+                            <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(inventory.id) } style={ {margin: '3px'}}>
+                                <i className="bx bx-edit-alt"></i>
+                            </button>
+                        :
+                            <button className="btn btn-success btn-sm m-1" onClick={ () => handlerDownload(inventory.id) }>
+                                <i className="ri-file-excel-fill"></i>
+                            </button>
+                    }
                 </td>
             </tr>
         );
@@ -358,7 +454,7 @@ function InventoryTool() {
                                 <div className="row form-group">
                                     <div className="row">
                                         <div className="col-2 form-group">
-                                            <button className="btn btn-primary btn-sm form-control" onClick={  () => handlerInsert() }>
+                                            <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerInsert() }>
                                                 NEW
                                             </button>
                                         </div>

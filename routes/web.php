@@ -117,6 +117,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:mms.index');
 	Route::get('/inventory-tool/list/{dateStart}/{dateEnd}', [InventoryToolController::class, 'List']);
 	Route::post('/inventory-tool/insert', [InventoryToolController::class, 'Insert']);
+	Route::get('/inventory-tool/finish/{idInventory}', [InventoryToolController::class, 'Finish']);
+	Route::get('/inventory-tool/list-detail/{idInventory}', [InventoryToolController::class, 'ListInventoryDetail']);
 	Route::post('/inventory-tool/insert-package', [InventoryToolController::class, 'InsertPackage']);
 	Route::get('/inventory-tool/export/{dateStart}/{dateEnd}', [InventoryToolController::class, 'Export']);
 	Route::post('/inventory-tool/send-pallet', [InventoryToolController::class, 'SendPallet']);

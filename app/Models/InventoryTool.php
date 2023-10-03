@@ -22,6 +22,11 @@ class InventoryTool extends Model
         return $this->hasMany('App\Models\User', 'idCellar');
     }
 
+    public function inventory_tool_detail()
+    {
+        return $this->hasMany('App\Models\InventoryToolDetail', 'idInventoryTool');
+    }
+
     //observers
     protected static function booted()
     {
