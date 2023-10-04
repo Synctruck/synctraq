@@ -53,7 +53,6 @@ class PackageLostController extends Controller
                                             ->orderBy('actualDate', 'desc')
                                             ->get();
             
-            $nameCellar = $packageLost->packageInbound->nameCellar;
 
             $package = [
 
@@ -69,7 +68,7 @@ class PackageLostController extends Controller
                 "Route" => $packageLost->Route,
                 "Weight" => $packageLost->Weight,
                 "comment" => $packageLost->comment,
-                "nameCellar" => $nameCellar,
+                "nameCellar" => $packageLost->nameCellar,
                 "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
                 "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
             ];
