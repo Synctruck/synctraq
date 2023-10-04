@@ -242,6 +242,16 @@ class PackageMiddleMileScanController extends Controller
                     $packageWarehouse->idUser     = Auth::user()->id;
                     $packageWarehouse->created_at = $created_at;
 
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                    if($cellar)
+                    {
+                        $packageWarehouse->idCellar    = $cellar->id;
+                        $packageWarehouse->nameCellar  = $cellar->name;
+                        $packageWarehouse->stateCellar = $cellar->state;
+                        $packageWarehouse->cityCellar  = $cellar->city;
+                    }
+
                     $packageWarehouse->save();
 
                     $packageHistory = new PackageHistory();
@@ -271,6 +281,14 @@ class PackageMiddleMileScanController extends Controller
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
+
+                    if($cellar)
+                    {
+                        $packageHistory->idCellar    = $cellar->id;
+                        $packageHistory->nameCellar  = $cellar->name;
+                        $packageHistory->stateCellar = $cellar->state;
+                        $packageHistory->cityCellar  = $cellar->city;
+                    }
 
                     $packageHistory->save();
 
@@ -334,6 +352,14 @@ class PackageMiddleMileScanController extends Controller
                 $packageWarehouse->idUser                       = Auth::user()->id;
                 $packageWarehouse->quantity                     = $packageInbound->quantity;
                 $packageWarehouse->status                       = 'Middle Mile Scan';
+                
+                if($cellar)
+                {
+                    $packageWarehouse->idCellar    = $cellar->id;
+                    $packageWarehouse->nameCellar  = $cellar->name;
+                    $packageWarehouse->stateCellar = $cellar->state;
+                    $packageWarehouse->cityCellar  = $cellar->city;
+                }
 
                 $packageWarehouse->save();
 
@@ -364,6 +390,14 @@ class PackageMiddleMileScanController extends Controller
                 $packageHistory->actualDate                   = $created_at;
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
+
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
 
                 $packageHistory->save();
 

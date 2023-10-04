@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -395,6 +395,16 @@ class PackageInboundController extends Controller
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {
+                    $packageCreate->idCellar    = $cellar->id;
+                    $packageCreate->nameCellar  = $cellar->name;
+                    $packageCreate->stateCellar = $cellar->state;
+                    $packageCreate->cityCellar  = $cellar->city;
+                }
+
                 if($packageCreate->status == 'Delivery') 
                 {
                     $packageCharge = ChargeCompanyDetail::where('Reference_Number_1', $package->Reference_Number_1)->first();
@@ -441,6 +451,15 @@ class PackageInboundController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
+
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
+
                 $packageHistory->save();
 
                 Log::info('$package->status: '. $package->status);
