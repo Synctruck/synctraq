@@ -1130,10 +1130,10 @@ function PackageInbound() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>WEIGHT</th>
-                                                <th>idCellar</th>
-                                                <th>nameCellar</th>
-                                                <th>stateCellar</th>
-                                                <th>cityCellar</th>
+                                                <th>ID CELLAR</th>
+                                                <th>NAME CELLAR</th>
+                                                <th>STATE CELLAR</th>
+                                                <th>CITY CELLAR</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
