@@ -115,7 +115,8 @@ class PackageWarehouseController extends Controller
                                                             'Dropoff_Province',
                                                             'Dropoff_Postal_Code',
                                                             'Weight',
-                                                            'Route'
+                                                            'Route',
+                                                            'nameCellar'
                                                         )
                                                         ->paginate(50); 
         }

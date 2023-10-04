@@ -641,6 +641,7 @@ function PackageWarehouse() {
                 <td>{ pack.Dropoff_Province }</td>
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td>{ pack.Route }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
@@ -1113,6 +1114,7 @@ function PackageWarehouse() {
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>ROUTE</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
