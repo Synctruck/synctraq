@@ -718,6 +718,10 @@ function PackageInbound() {
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.idCellar }</td>
+                <td>{ pack.nameCellar }</td>
+                <td>{ pack.stateCellar }</td>
+                <td>{ pack.cityCellar }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
@@ -1126,6 +1130,10 @@ function PackageInbound() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>WEIGHT</th>
+                                                <th>idCellar</th>
+                                                <th>nameCellar</th>
+                                                <th>stateCellar</th>
+                                                <th>cityCellar</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>
