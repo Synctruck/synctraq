@@ -750,6 +750,7 @@ function PackageLost() {
                 <td>{ pack.Dropoff_Province }</td>
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td>{ pack.Route }</td>
                 <td>
                     <button className="btn btn-primary btn-sm m-2" onClick={ () => handlerMoveToWarehouse(pack.Reference_Number_1) }>
@@ -1139,6 +1140,7 @@ function PackageLost() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>ACTION</th>
                                             </tr>
                                         </thead>

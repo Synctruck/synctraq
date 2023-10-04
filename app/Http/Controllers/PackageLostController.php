@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomEmail;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User};
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User, Cellar};
 
 use App\Service\ServicePackageLost;
 
@@ -67,6 +67,7 @@ class PackageLostController extends Controller
                 "Route" => $packageLost->Route,
                 "Weight" => $packageLost->Weight,
                 "comment" => $packageLost->comment,
+                "nameCellar" => $packageLost->nameCellar,
                 "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
                 "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
             ];
@@ -265,6 +266,16 @@ class PackageLostController extends Controller
                 $packageLost->updated_at                   = date('Y-m-d H:i:s');
                 $packageLost->status                       = 'Lost';
 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {
+                    $packageLost->idCellar    = $cellar->id;
+                    $packageLost->nameCellar  = $cellar->name;
+                    $packageLost->stateCellar = $cellar->state;
+                    $packageLost->cityCellar  = $cellar->city;
+                }
+
                 $packageLost->save();
 
                 //regsister history
@@ -294,6 +305,14 @@ class PackageLostController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
                 
                 $packageHistory->save();
 
