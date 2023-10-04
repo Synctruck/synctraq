@@ -795,6 +795,7 @@ function PackageNeedMoreInformation() {
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td >
                     {
                         (
@@ -1195,6 +1196,7 @@ function PackageNeedMoreInformation() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>WEIGHT</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>ACTION</th>
                                             </tr>
                                         </thead>
