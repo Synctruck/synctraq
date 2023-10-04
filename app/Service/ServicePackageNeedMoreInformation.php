@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound };
+use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound, Cellar };
 
 use App\Http\Controllers\Api\PackageController;
 
