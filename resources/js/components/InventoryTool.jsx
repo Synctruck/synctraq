@@ -34,6 +34,7 @@ function InventoryTool() {
     const [displayButton, setDisplayButton] = useState('none');
 
     const [disabledInput, setDisabledInput] = useState(false);
+    const [divNewInventoryTool, setDivNewInventoryTool] = useState('none')
 
     const [readInput, setReadInput] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -75,6 +76,8 @@ function InventoryTool() {
             setTotalPage(response.inventoryToolList.per_page);
             setPage(response.inventoryToolList.current_page);
             setQuantityInbound(response.quantityInbound);
+
+            setDivNewInventoryTool(response.newInventory);
         });
     }
 
@@ -218,16 +221,26 @@ function InventoryTool() {
         .then(res => res.json())
         .then((response) => {
 
-                setIdInventory(response.idInventory)
-                handlerInventoryDetailList(response.idInventory)
+                if(response.statusCode == true)
+                {
+                    setIdInventory(response.idInventory)
+                    handlerInventoryDetailList(response.idInventory)
+                    listAllInventoryTool();
 
-                swal('The inventory was created!', {
+                    swal('The inventory was created!', {
 
-                    icon: "success",
-                });
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal('There was an error try again!', {
+
+                        icon: "error",
+                    });
+                }
 
                 LoadingHideMap()
-                listAllInventoryTool();
             },
         );
     }
@@ -382,16 +395,12 @@ function InventoryTool() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th>
-                                                                                OVERAGE ({ listInventoryToolDetailOverage.length }) <i className="bi bi-patch-question-fill text-danger" data-tooltip-id="myTooltipReverted1"></i>
+                                                                                OVERAGE ({ listInventoryToolDetailOverage.length }) <i className="bi bi-patch-question-fill text-warning" data-tooltip-id="myTooltipReverted1"></i>
                                                                                 <ReactTooltip
                                                                                     id="myTooltipReverted1"
                                                                                     place="top"
                                                                                     variant="dark"
-                                                                                    content="Reverted shipments are packages 
-                                                                                            that were paid in error to the carrier and that 
-                                                                                            were marked for a discount on the next invoice. 
-                                                                                            The packages shown here are not discounts on the invoice,
-                                                                                             it is only to control which packages within this invoice are not valid."
+                                                                                    content="Packages that should not be in the warehouse."
                                                                                     style={ {width: '40%'} }
                                                                                   />
                                                                             </th>
@@ -452,8 +461,8 @@ function InventoryTool() {
                         <div className="card-body">
                             <h5 className="card-title">
                                 <div className="row form-group">
-                                    <div className="row">
-                                        <div className="col-2 form-group">
+                                    <div className="row" style={ {display: divNewInventoryTool} }>
+                                        <div className="col-2">
                                             <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerInsert() }>
                                                 NEW
                                             </button>
