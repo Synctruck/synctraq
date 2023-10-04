@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute, Cellar };
 
 
 use Illuminate\Support\Facades\Validator;
