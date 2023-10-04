@@ -115,6 +115,7 @@ class PackageMiddleMileScanController extends Controller
                                                             'Dropoff_Province',
                                                             'Dropoff_Postal_Code',
                                                             'Weight',
+                                                            'nameCellar',
                                                             'Route'
                                                         )
                                                         ->paginate(50); 
