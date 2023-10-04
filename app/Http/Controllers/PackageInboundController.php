@@ -120,7 +120,7 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')
-                                                ->select('company', 'TRUCK', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->select('company', 'TRUCK', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'idCellar','created_at')
                                                 ->paginate(50);
         }
         else{
