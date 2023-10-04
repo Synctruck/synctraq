@@ -26,34 +26,73 @@ class InventoryToolController extends Controller
         return view('package.inventory-tool');
     }
 
-    public function List()
+    public function List(Request $request, $dateStart, $dateEnd)
     {
-        return ['inventoryToolList' => InventoryTool::orderBy('created_at', 'desc')->paginate(50)];
+        $dateStart = $dateStart .' 00:00:00';
+        $dateEnd   = $dateEnd .' 23:59:59';
+
+        $listInventoryTool = InventoryTool::orderBy('created_at', 'desc')
+                                        ->whereBetween('created_at', [$dateStart, $dateEnd])
+                                        ->paginate(50);
+
+        $newInventory = InventoryTool::where('status', 'New')->first() ? 'none' : 'block';
+
+        return ['inventoryToolList' => $listInventoryTool, 'newInventory' => $newInventory];
     }
 
     public function Insert(Request $request)
     {
-        $idInventory = uniqid();
+        try
+        {
+            DB::beginTransaction();
 
-        $inventoryTool = new InventoryTool();
-        $inventoryTool->id = $idInventory;
+            $idInventory = uniqid();
 
-        $cellar = Cellar::find(Auth::user()->idCellar);
+            $inventoryTool = new InventoryTool();
+            $inventoryTool->id = $idInventory;
 
-        if($cellar)
-        {    
-            $inventoryTool->idCellar    = $cellar->id;
-            $inventoryTool->nameCellar  = $cellar->name;
-            $inventoryTool->stateCellar = $cellar->state;
-            $inventoryTool->cityCellar  = $cellar->city;
+            $cellar = Cellar::find(Auth::user()->idCellar);
+
+            if($cellar)
+            {    
+                $inventoryTool->idCellar    = $cellar->id;
+                $inventoryTool->nameCellar  = $cellar->name;
+                $inventoryTool->stateCellar = $cellar->state;
+                $inventoryTool->cityCellar  = $cellar->city;
+            }
+
+            $inventoryTool->idUser   = Auth::user()->id;
+            $inventoryTool->userName = Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $inventoryTool->status   = 'New';
+            
+            $packageInboundList = PackageInbound::select('Reference_Number_1')->get();
+            $packageWarehouseList = PackageWarehouse::select('Reference_Number_1')->get();
+
+            $packageList = $packageInboundList->merge($packageWarehouseList);
+
+            foreach($packageList as $package)
+            {
+                $inventoryToolDetail = new InventoryToolDetail();
+                $inventoryToolDetail->id                 = uniqid();
+                $inventoryToolDetail->idInventoryTool    = $idInventory;
+                $inventoryToolDetail->Reference_Number_1 = $package->Reference_Number_1;
+                $inventoryToolDetail->status             = 'Pending';
+                $inventoryToolDetail->save();
+            }
+            
+            $inventoryTool->nf = count($packageList);
+            $inventoryTool->save();
+
+            DB::commit();
+
+            return ['statusCode' => true, 'idInventory' => $idInventory];
         }
+        catch(Exception $e)
+        {
+            DB::rollback();
 
-        $inventoryTool->idUser   = Auth::user()->id;
-        $inventoryTool->userName = Auth::user()->name .' '. Auth::user()->nameOfOwner;
-        $inventoryTool->status   = 'New';
-        $inventoryTool->save();
-        
-        return ['idInventory' => $idInventory];
+            return ['statusCode' => false];
+        }
     }
 
     public function Finish($idInventoryTool)
@@ -69,10 +108,12 @@ class InventoryToolController extends Controller
     {
         $listInventoryToolDetailPending = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
                                                     ->where('status', 'Pending')
+                                                    ->orderBy('created_at', 'desc')
                                                     ->get();
 
         $listInventoryToolDetailOverage = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
                                                     ->where('status', 'Overage')
+                                                    ->orderBy('created_at', 'desc')
                                                     ->get();
 
         return [
@@ -83,13 +124,6 @@ class InventoryToolController extends Controller
 
     public function InsertPackage(Request $request)
     {
-        $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
-                                                 ->where('Reference_Number_1', $request->Reference_Number_1)
-                                                 ->first();
-
-        if($inventoryToolDetail)
-            return ['statusCode' => 'exists'];
-
         $packageController = new PackageController();
         $statusActual = $packageController->GetStatus($request->Reference_Number_1);
 
@@ -100,33 +134,38 @@ class InventoryToolController extends Controller
         {
             DB::beginTransaction();
 
-            
+            $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
+                                                ->where('Reference_Number_1', $request->Reference_Number_1)
+                                                ->where('status', 'Pending')
+                                                ->first();
+
             $inventoryTool = InventoryTool::find($request->idInventoryTool);
 
-            $inventoryToolDetail = new InventoryToolDetail();
-            $inventoryToolDetail->id = uniqid();
-            $inventoryToolDetail->idInventoryTool = $inventoryTool->id;
-            $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
-
-            if($statusActual['status'] == 'Inbound' || $statusActual['status'] == 'Warehouse')
+            if($inventoryToolDetail)
             {
-                $inventoryTool->nf           = $inventoryTool->nf + 1;
-                $inventoryToolDetail->status = 'Pending';
+                $inventoryTool->nf = $inventoryTool->nf - 1;
+
+                $inventoryToolDetail->delete();
             }
             else
             {
-                $inventoryTool->ov           = $inventoryTool->ov + 1;
-                $inventoryToolDetail->status = 'Overage';
+                $inventoryTool->ov = $inventoryTool->ov + 1;
+
+                $inventoryToolDetail = new InventoryToolDetail();
+                $inventoryToolDetail->id                 = uniqid();
+                $inventoryToolDetail->idInventoryTool    = $request->idInventoryTool;
+                $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
+                $inventoryToolDetail->status             = 'Overage';
+                $inventoryToolDetail->save();
             }
 
-            $inventoryToolDetail->save();
             $inventoryTool->save();
-
+            
             if($statusActual['status'] != 'Warehouse')
             {
                 $this->MoveToWarhouse($request->Reference_Number_1);
             }
-            
+
             DB::commit();
 
             return ['statusCode' => true];
