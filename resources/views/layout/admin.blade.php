@@ -876,7 +876,7 @@
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
                     let idCellar           = package.idCellar;
 
-                    if(package.status == 'Dispatch' || package.status == 'Warehouse')
+                    if(package.status == 'Dispatch' || package.status == 'Warehouse' || package.status == 'Inbound' )
                     {
                         if(idCellar > 0)
                         {
