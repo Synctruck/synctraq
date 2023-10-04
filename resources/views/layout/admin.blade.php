@@ -879,7 +879,7 @@
                     let stateCellar    = package.stateCellar;
                     let cityCellar     = package.cityCellar;
 
-                    if(package.status == 'Dispatch' || package.status == 'Warehouse')
+                    if(package.status == 'Dispatch' || package.status == 'Warehouse' || package.status == 'NMI')
                     {
                         if(idCellar > 0)
                         {
