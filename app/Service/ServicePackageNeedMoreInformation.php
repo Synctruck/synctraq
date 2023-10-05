@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound };
+use App\Models\{ PackageNeedMoreInformation, PackageWarehouse, PackageHistory, PackageHistoryNeeMoreInformation, PackageInbound, Cellar };
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -56,6 +56,17 @@ class ServicePackageNeedMoreInformation{
             $packageNeedMoreInformation->idUser                       = Auth::user()->id;
             $packageNeedMoreInformation->quantity                     = $package->quantity;
             $packageNeedMoreInformation->status                       = 'NMI';
+
+            $cellar = Cellar::find(Auth::user()->idCellar);
+            
+            if($cellar)
+            {    
+                $packageNeedMoreInformation->idCellar    = $cellar->id;
+                $packageNeedMoreInformation->nameCellar  = $cellar->name;
+                $packageNeedMoreInformation->stateCellar = $cellar->state;
+                $packageNeedMoreInformation->cityCellar  = $cellar->city;
+            }
+
             $packageNeedMoreInformation->save();
 
             $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
@@ -91,6 +102,14 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
+
+            if($cellar)
+            {    
+                $packageHistory->idCellar    = $cellar->id;
+                $packageHistory->nameCellar  = $cellar->name;
+                $packageHistory->stateCellar = $cellar->state;
+                $packageHistory->cityCellar  = $cellar->city;
+            }
             $packageHistory->save();
 
             $package->delete(); 
@@ -201,7 +220,7 @@ class ServicePackageNeedMoreInformation{
             if($type == 'list')
             {
                 $packageListNMI = $packageListNMI->orderBy('created_at', 'desc')
-                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'updated', 'created_at')
+                                                ->select('company', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'updated','nameCellar', 'created_at')
                                                 ->paginate(50);
             }
             else

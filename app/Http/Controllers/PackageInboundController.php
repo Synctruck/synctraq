@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute, Cellar };
 
 
 use Illuminate\Support\Facades\Validator;
@@ -120,7 +120,7 @@ class PackageInboundController extends Controller
         {
             $packageListInbound = $packageListInbound->where('reInbound', 0)
                                                 ->orderBy('created_at', 'desc')
-                                                ->select('company', 'TRUCK', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'created_at')
+                                                ->select('company', 'TRUCK', 'Reference_Number_1', 'Dropoff_Contact_Name', 'Dropoff_Contact_Phone_Number', 'Dropoff_Address_Line_1', 'Dropoff_City', 'Dropoff_Province', 'Dropoff_Postal_Code', 'Weight', 'Route', 'nameCellar','created_at')
                                                 ->paginate(50);
         }
         else{
@@ -285,6 +285,16 @@ class PackageInboundController extends Controller
                 $packageInbound->quantity                     = $packageManifest->quantity;
                 $packageInbound->status                       = 'Inbound';
 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {    
+                    $packageInbound->idCellar    = $cellar->id;
+                    $packageInbound->nameCellar  = $cellar->name;
+                    $packageInbound->stateCellar = $cellar->state;
+                    $packageInbound->cityCellar  = $cellar->city;
+                }
+
                 $packageInbound->save();
 
                 $packageHistory = new PackageHistory();
@@ -319,6 +329,13 @@ class PackageInboundController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                if($cellar){
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
 
                 $packageHistory->save();
 
@@ -538,6 +555,16 @@ class PackageInboundController extends Controller
                                     $packageInbound->idUser                       = Auth::user()->id;
                                     $packageInbound->quantity                     = $packageManifest->quantity;
                                     $packageInbound->status                       = 'Inbound';
+                                    
+                                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                                    if($cellar)
+                                    {    
+                                        $packageInbound->idCellar    = $cellar->id;
+                                        $packageInbound->nameCellar  = $cellar->name;
+                                        $packageInbound->stateCellar = $cellar->state;
+                                        $packageInbound->cityCellar  = $cellar->city;
+                                    }
 
                                     $packageInbound->save();
 
@@ -569,6 +596,14 @@ class PackageInboundController extends Controller
                                     $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                                    
+                                    if($cellar)
+                                    {
+                                      $packageHistory->idCellar    = $cellar->id;
+                                      $packageHistory->nameCellar  = $cellar->name;
+                                      $packageHistory->stateCellar = $cellar->state;
+                                      $packageHistory->cityCellar  = $cellar->city;
+                                    }
 
                                     $packageHistory->save();
 

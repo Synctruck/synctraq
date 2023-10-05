@@ -875,14 +875,14 @@
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
                     let idCellar           = package.idCellar;
+                    let nameCellar     = package.nameCellar;
+                    let stateCellar    = package.stateCellar;
+                    let cityCellar     = package.cityCellar;
 
-                    if(package.status == 'Dispatch' || package.status == 'Warehouse')
+                    if(package.status == 'Dispatch' || package.status == 'Warehouse' || package.status == 'NMI')
                     {
                         if(idCellar > 0)
                         {
-                            let nameCellar     = package.nameCellar;
-                            let stateCellar    = package.stateCellar;
-                            let cityCellar     = package.cityCellar;
                             Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
 
@@ -895,6 +895,7 @@
 
                     if(package.status == 'Inbound')
                     {
+                    
                         if(package.Notes)
                         {
                             let dimensions = package.Notes.split('|');
@@ -906,6 +907,10 @@
                                 document.getElementById('widthSearch').value  = dimensions[2];
                                 document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
                             }
+                        }
+                        if(idCellar > 0)
+                        {
+                            Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
 
                         Description = package.Description;

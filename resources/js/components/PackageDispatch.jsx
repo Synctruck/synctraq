@@ -988,6 +988,7 @@ function PackageDispatch() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
+                <td>{ packageDispatch.nameCellar }</td>
                 <td>{ packageDispatch.taskOnfleet }</td>
                 <td style={ {display: 'none'} }>
                     { idUserGeneral == packageDispatch.idUserDispatch && roleUser == 'Team' ? <><button className="btn btn-success btn-sm" value={ packageDispatch.Reference_Number_1 } onClick={ (e) => changeReference(packageDispatch.Reference_Number_1) }>Asignar</button><br/><br/></> : '' }
@@ -2143,6 +2144,7 @@ function PackageDispatch() {
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>TASK ONFLEET</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>

@@ -136,6 +136,7 @@ class PackageDispatchController extends Controller
                                                         'Dropoff_Postal_Code',
                                                         'Weight',
                                                         'Route',
+                                                        'nameCellar',
                                                         'taskOnfleet'
                                                     )
                                                     ->paginate(50);
