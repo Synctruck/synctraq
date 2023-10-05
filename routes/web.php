@@ -114,7 +114,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
 
 	//============ Validation INVENTORY TOOL
-	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:mms.index');
+	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:inventory-tool.index');
 	Route::get('/inventory-tool/list/{dateStart}/{dateEnd}', [InventoryToolController::class, 'List']);
 	Route::post('/inventory-tool/insert', [InventoryToolController::class, 'Insert']);
 	Route::get('/inventory-tool/finish/{idInventory}', [InventoryToolController::class, 'Finish']);
