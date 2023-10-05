@@ -215,6 +215,8 @@ function InventoryTool() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
+
+                setReadOnlyInput(false);
             },
         );
     }
