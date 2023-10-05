@@ -392,7 +392,7 @@ function InventoryTool() {
                             <h5 className="card-title">
                                 <div className="row form-group">
                                     <div className="row" style={ {display: divNewInventoryTool} }>
-                                        <div className="col-2">
+                                        <div className="col-2 form-group">
                                             <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerInsert() }>
                                                 NEW
                                             </button>
