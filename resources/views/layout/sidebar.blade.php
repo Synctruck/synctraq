@@ -150,7 +150,7 @@
                 </li>
             @endif
             
-            @if(hasPermission('packageLmCarrier.index'))
+            @if(hasPermission('packageDispatchToMiddleMile.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-dispatch-to-middlemile') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch-to-middlemile')}}">
                         <i class="bx bx-car"></i>
