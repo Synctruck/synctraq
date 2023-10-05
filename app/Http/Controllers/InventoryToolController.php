@@ -104,6 +104,46 @@ class InventoryToolController extends Controller
         return ['statusCode' => true];
     }
 
+    public function Download($idInventoryTool)
+    {
+        $delimiter = ',';
+        $filename  = 'INVENTORY TOOL.csv';
+        $file      = fopen('php://memory', 'w');
+
+        $inventoryTool = InventoryTool::find($idInventoryTool);
+
+        fputcsv($file, array('DATE', date('m/d/Y H:i:s', strtotime($inventoryTool->created_at))), $delimiter);
+        fputcsv($file, array('USER', $inventoryTool->userName), $delimiter);
+        fputcsv($file, array('NOT FOUND ', $inventoryTool->nf), $delimiter);
+        fputcsv($file, array('OVERAGE', $inventoryTool->ov), $delimiter);
+
+        fputcsv($file, array(''), $delimiter);
+        //set column headers
+
+        $fields = array('PACKAGE_ID' ,'STATUS');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $inventoryToolList = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)->get();
+
+        foreach($inventoryToolList as $inventoryToolDetail)
+        {
+            $lineData = array(
+                $inventoryToolDetail->Reference_Number_1,
+                $inventoryToolDetail->status,
+            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
+    }
+
     public function ListInventoryDetail($idInventoryTool)
     {
         $listInventoryToolDetailPending = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)

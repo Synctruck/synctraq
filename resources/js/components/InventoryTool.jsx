@@ -10,44 +10,27 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 
 function InventoryTool() {
 
-    const [listPackage, setListPackage] = useState([]);
-    const [listPackageTotal, setListPackageTotal]     = useState([]);
+    const [listPackage, setListInventory] = useState([]);
     const [pageNumber, setPackageNumber] = useState(1);
-    const [listRoute, setListRoute]     = useState([]);
-    const [dateInventory, setDateInventory] = useState(dateGeneral);
-    const [quantityInbound, setQuantityInbound] = useState(0);
     const [listInventoryToolDetailPending, setListInventoryToolDetailPending] = useState([]);
     const [listInventoryToolDetailOverage, setListInventoryToolDetailOverage] = useState([]);
+    const [dateInventory, setDateInventory] = useState()
 
     const [Reference_Number_1, setNumberPackage] = useState('');
     const [idInventory, setIdInventory]          = useState('');
 
-    const [textMessage, setTextMessage]         = useState('');
-    const [textMessage2, setTextMessage2]       = useState('');
-    const [textMessageDate, setTextMessageDate] = useState('');
-    const [typeMessage, setTypeMessage]         = useState('');
+    const [textMessage, setTextMessage] = useState('');
+    const [typeMessage, setTypeMessage] = useState('');
 
-    const [listInbound, setListInbound] = useState([]);
-
-    const [file, setFile]             = useState('');
-
-    const [displayButton, setDisplayButton] = useState('none');
-
-    const [disabledInput, setDisabledInput] = useState(false);
     const [divNewInventoryTool, setDivNewInventoryTool] = useState('none')
 
-    const [readInput, setReadInput] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [dateStart, setDateStart] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateInit);
+    const [dateEnd, setDateEnd]     = useState(auxDateInit);
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
-    const [totalPackage, setTotalPackage] = useState(0);
-
-    const inputFileRef  = React.useRef();
-
-    const [viewButtonSave, setViewButtonSave] = useState('none');
+    const [totalPackage, setTotalInventory] = useState(0);
 
     document.getElementById('bodyAdmin').style.backgroundColor = '#fff3cd';
 
@@ -55,7 +38,7 @@ function InventoryTool() {
 
         listAllInventoryTool();
 
-    }, [dateStart,dateEnd]);
+    }, [dateStart, dateEnd]);
 
     useEffect(() => {
 
@@ -64,57 +47,19 @@ function InventoryTool() {
     const listAllInventoryTool = () => {
 
         setIsLoading(true);
-        setListPackage([]);
+        setListInventory([]);
 
         fetch(url_general +'inventory-tool/list/'+ dateStart+'/'+ dateEnd +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
             setIsLoading(false);
-            setListPackage(response.inventoryToolList.data);
-            setTotalPackage(response.inventoryToolList.total);
+            setListInventory(response.inventoryToolList.data);
+            setTotalInventory(response.inventoryToolList.total);
             setTotalPage(response.inventoryToolList.per_page);
             setPage(response.inventoryToolList.current_page);
-            setQuantityInbound(response.quantityInbound);
-
             setDivNewInventoryTool(response.newInventory);
         });
-    }
-
-    const exportAllPackageInbound = (route, state, type) => {
-
-        let url = url_general +'package-lm-carrier/export/'+idCompany+'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+type;
-
-        if(type == 'download')
-        {
-            location.href = url;
-        }
-        else
-        {
-            setIsLoading(true);
-
-            fetch(url)
-            .then(res => res.json())
-            .then((response) => {
-
-                if(response.stateAction == true)
-                {
-                    swal("The export was sended to your mail!", {
-
-                        icon: "success",
-                    });
-                }
-                else
-                {
-                    swal("There was an error, try again!", {
-
-                        icon: "error",
-                    });
-                }
-
-                setIsLoading(false);
-            });
-        }
     }
 
     const handlerInventoryDetailList = (idInventory) => {
@@ -148,14 +93,9 @@ function InventoryTool() {
         handlerInventoryDetailList(idInventory)
     }
 
-    const handlerExport = (type) => {
-
-        exportAllPackageInbound(RouteSearch, StateSearch, type);
-    }
-
     const handlerChangePage = (pageNumber) => {
 
-        listAllInventoryTool(pageNumber, RouteSearch, StateSearch);
+        listAllInventoryTool();
     }
 
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
@@ -176,34 +116,8 @@ function InventoryTool() {
         );
     });
 
-    const handlerDownload = (PACKAGE_ID) => {
-
-        fetch(url_general +'package-lm-carrier/get/'+ PACKAGE_ID)
-        .then(res => res.json())
-        .then((response) => {
-
-            setReference_Number_1(PACKAGE_ID);
-            setDropoff_Contact_Name(response.package.Dropoff_Contact_Name);
-            setDropoff_Contact_Phone_Number(response.package.Dropoff_Contact_Phone_Number);
-            setDropoff_Address_Line_1(response.package.Dropoff_Address_Line_1);
-            setDropoff_Address_Line_2((response.package.Dropoff_Address_Line_2 ? response.package.Dropoff_Address_Line_2 : ''));
-            setDropoff_City(response.package.Dropoff_City);
-            setDropoff_Province(response.package.Dropoff_Province);
-            setDropoff_Postal_Code(response.package.Dropoff_Postal_Code);
-            setWeight(response.package.Weight);
-            setRoute(response.package.Route);
-        });
-
-        //clearValidation();
-
-        setReadOnlyInput(true);
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
-
-            keyboard: true
-        });
-
-        myModal.show();
+    const handlerDownload = (idInventory) => {
+        window.open(url_general +'inventory-tool/download/'+ idInventory)
     }
 
     const handlerInsert = () => {
@@ -253,8 +167,11 @@ function InventoryTool() {
         formData.append('Reference_Number_1', Reference_Number_1);
         formData.append('idInventoryTool', idInventory);
 
-        LoadingShowMap()
         clearValidation();
+
+        setTextMessage('');
+        setTypeMessage('');
+        setReadOnlyInput(true);
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -270,20 +187,13 @@ function InventoryTool() {
 
                 if(response.statusCode == true)
                 {
-                    swal('Package added to inventory!', {
-
-                        icon: "success",
-                    });
+                    setTextMessage('Package validate in WAREHOUSE #'+ Reference_Number_1);
+                    setTypeMessage('success');
 
                     handlerInventoryDetailList(idInventory)
                     setNumberPackage('')
-                }
-                else if(response.statusCode == 'exists')
-                {
-                    swal('The package has already been added to this inventory!', {
 
-                        icon: "warning",
-                    });
+                    document.getElementById('soundPitidoSuccess').play();
                 }
                 else if(response.statusCode == 'notExists')
                 {
@@ -291,6 +201,11 @@ function InventoryTool() {
 
                         icon: "warning",
                     });
+
+                    setTextMessage('The package does not exist #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
                 }
                 else(response.status == 422)
                 {
@@ -300,8 +215,6 @@ function InventoryTool() {
                         document.getElementById(index).innerHTML     = response.errors[index][0];
                     }
                 }
-
-                LoadingHideMap()
             },
         );
     }
@@ -378,6 +291,23 @@ function InventoryTool() {
                                                                     <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setNumberPackage(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
+                                                            <div className="col-lg-12 form-group text-center">
+                                                                {
+                                                                    typeMessage == 'success'
+                                                                    ?
+                                                                        <h2 className="text-success">{ textMessage }</h2>
+
+                                                                    :
+                                                                        ''
+                                                                }
+                                                                {
+                                                                    typeMessage == 'warning'
+                                                                    ?
+                                                                        <h2 className="text-warning">{ textMessage }</h2>
+                                                                    :
+                                                                        ''
+                                                                }
+                                                            </div>
                                                             <div className="col-lg-6">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
@@ -422,7 +352,7 @@ function InventoryTool() {
                                     </div>
                                 </React.Fragment>;
 
-    const listPackageTable = listPackage.map( (inventory, i) => {
+    const listInventoryTable = listPackage.map( (inventory, i) => {
 
         return (
 
@@ -468,68 +398,8 @@ function InventoryTool() {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="col-12 mb-4">
-                                        <div className="row" style={ {display: 'none'} }>
-                                            <div className="col-lg-2">
-                                                <div className="form-group">
-                                                    <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
-                                                </div> 
-                                            </div>
-                                            <div className="col-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
-                                                    <i className="ri-file-excel-fill"></i> EXPORT
-                                                </button>
-                                            </div>
-                                            <div className="col-3">
-                                                <div className="row">
-                                                    <div className="col-12">
-                                                        <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
-                                                            <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 form-group text-center">
-                                        {
-                                            typeMessage == 'success'
-                                            ?
-                                                <h2 className="text-success">{ textMessage }</h2>
-
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'error'
-                                            ?
-                                                <h2 className="text-danger">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'primary'
-                                            ?
-                                                <h2 className="text-primary">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-                                        {
-                                            typeMessage == 'warning'
-                                            ?
-                                                <h2 className="text-warning">{ textMessage }</h2>
-                                            :
-                                                ''
-                                        }
-
-                                        {
-                                            textMessageDate != ''
-                                            ?
-                                                <h2 className="text-warning">{ textMessageDate.substring(5, 7) }-{ textMessageDate.substring(8, 10) }-{ textMessageDate.substring(0, 4) } { textMessageDate.substring(11, 19) }</h2>
-                                            :
-                                                ''
-                                        }
-                                    </div>
+                                    <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
+                                    <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
@@ -583,7 +453,7 @@ function InventoryTool() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { listPackageTable }
+                                            { listInventoryTable }
                                         </tbody>
                                     </table>
                                 </div>
