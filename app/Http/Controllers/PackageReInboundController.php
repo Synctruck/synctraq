@@ -278,6 +278,16 @@ class PackageInboundController extends Controller
         $packageInbound->Weight                       = $request->get('Weight');
         $packageInbound->Route                        = $request->get('Route');
 
+        $cellar = Cellar::find(Auth::user()->idCellar);
+
+        if($cellar)
+       {
+          $packageInbound->idCellar    = $cellar->id;
+          $packageInbound->nameCellar  = $cellar->name;
+          $packageInbound->stateCellar = $cellar->state;
+          $packageInbound->cityCellar  = $cellar->city;
+        }
+
         $packageInbound->save();
 
         return response()->json(["stateAction" => true], 200);

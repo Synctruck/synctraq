@@ -502,6 +502,16 @@ class PackageWarehouseController extends Controller
                     $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->status                       = 'Return';
 
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                    if($cellar)
+                    {
+                        $packageReturn->idCellar    = $cellar->id;
+                        $packageReturn->nameCellar  = $cellar->name;
+                        $packageReturn->stateCellar = $cellar->state;
+                        $packageReturn->cityCellar  = $cellar->city;
+                    }
+
                     $packageReturn->save();
 
                     $packageHistory = new PackageHistory();
@@ -538,6 +548,14 @@ class PackageWarehouseController extends Controller
                     $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = date('Y-m-d H:i:s');
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                    if($cellar)
+                    {
+                        $packageHistory->idCellar    = $cellar->id;
+                        $packageHistory->nameCellar  = $cellar->name;
+                        $packageHistory->stateCellar = $cellar->state;
+                        $packageHistory->cityCellar  = $cellar->city;
+                    }
 
                     $packageHistory->save();
 
