@@ -125,8 +125,9 @@ class PackageInboundController extends Controller
                     $packageInbound->idUser                       = Auth::user()->id;
                     $packageInbound->status                       = 'Inbound';
 
-                    $cellar = Cellar::find(Auth::user()->idCellar);
-                    logger("idCellar: " . $cellar->id);
+                    /*$cellar = Cellar::find(Auth::user()->idCellar);*/
+                    $cellar = Auth::user()->idCellar;
+                    pp($cellar);
                         if($cellar>0)
                         {
                             logger("idCellar: " . $cellar->id);
