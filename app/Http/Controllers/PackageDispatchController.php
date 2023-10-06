@@ -1179,7 +1179,7 @@ class PackageDispatchController extends Controller
 
     public function Return(Request $request)
     {
-        Log::info('========== MARADONA-INBOUND');
+        Log::info('========== RE-INBOUND');
         Log::info('Reference_Number_1: '. $request->get('Reference_Number_1'));
 
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -1331,6 +1331,16 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at_ReInbound;
                     $packageHistory->updated_at                   = $created_at_ReInbound;
 
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                    if($cellar)
+                    {    
+                        $packageHistory->idCellar    = $cellar->id;
+                        $packageHistory->nameCellar  = $cellar->name;
+                        $packageHistory->stateCellar = $cellar->state;
+                        $packageHistory->cityCellar  = $cellar->city;
+                    }
+
                     $packageHistory->save();
 
                     $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+6 second'));
@@ -1381,6 +1391,16 @@ class PackageDispatchController extends Controller
                     $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
+
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                    if($cellar)
+                    {    
+                        $packageReturn->idCellar    = $cellar->id;
+                        $packageReturn->nameCellar  = $cellar->name;
+                        $packageReturn->stateCellar = $cellar->state;
+                        $packageReturn->cityCellar  = $cellar->city;
+                    }
 
                     $packageReturn->save(); 
 
@@ -1464,6 +1484,16 @@ class PackageDispatchController extends Controller
                         $packageWarehouse->quantity                     = $packageDispatch->quantity;
                         $packageWarehouse->status                       = 'Warehouse';
 
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                        if($cellar)
+                        {    
+                            $packageWarehouse->idCellar    = $cellar->id;
+                            $packageWarehouse->nameCellar  = $cellar->name;
+                            $packageWarehouse->stateCellar = $cellar->state;
+                            $packageWarehouse->cityCellar  = $cellar->city;
+                        }
+
                         $packageWarehouse->save();
 
                         $packageHistory = new PackageHistory();
@@ -1493,6 +1523,14 @@ class PackageDispatchController extends Controller
                         $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at_Warehouse;
                         $packageHistory->updated_at                   = $created_at_Warehouse;
+
+                        if($cellar)
+                        {    
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
 
                         $packageHistory->save();
                     }
