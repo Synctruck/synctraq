@@ -1391,17 +1391,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
-
-                    $cellar = Cellar::find(Auth::user()->idCellar);
-
-                    if($cellar)
-                    {    
-                        $packageReturn->idCellar    = $cellar->id;
-                        $packageReturn->nameCellar  = $cellar->name;
-                        $packageReturn->stateCellar = $cellar->state;
-                        $packageReturn->cityCellar  = $cellar->city;
-                    }
-
+                    
                     $packageReturn->save(); 
 
                     if($packageDispatch->idPaymentTeam != '')
