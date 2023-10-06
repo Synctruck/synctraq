@@ -353,6 +353,16 @@ class PackageMiddleMileScanController extends Controller
                 $packageWarehouse->quantity                     = $packageInbound->quantity;
                 $packageWarehouse->status                       = 'Middle Mile Scan';
                 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {
+                    $packageWarehouse->idCellar    = $cellar->id;
+                    $packageWarehouse->nameCellar  = $cellar->name;
+                    $packageWarehouse->stateCellar = $cellar->state;
+                    $packageWarehouse->cityCellar  = $cellar->city;
+                }
+
                 $packageWarehouse->save();
 
                 $packageHistory = new PackageHistory();
