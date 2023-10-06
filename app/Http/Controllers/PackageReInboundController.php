@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, States};
+use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, States, Cellar};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -125,6 +125,16 @@ class PackageInboundController extends Controller
                     $packageInbound->idUser                       = Auth::user()->id;
                     $packageInbound->status                       = 'Inbound';
 
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                         if($cellar)
+                        {
+                           $packageInbound->idCellar    = $cellar->id;
+                           $packageInbound->nameCellar  = $cellar->name;
+                           $packageInbound->stateCellar = $cellar->state;
+                           $packageInbound->cityCellar  = $cellar->city;
+                         }
+
                     $packageInbound->save();
 
                     $packageHistory = new PackageHistory();
@@ -151,6 +161,14 @@ class PackageInboundController extends Controller
                     $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->status                       = 'Inbound';
+
+                    if($cellar)
+                        {
+                           $packageHistory->idCellar    = $cellar->id;
+                           $packageHistory->nameCellar  = $cellar->name;
+                           $packageHistory->stateCellar = $cellar->state;
+                           $packageHistory->cityCellar  = $cellar->city;
+                         }
 
                     $packageHistory->save();
 
@@ -354,6 +372,17 @@ class PackageInboundController extends Controller
                                     $packageInbound->idUser                       = Auth::user()->id;
                                     $packageInbound->status                       = 'Inbound';
 
+                                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                                     if($cellar)
+                                     {
+                                      $packageInbound->idCellar    = $cellar->id;
+                                      $packageInbound->nameCellar  = $cellar->name;
+                                      $packageInbound->stateCellar = $cellar->state;
+                                      $packageInbound->cityCellar  = $cellar->city;
+                                     }
+                                    
+
                                     $packageInbound->save();
 
                                     $packageHistory = new PackageHistory();
@@ -378,6 +407,15 @@ class PackageInboundController extends Controller
                                     $packageHistory->Description                  = 'Inbound - for: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
                                     $packageHistory->inbound                      = 1;
                                     $packageHistory->status                       = 'Inbound';
+
+                                    if($cellar)
+                                    {
+                                     $packageHistory->idCellar    = $cellar->id;
+                                     $packageHistory->nameCellar  = $cellar->name;
+                                     $packageHistory->stateCellar = $cellar->state;
+                                     $packageHistory->cityCellar  = $cellar->city;
+                                    }
+                                   
 
                                     $packageHistory->save();
 
