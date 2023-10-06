@@ -863,11 +863,11 @@ function PackageWarehouse() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
-                                            @if(hasPermission('orders.index'))
+                                            
                                                 <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerGoToInventory() }>
                                                     Inventory Tool
                                                 </button>
-                                            @endif
+                                            
                                             </div>
                                             <div className="col-lg-2">
                                                 <form onSubmit={ handlerImport }>
