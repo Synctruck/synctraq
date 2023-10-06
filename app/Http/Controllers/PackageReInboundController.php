@@ -129,6 +129,7 @@ class PackageInboundController extends Controller
 
                          if($cellar)
                         {
+                        logger("idCellar: " . $cellar->id);
                            $packageInbound->idCellar    = $cellar->id;
                            $packageInbound->nameCellar  = $cellar->name;
                            $packageInbound->stateCellar = $cellar->state;
