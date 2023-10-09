@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
+use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageWeight, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
 
 use DateTime;
 use DB;
@@ -204,10 +204,21 @@ class PackageController extends Controller
                     Log::info('company->dimensions:');
                     Log::info($company->dimensions);
                     
+                    $packageWeight = new PackageWeight();
+                    $packageWeight->Reference_Number_1 = $data['Reference_Number_1'];
+                    
                     if($dimFactorCompany && $company->dimensions)
                     {
                         $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
+
+                        $packageWeight->width1 = $data['width'];
+                        $packageWeight->height1 = $data['height'];
+                        $packageWeight->length1 = $data['length'];
+                        $packageWeight->weight1 = $dim_weight;
                     }
+
+                    $packageWeight->weight3 = $data['Weight'];
+                    $packageWeight->save();
 
                     $routesZipCode = RoutesZipCode::find($data['Dropoff_Postal_Code']);
 
