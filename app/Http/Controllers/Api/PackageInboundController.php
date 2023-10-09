@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -81,6 +81,17 @@ class PackageInboundController extends Controller
                         $packageInbound->Route                        = $packageManifest->Route;
                         $packageInbound->quantity                     = $packageManifest->quantity;
                         $packageInbound->status                       = 'Inbound';
+                        
+                        
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                         if($cellar)
+                        {
+                           $packageInbound->idCellar    = $cellar->id;
+                           $packageInbound->nameCellar  = $cellar->name;
+                           $packageInbound->stateCellar = $cellar->state;
+                           $packageInbound->cityCellar  = $cellar->city;
+                         }
 
                         $packageInbound->save();
 
@@ -114,6 +125,14 @@ class PackageInboundController extends Controller
                         $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                         $packageHistory->created_at                   = date('Y-m-d H:i:s');
                         $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                        if($cellar)
+                        {
+                           $packageHistory->idCellar    = $cellar->id;
+                           $packageHistory->nameCellar  = $cellar->name;
+                           $packageHistory->stateCellar = $cellar->state;
+                           $packageHistory->cityCellar  = $cellar->city;
+                         }
 
                         $packageHistory->save();
 
