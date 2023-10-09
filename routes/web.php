@@ -295,6 +295,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('role/list', [RoleController::class, 'List']);
 
 	Route::get('cellar/get-all', [CellarController::class, 'GetAll']);
+	Route::get('cellar/list-active', [CellarController::class, 'ListActive']);
 
     Route::get('/roles',[RoleController::class,'index'])->middleware('permission:role.index');
     Route::get('/roles/getList',[RoleController::class,'getList']);

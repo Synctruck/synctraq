@@ -14,4 +14,11 @@ class CellarController extends Controller
     {
         return ['cellarList' => Cellar::orderBy('name', 'desc')->get()];
     }
+
+    public function ListActive(Request $request)
+    {
+        $cellarList = Cellar::where('status', 'Active')->orderBy('name', 'desc')->get();
+
+        return ['cellarList' => $cellarList];
+    }
 }
