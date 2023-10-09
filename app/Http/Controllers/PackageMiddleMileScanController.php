@@ -55,7 +55,7 @@ class PackageMiddleMileScanController extends Controller
                                             ->groupBy('Dropoff_Province')
                                             ->get();
 
-        $listStateValidate  = States::orderBy('name', 'asc')->get();                                    
+        $listStateValidate  = States::orderBy('name', 'asc')->get();
 
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
@@ -85,7 +85,7 @@ class PackageMiddleMileScanController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
         }
-        
+
         if($idValidator)
         {
             $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
@@ -118,7 +118,7 @@ class PackageMiddleMileScanController extends Controller
                                                             'nameCellar',
                                                             'Route'
                                                         )
-                                                        ->paginate(50); 
+                                                        ->paginate(50);
         }
         else
         {
@@ -190,14 +190,14 @@ class PackageMiddleMileScanController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
-        
+
         $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
         }
-        
+
         $servicePackageTerminal = new ServicePackageTerminal();
         $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
 
@@ -205,7 +205,7 @@ class PackageMiddleMileScanController extends Controller
         {
             return ['stateAction' => 'packageTerminal'];
         }
-        
+
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
         if($packageLost)
@@ -323,7 +323,7 @@ class PackageMiddleMileScanController extends Controller
                     return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageInbound];
                 }
             }
-                
+
             try
             {
                 DB::beginTransaction();
@@ -352,7 +352,7 @@ class PackageMiddleMileScanController extends Controller
                 $packageWarehouse->idUser                       = Auth::user()->id;
                 $packageWarehouse->quantity                     = $packageInbound->quantity;
                 $packageWarehouse->status                       = 'Middle Mile Scan';
-                
+
                 $cellar = Cellar::find(Auth::user()->idCellar);
 
                 if($cellar)
@@ -409,7 +409,7 @@ class PackageMiddleMileScanController extends Controller
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
                 //end data for inland
-                    
+
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];

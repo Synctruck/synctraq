@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, States};
+use App\Models\{PackageHistory, PackageInbound, PackageManifest, PackageNotExists, States, Cellar};
 
 use Illuminate\Support\Facades\Validator;
 
