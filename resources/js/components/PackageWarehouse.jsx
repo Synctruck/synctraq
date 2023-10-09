@@ -850,6 +850,8 @@ function PackageWarehouse() {
         window.open(url_general +'inventory-tool')
     }
 
+    const[showvalidateInventoryTool, setshowvalidateInventoryTool] = useState(validateInventoryTool)
+
     return (
     
         <section className="section">
@@ -862,7 +864,7 @@ function PackageWarehouse() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
-                                            <div className="col-2">
+                                            <div className="col-2" style={{display: showvalidateInventoryTool}}>
                                             
                                                 <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerGoToInventory() }>
                                                     Inventory Tool
