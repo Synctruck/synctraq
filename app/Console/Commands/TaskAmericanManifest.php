@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ FileImport, PackageManifest, PackageHistory, Routes, RoutesZipCode };
+use App\Models\{ FileImport, PackageWeight, PackageManifest, PackageHistory, Routes, RoutesZipCode };
 
 use Log;
 
@@ -79,6 +79,11 @@ class TaskAmericanManifest extends Command
                                 if(isset($row[21]) && isset($row[22]) && isset($row[16]) && isset($row[18]) && isset($row[19]) && isset($row[20]))
                                 {
                                     $created_at = date('Y-m-d H:i:s');
+
+                                    $packageWeight = new PackageWeight();
+                                    $packageWeight->Reference_Number_1 = $row[0];
+                                    $packageWeight->weight3 = $row[27];
+                                    $packageWeight->save();
 
                                     $package = new PackageManifest();
 
