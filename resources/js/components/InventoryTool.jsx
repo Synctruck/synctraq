@@ -370,7 +370,7 @@ function InventoryTool() {
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PENDING ({ listInventoryToolDetailPending.length })</th>
+                                                                            <th>PENDING WAREHOUSE ({ listInventoryToolDetailPending.length })</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
