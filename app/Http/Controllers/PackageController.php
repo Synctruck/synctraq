@@ -490,7 +490,7 @@ class PackageController extends Controller
 
         if($package)
         {
-            return ['status' => $package->status];
+            return ['status' => $package->status, 'package' => $package];
         }
 
         return ['status' => ''];

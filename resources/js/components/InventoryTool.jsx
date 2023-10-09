@@ -13,10 +13,12 @@ function InventoryTool() {
     const [listPackage, setListInventory] = useState([]);
     const [pageNumber, setPackageNumber] = useState(1);
     const [listInventoryToolDetailPending, setListInventoryToolDetailPending] = useState([]);
+    const [listInventoryToolDetailPendingNMI, setListInventoryToolDetailPendingNMI] = useState([]);
     const [listInventoryToolDetailOverage, setListInventoryToolDetailOverage] = useState([]);
     const [dateInventory, setDateInventory] = useState()
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [cellarName, setCellarName] = useState('');
     const [idInventory, setIdInventory]          = useState('');
 
     const [textMessage, setTextMessage] = useState('');
@@ -36,6 +38,7 @@ function InventoryTool() {
 
     useEffect(() => {
 
+        listAllCellar()
         listAllInventoryTool();
 
     }, [dateStart, dateEnd]);
@@ -62,6 +65,24 @@ function InventoryTool() {
         });
     }
 
+    const [cellarList, setCellarList] = useState([])
+
+    const listAllCellar = () => {
+        fetch(url_general +'cellar/list-active')
+        .then(res => res.json())
+        .then((response) => {
+            setCellarList(response.cellarList)
+        });
+    }
+
+    const optionsCellar = cellarList.map( (cellar, i) => {
+
+        return (
+
+            <option key={ i } value={ cellar.id }> { cellar.name }</option>
+        );
+    });
+
     const handlerInventoryDetailList = (idInventory) => {
 
         setIdInventory(idInventory);
@@ -74,14 +95,18 @@ function InventoryTool() {
         .then(res => res.json())
         .then((response) => {
 
+            setDateInventory(response.dateInventory)
             setListInventoryToolDetailPending(response.listInventoryToolDetailPending);
+            setListInventoryToolDetailPendingNMI(response.listInventoryToolDetailPendingNMI);
             setListInventoryToolDetailOverage(response.listInventoryToolDetailOverage);
 
             LoadingHideMap()
         });
     }
 
-    const handlerOpenModal = (idInventory) => {
+    const handlerOpenModal = (idInventory, nameCellar) => {
+
+        setCellarName(nameCellar)
 
         let myModal = new bootstrap.Modal(document.getElementById('modalInventoryPackages'), {
 
@@ -108,6 +133,14 @@ function InventoryTool() {
         );
     });
 
+    const listInventoryToolDetailPendingNMITable = listInventoryToolDetailPendingNMI.map( (inventoryToolDetail, i) => {
+        return (
+            <tr>
+                <td key={ i }>{ inventoryToolDetail.Reference_Number_1 }</td>
+            </tr>
+        );
+    });
+
     const listInventoryToolDetailOverageTable = listInventoryToolDetailOverage.map( (inventoryToolDetail, i) => {
         return (
             <tr>
@@ -120,43 +153,55 @@ function InventoryTool() {
         window.open(url_general +'inventory-tool/download/'+ idInventory)
     }
 
+    const [idCellar, setIdCellar] = useState(0)
+
     const handlerInsert = () => {
-        LoadingShowMap()
+        if(idCellar)
+        {
+            LoadingShowMap()
 
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            let url = 'inventory-tool/insert'
 
-        let url = 'inventory-tool/insert'
+            let formData = new FormData()
 
-        fetch(url_general + url, {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: []
-        })
-        .then(res => res.json())
-        .then((response) => {
+            formData.append('idCellar', idCellar)        
 
-                if(response.statusCode == true)
-                {
-                    setIdInventory(response.idInventory)
-                    handlerInventoryDetailList(response.idInventory)
-                    listAllInventoryTool();
+            fetch(url_general + url, {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json())
+            .then((response) => {
 
-                    swal('The inventory was created!', {
+                    if(response.statusCode == true)
+                    {
+                        setIdInventory(response.idInventory)
+                        handlerInventoryDetailList(response.idInventory)
+                        listAllInventoryTool();
 
-                        icon: "success",
-                    });
-                }
-                else
-                {
-                    swal('There was an error try again!', {
+                        swal('The inventory was created!', {
 
-                        icon: "error",
-                    });
-                }
+                            icon: "success",
+                        });
+                    }
+                    else
+                    {
+                        swal('There was an error try again!', {
 
-                LoadingHideMap()
-            },
-        );
+                            icon: "error",
+                        });
+                    }
+
+                    LoadingHideMap()
+                },
+            );
+        }
+        else
+        {
+            swal('Attention!', 'Select a warehouse', 'warning')
+        }
     }
 
     const handlerRegisterPackage = (e) => {
@@ -197,12 +242,21 @@ function InventoryTool() {
                 }
                 else if(response.statusCode == 'notExists')
                 {
-                    swal('The package does not exist!', {
-
-                        icon: "warning",
-                    });
-
                     setTextMessage('The package does not exist #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.statusCode == 'notExistsCellar')
+                {
+                    setTextMessage('You have not assigned the warehouse for this inventory #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.statusCode == 'notExistsCellarPackages')
+                {
+                    setTextMessage('The package does not belong to the current warehouse #'+ Reference_Number_1);
                     setTypeMessage('warning');
 
                     document.getElementById('soundPitidoWarning').play();
@@ -277,7 +331,9 @@ function InventoryTool() {
                                                     <div className="modal-header">
                                                         <div className="row" style={ {width: '100%'} }>
                                                             <div className="col-lg-10">
-                                                                <h5 className="modal-title text-primary" id="exampleModalLabel">Inventory { dateInventory }</h5>
+                                                                <h5 className="modal-title text-primary" id="exampleModalLabel">
+                                                                    Inventory: { cellarName } <br/> { dateInventory }
+                                                                </h5>
                                                             </div>
                                                             <div className="col-lg-2">
                                                                 <button type="button" className="btn btn-success btn-sm form-control" onClick={ () => handlerFinishInventoryTool() }>FINISH</button>
@@ -290,7 +346,7 @@ function InventoryTool() {
                                                                 <div className="form-group">
                                                                     <label className="form">PACKAGE ID</label>
                                                                     <div id="Reference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setNumberPackage(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
+                                                                    <input type="text" id="Reference_Number_1" value={ Reference_Number_1 } className="form-control" onChange={ (e) => setNumberPackage(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12 form-group text-center">
@@ -310,11 +366,11 @@ function InventoryTool() {
                                                                         ''
                                                                 }
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-4">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>PENDING ({ listInventoryToolDetailPending.length })</th>
+                                                                            <th>PENDING WAREHOUSE ({ listInventoryToolDetailPending.length })</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -322,7 +378,19 @@ function InventoryTool() {
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-                                                            <div className="col-lg-6">
+                                                            <div className="col-lg-4">
+                                                                <table className="table table-hover table-condensed table-bordered">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>PENDING NMI ({ listInventoryToolDetailPendingNMI.length })</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        { listInventoryToolDetailPendingNMITable }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div className="col-lg-4">
                                                                 <table className="table table-hover table-condensed table-bordered">
                                                                     <thead>
                                                                         <tr>
@@ -366,11 +434,12 @@ function InventoryTool() {
                 <td><b>{ inventory.userName }</b></td>
                 <td>{ inventory.nf }</td>
                 <td>{ inventory.ov }</td>
+                <td>{ inventory.nameCellar }</td>
                 <td>
                     {
                         inventory.status == 'New'
                         ?
-                            <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(inventory.id) } style={ {margin: '3px'}}>
+                            <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(inventory.id, inventory.nameCellar) } style={ {margin: '3px'}}>
                                 <i className="bx bx-edit-alt"></i>
                             </button>
                         :
@@ -392,19 +461,24 @@ function InventoryTool() {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">
-                                <div className="row form-group">
-                                    <div className="row" style={ {display: divNewInventoryTool} }>
-                                        <div className="col-2 form-group">
-                                            <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerInsert() }>
-                                                NEW
-                                            </button>
-                                        </div>
+                                <div className="row mb-3">
+                                    <div className="col-lg-2 form-group">
+                                        <select name="" id="" className="form-control" onChange={ (e) => setIdCellar(e.target.value) } required>
+                                            <option value="" style={ {display: 'none'} }>Select Warehouse</option>
+                                            { optionsCellar }
+                                        </select>
                                     </div>
-                                    <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
-                                    <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
+                                
+                                    <div className="col-lg-2 form-group">
+                                        <button className="btn btn-primary btn-sm form-control" onClick={ () => handlerInsert() }>
+                                            NEW
+                                        </button>
+                                    </div>
                                 </div>
+                                <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
+                                <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
                                 <div className="row">
-                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                    <div className="col-lg-2 form-group" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
                                         {
                                             (
                                                 isLoading
@@ -416,7 +490,7 @@ function InventoryTool() {
                                         }
                                     </div>
 
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2" style={ {display: 'none'} }>
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -428,7 +502,7 @@ function InventoryTool() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2">
+                                    <div className="col-lg-2" style={ {display: 'none'} }>
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="form-group">
@@ -451,6 +525,7 @@ function InventoryTool() {
                                                 <th>USER</th>
                                                 <th>NF</th>
                                                 <th>OV</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>REPORT</th>
                                             </tr>
                                         </thead>

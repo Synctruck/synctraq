@@ -32,7 +32,6 @@ class InventoryToolController extends Controller
         $dateEnd   = $dateEnd .' 23:59:59';
 
         $listInventoryTool = InventoryTool::orderBy('created_at', 'desc')
-                                        ->whereBetween('created_at', [$dateStart, $dateEnd])
                                         ->paginate(50);
 
         $newInventory = InventoryTool::where('status', 'New')->first() ? 'none' : 'block';
@@ -48,27 +47,26 @@ class InventoryToolController extends Controller
 
             $idInventory = uniqid();
 
+            $cellar = Cellar::find($request->idCellar);
+
             $inventoryTool = new InventoryTool();
             $inventoryTool->id = $idInventory;
-
-            $cellar = Cellar::find(Auth::user()->idCellar);
-
-            if($cellar)
-            {    
-                $inventoryTool->idCellar    = $cellar->id;
-                $inventoryTool->nameCellar  = $cellar->name;
-                $inventoryTool->stateCellar = $cellar->state;
-                $inventoryTool->cityCellar  = $cellar->city;
-            }
-
-            $inventoryTool->idUser   = Auth::user()->id;
-            $inventoryTool->userName = Auth::user()->name .' '. Auth::user()->nameOfOwner;
-            $inventoryTool->status   = 'New';
+            $inventoryTool->idCellar    = $cellar->id;
+            $inventoryTool->nameCellar  = $cellar->name;
+            $inventoryTool->stateCellar = $cellar->state;
+            $inventoryTool->cityCellar  = $cellar->city;
+            $inventoryTool->idUser      = Auth::user()->id;
+            $inventoryTool->userName    = Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $inventoryTool->status      = 'New';
             
-            $packageInboundList = PackageInbound::select('Reference_Number_1')->get();
-            $packageWarehouseList = PackageWarehouse::select('Reference_Number_1')->get();
+            $packageInboundList = PackageInbound::select('Reference_Number_1', 'status')->get();
+            $packageWarehouseList = PackageWarehouse::where('status', 'Warehouse')
+                                                    ->select('Reference_Number_1', 'status')
+                                                    ->get();
+            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'status')->get();
 
             $packageList = $packageInboundList->merge($packageWarehouseList);
+            $packageList = $packageList->merge($packageNeedMoreInformationList);
 
             foreach($packageList as $package)
             {
@@ -76,6 +74,7 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->id                 = uniqid();
                 $inventoryToolDetail->idInventoryTool    = $idInventory;
                 $inventoryToolDetail->Reference_Number_1 = $package->Reference_Number_1;
+                $inventoryToolDetail->statusPackage      = $package->status;
                 $inventoryToolDetail->status             = 'Pending';
                 $inventoryToolDetail->save();
             }
@@ -146,7 +145,17 @@ class InventoryToolController extends Controller
 
     public function ListInventoryDetail($idInventoryTool)
     {
+        $inventoryTool = InventoryTool::find($idInventoryTool);
+        $dateInventory = date('m/d/Y');
+
         $listInventoryToolDetailPending = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
+                                                    ->where('statusPackage', '!=', 'NMI')
+                                                    ->where('status', 'Pending')
+                                                    ->orderBy('created_at', 'desc')
+                                                    ->get();
+
+        $listInventoryToolDetailPendingNMI = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
+                                                    ->where('statusPackage', 'NMI')
                                                     ->where('status', 'Pending')
                                                     ->orderBy('created_at', 'desc')
                                                     ->get();
@@ -157,7 +166,9 @@ class InventoryToolController extends Controller
                                                     ->get();
 
         return [
+            'dateInventory' => $dateInventory,
             'listInventoryToolDetailPending' => $listInventoryToolDetailPending,
+            'listInventoryToolDetailPendingNMI' => $listInventoryToolDetailPendingNMI,
             'listInventoryToolDetailOverage' => $listInventoryToolDetailOverage
         ];
     }
@@ -170,6 +181,14 @@ class InventoryToolController extends Controller
         if($statusActual['status'] == "")
             return ['statusCode' => 'notExists'];
 
+        $inventoryTool = InventoryTool::find($request->idInventoryTool);
+
+        if($inventoryTool->idCellar != Auth::user()->idCellar)
+            return ['statusCode' => 'notExistsCellar'];
+
+        if($statusActual['package']->idCellar != $inventoryTool->idCellar)
+            return ['statusCode' => 'notExistsCellarPackages'];
+
         try
         {
             DB::beginTransaction();
@@ -179,7 +198,7 @@ class InventoryToolController extends Controller
                                                 ->where('status', 'Pending')
                                                 ->first();
 
-            $inventoryTool = InventoryTool::find($request->idInventoryTool);
+            
 
             if($inventoryToolDetail)
             {
@@ -195,15 +214,23 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->id                 = uniqid();
                 $inventoryToolDetail->idInventoryTool    = $request->idInventoryTool;
                 $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
+                $inventoryToolDetail->statusPackage      = $statusActual['status'];
                 $inventoryToolDetail->status             = 'Overage';
                 $inventoryToolDetail->save();
             }
 
             $inventoryTool->save();
             
-            if($statusActual['status'] != 'Warehouse')
+            if($statusActual['status'] == 'NMI')
             {
-                $this->MoveToWarhouse($request->Reference_Number_1);
+
+            }
+            else
+            {
+                if($statusActual['status'] != 'Warehouse')
+                {
+                    $this->MoveToWarhouse($request->Reference_Number_1);
+                }
             }
 
             DB::commit();
