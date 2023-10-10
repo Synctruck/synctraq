@@ -118,8 +118,8 @@ class WHookController extends Controller
                     if($packageDispatch->company == 'INLAND LOGISTICS' || $packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
                         //create or update price company team
-                        //$packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
-                        //$packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
+                        $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
+                        $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
                     
                     if($packageDispatch->company != 'Smart Kargo')
