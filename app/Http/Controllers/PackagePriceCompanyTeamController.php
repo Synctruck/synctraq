@@ -24,7 +24,6 @@ class PackagePriceCompanyTeamController extends Controller
         if($packagePriceCompanyTeam == null)
         {
             $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
             $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
         }
 
