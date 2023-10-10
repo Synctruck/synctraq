@@ -313,6 +313,18 @@ function Payments() {
                                 ''
                         )
                     }
+
+                    { 
+                        (
+                            payment.status == 'PAID'
+                            ? 
+                                <button className="btn btn-info btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Send Reciept">
+                                    <i className="ri-mail-fill"></i>
+                                </button>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );
