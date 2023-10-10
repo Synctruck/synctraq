@@ -263,25 +263,23 @@ class PaymentTeamController extends Controller
         $totalDeliveryRevert = $totalDelivery + $totalRevert;
 
         fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
-        
-       
+
         fseek($file, 0);
-        
+
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
-
     }
 
-    public function ExportReceipt($idPayment, $typeExport)
+    public function ExportReceipt($idPayment)
     {
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
         $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
- 
+        
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
@@ -406,14 +404,13 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-        
-           
-            rewind($file);
-            fclose($file);
-        
-            SendGeneralExport('Payment Team', $filename);
-        
-            return ['stateAction' => true];
+
+        fseek($file, 0);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+        fpassthru($file);
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
