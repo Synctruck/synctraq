@@ -64,7 +64,7 @@ class PackagePriceCompanyTeamController extends Controller
 
         if($packageWeight)
         {
-            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight)
+            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight);
         }
         else
         {
