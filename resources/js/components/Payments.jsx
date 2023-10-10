@@ -82,40 +82,6 @@ function Payments() {
         });
     }
 
-    const exportAllPackageWarehouse = (id, type) => {
-        let url = url_general + 'payment-team/export-receipt/' + id + '/' + type;
-    
-        if (type === 'download') {
-            location.href = url;
-        } else {
-            setIsLoading(true);
-    
-            fetch(url)
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.json();
-                })
-                .then(response => {
-                    if (response.stateAction === true) {
-                        swal("The export was sent to your email!", {
-                            icon: "success"
-                        });
-                    } else {
-                        swal("There was an error, please try again later.", {
-                            icon: "error"
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    setIsLoading(false);
-                });
-        }
-    }
-    
-
     const listAllTeam = () => {
 
         fetch(url_general +'team/listall')
@@ -146,9 +112,9 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
-    const handlerExportPaymentReceipt = (id, type) => {
+    const handlerExportPaymentReceipt = (id) => {
 
-        exportAllPackageWarehouse(id, type);
+        location.href = url_general +'payment-team/export-receipt/'+ id;
     }
 
     const handlerChangeStatus = (id, status) => {
@@ -340,20 +306,8 @@ function Payments() {
                         (
                             payment.status == 'PAID'
                             ? 
-                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, 'download') } title="Download Receipt">
+                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
                                     <i className="ri-file-excel-fill"></i>
-                                </button>
-                            :
-                                ''
-                        )
-                    }
-
-{ 
-                        (
-                            payment.status == 'PAID'
-                            ? 
-                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, 'send') } title="Send Email">
-                                    <i className="fas fa-envelope"></i>
                                 </button>
                             :
                                 ''
