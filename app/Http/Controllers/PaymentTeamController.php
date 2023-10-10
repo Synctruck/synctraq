@@ -546,29 +546,24 @@ class PaymentTeamController extends Controller
             }
         }
 
-        $filename = "PAYMENT-RECEIPT-TEAM-" . $payment->id . ".csv";
-        $filePath = public_path('receipts/' . $filename);
-        file_put_contents($filePath, $content);
-    
-        // Envía el correo al usuario
         $user = Auth::user(); // Obtén al usuario que ha iniciado sesión
-        $email = $user->email; // Obtén la dirección de correo del usuario
-    
-        // Configura el correo con el archivo adjunto
-        Mail::send([], [], function($message) use ($email, $filePath) {
-            $message->to($email)
-                ->subject('Recibo de pago')
-                ->attach($filePath, [
-                    'as' => $filename, // Nombre del archivo adjunto
-                    'mime' => 'application/csv', // Tipo MIME del archivo
-                ]);
-        });
-    
-        // Elimina el archivo después de enviarlo por correo (opcional)
-        unlink($filePath);
-    
-        // Redirige o muestra un mensaje de éxito
-        return redirect()->back()->with('success', 'Recibo enviado con éxito');
+    $email = $user->email; // Obtén la dirección de correo del usuario
+
+    // Configura el correo con el archivo adjunto
+    Mail::send([], [], function($message) use ($email, $filePath) {
+        $message->to($email)
+            ->subject('Recibo de pago')
+            ->attach($filePath, [
+                'as' => $filename, // Nombre del archivo adjunto
+                'mime' => 'application/csv', // Tipo MIME del archivo
+            ]);
+    });
+
+    // Elimina el archivo después de enviarlo por correo (opcional)
+    unlink($filePath);
+
+    // Redirige o muestra un mensaje de éxito
+    return redirect()->back()->with('success', 'Recibo enviado con éxito');
 
     }
 
