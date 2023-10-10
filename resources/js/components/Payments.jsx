@@ -88,7 +88,10 @@ function Payments() {
 
         if(type == 'download')
         {
-        
+            location.href = url;
+        }
+        else
+        {
             setIsLoading(true);
 
             fetch(url)
@@ -352,7 +355,7 @@ function Payments() {
                             payment.status == 'PAID'
                             ? 
                                 <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, 'send') } title="Send Email">
-                                    <i className="bi bi-envelope-fill"></i>
+                                    <i className="fas fa-envelope"></i>
                                 </button>
                             :
                                 ''
