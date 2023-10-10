@@ -83,40 +83,38 @@ function Payments() {
     }
 
     const exportAllPackageWarehouse = (id, type) => {
-
-        let url = url_general +'payment-team/export-receipt/'+ id +'/'+type;
-
-        if(type == 'download')
-        {
+        let url = url_general + 'payment-team/export-receipt/' + id + '/' + type;
+    
+        if (type === 'download') {
             location.href = url;
-        }
-        else
-        {
+        } else {
             setIsLoading(true);
-
+    
             fetch(url)
-            .then(res => res.json())
-            .then((response) => {
-
-                if(response.stateAction == true)
-                {
-                    swal("The export was sended to your mail!", {
-
-                        icon: "success",
-                    });
-                }
-                else
-                {
-                    swal("There was an error, try again!", {
-
-                        icon: "error",
-                    });
-                }
-
-                setIsLoading(false);
-            });
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(response => {
+                    if (response.stateAction === true) {
+                        swal("The export was sent to your email!", {
+                            icon: "success"
+                        });
+                    } else {
+                        swal("There was an error, please try again later.", {
+                            icon: "error"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    setIsLoading(false);
+                });
         }
     }
+    
 
     const listAllTeam = () => {
 
