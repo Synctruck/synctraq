@@ -1,5 +1,5 @@
 @extends('layout.admin')
-@section('title', 'PAYMENT - TEAMS')
+@section('title', 'PAYMEN - TEAMS')
 @section('content')
 <div class="pagetitle">
 </div><!-- End Page Title -->

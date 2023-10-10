@@ -263,22 +263,27 @@ class PaymentTeamController extends Controller
         $totalDeliveryRevert = $totalDelivery + $totalRevert;
 
         fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
-
+        
+       
         fseek($file, 0);
-
+        
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+
     }
 
-    public function ExportReceipt($idPayment)
+    public function ExportReceipt($idPayment, $typeExport)
     {
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
         $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
+        $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+       
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
@@ -404,13 +409,24 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-
+        if($typeExport == 'download')
+        {
         fseek($file, 0);
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+        }
+        else
+        {
+        rewind($file);
+        fclose($file);
+
+        SendGeneralExport('Packages Warehouse', $filename);
+
+        return ['stateAction' => true];
+       }
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
