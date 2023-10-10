@@ -281,10 +281,7 @@ class PaymentTeamController extends Controller
         $delimiter = ",";
         $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
-        $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
-        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
-       
-        
+ 
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
@@ -423,7 +420,7 @@ class PaymentTeamController extends Controller
         rewind($file);
         fclose($file);
 
-        SendGeneralExport('Packages Warehouse', $filename);
+        SendGeneralExport('Payment Team', $filename);
 
         return ['stateAction' => true];
        }

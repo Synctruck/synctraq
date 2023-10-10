@@ -150,7 +150,7 @@ function Payments() {
 
     const handlerExportPaymentReceipt = (id, type) => {
 
-        exportAllPackageWarehouse(id,'send' );
+        exportAllPackageWarehouse(id, type);
     }
 
     const handlerChangeStatus = (id, status) => {
@@ -354,7 +354,7 @@ function Payments() {
                         (
                             payment.status == 'PAID'
                             ? 
-                                <button className="btn btn-info btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, 'send') } title="Send Email">
+                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, 'send') } title="Send Email">
                                     <i className="bi bi-envelope-fill"></i>
                                 </button>
                             :
