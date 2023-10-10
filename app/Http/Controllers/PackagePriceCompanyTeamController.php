@@ -29,7 +29,20 @@ class PackagePriceCompanyTeamController extends Controller
         }
 
         $Reference_Number_1    = $packageDispatch->Reference_Number_1;
-        $weight                = $packageDispatch->Weight;
+
+        $packageWeight = PackageWeight::find($packageDispatch->Reference_Number_1);
+
+        if($packageWeight)
+        {
+            Log::info('weight1 => '. $packageWeight->weight1 .' weight3 => '. $packageWeight->weight3 .' Weight => '. $packageDispatch->Weight);
+            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight);
+        }
+        else
+        {
+            $weightPackage = $packageDispatch->Weight;
+        }
+
+        $weight = $weightPackage;
 
         $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
@@ -60,18 +73,7 @@ class PackagePriceCompanyTeamController extends Controller
             }
         }
 
-        $packageWeight = PackageWeight::find($packageDispatch->Reference_Number_1);
-
-        if($packageWeight)
-        {
-            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight);
-        }
-        else
-        {
-            $weightPackage = $packageDispatch->Weight;
-        }
-
-        $dimWeightCompanyRound = ceil($weightPackage);
+        $dimWeightCompanyRound = ceil($weight);
 
         $priceWeightCompany = new RangePriceCompanyController();
         $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound, $packageDispatch->Reference_Number_1);
