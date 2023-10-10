@@ -150,7 +150,7 @@ function Payments() {
 
     const handlerExportPaymentReceipt = (id, type) => {
 
-        exportAllPackageWarehouse(id, type);
+        exportAllPackageWarehouse(id,'send' );
     }
 
     const handlerChangeStatus = (id, status) => {
