@@ -24,10 +24,10 @@ class PackagePriceCompanyTeamController extends Controller
         if($packagePriceCompanyTeam == null)
         {
             $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-            $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
+            $packagePriceCompanyTeam->id = date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
         }
 
-        $Reference_Number_1    = $packageDispatch->Reference_Number_1;
+        $Reference_Number_1 = $packageDispatch->Reference_Number_1;
 
         $packageWeight = PackageWeight::find($packageDispatch->Reference_Number_1);
 
