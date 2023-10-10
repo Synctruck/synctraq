@@ -413,6 +413,165 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
+    public function SendReceipt($idPayment)
+    {
+        $payment = PaymentTeam::with('team')->find($idPayment);
+
+        $delimiter = ",";
+        $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
+        $file      = fopen('php://memory', 'w');
+        
+        $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
+        $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
+        $fieldIdPayment = array('ID PAYMENT', $idPayment);
+        $fieldTeam      = array('TEAM', $payment->team->name);
+        $fieldSurcharge = array('SURCHARGE', ($payment->surcharge ? 'YES' : 'NO'));
+        $fieldNumberTransaction = array('PAYMENT CONFIRMATION CODE', $payment->numberTransaction);
+        $fieldTeamTotal = array('INVOICE TOTAL', $payment->total);
+        $fielBlank      = array('');
+
+        fputcsv($file, $fieldStartDate, $delimiter);
+        fputcsv($file, $fieldEndDate, $delimiter);
+        fputcsv($file, $fieldIdPayment, $delimiter);
+        fputcsv($file, $fieldTeam, $delimiter);
+        
+        if($payment->surcharge)
+        {
+            fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
+        }
+
+        fputcsv($file, $fieldNumberTransaction, $delimiter);
+        fputcsv($file, $fieldTeamTotal, $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+
+        $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
+                                                                ->orderBy('created_at', 'asc')
+                                                                ->get();
+
+        if(count($paymentTeamAdjustmentList) > 0)
+        {
+            fputcsv($file, array('ADJUSTMENT'), $delimiter);
+            fputcsv($file, array('TOTAL ADJUSTMENT', $payment->totalAdjustment .' $'), $delimiter);
+            fputcsv($file, array('DATE', 'DESCRIPTION', 'AMOUNT'), $delimiter);
+
+            foreach($paymentTeamAdjustmentList as $chargeAdjustment)
+            {
+                $lineDataAdjustment = array(
+                    date('m/d/y H:i:s', strtotime($chargeAdjustment->created_at)),
+                    $chargeAdjustment->description,
+                    $chargeAdjustment->amount
+                );
+
+                fputcsv($file, $lineDataAdjustment, $delimiter);
+            }
+
+            fputcsv($file, $fielBlank, $delimiter);
+            fputcsv($file, $fielBlank, $delimiter);
+        }
+
+        //LIST DELIVERIES
+        fputcsv($file, array('DATE DELIVERY', 'PACKAGE ID', 'ROUTE', 'TOTAL PRICE'), $delimiter);
+
+        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->where('podFailed', 0)
+                                                    ->get();
+
+        $totalDelivery = 0;
+
+        foreach($paymentTeamDetailList as $paymentDetail)
+        {
+            $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
+
+            $lineData = array(
+
+                $dateDelivery,
+                $paymentDetail->Reference_Number_1,
+                $paymentDetail->Route,
+                $paymentDetail->totalPrice,
+            );
+
+            $totalDelivery = $totalDelivery + $paymentDetail->totalPrice;
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+        
+        //LIST REVERTS
+        $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
+
+        if(count($paymentTeamDetailReturnList) > 0)
+        {
+            foreach($paymentTeamDetailReturnList as $paymentDetailReturn)
+            {
+                $dateDelivery = date('m-d-Y H:i:s', strtotime($paymentDetailReturn->Date_Delivery));
+
+                $lineData = array(
+
+                    $dateDelivery,
+                    $paymentDetailReturn->Reference_Number_1,
+                    $paymentDetailReturn->Route,
+                    $paymentDetailReturn->totalPrice,
+                );
+
+                $totalDelivery = $totalDelivery + $paymentDetailReturn->totalPrice;
+
+                fputcsv($file, $lineData, $delimiter);
+            }
+        }
+
+        fputcsv($file, array('', '', 'TOTAL DELIVERY', $totalDelivery), $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+
+        //LIST POD FAILED
+        $paymentPODFailedList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->where('podFailed', 1)
+                                                    ->get();
+
+        if(count($paymentPODFailedList) > 0)
+        {
+            fputcsv($file, array('INVALID PODS'), $delimiter);
+
+            foreach($paymentPODFailedList as $paymentPODFailed)
+            {
+                $dateDelivery = date('m-d-Y', strtotime($paymentPODFailed->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentPODFailed->Date_Delivery));
+
+                $lineData = array(
+
+                    $dateDelivery,
+                    $paymentPODFailed->Reference_Number_1,
+                    $paymentPODFailed->Route,
+                    $paymentPODFailed->totalPrice,
+                );
+
+                fputcsv($file, $lineData, $delimiter);
+            }
+        }
+
+        $filename = "PAYMENT-RECEIPT-TEAM-" . $payment->id . ".csv";
+        $filePath = public_path('receipts/' . $filename);
+        file_put_contents($filePath, $content);
+    
+        // Envía el correo al usuario
+        $user = Auth::user(); // Obtén al usuario que ha iniciado sesión
+        $email = $user->email; // Obtén la dirección de correo del usuario
+    
+        // Configura el correo con el archivo adjunto
+        Mail::send([], [], function($message) use ($email, $filePath) {
+            $message->to($email)
+                ->subject('Recibo de pago')
+                ->attach($filePath, [
+                    'as' => $filename, // Nombre del archivo adjunto
+                    'mime' => 'application/csv', // Tipo MIME del archivo
+                ]);
+        });
+    
+        // Elimina el archivo después de enviarlo por correo (opcional)
+        unlink($filePath);
+    
+        // Redirige o muestra un mensaje de éxito
+        return redirect()->back()->with('success', 'Recibo enviado con éxito');
+
+    }
+
     public function StatusChange(Request $request, $idPayment, $status)
     {
         $paymentTeam = PaymentTeam::find($idPayment);
