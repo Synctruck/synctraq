@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany };
+use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany, PackageWeight };
 
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 
@@ -60,7 +60,18 @@ class PackagePriceCompanyTeamController extends Controller
             }
         }
 
-        $dimWeightCompanyRound = ceil($packageDispatch->Weight);
+        $packageWeight = PackageWeight::find($packageDispatch->Reference_Number_1);
+
+        if($packageWeight)
+        {
+            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight)
+        }
+        else
+        {
+            $weightPackage = $packageDispatch->Weight;
+        }
+
+        $dimWeightCompanyRound = ceil($weightPackage);
 
         $priceWeightCompany = new RangePriceCompanyController();
         $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound, $packageDispatch->Reference_Number_1);

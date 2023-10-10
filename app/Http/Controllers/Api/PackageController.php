@@ -211,7 +211,7 @@ class PackageController extends Controller
                     {
                         $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
 
-                        $packageWeight->width1 = $data['width'];
+                        $packageWeight->width1  = $data['width'];
                         $packageWeight->height1 = $data['height'];
                         $packageWeight->length1 = $data['length'];
                         $packageWeight->weight1 = $dim_weight;
