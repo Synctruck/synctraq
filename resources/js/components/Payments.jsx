@@ -88,10 +88,7 @@ function Payments() {
 
         if(type == 'download')
         {
-            location.href = url;
-        }
-        else
-        {
+        
             setIsLoading(true);
 
             fetch(url)
