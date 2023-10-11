@@ -280,6 +280,23 @@ class PaymentTeamController extends Controller
         $delimiter = ",";
         $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
         $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+
+        if ($type != 'download') 
+	    {
+          $files = [public_path($filename)];
+          $date = date('Y-m-d H:i:s');
+          $data = ['title' => $title, 'date' => $date];
+
+            Mail::send('mail.export', ['data' => $data], function ($message) use ($data, $date, $files) {
+
+          $message->to(Auth::user()->email, 'Syntruck')
+            ->subject($data['title'] . '(' . $date . ')');
+
+        foreach ($files as $file) {
+            $message->attach($file);
+        }
+         });
+	    }
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
@@ -405,13 +422,11 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-
-            
-            rewind($file);
-            fclose($file);
-
-            SendGeneralExport('Packages Warehouse', $filename);
-            return ['stateAction' => true];     
+            fseek($file, 0);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+            fpassthru($file);
+        
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
