@@ -421,7 +421,7 @@ class PaymentTeamController extends Controller
                 rewind($file);
                 fclose($file);
                 
-                SendToTeam('Packages Warehouse', $filename,  $idPayment);
+                SendToTeam('Payment Team', $filename,  $idPayment);
                 return ['stateAction' => true];
         }
     }
