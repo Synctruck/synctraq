@@ -405,11 +405,7 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-            fseek($file, 0);
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="' . $filename . '";');
-            fpassthru($file);
-      
+
             
             rewind($file);
             fclose($file);
