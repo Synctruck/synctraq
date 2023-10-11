@@ -666,7 +666,7 @@ function PackageWarehouse() {
         }
         else
         {
-            setIsLoading(true);
+            
 
             fetch(url)
             .then(res => res.json())
