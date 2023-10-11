@@ -272,13 +272,14 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
-    public function ExportReceipt($idPayment)
+    public function ExportReceipt($idPayment, $typeExport)
     {
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
-        $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
-        $file      = fopen('php://memory', 'w');
+       
+        $filename = $typeExport == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
+        $file = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
@@ -404,13 +405,24 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
+        if($typeExport == 'download')
+        {
+             fseek($file, 0);
 
-        fseek($file, 0);
+             header('Content-Type: text/csv');
+             header('Content-Disposition: attachment; filename="' . $filename . '";');
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+             fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
 
-        fpassthru($file);
+            SendGeneralExport('Payment Team', $filename);
+
+            return ['stateAction' => true];
+        }
     }
 
     public function StatusChange(Request $request, $idPayment, $status)

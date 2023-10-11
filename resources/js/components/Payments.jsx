@@ -112,9 +112,44 @@ function Payments() {
         location.href = url_general +'payment-team/export/'+ id;
     }
 
-    const handlerExportPaymentReceipt = (id) => {
+    const exportAllPackageWarehouse = (id, type) => {
 
-        location.href = url_general +'payment-team/export-receipt/'+ id;
+        let url = url_general +'payment-team/export/'+ id +'/'+type;
+
+        if(type == 'download')
+        {
+            location.href = url;
+        }
+        else
+        {
+            
+            fetch(url)
+            .then(res => res.json())
+            .then((response) => {
+
+                if(response.stateAction == true)
+                {
+                    swal("The export was sended to your mail!", {
+
+                        icon: "success",
+                    });
+                }
+                else
+                {
+                    swal("There was an error, try again!", {
+
+                        icon: "error",
+                    });
+                }
+
+                setIsLoading(false);
+            });
+        }
+    }
+
+    const handlerExportPaymentReceipt = (id, type) => {
+
+        exportAllPackageWarehouse(id, type);
     }
 
     const handlerChangeStatus = (id, status) => {
@@ -306,7 +341,7 @@ function Payments() {
                         (
                             payment.status == 'PAID'
                             ? 
-                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Download Receipt">
+                                <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, "download") } title="Download Receipt">
                                     <i className="ri-file-excel-fill"></i>
                                 </button>
                             :
@@ -318,7 +353,7 @@ function Payments() {
                         (
                             payment.status == 'PAID'
                             ? 
-                                <button className="btn btn-info btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id) } title="Send Reciept">
+                                <button className="btn btn-info btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, "send") } title="Send Email">
                                     <i className="ri-mail-fill"></i>
                                 </button>
                             :
