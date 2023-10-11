@@ -17,7 +17,7 @@ class TaskAmericanEagleInvoice extends Command
      *
      * @var string
      */
-    protected $signature = 'test:task-ae';
+    protected $signature = 'task:ae-invoice';
 
     /**
      * The console command description.
