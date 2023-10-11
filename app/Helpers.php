@@ -4,6 +4,7 @@ use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\PermissionUser;
 use App\Models\User;
+use App\Models\PaymentTeam;
 use Illuminate\Support\Facades\Auth;
 
 //funcion que evalua si el usuario tiene permiso para una acción
@@ -43,6 +44,29 @@ function SendGeneralExport($title, $filename)
     Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
 
         $message->to(Auth::user()->email, 'Syntruck')
+        ->subject($data['title']  .'('. $date . ')');
+
+        foreach ($files as $file)
+        {
+            $message->attach($file);
+        }
+    });
+}
+
+
+function SendToTeam($title, $filename)
+{
+    $filename  = $filename;
+    $files     = [public_path($filename)];
+    $date      = date('Y-m-d H:i:s');
+    $data      = ['title' => $title, 'date' => $date];
+
+    $idTeam =  PaymentTeam::find($idPayment)->idTeam;
+    $email = User::find($idTeam)->email;
+ 
+    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
+
+        $message->to($email, 'Syntruck')
         ->subject($data['title']  .'('. $date . ')');
 
         foreach ($files as $file)

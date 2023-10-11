@@ -276,7 +276,7 @@ class PaymentTeamController extends Controller
     {
         
         $payment = PaymentTeam::with('team')->find($idPayment);
-
+    
         $delimiter = ",";
         $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
         $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
@@ -419,7 +419,7 @@ class PaymentTeamController extends Controller
                 rewind($file);
                 fclose($file);
     
-                SendGeneralExport('Payment Team', $filename);
+                SendToTeam('Payment Team', $filename);
     
                 return ['stateAction' => true];
         }
