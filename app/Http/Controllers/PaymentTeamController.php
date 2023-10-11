@@ -425,7 +425,7 @@ class PaymentTeamController extends Controller
     
                 $idTeam =  PaymentTeam::find($idPayment)->idTeam;
                 $email = User::find($idTeam)->email;
-             
+                dd($email);
                 Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
             
                     $message->to($email, 'Syntruck')
