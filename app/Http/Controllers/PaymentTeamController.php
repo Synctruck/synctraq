@@ -405,20 +405,17 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-        if ($type == 'download') {
             fseek($file, 0);
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename="' . $filename . '";');
             fpassthru($file);
-        } else {
+      
             
             rewind($file);
             fclose($file);
 
             SendGeneralExport('Packages Warehouse', $filename);
-            return ['stateAction' => true];
-        }
-           
+            return ['stateAction' => true];     
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
