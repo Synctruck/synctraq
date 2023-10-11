@@ -68,7 +68,7 @@ function SendToTeam($title, $filename, $idPayment)
         
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
-        
+        dd($gerardoEmail);
         $message->cc([$gerardoEmail]);
 
         foreach ($files as $file)
