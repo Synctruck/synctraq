@@ -64,10 +64,12 @@ function SendToTeam($title, $filename, $idPayment)
     $idTeam =  PaymentTeam::find($idPayment)->idTeam;
     $email = User::find($idTeam)->email;
  
-    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email) {
-    
-        $message->cc(['gerardo@inlandlogistics.co','finance@synctruck.com','david.bautista@e-globalsupport.com', $email])
-        ->subject($data['title']  .'('. $date . ')');
+        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email) {
+
+        $message->to($email, 'Syntruck')
+        ->subject($data['title'] . ' (' . $date . ')');
+        
+        $message->cc(['granilloronquillo16@gmail.com']);
 
         foreach ($files as $file)
         {
