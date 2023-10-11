@@ -274,10 +274,10 @@ class PaymentTeamController extends Controller
 
     public function ExportReceipt($idPayment, $type)
     {
+        
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
-       
         $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
         $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
         
@@ -405,14 +405,20 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-           if($type=='messi')
-           {
+        if ($type == 'download') {
             fseek($file, 0);
-             header('Content-Type: text/csv');
-             header('Content-Disposition: attachment; filename="' . $filename . '";');
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+            fpassthru($file);
+        } else {
+            
+            rewind($file);
+            fclose($file);
 
-             fpassthru($file);
-           }
+            SendGeneralExport('Packages Warehouse', $filename);
+            return ['stateAction' => true];
+        }
+           
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
