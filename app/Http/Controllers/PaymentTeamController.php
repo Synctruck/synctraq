@@ -405,7 +405,6 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-        dd($type);
         if($type == 'download')
         {
                 fseek($file, 0);
@@ -417,7 +416,6 @@ class PaymentTeamController extends Controller
         }
         else
         {
-                dd("punto");
                 rewind($file);
                 fclose($file);
     
