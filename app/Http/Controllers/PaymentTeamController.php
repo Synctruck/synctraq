@@ -420,23 +420,8 @@ class PaymentTeamController extends Controller
         {
                 rewind($file);
                 fclose($file);
-                $title     = 'Payment Team';
-                $files     = [public_path($filename)];
-                $date      = date('Y-m-d H:i:s');
-                $data      = ['title' => $title, 'date' => $date];
-                $idTeam =  PaymentTeam::find($idPayment)->idTeam;
-                $email =   User::find($idTeam)->email;
                 
-                Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files,$email) {
-                    $message->to($email, 'Syntruck')
-                    ->subject($data['title']  .'('. $date . ')');
-            
-                    foreach ($files as $file)
-                    {
-                        $message->attach($file);
-                    }
-                });
-    
+                SendGeneralExport('Packages Warehouse', $filename,  $idPayment);
                 return ['stateAction' => true];
         }
     }
