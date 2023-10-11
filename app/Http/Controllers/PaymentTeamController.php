@@ -272,14 +272,14 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
-    public function ExportReceipt($idPayment, $typeExport)
+    public function ExportReceipt($idPayment, $type)
     {
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
        
-        $filename = $typeExport == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
-        $file = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+        $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
+        $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
@@ -405,11 +405,14 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
+           if($type=='messi')
+           {
             fseek($file, 0);
              header('Content-Type: text/csv');
              header('Content-Disposition: attachment; filename="' . $filename . '";');
 
              fpassthru($file);
+           }
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
