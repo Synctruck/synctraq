@@ -66,7 +66,7 @@ function SendToTeam($title, $filename, $idPayment)
  
     Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email) {
     
-        $message->cc(['granilloronquillo16@gmail.com','granilloronquillo16@gmail.com','alvaro.granillo@inlandlogistics.co', $email])
+        $message->cc(['gerardo@inlandlogistics.co','finance@synctruck.com','david.bautista@e-globalsupport.com', $email])
         ->subject($data['title']  .'('. $date . ')');
 
         foreach ($files as $file)
