@@ -122,7 +122,6 @@ function Payments() {
         }
         else
         {
-            
             fetch(url)
             .then(res => res.json())
             .then((response) => {
