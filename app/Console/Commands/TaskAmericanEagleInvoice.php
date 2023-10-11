@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ ChargeCompany, ChargeCompanyDetail, Company, CompanyStatus, FileSend, PackageDispatch, PackageHistory };
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, ChargeCompanyAdjustment, PackageDispatch, PackagePriceCompanyTeam };
 
 use Log;
 
@@ -69,7 +69,7 @@ class TaskAmericanEagleInvoice extends Command
         $file   = fopen($contents, 'w');
 
         $idCharge = $charge->id;
-        
+
         $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
         $fieldIdPayment   = array('ID CHARGE', $idCharge);
         $fieldCompany     = array('COMPANY', $charge->company->name);
@@ -115,7 +115,6 @@ class TaskAmericanEagleInvoice extends Command
         {
             $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $chargeDetail->Reference_Number_1)->first();
             $packageDelivery         = PackageDispatch::find($chargeDetail->Reference_Number_1);
-
 
             if($packageDelivery)
             {
