@@ -63,13 +63,13 @@ function SendToTeam($title, $filename, $idPayment)
 
     $idTeam =  PaymentTeam::find($idPayment)->idTeam;
     $email = User::find($idTeam)->email;
-    $gerardoEmail = env('GERARDO_EMAIL');
-        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $gerardoEmail) {
-        
+ 
+        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email) {
+
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
-        dd($gerardoEmail);
-        $message->cc([$gerardoEmail]);
+        
+        $message->cc(['gerardo@inlandlogistics.co','finance@synctruck.com','david.bautista@e-globalsupport.com']);
 
         foreach ($files as $file)
         {
