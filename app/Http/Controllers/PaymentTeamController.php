@@ -407,7 +407,8 @@ class PaymentTeamController extends Controller
         }
         if($typeExport == 'download')
         {
-             fseek($file, 0);
+            pp("messi");
+            fseek($file, 0);
 
              header('Content-Type: text/csv');
              header('Content-Disposition: attachment; filename="' . $filename . '";');
