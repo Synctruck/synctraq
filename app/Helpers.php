@@ -54,7 +54,7 @@ function SendGeneralExport($title, $filename)
 }
 
 
-function SendToTeam($title, $filename)
+function SendToTeam($title, $filename,$idPayment)
 {
     $filename  = $filename;
     $files     = [public_path($filename)];
