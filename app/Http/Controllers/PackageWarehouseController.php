@@ -134,6 +134,7 @@ class PackageWarehouseController extends Controller
         $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
+
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'VALIDATOR', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
 

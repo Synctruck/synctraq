@@ -405,11 +405,11 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
-    
-        if($typeExport == 'download')
+        dd($type);
+        if($type == 'download')
         {
                 fseek($file, 0);
-    
+
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '";');
     
@@ -417,6 +417,7 @@ class PaymentTeamController extends Controller
         }
         else
         {
+                dd("punto");
                 rewind($file);
                 fclose($file);
     

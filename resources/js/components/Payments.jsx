@@ -4,6 +4,7 @@ import { Modal } from 'react'
 import Pagination from "react-js-pagination"
 import swal from 'sweetalert'
 import Select from 'react-select'
+import { Alert } from 'bootstrap'
 
 function Payments() {
 
@@ -114,7 +115,7 @@ function Payments() {
 
     const exportAllPackageWarehouse = (id, type) => {
 
-        let url = url_general +'payment-team/export/'+ id +'/'+type;
+        let url = url_general +'payment-team/export-receipt/'+ id + '/'+ type;
 
         if(type == 'download')
         {
@@ -147,7 +148,7 @@ function Payments() {
     }
 
     const handlerExportPaymentReceipt = (id, type) => {
-
+        alert("2");
         exportAllPackageWarehouse(id, type);
     }
 

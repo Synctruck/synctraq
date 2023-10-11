@@ -221,8 +221,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/list-revert-shipments/{idPayment}', [PaymentTeamController::class, 'ListRevertShipments']);
 	Route::get('/payment-team/status-change/{idpayment}/{status}', [PaymentTeamController::class, 'StatusChange']);
 	Route::get('/payment-team/import', [PaymentTeamController::class, 'Import']);
-	Route::get('/payment-team/export/{id}/{type}', [PaymentTeamController::class, 'Export']);
-	Route::get('/payment-team/export-receipt/{id}', [PaymentTeamController::class, 'ExportReceipt']);
+	Route::get('/payment-team/export/{id}', [PaymentTeamController::class, 'Export']);
+	Route::get('/payment-team/export-receipt/{id}/{type}', [PaymentTeamController::class, 'ExportReceipt']);
 	Route::get('/payment-team/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
