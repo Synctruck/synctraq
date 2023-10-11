@@ -281,8 +281,6 @@ class PaymentTeamController extends Controller
         $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
         $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
-        if ($type != 'download') 
-	    {
           $files = [public_path($filename)];
           $date = date('Y-m-d H:i:s');
           $data = ['title' => $title, 'date' => $date];
@@ -296,7 +294,6 @@ class PaymentTeamController extends Controller
             $message->attach($file);
         }
          });
-	    }
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
