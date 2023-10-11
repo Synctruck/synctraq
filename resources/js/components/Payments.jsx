@@ -148,7 +148,6 @@ function Payments() {
     }
 
     const handlerExportPaymentReceipt = (id, type) => {
-        alert("2");
         exportAllPackageWarehouse(id, type);
     }
 
