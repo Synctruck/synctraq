@@ -68,6 +68,8 @@ class TaskAmericanEagleInvoice extends Command
         $delimiter = ",";
         $file   = fopen($contents, 'w');
 
+        $idCharge = $charge->id;
+        
         $fieldDate        = array('DATE', date('m/d/Y H:i:s'));
         $fieldIdPayment   = array('ID CHARGE', $idCharge);
         $fieldCompany     = array('COMPANY', $charge->company->name);
