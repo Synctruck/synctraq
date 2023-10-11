@@ -420,7 +420,7 @@ class PaymentTeamController extends Controller
                 rewind($file);
                 fclose($file);
     
-                SendGeneralExport('Packages Warehouse', $filename);
+                SendGeneralExport('Payment Team', $filename);
     
                 return ['stateAction' => true];
             }
