@@ -406,24 +406,24 @@ class PaymentTeamController extends Controller
             }
         }
     
-            if($typeExport == 'download')
-            {
+        if($typeExport == 'download')
+        {
                 fseek($file, 0);
     
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '";');
     
                 fpassthru($file);
-            }
-            else
-            {
+        }
+        else
+        {
                 rewind($file);
                 fclose($file);
     
                 SendGeneralExport('Payment Team', $filename);
     
                 return ['stateAction' => true];
-            }
+        }
     }
 
     public function StatusChange(Request $request, $idPayment, $status)
