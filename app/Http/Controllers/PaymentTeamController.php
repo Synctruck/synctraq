@@ -10,6 +10,8 @@ use App\Models\{
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+
 
 use Auth;
 use DateTime;
@@ -418,15 +420,15 @@ class PaymentTeamController extends Controller
         {
                 rewind($file);
                 fclose($file);
-                
+                $title     = 'Payment Team';
                 $files     = [public_path($filename)];
                 $date      = date('Y-m-d H:i:s');
-            
+                $data      = ['title' => $title, 'date' => $date];
                 $idTeam =  PaymentTeam::find($idPayment)->idTeam;
-                $email = User::find($idTeam)->email;
-                dd($email);
-                Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files) {
-            
+                $email =   User::find($idTeam)->email;
+                
+                Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files,$email) {
+                    dd($email);
                     $message->to($email, 'Syntruck')
                     ->subject($data['title']  .'('. $date . ')');
             
