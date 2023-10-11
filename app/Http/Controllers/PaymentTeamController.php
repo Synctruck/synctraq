@@ -421,8 +421,7 @@ class PaymentTeamController extends Controller
                 
                 $files     = [public_path($filename)];
                 $date      = date('Y-m-d H:i:s');
-                /*$data      = ['title' => $title, 'date' => $date];*/
-    
+            
                 $idTeam =  PaymentTeam::find($idPayment)->idTeam;
                 $email = User::find($idTeam)->email;
                 dd($email);
