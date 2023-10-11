@@ -65,7 +65,7 @@ function SendToTeam($title, $filename, $idPayment)
     $email = User::find($idTeam)->email;
     $gerardoEmail = env('GERARDO_EMAIL');
         Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $gerardoEmail) {
-
+        
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
         
