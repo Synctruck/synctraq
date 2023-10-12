@@ -336,4 +336,41 @@ class ChargeCompanyController extends Controller
 
         fpassthru($file);
     }
+
+    public function DeletePackagesDetail()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $startDate = date('Y-m-d 00:00:00');
+            $endDate   = date('Y-m-d 23:59:59');
+
+            $chargeCompanyDetailList = ChargeCompanyDetail::whereBetween('created_at', [$startDate, $endDate])->get();
+
+            foreach($chargeCompanyDetailList as $chargeDetail)
+            {
+                $packageDispatch = PackageDispatch::find($chargeDetail->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->invoiced = 0;
+                    $packageDispatch->save();
+                }
+                
+                $chargeDetail = ChargeCompanyDetail::find($chargeDetail->Reference_Number_1);
+                $chargeDetail->delete();
+            }
+
+            DB::commit();
+
+            return "completed";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
+    }
 }
