@@ -193,7 +193,7 @@ class InventoryToolController extends Controller
 
         if($statusActual['package']->idCellar != $inventoryTool->idCellar)
             return ['statusCode' => 'notExistsCellarPackages'];
-
+ 
         $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
                                                 ->where('Reference_Number_1', $request->Reference_Number_1)
                                                 ->first();
