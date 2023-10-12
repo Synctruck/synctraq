@@ -76,9 +76,7 @@ function Login() {
                 <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
               <div className="d-flex justify-content-center py-4">
-                 <div style={{ backgroundColor: '#0a5dc2', padding: '10px' }}>
-                  <img  src="/img/log.png" width={200} alt="img" style={{ background: '#0a5dc2', padding: '10px', borderRadius: '5px',}} />
-                </div>
+                  <img  src="/img/logo_sync_truck.png" width={200} alt="img"/>
               </div>
 
                   <div className="card mb-3">
