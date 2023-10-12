@@ -189,21 +189,23 @@ class InventoryToolController extends Controller
         if($statusActual['package']->idCellar != $inventoryTool->idCellar)
             return ['statusCode' => 'notExistsCellarPackages'];
 
+        $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
+                                                ->where('Reference_Number_1', $request->Reference_Number_1)
+                                                ->first();
+
+        if($inventoryToolDetail)
+            if($inventoryToolDetail->status == 'Inventoried')
+                return ['statusCode' => 'packageInventoried'];
+
         try
         {
             DB::beginTransaction();
 
-            $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
-                                                ->where('Reference_Number_1', $request->Reference_Number_1)
-                                                ->where('status', 'Pending')
-                                                ->first();
-
-            
-
-            if($inventoryToolDetail)
+            if($inventoryToolDetail->status == 'Pending')
             {
                 $inventoryTool->nf = $inventoryTool->nf - 1;
 
+                $inventoryToolDetail->status = 'Inventoried';
                 $inventoryToolDetail->delete();
             }
             else

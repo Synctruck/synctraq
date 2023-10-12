@@ -261,6 +261,13 @@ function InventoryTool() {
 
                     document.getElementById('soundPitidoWarning').play();
                 }
+                else if(response.statusCode == 'packageInventoried')
+                {
+                    setTextMessage('The package was inventoried #'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
                 else(response.status == 422)
                 {
                     for(const index in response.errors)
