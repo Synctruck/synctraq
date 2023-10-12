@@ -77,7 +77,7 @@ function Login() {
 
               <div className="d-flex justify-content-center py-4">
                  <div style={{ backgroundColor: '#0a5dc2', padding: '10px' }}>
-                  <img  src="/img/logo.png" width={200} alt="img" style={{ background: '#0a5dc2', padding: '10px', borderRadius: '5px',}} />
+                  <img  src="/img/log.png" width={200} alt="img" style={{ background: '#0a5dc2', padding: '10px', borderRadius: '5px',}} />
                 </div>
               </div>
 
