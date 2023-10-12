@@ -211,7 +211,7 @@ class InventoryToolController extends Controller
                 $inventoryTool->nf = $inventoryTool->nf - 1;
 
                 $inventoryToolDetail->status = 'Inventoried';
-                $inventoryToolDetail->delete();
+                $inventoryToolDetail->save();
             }
             else
             {

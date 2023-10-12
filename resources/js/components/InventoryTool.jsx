@@ -263,6 +263,7 @@ function InventoryTool() {
                 }
                 else if(response.statusCode == 'packageInventoried')
                 {
+                    setNumberPackage('')
                     setTextMessage('The package was inventoried #'+ Reference_Number_1);
                     setTypeMessage('warning');
 
