@@ -177,7 +177,7 @@ class PackageLmCarrierController extends Controller
                 );
 
         $dataSend =    '{
-                            "status" : "scan_in_last_mile_carrier",
+                            "status" : "reprocessing_at_mc",
                             "datetime" : "'. $created_at .'",
                             "warehouse": "'. $cellar->id .'",
                             "location" : "'. $cellar->state .','. $cellar->city .'"
