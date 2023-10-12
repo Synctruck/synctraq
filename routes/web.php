@@ -207,6 +207,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/charge-company/export/{id}/{download}', [ChargeCompanyController::class, 'Export']);
 	Route::get('/charge-company/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [ChargeCompanyController::class, 'ExportAll']);
 
+	Route::get('/charge-company/delete-detail', [ChargeCompanyController::class, 'DeletePackagesDetail']);
+
 	Route::get('/charge-company-adjustment/{idCharge}', [ChargeCompanyAdjustmentController::class, 'List']);
 	Route::post('/charge-company-adjustment/insert', [ChargeCompanyAdjustmentController::class, 'Insert']);
 

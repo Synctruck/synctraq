@@ -59,11 +59,16 @@ class InventoryToolController extends Controller
             $inventoryTool->userName    = Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $inventoryTool->status      = 'New';
             
-            $packageInboundList = PackageInbound::select('Reference_Number_1', 'status')->get();
+            $packageInboundList = PackageInbound::select('Reference_Number_1', 'idCellar', 'status')
+                                                ->where('idCellar', $request->idCellar)
+                                                ->get();
             $packageWarehouseList = PackageWarehouse::where('status', 'Warehouse')
-                                                    ->select('Reference_Number_1', 'status')
+                                                    ->where('idCellar', $request->idCellar)
+                                                    ->select('Reference_Number_1', 'idCellar', 'status')
                                                     ->get();
-            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'status')->get();
+            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'idCellar', 'status')
+                                                                        ->where('idCellar', $request->idCellar)
+                                                                        ->get();
 
             $packageList = $packageInboundList->merge($packageWarehouseList);
             $packageList = $packageList->merge($packageNeedMoreInformationList);
@@ -189,22 +194,24 @@ class InventoryToolController extends Controller
         if($statusActual['package']->idCellar != $inventoryTool->idCellar)
             return ['statusCode' => 'notExistsCellarPackages'];
 
+        $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
+                                                ->where('Reference_Number_1', $request->Reference_Number_1)
+                                                ->first();
+
+        if($inventoryToolDetail)
+            if($inventoryToolDetail->status == 'Inventoried')
+                return ['statusCode' => 'packageInventoried'];
+
         try
         {
             DB::beginTransaction();
 
-            $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
-                                                ->where('Reference_Number_1', $request->Reference_Number_1)
-                                                ->where('status', 'Pending')
-                                                ->first();
-
-            
-
-            if($inventoryToolDetail)
+            if($inventoryToolDetail->status == 'Pending')
             {
                 $inventoryTool->nf = $inventoryTool->nf - 1;
 
-                $inventoryToolDetail->delete();
+                $inventoryToolDetail->status = 'Inventoried';
+                $inventoryToolDetail->save();
             }
             else
             {
