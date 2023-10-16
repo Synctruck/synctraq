@@ -54,7 +54,7 @@
                                 <a href="{{url('/')}}"><img src="{{asset('img/logo.PNG')}}" width="200" alt=""/></a>
                             </div> --}}
 
-                            <div id="tracks">
+                            <div id="">
                             </div>
                         </div>
                     </div>

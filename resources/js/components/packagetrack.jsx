@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Steps } from 'rsuite';
 import '../../css/rsuit.css';
 
-function Track() {
+function PackageTrack() {
 
     const [packageId, setPackageId]         = useState('');
     const [packageZipCode, setPackageZipCode] = useState('');
@@ -167,8 +167,19 @@ function Track() {
     return (
 
         <section className="section">
-                    
+            <div className="card mb-3">
+                <div className="card-body">
+                    <div className=" pb-2">
                         <div className="row">
+                            <div className="col-lg-12 text-center">
+                                <div className="form-group">
+                                    <img src="./img/logo.png" alt="" width="220"/>
+                                </div>
+                            </div>
+                            <div className="col-lg-12">
+                                <h5 className="card-title text-center pb-0 fs-4">Track Your Package</h5>
+                                <p className="text-center"><span> <b>NOTE:</b> Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p><br></br>
+                            </div>
                             <div className="col-lg-12">
                                 <form id="formSearch" onSubmit={getDetail}>
                                     <div className="form-group">
@@ -199,13 +210,60 @@ function Track() {
                                 </Steps>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div className="card mb-3" >
+                <div className="card-body">
+                    <div className=" pb-2">
+                        <div className="row">
+                            <div className="col-lg-6">
+                                <div className="col-lg-12">
+                                    <div className="form-group">
+                                        <h5 className="card-title text-center pb-0 fs-4">Need More Help</h5>
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 text-center">
+                                    <div className="form-group">
+                                        <h5 className='text-center'>Customer Support</h5>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>(551) 225-0007</p>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>connect@synctruck.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-lg-6">
+                                <div className="col-lg-12">
+                                    <div className="form-group">
+                                        <h5 className="card-title text-center pb-0 fs-4">Office Hours</h5>
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 text-center">
+                                    <div className="form-group">
+                                        <h5 className='text-center'>Mon – Fri</h5>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>09:00 am – 05:00 pm</p>
+                                    </div>
+                                    <div className="form-group">
+                                        <p>Sat – Sun | Closed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }
 
-export default Track;
+export default PackageTrack;
 
 // DOM element
-if (document.getElementById('tracks')) {
-    ReactDOM.render(<Track />, document.getElementById('tracks'));
+if (document.getElementById('track')) {
+    ReactDOM.render(<PackageTrack />, document.getElementById('track'));
 }
