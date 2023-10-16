@@ -191,8 +191,11 @@ class InventoryToolController extends Controller
         if($inventoryTool->idCellar != Auth::user()->idCellar)
             return ['statusCode' => 'notExistsCellar'];
 
-        if($statusActual['package']->idCellar != $inventoryTool->idCellar)
-            return ['statusCode' => 'notExistsCellarPackages'];
+        if($statusActual['status'] != 'Warehouse')
+        {
+            if($statusActual['package']->idCellar != $inventoryTool->idCellar)
+                return ['statusCode' => 'notExistsCellarPackages'];
+        }
  
         $inventoryToolDetail = InventoryToolDetail::where('idInventoryTool', $request->idInventoryTool)
                                                 ->where('Reference_Number_1', $request->Reference_Number_1)
@@ -206,17 +209,33 @@ class InventoryToolController extends Controller
         {
             DB::beginTransaction();
 
-            if($inventoryToolDetail->status == 'Pending')
+            if($inventoryToolDetail)
             {
-                $inventoryTool->nf = $inventoryTool->nf - 1;
+                if($inventoryToolDetail->status == 'Pending')
+                {
+                    $inventoryTool->nf = $inventoryTool->nf - 1;
 
-                $inventoryToolDetail->status = 'Inventoried';
-                $inventoryToolDetail->save();
+                    $inventoryToolDetail->status = 'Inventoried';
+                    $inventoryToolDetail->save();
+                }
+                else
+                {
+                    $inventoryTool->ov = $inventoryTool->ov + 1;
+
+                    $inventoryToolDetail = new InventoryToolDetail();
+                    $inventoryToolDetail->id                 = uniqid();
+                    $inventoryToolDetail->idInventoryTool    = $request->idInventoryTool;
+                    $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
+                    $inventoryToolDetail->statusPackage      = $statusActual['status'];
+                    $inventoryToolDetail->status             = 'Overage';
+                    $inventoryToolDetail->save();
+                }
+
+                $inventoryTool->save();
             }
-            else
+            
+            if(!$inventoryToolDetail && $statusActual['status'] == 'Warehouse')
             {
-                $inventoryTool->ov = $inventoryTool->ov + 1;
-
                 $inventoryToolDetail = new InventoryToolDetail();
                 $inventoryToolDetail->id                 = uniqid();
                 $inventoryToolDetail->idInventoryTool    = $request->idInventoryTool;
@@ -224,10 +243,48 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->statusPackage      = $statusActual['status'];
                 $inventoryToolDetail->status             = 'Overage';
                 $inventoryToolDetail->save();
+
+                $packageWarehouse = PackageWarehouse::find($request->Reference_Number_1);
+                $packageWarehouse->idCellar    = $inventoryTool->idCellar;
+                $packageWarehouse->nameCellar  = $inventoryTool->nameCellar;
+                $packageWarehouse->stateCellar = $inventoryTool->stateCellar;
+                $packageWarehouse->cityCellar  = $inventoryTool->cityCellar;
+                $packageWarehouse->save();
+
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageWarehouse->idCompany;
+                $packageHistory->company                      = $packageWarehouse->company;
+                $packageHistory->idStore                      = $packageWarehouse->idStore;
+                $packageHistory->store                        = $packageWarehouse->store;
+                $packageHistory->Dropoff_Contact_Name         = $packageWarehouse->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packageWarehouse->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageWarehouse->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageWarehouse->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageWarehouse->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packageWarehouse->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packageWarehouse->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageWarehouse->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageWarehouse->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $packageWarehouse->Notes;
+                $packageHistory->Weight                       = $packageWarehouse->Weight;
+                $packageHistory->Route                        = $packageWarehouse->Route;
+                $packageHistory->idUser                       = Auth::user()->id;
+                $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                $packageHistory->quantity                     = $packageWarehouse->quantity;
+                $packageHistory->status                       = 'Warehouse';
+                $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                $packageHistory->idCellar                     = $inventoryTool->idCellar;
+                $packageHistory->nameCellar                   = $inventoryTool->nameCellar;
+                $packageHistory->stateCellar                  = $inventoryTool->stateCellar;
+                $packageHistory->cityCellar                   = $inventoryTool->cityCellar;
+                $packageHistory->save();
             }
 
-            $inventoryTool->save();
-            
             if($statusActual['status'] == 'NMI')
             {
 
