@@ -155,22 +155,22 @@ function Track() {
 
             {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
                 <div className="container">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <h6 className="pt-4">Tracking details</h6>
-                    <hr />
-                    <h5 className="text-center">PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                    <div className={`col-12 mt-2 column`}>
-                      <Steps current={step}>
-                        <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                        <Steps.Item title="Inbound" description={inboundDesc} />
-                        <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                        <Steps.Item title="Delivery" description={deliveryDesc} />
-                      </Steps>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <h6 className="pt-4">Tracking details</h6>
+                            <hr />
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+                            <div className={`col-12 mt-2 tracking-details`}>
+                                <Steps current={step}>
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                </Steps>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
             )}
         </section>
     );
