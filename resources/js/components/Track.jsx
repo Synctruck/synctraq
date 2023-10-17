@@ -172,7 +172,6 @@ function Track() {
               </div>
             </div>
           </div>
-      
           {searchClicked && listDetails.length > 0 && (
   <div className="container">
     <div className="row">
@@ -180,8 +179,8 @@ function Track() {
         <h6 className="pt-4">Tracking details</h6>
         <hr />
         <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-        <div className="col-12 mt-2 tracking-details">
-          <Steps current={step} className="d-md-flex flex-row text-center">
+        <div className="col-12 mt-2 tracking-details" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Steps current={step}>
             <Steps.Item title="In Fulfillment" description={onholdDesc} />
             <Steps.Item title="Inbound" description={inboundDesc} />
             <Steps.Item title="Out for Delivery" description={dispatchDesc} />
@@ -192,6 +191,7 @@ function Track() {
     </div>
   </div>
 )}
+
 
 
         </section>
