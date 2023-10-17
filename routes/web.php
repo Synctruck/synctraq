@@ -19,6 +19,11 @@ Route::get('/track', [Trackcontroller::class, 'Index']);
 Route::get('/track/detail/{package_id}', [Trackcontroller::class, 'trackDetail']);
 Route::get('/track-detail', [Trackcontroller::class, 'Index']);
 
+//trackpackage that will be used as iFrame
+Route::get('/trackpackage', [TrackpackageController::class, 'Index']);
+Route::get('/trackpackage/detail/{package_id}', [TrackpackageController::class, 'trackDetail']);
+Route::get('/trackpackage-detail', [TrackpackageController::class, 'Index']);
+
 //============ User Login - Logout
 Route::get('/', [UserController::class, 'Login']);
 Route::post('/user/login', [UserController::class, 'ValidationLogin']);
