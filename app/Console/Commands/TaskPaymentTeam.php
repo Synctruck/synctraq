@@ -97,7 +97,7 @@ class TaskPaymentTeam extends Command
                     $totalTeam   = 0;
 
                     Log::info($listPackageDelivery);
-                    
+
                     if($listPackageDelivery)
                     {
                         $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
@@ -109,7 +109,6 @@ class TaskPaymentTeam extends Command
                             $toReversePackages->delete();
                         }
 
-                        $totalAdjustmentToDeduct = 0;
                         $shipmentIds = '';
 
                         $toDeductLostPackagesList = ToDeductLostPackages::where('idTeam', $team->id)->get();
@@ -122,6 +121,8 @@ class TaskPaymentTeam extends Command
                             $toDeductLostPackages = ToDeductLostPackages::find($toDeductLostPackages->shipmentId);
                             $toDeductLostPackages->delete();
                         }
+
+                        Log::info('$totalAdjustmentToDeduct => '. $totalAdjustmentToDeduct);
 
                         foreach($listPackageDelivery as $packageDelivery)
                         {
