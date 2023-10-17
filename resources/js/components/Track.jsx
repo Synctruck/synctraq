@@ -169,7 +169,7 @@ function Track() {
                     </Steps>
                 </div>
             </div>
-            <div className="col-lg-6">
+            <div className="col-lg-6 d-none d-lg-block"> {/* Agregar clase d-none d-lg-block para ocultar en pantallas más pequeñas */}
                 <h6 className="pt-4">Tracking details (Column)</h6>
                 <hr />
                 <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
@@ -185,6 +185,7 @@ function Track() {
         </div>
     </div>
 )}
+
 
         </section>
     );
