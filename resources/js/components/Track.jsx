@@ -19,10 +19,29 @@ function Track() {
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
     const [searchClicked, setSearchClicked] = useState(false); // Variable para rastrear si se hizo clic en Search
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         handleStep();
     }, [listDetails]);
+
+    useEffect(() => {
+        // Check if the device's screen width is below a certain breakpoint (e.g., 768px for most mobile devices).
+        const handleResize = () => {
+          setIsMobile(window.innerWidth <= 768);
+        };
+    
+        // Add event listener for window resize
+        window.addEventListener('resize', handleResize);
+    
+        // Initial check on component mount
+        handleResize();
+    
+        // Clean up the event listener on unmount
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
 
     useEffect(() => {
         if (packageId !== '' && searchClicked) { 
@@ -174,22 +193,22 @@ function Track() {
           </div>
           {searchClicked && listDetails.length > 0 && (
   <div className="container">
-    <div className="row">
-      <div className="col-lg-12">
-        <h6 className="pt-4">Tracking details</h6>
-        <hr />
-        <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-        <div className="col-12 mt-2 tracking-details" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Steps current={step}>
-            <Steps.Item title="In Fulfillment" description={onholdDesc} />
-            <Steps.Item title="Inbound" description={inboundDesc} />
-            <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-            <Steps.Item title="Delivery" description={deliveryDesc} />
-          </Steps>
-        </div>
+  <div className="row">
+    <div className="col-lg-12">
+      <h6 className="pt-4">Tracking details</h6>
+      <hr />
+      <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+      <div className="col-12 mt-2 tracking-details" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center' }}>
+        <Steps current={step}>
+          <Steps.Item title="In Fulfillment" description={onholdDesc} />
+          <Steps.Item title="Inbound" description={inboundDesc} />
+          <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+          <Steps.Item title="Delivery" description={deliveryDesc} />
+        </Steps>
       </div>
     </div>
   </div>
+</div>
 )}
 
 
