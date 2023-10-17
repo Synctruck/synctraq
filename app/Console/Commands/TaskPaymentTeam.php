@@ -184,8 +184,10 @@ class TaskPaymentTeam extends Command
 
                             if($toDeductLostPackages)
                             {
-                                $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
-                                $shipmentIds             = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
+                                if($toDeductLostPackages->priceToDeduct)
+                                    $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
+
+                                $shipmentIds = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
 
                                 $toDeductLostPackages->delete();
                             }
