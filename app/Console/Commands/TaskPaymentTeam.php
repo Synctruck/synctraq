@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\{ 
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
-            RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User };
+            RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User, ToDeductLostPackages };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -107,6 +107,9 @@ class TaskPaymentTeam extends Command
                             $toReversePackages->delete();
                         }
 
+                        $totalAdjustmentToDeduct = 0;
+                        $shipmentIds = '';
+
                         foreach($listPackageDelivery as $packageDelivery)
                         {
                             $dimFactor   = 200;
@@ -176,6 +179,14 @@ class TaskPaymentTeam extends Command
                                     }
                                 }
                             }
+
+                            $toDeductLostPackages = ToDeductLostPackages::find($packageDelivery->Reference_Number_1);
+
+                            if($toDeductLostPackages)
+                            {
+                                $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
+                                $shipmentIds             = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
+                            }
                         }
 
                         if($totalTeam > 0)
@@ -187,6 +198,16 @@ class TaskPaymentTeam extends Command
                                 $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
                                 $paymentTeamAdjustment->amount        = $totalAdjustment;
                                 $paymentTeamAdjustment->description   = 'Reverts';
+                                $paymentTeamAdjustment->save();
+                            }
+
+                            if($totalAdjustmentToDeduct != 0)
+                            {
+                                $paymentTeamAdjustment = new PaymentTeamAdjustment();
+                                $paymentTeamAdjustment->id            = uniqid();
+                                $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
+                                $paymentTeamAdjustment->amount        = $totalAdjustmentToDeduct;
+                                $paymentTeamAdjustment->description   = 'Lost Packages: '. $shipmentIds;
                                 $paymentTeamAdjustment->save();
                             }
 

@@ -213,10 +213,10 @@
             @endif
 
             <li class="nav-item" id="liUlFinanzas">
-                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check' || Request::is('payment-revert')) || Request::is('report-invoices') ? 'true' : 'false'}}">
+                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check' || Request::is('payment-revert')) || Request::is('to-deduct-lost-packages') || Request::is('report-invoices') ? 'true' : 'false'}}">
                   <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team') || Request::is('payment-revert')) || Request::is('report-invoices') ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
+                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team') || Request::is('payment-revert')) || Request::is('to-deduct-lost-packages') || Request::is('report-invoices') ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
                     @if(hasPermission('chargeCompany.index'))
                         <li>
                             <a class="nav-link {{Request::is('charge-company') ? 'active' : 'collapsed'}}" href="{{url('charge-company')}}">
@@ -238,6 +238,14 @@
                             <a class="nav-link {{Request::is('payment-revert') ? 'active' : 'collapsed'}}" href="{{url('payment-revert')}}">
                                 <i class="bx bxs-dollar-circle"></i>
                                 <span>PAYMENT REVERTS</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if(hasPermission('toDeductLostPackages.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('to-deduct-lost-packages') ? 'active' : 'collapsed'}}" href="{{url('to-deduct-lost-packages')}}">
+                                <i class="bx bxs-dollar-circle"></i>
+                                <span>DEDUCT LOST PACKAGES</span>
                             </a>
                         </li>
                     @endif
