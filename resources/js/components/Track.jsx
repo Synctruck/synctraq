@@ -5,9 +5,6 @@ import axios from 'axios';
 import moment from 'moment';
 import { Steps } from 'rsuite';
 import '../../css/rsuit.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
 
 function Track() {
     const [packageId, setPackageId] = useState('');
@@ -19,7 +16,6 @@ function Track() {
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
     const [searchClicked, setSearchClicked] = useState(false); // Variable para rastrear si se hizo clic en Search
-    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         handleStep();
@@ -49,18 +45,6 @@ function Track() {
             .finally();
         }
     }, [packageId, searchClicked]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 10000); // Adjust the breakpoint as needed
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Initial check
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
 
     const getDetail = (e) => {
         e.preventDefault();
@@ -185,6 +169,7 @@ function Track() {
                     </div>
                 </div>
             </div>
+
             {searchClicked && listDetails.length > 0 && (
                 <div className="container">
                     <div className="row">
@@ -192,7 +177,7 @@ function Track() {
                             <h6 className="pt-4">Tracking details</h6>
                             <hr />
                             <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                            <div className="col-12 mt-2 tracking-details" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center' }}>
+                            <div className={`col-12 mt-2 tracking-details`}>
                                 <Steps current={step}>
                                     <Steps.Item title="In Fulfillment" description={onholdDesc} />
                                     <Steps.Item title="Inbound" description={inboundDesc} />
@@ -206,8 +191,6 @@ function Track() {
             )}
         </section>
     );
-
-      
 
 }
 
