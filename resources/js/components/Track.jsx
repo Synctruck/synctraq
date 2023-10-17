@@ -178,22 +178,22 @@ function Track() {
                       <hr />
                       <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
                     </div>
-                    <div className="col-lg-3">
+                    <div className="col-12 col-lg-3">
                       <Steps current={step}>
                         <Steps.Item title="In Fulfillment" description={onholdDesc} />
                       </Steps>
                     </div>
-                    <div className="col-lg-3">
+                    <div className="col-12 col-lg-3">
                       <Steps current={step}>
                         <Steps.Item title="Inbound" description={inboundDesc} />
                       </Steps>
                     </div>
-                    <div className="col-lg-3">
+                    <div className="col-12 col-lg-3">
                       <Steps current={step}>
                         <Steps.Item title="Out for Delivery" description={dispatchDesc} />
                       </Steps>
                     </div>
-                    <div className="col-lg-3">
+                    <div className="col-12 col-lg-3">
                       <Steps current={step}>
                         <Steps.Item title="Delivery" description={deliveryDesc} />
                       </Steps>
@@ -205,6 +205,7 @@ function Track() {
           </div>
         </section>
       );
+      
       
       
 
