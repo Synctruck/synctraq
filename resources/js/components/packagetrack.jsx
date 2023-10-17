@@ -164,21 +164,21 @@ function PackageTrack() {
 
 
 
-    return (
 
+    return (
         <section className="section">
             <div className="card mb-3">
                 <div className="card-body">
-                    <div className=" pb-2">
+                    <div className="pb-2">
                         <div className="row">
                             <div className="col-lg-12 text-center">
                                 <div className="form-group">
-                                    <img src="./img/logo.png" alt="" width="220"/>
+                                    <img src="./img/logo.png" alt="" className="img-responsive" />
                                 </div>
                             </div>
                             <div className="col-lg-12">
                                 <h5 className="card-title text-center pb-0 fs-4">Track Your Package</h5>
-                                <p className="text-center"><span> <b>NOTE:</b> Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p><br></br>
+                                <p className="text-center"><span><b>NOTE:</b> Package ID is the entire package identifier under the barcode on your package. Package ID Example: 222668400492 </span></p>
                             </div>
                             <div className="col-lg-12">
                                 <form id="formSearch" onSubmit={getDetail}>
@@ -191,31 +191,33 @@ function PackageTrack() {
                                             required
                                             value={packageId}
                                             onChange={(e) => setPackageId(e.target.value)}
-                                            /><br />
-                                        <button className='btn' type='submit' style={{ backgroundColor: '#015E7C', color: 'white' }}> Search</button>
+                                        />
+                                        <br />
+                                        <button className="btn" type="submit" style={{ backgroundColor: '#015E7C', color: 'white' }}>Search</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
 
-                        <h6 className="pt-4">Tracking details </h6><hr />
-                        <div className='row'>
-                            <h5 className='text-center'>PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: { packageZipCode }</h5>
-                            <div className='col-12 mt-2'>
+                        <h6 className="pt-4">Tracking details</h6>
+                        <hr />
+                        <div className="row">
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+                            <div className="col-12 mt-2">
                                 <Steps current={step}>
                                     <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                    <Steps.Item title="Inbound" description={inboundDesc}/>
-                                    <Steps.Item title="Out for Delivery" description={dispatchDesc}/>
-                                    <Steps.Item title="Delivery" description={deliveryDesc}/>
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
                                 </Steps>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="card mb-3" >
+            <div className="card mb-3">
                 <div className="card-body">
-                    <div className=" pb-2">
+                    <div className="pb-2">
                         <div className="row">
                             <div className="col-lg-6">
                                 <div className="col-lg-12">
@@ -225,7 +227,7 @@ function PackageTrack() {
                                 </div>
                                 <div className="col-lg-12 text-center">
                                     <div className="form-group">
-                                        <h5 className='text-center'>Customer Support</h5>
+                                        <h5 className="text-center">Customer Support</h5>
                                     </div>
                                     <div className="form-group">
                                         <p>(551) 225-0007</p>
@@ -243,7 +245,7 @@ function PackageTrack() {
                                 </div>
                                 <div className="col-lg-12 text-center">
                                     <div className="form-group">
-                                        <h5 className='text-center'>Mon – Fri</h5>
+                                        <h5 className="text-center">Mon – Fri</h5>
                                     </div>
                                     <div className="form-group">
                                         <p>09:00 am – 05:00 pm</p>
@@ -262,7 +264,6 @@ function PackageTrack() {
 }
 
 export default PackageTrack;
-
 // DOM element
 if (document.getElementById('track')) {
     ReactDOM.render(<PackageTrack />, document.getElementById('track'));

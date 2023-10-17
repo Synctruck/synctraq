@@ -147,39 +147,44 @@ function Track() {
 
     return (
         <section className="section">
-            <div className="row">
-                <div className="col-lg-12">
-                    <form id="formSearch" onSubmit={getDetail}>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="textSearch"
-                                className="form-control"
-                                placeholder="Package ID"
-                                required
-                                value={packageId}
-                                onChange={(e) => setPackageId(e.target.value)}
-                            />
-                            <br />
-                            <button className='btn' type='submit' style={{ backgroundColor: '#015E7C', color: 'white' }}>Search</button>
-                        </div>
-                    </form>
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-6">
+                        <form id="formSearch" onSubmit={getDetail}>
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    id="textSearch"
+                                    className="form-control"
+                                    placeholder="Package ID"
+                                    required
+                                    value={packageId}
+                                    onChange={(e) => setPackageId(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <button className="btn btn-primary" type="submit">Search</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
             {searchClicked && (
-                <div>
-                    <h6 className="pt-4">Tracking details</h6>
-                    <hr />
-                    <div className='row'>
-                        <h5 className='text-center'>PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                        <div className='col-12 mt-2'>
-                            <Steps current={step}>
-                                <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                <Steps.Item title="Inbound" description={inboundDesc} />
-                                <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                                <Steps.Item title="Delivery" description={deliveryDesc} />
-                            </Steps>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <h6 className="pt-4">Tracking details</h6>
+                            <hr />
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+                            <div className="col-12 mt-2">
+                                <Steps current={step}>
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                </Steps>
+                            </div>
                         </div>
                     </div>
                 </div>
