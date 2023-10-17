@@ -159,13 +159,13 @@ function Track() {
                         <div className="col-lg-12">
                             <h6 className="pt-4">Tracking details</h6>
                             <hr />
-                            <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
                             <div className={`col-12 mt-2 tracking-details`}>
                                 <Steps current={step}>
-                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                    <Steps.Item title="Inbound" description={inboundDesc} />
-                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                    <Steps.Item title="In Fulfillment" />
+                                    <Steps.Item title="Inbound" />
+                                    <Steps.Item title="Out for Delivery"/>
+                                    <Steps.Item title="Delivery"/>
                                 </Steps>
                             </div>
                         </div>
