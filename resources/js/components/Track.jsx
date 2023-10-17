@@ -169,22 +169,29 @@ function Track() {
                     </Steps>
                 </div>
             </div>
-            <div className="col-lg-6 d-none d-lg-block"> {/* Agregar clase d-none d-lg-block para ocultar en pantallas más pequeñas */}
+            <div className="col-lg-6">
                 <h6 className="pt-4">Tracking details (Column)</h6>
                 <hr />
-                <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
                 <div className={`col-12 mt-2 tracking-details`}>
-                    <Steps current={step}>
-                        <Steps.Item title="In Fulfillment" />
-                        <Steps.Item title="Inbound" />
-                        <Steps.Item title="Out for Delivery"/>
-                        <Steps.Item title="Delivery"/>
-                    </Steps>
+                    <div className="row">
+                        <div className="col-12">
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
+                        </div>
+                        <div className="col-12">
+                            <Steps current={step}>
+                                <Steps.Item title="In Fulfillment" />
+                                <Steps.Item title="Inbound" />
+                                <Steps.Item title="Out for Delivery"/>
+                                <Steps.Item title="Delivery"/>
+                            </Steps>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 )}
+
 
 
         </section>
