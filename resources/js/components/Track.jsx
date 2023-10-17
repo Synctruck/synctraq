@@ -15,6 +15,7 @@ function Track() {
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
     const [searchClicked, setSearchClicked] = useState(false);
+    const [searchFieldChanged, setSearchFieldChanged] = useState(false);
 
     useEffect(() => {
         handleStep();
@@ -23,6 +24,7 @@ function Track() {
     const getDetail = (e) => {
         e.preventDefault();
         setSearchClicked(true);
+        setSearchFieldChanged(false); // Reiniciar el estado de búsqueda del campo
 
         console.log('submit');
 
@@ -119,6 +121,11 @@ function Track() {
         );
     });
 
+    const handleSearchFieldChange = (e) => {
+        setPackageId(e.target.value);
+        setSearchFieldChanged(true);
+    }
+
     return (
         <section className="section">
             <div className="container">
@@ -133,7 +140,7 @@ function Track() {
                                     placeholder="Package ID"
                                     required
                                     value={packageId}
-                                    onChange={(e) => setPackageId(e.target.value)}
+                                    onChange={handleSearchFieldChange}
                                 />
                             </div>
                             <div className="form-group">
@@ -144,7 +151,7 @@ function Track() {
                 </div>
             </div>
 
-            {searchClicked && listDetails.length > 0 && (
+            {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
@@ -174,3 +181,4 @@ export default Track;
 if (document.getElementById('tracks')) {
     ReactDOM.render(<Track />, document.getElementById('tracks'));
 }
+
