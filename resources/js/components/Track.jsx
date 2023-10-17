@@ -148,65 +148,64 @@ function Track() {
         );
     });
 
-    return (
-        <section className="section">
-          <div className="container">
+   return (
+  <section className="section">
+    <div className="container">
+      <div className="row">
+        <div className="col-lg-6">
+          <form id="formSearch" onSubmit={getDetail}>
+            <div className="form-group">
+              <input
+                type="text"
+                id="textSearch"
+                className="form-control"
+                placeholder="Package ID"
+                required
+                value={packageId}
+                onChange={(e) => setPackageId(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <button className="btn btn-primary" type="submit">Search</button>
+            </div>
+          </form>
+        </div>
+        <div className="col-lg-6">
+          {searchClicked && listDetails.length > 0 && (
             <div className="row">
-              <div className="col-lg-6">
-                <form id="formSearch" onSubmit={getDetail}>
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      id="textSearch"
-                      className="form-control"
-                      placeholder="Package ID"
-                      required
-                      value={packageId}
-                      onChange={(e) => setPackageId(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <button className="btn btn-primary" type="submit">Search</button>
-                  </div>
-                </form>
+              <div className="col-lg-12">
+                <h6 className="pt-4">Tracking details</h6>
+                <hr />
+                <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
               </div>
-              <div className="col-lg-6">
-                {searchClicked && listDetails.length > 0 && (
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <h6 className="pt-4">Tracking details</h6>
-                      <hr />
-                      <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                    </div>
-                    <div className="col-12 col-lg-3">
-                      <Steps current={step}>
-                        <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                      </Steps>
-                    </div>
-                    <div className="col-12 col-lg-3">
-                      <Steps current={step}>
-                        <Steps.Item title="Inbound" description={inboundDesc} />
-                      </Steps>
-                    </div>
-                    <div className="col-12 col-lg-3">
-                      <Steps current={step}>
-                        <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                      </Steps>
-                    </div>
-                    <div className="col-12 col-lg-3">
-                      <Steps current={step}>
-                        <Steps.Item title="Delivery" description={deliveryDesc} />
-                      </Steps>
-                    </div>
-                  </div>
-                )}
+              <div className="col-lg-3">
+                <Steps current={step}>
+                  <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                </Steps>
+              </div>
+              <div className="col-lg-3">
+                <Steps current={step}>
+                  <Steps.Item title="Inbound" description={inboundDesc} />
+                </Steps>
+              </div>
+              <div className="col-lg-3">
+                <Steps current={step}>
+                  <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                </Steps>
+              </div>
+              <div className="col-lg-3">
+                <Steps current={step}>
+                  <Steps.Item title="Delivery" description={deliveryDesc} />
+                </Steps>
               </div>
             </div>
-          </div>
-        </section>
-      );
-      
-      
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
       
 
 }
