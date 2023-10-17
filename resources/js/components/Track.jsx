@@ -156,21 +156,27 @@ function Track() {
             {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-12">
+                        <div className="col-lg-12 d-none d-lg-block">
                             <h6 className="pt-4">Tracking details</h6>
                             <hr />
-                            <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                            <div className={`col-12 mt-2 tracking-details`}>
-                                <Steps current={step}>
-                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                    <Steps.Item title="Inbound" description={inboundDesc} />
-                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                                    <Steps.Item title="Delivery" description={deliveryDesc} />
-                                </Steps>
-                            </div>
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
+                            <div className={`col-12 mt-2 tracking-details`} style={{ flexDirection: 'column' }}>
+    <Steps current={step}>
+        <Steps.Item title="In Fulfillment" />
+        <Steps.Item title="Inbound" />
+        <Steps.Item title="Out for Delivery" />
+        <Steps.Item title="Delivery" />
+    </Steps>
+</div>
+
                         </div>
                     </div>
+
+                    x
                 </div>
+
+
+
             )}
         </section>
     );
