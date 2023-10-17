@@ -1,3 +1,17 @@
 @import "rsuite/dist/rsuite.css";
 
+@media (max-width: 768px) {
+    .tracking-details {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  
+  /* Para pantallas más grandes, como escritorios */
+  @media (min-width: 769px) {
+    .tracking-details {
+      display: flex;
+      flex-direction: row;
+    }
+  }
 
