@@ -181,7 +181,7 @@ function Track() {
         <hr />
         <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
         <div className="col-12 mt-2 tracking-details">
-          <Steps current={step} className="d-flex flex-row flex-md-column text-center">
+          <Steps current={step} className="d-md-flex flex-row text-center">
             <Steps.Item title="In Fulfillment" description={onholdDesc} />
             <Steps.Item title="Inbound" description={inboundDesc} />
             <Steps.Item title="Out for Delivery" description={dispatchDesc} />
@@ -192,6 +192,7 @@ function Track() {
     </div>
   </div>
 )}
+
 
         </section>
       );
