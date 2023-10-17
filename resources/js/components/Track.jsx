@@ -17,10 +17,7 @@ function Track() {
     const [deliveryDesc, setDeliveryDesc] = useState('');
     const [searchClicked, setSearchClicked] = useState(false); // Variable para rastrear si se hizo clic en Search
 
-    useEffect(() => {
-        handleStep();
-    }, [listDetails]);
-
+  
     useEffect(() => {
         if (packageId !== '' && searchClicked) { 
             history.pushState(null, "", "trackpackage-detail?textSearch=" + packageId);
