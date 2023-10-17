@@ -160,7 +160,7 @@ function Track() {
                     <h6 className="pt-4">Tracking details</h6>
                     <hr />
                     <h5 className="text-center">PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}</h5>
-                    <div className={`col-12 mt-2 tracking-details`}>
+                    <div className={`col-12 mt-2 row`}>
                       <Steps current={step}>
                         <Steps.Item title="In Fulfillment" description={onholdDesc} />
                         <Steps.Item title="Inbound" description={inboundDesc} />

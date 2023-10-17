@@ -3,7 +3,7 @@
 @media (max-width: 10000px) {
     .tracking-details {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
     }
   }
   
