@@ -4,6 +4,7 @@ import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
 import '../../css/rsuit.css';
+import swal from 'sweetalert';
 
 function Track() {
     const [packageId, setPackageId] = useState('');
@@ -41,7 +42,9 @@ function Track() {
             setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
         })
         .catch(function (error) {
-            alert('Error:', error);
+            if (error.response.status === 404) {
+                swal('Package Not Found', 'The package was not found. Please check the package ID and try again.', 'error');
+            }
         })
         .finally();
     }
