@@ -65,6 +65,7 @@ require('./components/PackageRts');
 require('./components/Roles');
 require('./components/PackageBlocked');
 require('./components/Track');
+require('./components/PackageTrack');
 require('./components/Login');
 
 //rutas públicas (usuarios externos a la empresa)

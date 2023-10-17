@@ -23,11 +23,11 @@ function Track() {
 
     useEffect(() => {
         if (packageId !== '' && searchClicked) { // Verificar si se ingresó un Package ID y se hizo clic en Search
-            history.pushState(null, "", "track-detail?textSearch=" + packageId);
+            history.pushState(null, "", "trackpackage-detail?textSearch=" + packageId);
 
             console.log('submit');
 
-            let url = url_general + 'track/detail/' + packageId;
+            let url = url_general + 'trackpackage/detail/' + packageId;
             let method = 'GET';
 
             axios({
@@ -52,7 +52,7 @@ function Track() {
 
         console.log('submit');
 
-        let url = url_general + 'track/detail/' + packageId;
+        let url = url_general + 'trackpackage/detail/' + packageId;
         let method = 'GET';
 
         axios({
