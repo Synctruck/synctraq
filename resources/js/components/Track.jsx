@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import Pagination from "react-js-pagination";
+import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
-import { Steps } from 'rsuite';
 import '../../css/rsuit.css';
 
 function Track() {
@@ -15,37 +14,15 @@ function Track() {
     const [inboundDesc, setInboundDesc] = useState('');
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
-    const [searchClicked, setSearchClicked] = useState(false); // Variable para rastrear si se hizo clic en Search
+    const [searchClicked, setSearchClicked] = useState(false);
 
-  
     useEffect(() => {
-        if (packageId !== '' && searchClicked) { 
-            history.pushState(null, "", "trackpackage-detail?textSearch=" + packageId);
-
-            console.log('submit');
-
-            let url = url_general + 'trackpackage/detail/' + packageId;
-            let method = 'GET';
-
-            axios({
-                method: method,
-                url: url
-            })
-            .then((response) => {
-                console.log(response.data);
-                setListDetails(response.data.details);
-                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
-            })
-            .catch(function (error) {
-                alert('Error:', error);
-            })
-            .finally();
-        }
-    }, [packageId, searchClicked]);
+        handleStep();
+    }, [listDetails]);
 
     const getDetail = (e) => {
         e.preventDefault();
-        setSearchClicked(true); // Marcar que se hizo clic en Search
+        setSearchClicked(true);
 
         console.log('submit');
 
