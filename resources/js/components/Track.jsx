@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import Pagination from "react-js-pagination";
+import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
-import { Steps } from 'rsuite';
 import '../../css/rsuit.css';
+import swal from 'sweetalert'
+
 
 function Track() {
     const [packageId, setPackageId] = useState('');
@@ -15,37 +16,17 @@ function Track() {
     const [inboundDesc, setInboundDesc] = useState('');
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
-    const [searchClicked, setSearchClicked] = useState(false); // Variable para rastrear si se hizo clic en Search
+    const [searchClicked, setSearchClicked] = useState(false);
+    const [searchFieldChanged, setSearchFieldChanged] = useState(false);
 
-  
     useEffect(() => {
-        if (packageId !== '' && searchClicked) { 
-            history.pushState(null, "", "trackpackage-detail?textSearch=" + packageId);
-
-            console.log('submit');
-
-            let url = url_general + 'trackpackage/detail/' + packageId;
-            let method = 'GET';
-
-            axios({
-                method: method,
-                url: url
-            })
-            .then((response) => {
-                console.log(response.data);
-                setListDetails(response.data.details);
-                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
-            })
-            .catch(function (error) {
-                alert('Error:', error);
-            })
-            .finally();
-        }
-    }, [packageId, searchClicked]);
+        handleStep();
+    }, [listDetails]);
 
     const getDetail = (e) => {
         e.preventDefault();
-        setSearchClicked(true); // Marcar que se hizo clic en Search
+        setSearchClicked(true);
+        setSearchFieldChanged(false); // Reiniciar el estado de búsqueda del campo
 
         console.log('submit');
 
@@ -61,8 +42,8 @@ function Track() {
             setListDetails(response.data.details);
             setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
         })
-        .catch(function (error) {
-            alert('Error:', error);
+        .catch(function () {
+            swal('Error', 'Package was not found', 'error');
         })
         .finally();
     }
@@ -142,6 +123,11 @@ function Track() {
         );
     });
 
+    const handleSearchFieldChange = (e) => {
+        setPackageId(e.target.value);
+        setSearchFieldChanged(true);
+    }
+
     return (
         <section className="section">
             <div className="container">
@@ -156,7 +142,7 @@ function Track() {
                                     placeholder="Package ID"
                                     required
                                     value={packageId}
-                                    onChange={(e) => setPackageId(e.target.value)}
+                                    onChange={handleSearchFieldChange}
                                 />
                             </div>
                             <div className="form-group">
@@ -167,7 +153,7 @@ function Track() {
                 </div>
             </div>
 
-            {searchClicked && listDetails.length > 0 && (
+            {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
@@ -197,3 +183,4 @@ export default Track;
 if (document.getElementById('tracks')) {
     ReactDOM.render(<Track />, document.getElementById('tracks'));
 }
+
