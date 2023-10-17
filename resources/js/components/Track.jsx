@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
 import '../../css/rsuit.css';
 import swal from 'sweetalert'
-
 
 function Track() {
     const [packageId, setPackageId] = useState('');
@@ -26,9 +24,7 @@ function Track() {
     const getDetail = (e) => {
         e.preventDefault();
         setSearchClicked(true);
-        setSearchFieldChanged(false); // Reiniciar el estado de búsqueda del campo
-
-        console.log('submit');
+        setSearchFieldChanged(false);
 
         let url = url_general + 'trackpackage/detail/' + packageId;
         let method = 'GET';
@@ -38,63 +34,42 @@ function Track() {
             url: url
         })
         .then((response) => {
-            console.log(response.data);
             setListDetails(response.data.details);
             setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
         })
         .catch(function () {
             swal('Error', 'Package was not found', 'error');
         })
-        .finally();
     }
 
     const handleStep = () => {
-        console.log('cambiando step');
         let finalStep = null;
         setOnholdDesc('');
         setInboundDesc('');
         setDeliveryDesc('');
         setDispatchDesc('');
 
-        listDetails.map((item, i) => {
-            if (item.status == 'Manifest') {
+        listDetails.forEach((item) => {
+            if (item.status === 'Manifest') {
                 setOnholdDesc(moment(item.created_at).format('LL'));
             }
-            if (item.status == 'Inbound') {
+            if (item.status === 'Inbound') {
                 setInboundDesc(moment(item.created_at).format('LL'));
             }
-            if (item.status == 'Dispatch') {
+            if (item.status === 'Dispatch') {
                 setDispatchDesc(moment(item.created_at).format('LL'));
             }
-            if (item.status == 'Delivery') {
+            if (item.status === 'Delivery') {
                 setDeliveryDesc(moment(item.created_at).format('LL'));
             }
         });
 
-        finalStep = listDetails.find((item) => {
-            return item.status == 'Delivery';
-        });
-        if (!finalStep) {
-            finalStep = listDetails.find((item) => {
-                return item.status == 'Dispatch';
-            });
-
-            if (!finalStep) {
-                finalStep = listDetails.find((item) => {
-                    return item.status == 'Inbound';
-                });
-            }
-
-            if (!finalStep) {
-                finalStep = listDetails.find((item) => {
-                    return item.status == 'Manifest';
-                });
-            }
-        }
+        finalStep = listDetails.find((item) => item.status === 'Delivery') ||
+            listDetails.find((item) => item.status === 'Dispatch') ||
+            listDetails.find((item) => item.status === 'Inbound') ||
+            listDetails.find((item) => item.status === 'Manifest');
 
         if (finalStep) {
-            console.log('final step: ', finalStep.status);
-
             switch (finalStep.status) {
                 case 'Manifest':
                     setStep(0);
@@ -114,14 +89,12 @@ function Track() {
         }
     }
 
-    const detailsListTable = listDetails.map((item, i) => {
-        return (
-            <tr key={i}>
-                <td>{moment(item.created_at).format('LLLL')}</td>
-                <td>{item.status}</td>
-            </tr>
-        );
-    });
+    const detailsListTable = listDetails.map((item, i) => (
+        <tr key={i}>
+            <td>{moment(item.created_at).format('LLLL')}</td>
+            <td>{item.status}</td>
+        </tr>
+    ));
 
     const handleSearchFieldChange = (e) => {
         setPackageId(e.target.value);
@@ -154,33 +127,28 @@ function Track() {
             </div>
 
             {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
-             <div className="container">
-             <div className="row">
-               <div className="col-lg-12 d-none d-lg-block">
-                 <h6 className="pt-4">Tracking details</h6>
-                 <hr />
-                 <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
-                 <div className={`col-12 mt-2 tracking-details`}>
-                   <div className="vertical-progress-bar">
-                     {listDetails.map((item, index) => (
-                       <div key={index} className={`step ${index === step ? "current" : ""}`}>
-                         <p>{item.title}</p>
-                       </div>
-                     ))}
-                   </div>
-                 </div>
-               </div>
-             </div>
-           </div>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-12 d-none d-lg-block">
+                            <h6 className="pt-4">Tracking details</h6>
+                            <hr />
+                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
+                            <div className="vertical-progress-bar">
+                                <div className={`step ${step === 0 ? "current" : ""}`}>In Fulfillment</div>
+                                <div className={`step ${step === 1 ? "current" : ""}`}>Inbound</div>
+                                <div className={`step ${step === 2 ? "current" : ""}`}>Out for Delivery</div>
+                                <div className={`step ${step === 3 ? "current" : ""}`}>Delivery</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </section>
     );
-
 }
 
 export default Track;
 
-// DOM element
 if (document.getElementById('tracks')) {
     ReactDOM.render(<Track />, document.getElementById('tracks'));
 }
