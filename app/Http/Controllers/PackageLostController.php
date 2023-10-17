@@ -329,6 +329,7 @@ class PackageLostController extends Controller
                 {
                     $toDeductLostPackages = new ToDeductLostPackages();
                     $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
+                    $toDeductLostPackages->idTeam     = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
 
                     if($packageInbound->company != 'EIGHTVAPE')
                         $toDeductLostPackages->priceToDeduct = 50;

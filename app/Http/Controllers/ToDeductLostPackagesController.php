@@ -23,7 +23,7 @@ class ToDeductLostPackagesController extends Controller
     public function List()
     {
         $totalDeducts             = ToDeductLostPackages::get()->sum('priceToDeduct');
-        $toDeductLostPackagesList = ToDeductLostPackages::orderBy('created_at', 'desc')->paginate(50);
+        $toDeductLostPackagesList = ToDeductLostPackages::with('team')->orderBy('created_at', 'desc')->paginate(50);
 
         return [
             'totalDeducts' => number_format($totalDeducts, 4),
@@ -35,6 +35,15 @@ class ToDeductLostPackagesController extends Controller
     {
         $toDeductLostPackage = ToDeductLostPackages::find($shipmentId);
         $toDeductLostPackage->priceToDeduct = $priceToDeduct;
+        $toDeductLostPackage->save();
+
+        return ['statusCode' => true];
+    }
+
+    public function UpdateTeam($shipmentId, $idTeam)
+    {
+        $toDeductLostPackage = ToDeductLostPackages::find($shipmentId);
+        $toDeductLostPackage->idTeam = $idTeam;
         $toDeductLostPackage->save();
 
         return ['statusCode' => true];

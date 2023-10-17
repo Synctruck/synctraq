@@ -7,21 +7,17 @@ import Select from 'react-select'
 
 function ToDeductLostPackages() {
 
-    const [listToReverse, setListToReverse]         = useState([]);
-    const [listCompany, setListCompany]             = useState([]);
+    const [listToReverse, setListToReverse] = useState([]);
+    const [listCompany, setListCompany]     = useState([]);
+    const [listTeam, setListTeam]           = useState([]);
 
     const [quantityRevert, setQuantityRevert] = useState(0);
     const [totalDeductLost, setTotalDeductLost] = useState(0);
 
-    const [dateInit, setDateInit] = useState(auxDateInit);
-    const [dateEnd, setDateEnd]   = useState(auxDateInit);
-    const [idCompany, setIdCompany] = useState(0);
-
-    const [Reference_Number_1, setReference_Number_1] = useState('');
+    const [idTeam, setIdTeam] = useState('');
 
     const [RouteSearch, setRouteSearch]   = useState('all');
     const [StateSearch, setStateSearch]   = useState('all');
-    const [Status, setStatus]             = useState('all');
 
     const [page, setPage]                 = useState(1);
     const [totalPage, setTotalPage]       = useState(0);
@@ -29,12 +25,13 @@ function ToDeductLostPackages() {
 
     useEffect(() => {
 
-        listToDeductLostPackages(1, RouteSearch, Status);
+        listToDeductLostPackages(1);
+        listAllTeam();
 
-    }, [dateInit, dateEnd, idCompany, Status]);
+    }, []);
 
 
-    const listToDeductLostPackages = (pageNumber, routeSearch, status) => {
+    const listToDeductLostPackages = (pageNumber) => {
 
         setListToReverse([]);
 
@@ -64,6 +61,64 @@ function ToDeductLostPackages() {
     const handlerChangePage = (pageNumber) => {
 
         listToDeductLostPackages(pageNumber, RouteSearch, StateSearch);
+    }
+
+    const listAllTeam = () => {
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const handlerEditTeam = (shipmentId) => {
+
+        if(idTeam)
+        {
+            swal({
+                title: "Do you want to assign the package #"+ shipmentId +" to the team "+ $('#idTeam').find('option:selected').text() +"?",
+                text: "Assign to team!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+
+                if(willDelete)
+                {
+                    LoadingShowMap();
+
+                    fetch(url_general +'to-deduct-lost-packages/update-team/'+ shipmentId +'/'+ idTeam)
+                    .then(response => response.json())
+                    .then(response => {
+
+                        if(response.statusCode)
+                        {
+                            swal("The package was assigned to the team!", {
+
+                                icon: "success",
+                            });
+
+                            listToDeductLostPackages(page);
+                        }
+
+                        LoadingHideMap();
+                    });
+                }
+            });
+        }
+        else
+            swal('Attention', 'Select a team', 'warning');
     }
 
     const handlerEditPrice = (shipmentId) => {
@@ -122,13 +177,23 @@ function ToDeductLostPackages() {
         let total = (toDeductLostPackage.priceToDeduct ? handlerChangeFormatPrice(toDeductLostPackage.priceToDeduct) : null)
 
         return (
-
             <tr key={i}>
                 <td style={ { width: '100px'} }>
                     <b>{ toDeductLostPackage.created_at.substring(5, 7) }-{ toDeductLostPackage.created_at.substring(8, 10) }-{ toDeductLostPackage.created_at.substring(0, 4) }</b><br/>
                     { toDeductLostPackage.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ toDeductLostPackage.shipmentId }</b></td>
+                <td className="text-center">
+                    {
+                        toDeductLostPackage.team
+                        ?
+                            toDeductLostPackage.team.name
+                        :
+                            <button className="btn btn-success btn-sm" onClick={ () => handlerEditTeam(toDeductLostPackage.shipmentId) }>
+                                <i className="bx bx-edit-alt"></i>
+                            </button>
+                    }
+                </td>
                 <td className="text-danger text-right">
                     {
                         toDeductLostPackage.priceToDeduct
@@ -182,7 +247,15 @@ function ToDeductLostPackages() {
                                             <tr>
                                                 <th><b>DATE</b></th>
                                                 <th><b>PACKAGE ID</b></th>
-                                                <th><b>PAYMENT N°</b></th>
+                                                <th style={ {width: '200px'} }>
+                                                    <div className="form-group">
+                                                        <select name="idTeam" id="idTeam" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                            <option value="">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                    </div>
+                                                </th>
+                                                <th><b>PRICE</b></th>
                                                 <th><b>ACTION</b></th>
                                             </tr>
                                         </thead>
