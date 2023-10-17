@@ -5,6 +5,9 @@ import axios from 'axios';
 import moment from 'moment';
 import { Steps } from 'rsuite';
 import '../../css/rsuit.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 
 function Track() {
     const [packageId, setPackageId] = useState('');
@@ -176,32 +179,19 @@ function Track() {
       <div className="col-lg-12">
         <h6 className="pt-4">Tracking details</h6>
         <hr />
-        <h5 className="text-center">PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}</h5>
-        <div className="col-12 mt-2 tracking-details">
-          <div className="d-none d-md-block">
-            {/* En pantallas grandes (PC), muestra horizontalmente */}
-            <Steps current={step}>
-              <Steps.Item title="In Fulfillment" description={onholdDesc} />
-              <Steps.Item title="Inbound" description={inboundDesc} />
-              <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-              <Steps.Item title="Delivery" description={deliveryDesc} />
-            </Steps>
-          </div>
-          <div className="d-md-none">
-            {/* En dispositivos móviles, muestra verticalmente */}
-            <Steps current={step} direction="vertical">
-              <Steps.Item title="In Fulfillment" description={onholdDesc} />
-              <Steps.Item title="Inbound" description={inboundDesc} />
-              <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-              <Steps.Item title="Delivery" description={deliveryDesc} />
-            </Steps>
-          </div>
+        <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
+        <div className="col-12 mt-2 tracking-details"> {/* Reemplacé la interpolación por una clase Bootstrap */}
+          <Steps current={step}>
+            <Steps.Item title="In Fulfillment" description={onholdDesc} />
+            <Steps.Item title="Inbound" description={inboundDesc} />
+            <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+            <Steps.Item title="Delivery" description={deliveryDesc} />
+          </Steps>
         </div>
       </div>
     </div>
   </div>
 )}
-
         </section>
     );
 
