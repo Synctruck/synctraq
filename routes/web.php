@@ -244,6 +244,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/to-deduct-lost-packages', [ToDeductLostPackagesController::class, 'Index'])->middleware('permission:toDeductLostPackages.index');
 	Route::get('/to-deduct-lost-packages/list', [ToDeductLostPackagesController::class, 'List']);
 	Route::get('/to-deduct-lost-packages/update/{shipmentId}/{priceToDeduct}', [ToDeductLostPackagesController::class, 'UpdateDeductPrice']);
+	Route::get('/to-deduct-lost-packages/update-team/{shipmentId}/{idTeam}', [ToDeductLostPackagesController::class, 'UpdateTeam']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);

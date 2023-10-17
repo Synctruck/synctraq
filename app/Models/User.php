@@ -145,6 +145,11 @@ class User extends Authenticatable  implements Auditable
         return $this->hasMany('App\Models\PaymentTeam', 'idUserPaid');
     }
 
+    public function to_deduct_lost()
+    {
+        return $this->hasMany('\App\Models\ToDeductLostPackages', 'idTeam');
+    }
+
     //obtiene todos los permisos por rol y por usuario
     public static function allPermisions($id_user,$id_role)
     {

@@ -12,6 +12,11 @@ class ToDeductLostPackages extends Model
     public $timestamps   = false;
     public $incrementing = true;
 
+    public function team()
+    {
+        return $this->belongsTo('\App\Models\User', 'idTeam', 'id');
+    }
+
     //observers
     protected static function booted()
     {

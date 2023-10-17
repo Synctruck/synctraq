@@ -110,6 +110,17 @@ class TaskPaymentTeam extends Command
                         $totalAdjustmentToDeduct = 0;
                         $shipmentIds = '';
 
+                        $toDeductLostPackagesList = ToDeductLostPackages::where('idTeam', $team->id)->get();
+                        $totalAdjustmentToDeduct  = $toReversePackagesList->sum('priceToDeduct');
+
+                        foreach($toDeductLostPackagesList as $toDeductLostPackages)
+                        {
+                            $shipmentIds = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
+
+                            $toDeductLostPackages = ToDeductLostPackages::find($toDeductLostPackages->shipmentId);
+                            $toDeductLostPackages->delete();
+                        }
+
                         foreach($listPackageDelivery as $packageDelivery)
                         {
                             $dimFactor   = 200;
@@ -179,18 +190,6 @@ class TaskPaymentTeam extends Command
                                     }
                                 }
                             }
-
-                            $toDeductLostPackages = ToDeductLostPackages::find($packageDelivery->Reference_Number_1);
-
-                            if($toDeductLostPackages)
-                            {
-                                if($toDeductLostPackages->priceToDeduct)
-                                    $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
-
-                                $shipmentIds = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
-
-                                $toDeductLostPackages->delete();
-                            }
                         }
 
                         if($totalTeam > 0)
@@ -217,7 +216,7 @@ class TaskPaymentTeam extends Command
 
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
-                            $paymentTeam->totalAdjustment = $totalAdjustment;
+                            $paymentTeam->totalAdjustment = $totalAdjustment + $totalAdjustmentToDeduct;
                             $paymentTeam->total          = $totalTeam + $totalAdjustment;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
