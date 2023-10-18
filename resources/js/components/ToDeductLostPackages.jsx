@@ -134,7 +134,7 @@ function ToDeductLostPackages() {
         }
         else
         {
-            swal('Attention', 'You have not entered anything. Select the status again', 'warning');
+            swal('Attention', 'You must enter an amount in the text box', 'warning');
         }
 
     }
