@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomEmail;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User, Cellar};
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User, Cellar, ToDeductLostPackages };
 
 use App\Service\ServicePackageLost;
 
@@ -323,6 +323,20 @@ class PackageLostController extends Controller
                 $package = $packageInbound;
                 $packageInbound->delete();
                 
+                $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
+
+                if(!$toDeductLostPackages)
+                {
+                    $toDeductLostPackages = new ToDeductLostPackages();
+                    $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
+                    $toDeductLostPackages->idTeam     = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
+
+                    if($packageInbound->company != 'EIGHTVAPE')
+                        $toDeductLostPackages->priceToDeduct = 50;
+
+                    $toDeductLostPackages->save();
+                }
+
                 DB::commit();
 
                 if($package->status == 'Dispatch')

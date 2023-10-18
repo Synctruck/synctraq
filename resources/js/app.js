@@ -27,6 +27,7 @@ require('./components/PaymentDeliveryTeam');
 require('./components/Payments');
 require('./components/PaymentAdjustment');
 require('./components/Reverts');
+require('./components/ToDeductLostPackages');
 require('./components/Report');
 require('./components/ReportInvoices');
 require('./components/ReportDelivery');
@@ -65,6 +66,7 @@ require('./components/PackageRts');
 require('./components/Roles');
 require('./components/PackageBlocked');
 require('./components/Track');
+require('./components/PackageTrack');
 require('./components/Login');
 
 //rutas públicas (usuarios externos a la empresa)

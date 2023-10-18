@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\{ 
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail, 
             PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
-            RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User };
+            RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User, ToDeductLostPackages };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
 
@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        if(1)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' +2 day'));
 
             try
             {
@@ -87,12 +87,6 @@ class TaskPaymentTeam extends Command
                                                             ->where('status', 'Delivery')
                                                             ->get();
 
-                    if($team->id == 271)
-                    {
-                        Log::info('$listPackageDelivery => ');
-                        Log::info($listPackageDelivery);
-                    }
-
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
@@ -107,6 +101,21 @@ class TaskPaymentTeam extends Command
                             $toReversePackages->delete();
                         }
 
+                        $shipmentIds = '';
+                        $totalAdjustmentToDeduct = 0;
+
+                        $toDeductLostPackagesList = ToDeductLostPackages::where('idTeam', $team->id)->get();
+
+                        foreach($toDeductLostPackagesList as $toDeductLostPackages)
+                        {
+                            $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
+
+                            $shipmentIds = $shipmentIds == '' ? $toDeductLostPackages->shipmentId : $shipmentIds .','. $toDeductLostPackages->shipmentId;
+
+                            $toDeductLostPackages = ToDeductLostPackages::find($toDeductLostPackages->shipmentId);
+                            $toDeductLostPackages->delete();
+                        }
+
                         foreach($listPackageDelivery as $packageDelivery)
                         {
                             $dimFactor   = 200;
@@ -116,9 +125,7 @@ class TaskPaymentTeam extends Command
                             $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
                             if($dieselPrice)
-                            {
-                                Log::info('dieselPrice => '. $dieselPrice);
-                                
+                            {                                
                                 $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
                                                             ->where('minWeight', '<=', $weightRound)
                                                             ->where('maxWeight', '>=', $weightRound)
@@ -190,10 +197,20 @@ class TaskPaymentTeam extends Command
                                 $paymentTeamAdjustment->save();
                             }
 
+                            if($totalAdjustmentToDeduct != 0)
+                            {
+                                $paymentTeamAdjustment = new PaymentTeamAdjustment();
+                                $paymentTeamAdjustment->id            = uniqid();
+                                $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
+                                $paymentTeamAdjustment->amount        = -$totalAdjustmentToDeduct;
+                                $paymentTeamAdjustment->description   = 'Lost Packages: '. $shipmentIds;
+                                $paymentTeamAdjustment->save();
+                            }
+
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
-                            $paymentTeam->totalAdjustment = $totalAdjustment;
-                            $paymentTeam->total          = $totalTeam + $totalAdjustment;
+                            $paymentTeam->totalAdjustment = $totalAdjustment - $totalAdjustmentToDeduct;
+                            $paymentTeam->total          = $totalTeam + $totalAdjustment - $totalAdjustmentToDeduct;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->status         = 'TO APPROVE';

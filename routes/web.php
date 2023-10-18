@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{ AssignedController, CellarController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, ChargeCompanyAdjustmentController, DriverController, IndexController, InventoryToolController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController, ToReversePackagesController, RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController, PaymentTeamAdjustmentController, ReportInvoiceController, PackageDispatchToMiddleMileController };
+use App\Http\Controllers\{ AssignedController, CellarController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, ChargeCompanyAdjustmentController, DriverController, IndexController, InventoryToolController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController, ToReversePackagesController, RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController, PaymentTeamAdjustmentController, ReportInvoiceController, PackageDispatchToMiddleMileController, ToDeductLostPackagesController, TrackpackageController};
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +18,11 @@ Route::get('/home/public', [IndexController::class, 'IndexPublic']);
 Route::get('/track', [Trackcontroller::class, 'Index']);
 Route::get('/track/detail/{package_id}', [Trackcontroller::class, 'trackDetail']);
 Route::get('/track-detail', [Trackcontroller::class, 'Index']);
+
+//trackpackage that will be used as iFrame
+Route::get('/trackpackage', [TrackpackageController::class, 'Index']);
+Route::get('/trackpackage/detail/{package_id}', [TrackpackageController::class, 'trackDetail']);
+Route::get('/trackpackage-detail', [TrackpackageController::class, 'Index']);
 
 //============ User Login - Logout
 Route::get('/', [UserController::class, 'Login']);
@@ -234,6 +239,12 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
 	Route::get('/payment-revert/{dateInit}/{dateEnd}/{idTeam}/{status}', [ToReversePackagesController::class, 'List']);
 	Route::post('/payment-revert/insert', [ToReversePackagesController::class, 'Insert']);
+
+	//=========== Payment Team Revert
+	Route::get('/to-deduct-lost-packages', [ToDeductLostPackagesController::class, 'Index'])->middleware('permission:toDeductLostPackages.index');
+	Route::get('/to-deduct-lost-packages/list', [ToDeductLostPackagesController::class, 'List']);
+	Route::get('/to-deduct-lost-packages/update/{shipmentId}/{priceToDeduct}', [ToDeductLostPackagesController::class, 'UpdateDeductPrice']);
+	Route::get('/to-deduct-lost-packages/update-team/{shipmentId}/{idTeam}', [ToDeductLostPackagesController::class, 'UpdateTeam']);
 
 	//=========== PAYMENT TEAM
 	Route::get('/payment-delivery-team', [PaymentDeliveryTeamController::class, 'Index']);
