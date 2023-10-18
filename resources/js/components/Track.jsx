@@ -164,10 +164,10 @@ function Track() {
         <h5 className="text-center">PACKAGE ID: {packageId}  / DELIVERY ZIP CODE: {packageZipCode}</h5>
         <div className="col-12 mt-2 tracking-details">
           <Steps current={step} className="flex-column text-center">
-            <Steps.Item title="In Fulfillment" description={onholdDesc} />
-            <Steps.Item title="Inbound" description={inboundDesc} />
-            <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-            <Steps.Item title="Delivery" description={deliveryDesc} />
+            <Steps.Item title="In Fulfillment" />
+            <Steps.Item title="Inbound"/>
+            <Steps.Item title="Out for Delivery" />
+            <Steps.Item title="Delivery"/>
           </Steps>
         </div>
       </div>
