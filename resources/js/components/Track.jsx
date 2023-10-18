@@ -188,10 +188,13 @@ function Track() {
             </div>
           </div>
         </div>
+        {/* Linea que conecta los puntos */}
+        <div className="line" style={{ width: `${(step / 3) * 100}%` }}></div>
       </div>
     </div>
   </div>
 )}
+
 
             </section>
           );
