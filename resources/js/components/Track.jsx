@@ -168,26 +168,26 @@ function Track() {
             <div className="row">
               <div className="col-md-3">
               <Steps current={step} className="text-center">
-                <Steps.Item title="In Fulfillment" />
+                 <Steps.Item title="In Fulfillment" />
               </Steps>
              </div>
             <div className="col-md-3">
             <Steps current={step} className="text-center">
-  <Steps.Item title="In Fulfillment" icon={<span className="step-circle">15</span>} />
-</Steps>
+                <Steps.Item title="Inbound" />
+            </Steps>
             </div>
             <div className="col-md-3">
-              <Steps current={step === 2 ? 0 : -1} className="text-center">
+            <Steps current={step} className="text-center">
                 <Steps.Item title="Out for Delivery" />
-              </Steps>
+            </Steps>
             </div>
             <div className="col-md-3">
-              <Steps current={step === 3 ? 0 : -1} className="text-center">
+            <Steps current={step} className="text-center">
                 <Steps.Item title="Delivery" />
-              </Steps>
+            </Steps>
             </div>
           </div>
-        </div>
+         </div>
       </div>
     </div>
   </div>
