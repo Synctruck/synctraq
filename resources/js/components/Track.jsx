@@ -162,7 +162,7 @@ function Track() {
                      <h6 className="pt-4">Tracking Details</h6>
              <hr />
             <h5 className="text-center">
-             PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
+             PACKAGE ID: {packageId} / Owner: {packageZipCode}
             </h5>
            <div className="col-12 mt-2 tracking-details">
             <div className="row">
