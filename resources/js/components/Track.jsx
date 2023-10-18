@@ -155,26 +155,27 @@ function Track() {
                 </div>
               </div>
           
-              {searchClicked && listDetails.length > 0 && (
+            {searchClicked && listDetails.length > 0 && (
             <div className="container">
-            <div className="row">
-            <div className="col-lg-12">
-            <h6 className="pt-4">Tracking Details</h6>
-            <hr />
-            <h5 className="text-center">
-             PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
-            </h5>
-           <div className="col-12 mt-2 tracking-details">
-            <div className="row">
-              <div className="col-md-3">
-              <Steps current={step === 0 ? 0 : -1} className="text-center">
-                <Steps.Item title="In Fulfillment" />
-              </Steps>
-             </div>
+                <div className="row">
+                    <div className="col-lg-12">
+                     <h6 className="pt-4">Tracking Details</h6>
+                     <hr />
+                     <h5 className="text-center">
+                      PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
+                     </h5>
+                    <div className="col-12 mt-2 tracking-details">
+                <div className="row">
             <div className="col-md-3">
-              <Steps current={step === 1 ? 0 : -1} className="text-center">
-                <Steps.Item title="Inbound" />
-              </Steps>
+            <Steps current={step === 0 ? 1 : -1} className="text-center">
+            <Steps.Item title="In Fulfillment" />
+            </Steps>
+            </div>
+            <div className="col-md-3">
+            <Steps current={step === 1 ? 2 : -1} className="text-center">
+            <Steps.Item title="Inbound" />
+            </Steps>
+
             </div>
             <div className="col-md-3">
               <Steps current={step === 2 ? 0 : -1} className="text-center">
