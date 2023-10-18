@@ -166,17 +166,12 @@ function Track() {
              PACKAGE ID: {packageId} / OWNER: {packageZipCode}
             </h5>
             <div className={`col-12 mt-2 tracking-details d-none d-md-block`}>
-            <Steps
-             direction="vertical"
-            size="small"
-            current={1} // Asegúrate de configurar esto según tu estado actual
-            items={[
-           { title: 'In Fulfillment', description: onholdDesc },
-      { title: 'Inbound', description: inboundDesc },
-      { title: 'Out for Delivery', description: dispatchDesc },
-      { title: 'Delivery', description: deliveryDesc },
-    ]}
-  />
+                                <Steps current={step} direction="vertical">
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                </Steps>
             </div>
             <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
             <div className="row">
