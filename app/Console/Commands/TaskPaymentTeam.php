@@ -87,16 +87,8 @@ class TaskPaymentTeam extends Command
                                                             ->where('status', 'Delivery')
                                                             ->get();
 
-                    if($team->id == 271)
-                    {
-                        Log::info('$listPackageDelivery => ');
-                        Log::info($listPackageDelivery);
-                    }
-
                     $totalPieces = 0;
                     $totalTeam   = 0;
-
-                    Log::info($listPackageDelivery);
 
                     if($listPackageDelivery)
                     {
@@ -114,9 +106,6 @@ class TaskPaymentTeam extends Command
 
                         $toDeductLostPackagesList = ToDeductLostPackages::where('idTeam', $team->id)->get();
 
-                        Log::info('toDeductLostPackagesList => ');
-                        Log::info($totalAdjustmentToDeduct);
-
                         foreach($toDeductLostPackagesList as $toDeductLostPackages)
                         {
                             $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
@@ -127,8 +116,6 @@ class TaskPaymentTeam extends Command
                             $toDeductLostPackages->delete();
                         }
 
-                        Log::info('$totalAdjustmentToDeduct => '. $totalAdjustmentToDeduct);
-
                         foreach($listPackageDelivery as $packageDelivery)
                         {
                             $dimFactor   = 200;
@@ -138,9 +125,7 @@ class TaskPaymentTeam extends Command
                             $dieselPrice = $this->GetDieselPrice($packageDelivery);
 
                             if($dieselPrice)
-                            {
-                                Log::info('dieselPrice => '. $dieselPrice);
-                                
+                            {                                
                                 $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
                                                             ->where('minWeight', '<=', $weightRound)
                                                             ->where('maxWeight', '>=', $weightRound)
