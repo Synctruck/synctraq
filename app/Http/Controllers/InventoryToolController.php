@@ -323,8 +323,12 @@ class InventoryToolController extends Controller
         $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
 
-        $packageWarehouse = new PackageWarehouse();
+        if($package->status != 'Middle Mile Scan')
+            $packageWarehouse = new PackageWarehouse();
+        else
+            $packageWarehouse = PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
 
         $packageWarehouse->Reference_Number_1           = $package->Reference_Number_1;
         $packageWarehouse->idCompany                    = $package->idCompany;
