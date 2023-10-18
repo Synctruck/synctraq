@@ -162,35 +162,29 @@ function Track() {
                      <h6 className="pt-4">Tracking Details</h6>
                      <hr />
                      <h5 className="text-center">
-                      PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
-                     </h5>
-                    <div className="col-12 mt-2 tracking-details">
-                <div className="row">
+             PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
+            </h5>
+           <div className="col-12 mt-2 tracking-details">
+            <div className="row">
+              <div className="col-md-3">
+              <Steps current={step === 0 ? 0 : -1} className="text-center">
+                <Steps.Item title="In Fulfillment" />
+              </Steps>
+             </div>
             <div className="col-md-3">
-            <Steps current={step} className="text-center">
-            <Steps.Item title="In Fulfillment">
-             {step === 0 ? "2" : ""}
-            </Steps.Item>
-            </Steps>
+              <Steps current={step === 1 ? 0 : -1} className="text-center">
+                <Steps.Item title="Inbound" />
+              </Steps>
             </div>
             <div className="col-md-3">
-            <Steps current={step === 1 ? 2 : -1} className="text-center">
-            <Steps.Item title="Inbound" />
-            </Steps>
+              <Steps current={step === 2 ? 0 : -1} className="text-center">
+                <Steps.Item title="Out for Delivery" />
+              </Steps>
             </div>
             <div className="col-md-3">
-            <Steps current={step} className="text-center">
-            <Steps.Item title="Out for Delivery">
-            {step === 2 ? "3" : ""}
-            </Steps.Item>
-            </Steps>
-            </div>
-            <div className="col-md-3">
-            <Steps current={step} className="text-center">
-  <Steps.Item title="Delivery">
-    {step === 3 ? "4" : ""}
-  </Steps.Item>
-</Steps>
+              <Steps current={step === 3 ? 0 : -1} className="text-center">
+                <Steps.Item title="Delivery" />
+              </Steps>
             </div>
           </div>
         </div>
