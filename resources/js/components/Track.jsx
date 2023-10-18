@@ -161,18 +161,15 @@ function Track() {
                             <hr />
                             <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
                             <div className={`col-12 mt-2 tracking-details`} style={{ flexDirection: 'column' }}>
-    <Steps current={step}>
-        <Steps.Item title="In Fulfillment" />
-        <Steps.Item title="Inbound" />
-        <Steps.Item title="Out for Delivery" />
-        <Steps.Item title="Delivery" />
-    </Steps>
-</div>
-
+                            <Steps current={step}>
+                            <Steps.Item title="In Fulfillment" />
+                            <Steps.Item title="Inbound" />
+                            <Steps.Item title="Out for Delivery" />
+                            <Steps.Item title="Delivery" />
+                            </Steps>
+                            </div>
                         </div>
                     </div>
-
-                    x
                 </div>
 
 
