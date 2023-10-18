@@ -160,18 +160,16 @@ function Track() {
                 <div className="row">
                     <div className="col-lg-12">
                      <h6 className="pt-4">Tracking Details</h6>
-                     <hr />
-                     <h5 className="text-center">
+             <hr />
+            <h5 className="text-center">
              PACKAGE ID: {packageId} / DELIVERY ZIP CODE: {packageZipCode}
             </h5>
            <div className="col-12 mt-2 tracking-details">
             <div className="row">
               <div className="col-md-3">
               <Steps current={step === 0 ? 0 : -1} className="text-center">
-  <Steps.Item title="In Fulfillment" className={step === 0 ? '' : 'hidden-number'}>
-    155
-  </Steps.Item>
-</Steps>
+                <Steps.Item title="In Fulfillment" />
+              </Steps>
              </div>
             <div className="col-md-3">
               <Steps current={step === 1 ? 0 : -1} className="text-center">
