@@ -12,7 +12,7 @@ function Track() {
     const [packageId, setPackageId] = useState('');
     const [packageZipCode, setPackageZipCode] = useState('');
     const [listDetails, setListDetails] = useState([]);
-    const [step, setStep] = useState(null);
+    const [step, setStep] = useState(0);
     const [onholdDesc, setOnholdDesc] = useState('');
     const [inboundDesc, setInboundDesc] = useState('');
     const [dispatchDesc, setDispatchDesc] = useState('');
