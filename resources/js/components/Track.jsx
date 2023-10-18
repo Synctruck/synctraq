@@ -172,31 +172,30 @@ function Track() {
                                     <Steps.Item title="Delivery" description={deliveryDesc} />
                                 </Steps>
             </div>
-            <div className="col-12 mt-2 tracking-details d-block d-sm-none">
-  <div className="row">
-    <div className="col-md-3">
-      <Steps current={step === 0 ? 0 : -1} className="text-center ant-steps-item-custom">
-        <Steps.Item title="In Fulfillment" />
-      </Steps>
-    </div>
-    <div className="col-md-3">
-      <Steps current={step === 1 ? 0 : -1} className="text-center ant-steps-item-custom">
-        <Steps.Item title="Inbound" />
-      </Steps>
-    </div>
-    <div className="col-md-3">
-      <Steps current={step === 2 ? 0 : -1} className="text-center ant-steps-item-custom">
-        <Steps.Item title="Out for Delivery" />
-      </Steps>
-    </div>
-    <div className="col-md-3">
-      <Steps current={step === 3 ? 0 : -1} className="text-center ant-steps-item-custom">
-        <Steps.Item title="Delivery" />
-      </Steps>
-    </div>
-  </div>
-</div>
-
+            <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
+            <div className="row">
+              <div className="col-md-3">
+              <Steps current={step === 0 ? 0 : 1} className="text-center">
+                <Steps.Item title="In Fulfillment" />
+              </Steps>
+             </div>
+            <div className="col-md-3">
+              <Steps current={step === 1 ? 0 : -1} className="text-center">
+                <Steps.Item title="Inbound" />
+              </Steps>
+            </div>
+            <div className="col-md-3">
+              <Steps current={step === 2 ? 0 : -1} className="text-center">
+                <Steps.Item title="Out for Delivery" />
+              </Steps>
+            </div>
+            <div className="col-md-3">
+              <Steps current={step === 3 ? 0 : -1} className="text-center">
+                <Steps.Item title="Delivery" />
+              </Steps>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
