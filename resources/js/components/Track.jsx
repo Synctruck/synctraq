@@ -180,7 +180,7 @@ function Track() {
               </Steps>
              </div>
             <div className="col-md-3">
-              <Steps current={step === 1 ? 0 : 3} className="text-center">
+              <Steps current={step === 1 ? 2 : 1} className="text-center">
                 <Steps.Item title="Inbound" />
               </Steps>
             </div>
