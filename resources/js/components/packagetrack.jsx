@@ -173,7 +173,7 @@ function PackageTrack() {
                         <div className="row">
                             <div className="col-lg-12 text-center">
                                 <div className="form-group">
-                                    <img src="./img/log.png" alt="" width="220"/>
+                                    <img src="./img/logo_sync_truck.png" alt="" width="220"/>
                                 </div>
                             </div>
                             <div className="col-lg-12">
@@ -265,5 +265,5 @@ export default PackageTrack;
 
 // DOM element
 if (document.getElementById('track')) {
-    ReactDOM.render(<Track />, document.getElementById('track'));
+    ReactDOM.render(<PackageTrack />, document.getElementById('track'));
 }
