@@ -156,7 +156,7 @@ function Track() {
             {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-12 d-none d-lg-block">
+                        <div className="col-lg-12">
                             <h6 className="pt-4">Tracking details</h6>
                             <hr />
                             <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
