@@ -176,8 +176,15 @@ function Track() {
             <div className="row">
               <div className="col-md-3">
               <Steps current={step === 0 ? 0 : 1} className="text-center">
-                <Steps.Item title="In Fulfillment" />
-              </Steps>
+  <Steps.Item>
+    {step === 0 ? (
+      <Steps.Item title="In Fulfillment" />
+    ) : (
+      "In Fulfillment"
+    )}
+  </Steps.Item>
+</Steps>
+
              </div>
             <div className="col-md-3">
               <Steps current={step === 1 ? 0 : 1} className="text-center">
