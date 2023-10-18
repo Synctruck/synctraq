@@ -12,7 +12,7 @@ function Track() {
     const [packageId, setPackageId] = useState('');
     const [packageZipCode, setPackageZipCode] = useState('');
     const [listDetails, setListDetails] = useState([]);
-    const [step, setStep] = useState(0);
+    const [step, setStep] = useState(null);
     const [onholdDesc, setOnholdDesc] = useState('');
     const [inboundDesc, setInboundDesc] = useState('');
     const [dispatchDesc, setDispatchDesc] = useState('');
@@ -167,27 +167,29 @@ function Track() {
            <div className="col-12 mt-2 tracking-details">
             <div className="row">
               <div className="col-md-3">
-              <Steps current={step} className="text-center">
-                 <Steps.Item title="In Fulfillment" />
+              <Steps current={step === 0 ? 0 : -1} className="text-center">
+              <Steps.Item title="In Fulfillment">
+                {step === 0 ? '1' : ''}
+              </Steps.Item>
               </Steps>
              </div>
             <div className="col-md-3">
-            <Steps current={step} className="text-center">
+              <Steps current={step === 1 ? 0 : -1} className="text-center">
                 <Steps.Item title="Inbound" />
-            </Steps>
+              </Steps>
             </div>
             <div className="col-md-3">
-            <Steps current={step} className="text-center">
+              <Steps current={step === 2 ? 0 : -1} className="text-center">
                 <Steps.Item title="Out for Delivery" />
-            </Steps>
+              </Steps>
             </div>
             <div className="col-md-3">
-            <Steps current={step} className="text-center">
+              <Steps current={step === 3 ? 0 : -1} className="text-center">
                 <Steps.Item title="Delivery" />
-            </Steps>
+              </Steps>
             </div>
           </div>
-         </div>
+        </div>
       </div>
     </div>
   </div>
