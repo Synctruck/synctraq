@@ -167,29 +167,45 @@ function Track() {
         <div className="col-12 mt-2 tracking-details">
           <div className="row">
             <div className="col-md-3">
-              <Steps current={step === 0 ? 0 : -1} className="text-center">
-                <Steps.Item title="In Fulfillment" />
+              <Steps className="text-center">
+                {step === 0 ? (
+                  <Steps.Item title="In Fulfillment" />
+                ) : (
+                  <Steps.Item title={<span>&#10003;</span>} />
+                )}
               </Steps>
             </div>
             <div className="col-md-3">
-              <Steps current={step === 1 ? 0 : -1} className="text-center">
-                <Steps.Item title="Inbound" />
+              <Steps className="text-center">
+                {step === 1 ? (
+                  <Steps.Item title="Inbound" />
+                ) : (
+                  <Steps.Item title={<span>&#10003;</span>} />
+                )}
               </Steps>
             </div>
             <div className="col-md-3">
-              <Steps current={step === 2 ? 0 : -1} className="text-center">
-                <Steps.Item title="Out for Delivery" />
+              <Steps className="text-center">
+                {step === 2 ? (
+                  <Steps.Item title="Out for Delivery" />
+                ) : (
+                  <Steps.Item title={<span>&#10003;</span>} />
+                )}
               </Steps>
             </div>
             <div className="col-md-3">
-              <Steps current={step === 3 ? 0 : -1} className="text-center">
-                <Steps.Item title="Delivery" />
+              <Steps className="text-center">
+                {step === 3 ? (
+                  <Steps.Item title="Delivery" />
+                ) : (
+                  <Steps.Item title={<span>&#10003;</span>} />
+                )}
               </Steps>
             </div>
           </div>
         </div>
-        {/* Linea que conecta los puntos */}
-        <div className="line" style={{ width: `${(step / 3) * 100}%` }}></div>
+        {/* Línea que conecta los puntos */}
+        <div className="line"></div>
       </div>
     </div>
   </div>
