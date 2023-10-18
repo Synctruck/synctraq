@@ -130,53 +130,51 @@ function Track() {
 
     return (
         <section className="section">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-6">
-                        <form id="formSearch" onSubmit={getDetail}>
-                            <div className="form-group">
-                                <input
-                                    type="text"
-                                    id="textSearch"
-                                    className="form-control"
-                                    placeholder="Package ID"
-                                    required
-                                    value={packageId}
-                                    onChange={handleSearchFieldChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <button className="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6">
+                <form id="formSearch" onSubmit={getDetail}>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      id="textSearch"
+                      className="form-control"
+                      placeholder="Package ID"
+                      required
+                      value={packageId}
+                      onChange={handleSearchFieldChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <button className="btn btn-primary" type="submit">Search</button>
+                  </div>
+                </form>
+              </div>
             </div>
-
-            {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 d-none d-lg-block">
-                            <h6 className="pt-4">Tracking details</h6>
-                            <hr />
-                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
-                            <div className={`col-12 mt-2 tracking-details`} style={{ flexDirection: 'column' }}>
-                            <Steps current={step}>
-                            <Steps.Item title="In Fulfillment" />
-                            <Steps.Item title="Inbound" />
-                            <Steps.Item title="Out for Delivery" />
-                            <Steps.Item title="Delivery" />
-                            </Steps>
-                            </div>
-                        </div>
-                    </div>
+          </div>
+      
+          {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-12">
+                  <h6 className="pt-4">Tracking details</h6>
+                  <hr />
+                  <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
+                  <div className={`col-12 mt-2 tracking-details d-lg-flex`} style={{ flexDirection: 'column' }}>
+                    <Steps current={step}>
+                      <Steps.Item title="In Fulfillment" />
+                      <Steps.Item title="Inbound" />
+                      <Steps.Item title="Out for Delivery" />
+                      <Steps.Item title="Delivery" />
+                    </Steps>
+                  </div>
                 </div>
-
-
-
-            )}
+              </div>
+            </div>
+          )}
         </section>
-    );
+      );
+      
 
 }
 
