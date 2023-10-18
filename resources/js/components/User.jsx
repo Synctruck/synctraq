@@ -463,10 +463,10 @@ function User() {
                                                         <div className="row">
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
-                                                                    <label className="form">Cellar</label>
+                                                                    <label className="form">Warehouse</label>
                                                                     <div id="idCellar" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Select a cellar</option>
+                                                                    <select value={ idCellar } className="form-control" onChange={ (e) => setIdCellar(e.target.value) }>
+                                                                        <option value="">Select a Warehouse</option>
                                                                         { listCellarTable }
                                                                     </select>
                                                                 </div>
@@ -587,7 +587,7 @@ function User() {
                                                 <th>ADDREESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>CELLAR</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

@@ -515,51 +515,24 @@ function ReportInvoices() {
                                                     </div>
                                                 </div>
                                             </dvi>
-                                            {
-                                                roleUser == 'Master'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">TEAM</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listTeamSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-lg-2">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
-                                            {
-                                                roleUser == 'Team'
-                                                ?
-                                                    <>
-                                                        <div className="col-lg-3">
-                                                            <div className="form-group">
-                                                                <label htmlFor="">DRIVER</label>
-                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                                   <option value="0">All</option>
-                                                                    { listDriverSelect }
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                :
-                                                    ''
-                                            }
-
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <label htmlFor="">TEAM</label>
+                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                       <option value="0">All</option>
+                                                        { listTeamSelect }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <label htmlFor="">DRIVER</label>
+                                                    <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                       <option value="0">All</option>
+                                                        { listDriverSelect }
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">

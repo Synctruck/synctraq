@@ -13,7 +13,7 @@ use App\Models\{
         PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
         PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
         PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
-        PackageWarehouse, TeamRoute, User
+        PackageWarehouse, TeamRoute, User, PackageDispatchToMiddleMile
     };
 
 use App\External\ExternalServiceInland;
@@ -486,10 +486,11 @@ class PackageController extends Controller
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
 
         if($package)
         {
-            return ['status' => $package->status];
+            return ['status' => $package->status, 'package' => $package];
         }
 
         return ['status' => ''];

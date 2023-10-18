@@ -3,8 +3,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States };
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -12,6 +13,7 @@ use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 use App\Http\Controllers\Api\PackageController;
 
 use App\Service\ServicePackageLmCarrier;
+use App\Service\ServicePackageDispatchToMiddleMile;
 
 use DB;
 use Log;
@@ -50,90 +52,22 @@ class PackageInboundController extends Controller
                     $width      = $dimensions['width'];
                     $height     = $dimensions['height'];
                     $length     = $dimensions['length'];
-                    $dimensions = $length .'|'. $height .'|'. $width;
 
-                    try
+                    $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+                    $packageWeight    = PackageWeight::find($Reference_Number_1);
+
+                    if(!$packageWeight)
                     {
-                        DB::beginTransaction();
-
-                        $packageInbound = new PackageInbound();
-
-                        $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
-                        $packageInbound->idCompany                    = $packageManifest->idCompany;
-                        $packageInbound->company                      = $packageManifest->company;
-                        $packageInbound->idStore                      = $packageManifest->idStore;
-                        $packageInbound->store                        = $packageManifest->store;
-                        $packageInbound->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
-                        $packageInbound->CLIENT                       = $packageManifest->company;
-                        $packageInbound->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
-                        $packageInbound->Dropoff_Company              = $packageManifest->Dropoff_Company;
-                        $packageInbound->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
-                        $packageInbound->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
-                        $packageInbound->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
-                        $packageInbound->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
-                        $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
-                        $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
-                        $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageInbound->Notes                        = $dimensions;
-                        $packageInbound->Weight                       = $weight;
-                        $packageInbound->Route                        = $packageManifest->Route;
-                        $packageInbound->quantity                     = $packageManifest->quantity;
-                        $packageInbound->status                       = 'Inbound';
-
-                        $packageInbound->save();
-
-                        $packageHistory = new PackageHistory();
-
-                        $packageHistory->id                           = uniqid();
-                        $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
-                        $packageHistory->idCompany                    = $packageManifest->idCompany;
-                        $packageHistory->company                      = $packageManifest->company;
-                        $packageHistory->idStore                      = $packageManifest->idStore;
-                        $packageHistory->store                        = $packageManifest->store;
-                        $packageHistory->TRUCK                        = $request->get('TRUCK') ? $request->get('TRUCK') : '';
-                        $packageHistory->CLIENT                       = $request->get('CLIENT') ? $request->get('CLIENT') : '';
-                        $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
-                        $packageHistory->Dropoff_Company              = $packageManifest->Dropoff_Company;
-                        $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
-                        $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
-                        $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
-                        $packageHistory->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
-                        $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
-                        $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
-                        $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                        $packageHistory->Notes                        = $dimensions;
-                        $packageHistory->Weight                       = $weight;
-                        $packageHistory->Route                        = $packageManifest->Route;
-                        $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                        $packageHistory->Description                  = 'Inbound - for: API CARGO';
-                        $packageHistory->inbound                      = 1;
-                        $packageHistory->quantity                     = $packageManifest->quantity;
-                        $packageHistory->status                       = 'Inbound';
-                        $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                        $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                        $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-
-                        $packageHistory->save();
-
-                        $packageManifest->delete();
-
-                        DB::commit();
-
-                        //data for INLAND
-                        $packageController = new PackageController();
-                        $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
-                        //end data for inland
-
-                        Log::info("============== CORRECT - INBOUND  ========");
-                        Log::info("===================================");
+                        $packageWeight = new PackageWeight();
                     }
-                    catch(Exception $e)
+                    
+                    if($dimFactorCompany)
                     {
-                        DB::rollback();
-
-                        Log::info("============== ERROR - ROLLBACK  ========");
-                        Log::info("===================================");
+                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
                     }
+
+                    $packageWeight->weight4 = $weight;
+                    $packageWeight->save();
                 }
                 else
                 {
@@ -177,6 +111,7 @@ class PackageInboundController extends Controller
         $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
 
         try
         {
@@ -246,6 +181,23 @@ class PackageInboundController extends Controller
                     else
                     {
                         $packageCreate = new PackagelmCarrier();
+                    }
+                    
+                }
+                else if($status == 'Dispatch To MiddleMile')
+                {
+                    if($package->status == 'Dispatch To MiddleMile')
+                    {
+                        return response()->json(
+                            [
+                                'status' => 400,
+                                'error' => 'PACKAGE_ID '. $package->Reference_Number_1 .' is already taken in Inbound.'
+                            ]
+                        , 400);
+                    }
+                    else
+                    {
+                        $packageCreate = new PackageDispatchToMiddleMile();
                     }
                     
                 }
@@ -354,7 +306,7 @@ class PackageInboundController extends Controller
                 $packageCreate->idCompany          = $package->idCompany;
                 $packageCreate->company            = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageCreate->idStore  = $package->idStore;
                     $packageCreate->store    = $package->store;
@@ -397,7 +349,7 @@ class PackageInboundController extends Controller
                 $packageHistory->idCompany                    = $package->idCompany;
                 $packageHistory->company                      = $package->company;
 
-                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost')
+                if($status != 'ReturnCompany' && $status != 'LM Carrier' && $status != 'Lost' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageHistory->idStore  = $package->idStore;
                     $packageHistory->store    = $package->store;
@@ -427,7 +379,7 @@ class PackageInboundController extends Controller
                 Log::info('$package->status: '. $package->status);
                 Log::info('$status: '. $status);
 
-                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal' || $package->status == 'Lost')
+                if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'ReInbound' || $package->status == 'ReturnCompany' || $package->status == 'Middle Mile Scan' || $package->status == 'Warehouse' || $package->status == 'LM Carrier' || $package->status == 'Terminal' || $package->status == 'Lost' || $package->status == 'Dispatch To MiddleMile')
                 {
                     if($package->status == 'Warehouse' && $status == 'Middle Mile Scan')
                     {
@@ -457,7 +409,7 @@ class PackageInboundController extends Controller
                     }
                 }
 
-                if($package->company != 'INLAND LOGISTICS' && $status != 'Warehouse' && $status != 'LM Carrier')
+                if($package->company != 'INLAND LOGISTICS' && $status != 'Warehouse' && $status != 'LM Carrier' && $status != 'Dispatch To MiddleMile')
                 {
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($package, $status, [], date('Y-m-d H:i:s'));

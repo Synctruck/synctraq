@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
+use App\Models\{ Comment, Company, CompanyStatus, DimFactorCompany, PackageWeight, PackageDispatch, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, Routes, RoutesAux, RoutesZipCode };
 
 use DateTime;
 use DB;
@@ -105,7 +105,7 @@ class PackageController extends Controller
             $data['weight_unit']           = $request->get('shipment')['shipment_details']['weight_unit'];
             $data['width']                 = $request->get('shipment')['shipment_details']['width'];
             $data['height']                = $request->get('shipment')['shipment_details']['height'];
-            $data['length']                = $request->get('shipment')['shipment_details']['length'];
+            $data['length']                = isset($request->get('shipment')['shipment_details']['length']) ?? 0;
             $data['dimensions_unit']       = $request->get('shipment')['shipment_details']['dimensions_unit'];
             $data['signature_on_delivery'] = $request->get('shipment')['shipment_details']['signature_on_delivery'];
             $data['hazardous_goods']       = $request->get('shipment')['shipment_details']['hazardous_goods'];
@@ -204,10 +204,21 @@ class PackageController extends Controller
                     Log::info('company->dimensions:');
                     Log::info($company->dimensions);
                     
+                    $packageWeight = new PackageWeight();
+                    $packageWeight->Reference_Number_1 = $data['Reference_Number_1'];
+                    
                     if($dimFactorCompany && $company->dimensions)
                     {
                         $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
+
+                        $packageWeight->width1  = $data['width'];
+                        $packageWeight->height1 = $data['height'];
+                        $packageWeight->length1 = $data['length'];
+                        $packageWeight->weight1 = $dim_weight;
                     }
+
+                    $packageWeight->weight3 = $data['Weight'];
+                    $packageWeight->save();
 
                     $routesZipCode = RoutesZipCode::find($data['Dropoff_Postal_Code']);
 
@@ -317,7 +328,7 @@ class PackageController extends Controller
                         [
                             'message' => 'Something went wrong with the registration process, please try again',
                         ]
-                    , 500);
+                    , 400);
                 }
             }
 

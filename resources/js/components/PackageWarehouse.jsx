@@ -641,6 +641,7 @@ function PackageWarehouse() {
                 <td>{ pack.Dropoff_Province }</td>
                 <td>{ pack.Dropoff_Postal_Code }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td>{ pack.Route }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
@@ -665,7 +666,7 @@ function PackageWarehouse() {
         }
         else
         {
-            setIsLoading(true);
+            
 
             fetch(url)
             .then(res => res.json())
@@ -845,8 +846,14 @@ function PackageWarehouse() {
         return <option value={company.id}>{company.name}</option>
     })
 
-    return (
+    const handlerGoToInventory = () => {
+        window.open(url_general +'inventory-tool')
+    }
 
+    const[showvalidateInventoryTool, setshowvalidateInventoryTool] = useState(validateInventoryTool)
+
+    return (
+    
         <section className="section">
             { modalPackageEdit }
             <div className="row">
@@ -857,6 +864,13 @@ function PackageWarehouse() {
                                 <div className="row form-group">
                                     <div className="col-12 mb-4">
                                         <div className="row">
+                                            <div className="col-2" style={{display: showvalidateInventoryTool}}>
+                                            
+                                                <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerGoToInventory() }>
+                                                    Inventory Tool
+                                                </button>
+                                            
+                                            </div>
                                             <div className="col-lg-2">
                                                 <form onSubmit={ handlerImport }>
                                                     <div className="form-group">
@@ -1104,6 +1118,7 @@ function PackageWarehouse() {
                                                 <th>STATE</th>
                                                 <th>ZIP CODE</th>
                                                 <th>WEIGHT</th>
+                                                <th>WAREHOUSE</th>
                                                 <th>ROUTE</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>

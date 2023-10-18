@@ -108,32 +108,12 @@
                 </li>
             @endif
 
-            {{-- @if(Auth::user()->role->name == 'Master')
-                <li >
-                    <a class="nav-link {{Request::is('assigned') ? 'show' : 'collapsed'}}" href="{{url('/assigned')}}">
-                        <i class="bx bx-user"></i>
-                        <span>Assigned Team</span>
-                    </a>
-                </li>
-            @endif --}}
-
             <li style="display: none;">
                 <a class="nav-link {{Request::is('package-delivery') ? 'show' : 'collapsed'}}" href="{{url('package-delivery')}}">
                     <i class="bx bx-car"></i>
                     <span>DELIVERIES</span>
                 </a>
             </li>
-
-            {{-- <li class="nav-heading">* DESELECT</li> --}}
-            {{-- @if(Auth::user()->role->name == 'Master')
-                <li >
-                    <a class="nav-link {{Request::is('package-not-exists') ? 'show' : 'collapsed'}}" href="{{url('/package-not-exists')}}">
-                        <i class="bx bx-barcode-reader"></i>
-                        <span>Not Exists</span>
-                    </a>
-                </li>
-            @endif --}}
-
             @if(hasPermission('reinbound.index'))
                 <li >
                     <a class="nav-link {{Request::is('package/return') ? 'show' : 'collapsed'}}" href="{{url('/package/return')}}">
@@ -169,6 +149,15 @@
                     </a>
                 </li>
             @endif
+            
+            @if(hasPermission('packageDispatchToMiddleMile.index'))
+                <li >
+                    <a class="nav-link {{Request::is('package-dispatch-to-middlemile') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch-to-middlemile')}}">
+                        <i class="bx bx-car"></i>
+                        <span>DISPATCH TO MIDDLEMILE</span>
+                    </a>
+                </li>
+            @endif
 
             @if(hasPermission('lost.index'))
                 <li >
@@ -187,16 +176,6 @@
                     </a>
                 </li>
             @endif
-
-                {{-- @if(Auth::user()->role->name == 'Master')
-                    <li >
-                        <a class="nav-link {{Request::is('unassigned') ? 'show' : 'collapsed'}}" href="{{url('/unassigned')}}">
-                            <i class="bx bx-user"></i>
-                            <span>Unssigned Team</span>
-                        </a>
-                    </li>
-                @endif --}}
-
 
             @if(hasPermission('assigned.index'))
             <li style="display: none;">
@@ -234,10 +213,10 @@
             @endif
 
             <li class="nav-item" id="liUlFinanzas">
-                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check' || Request::is('payment-revert')) || Request::is('report-invoices') ? 'true' : 'false'}}">
+                <a class="nav-link {{ (Request::is('charge-company')) ? '' : 'collapsed'}}" data-bs-target="#ulFinanzas" data-bs-toggle="collapse" href="#" aria-expanded=" {{Request::is('payment-team') || Request::is('package-delivery/check' || Request::is('payment-revert')) || Request::is('to-deduct-lost-packages') || Request::is('report-invoices') ? 'true' : 'false'}}">
                   <i class="bx bxs-check-circle"></i><span>FINANCE</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team') || Request::is('payment-revert')) || Request::is('report-invoices') ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
+                <ul id="ulFinanzas" class="nav-content collapse {{ (Request::is('charge-company') || Request::is('payment-team') || Request::is('payment-revert')) || Request::is('to-deduct-lost-packages') || Request::is('report-invoices') ? 'show' : '' }}" data-bs-parent="#ulFinanzas" style="">
                     @if(hasPermission('chargeCompany.index'))
                         <li>
                             <a class="nav-link {{Request::is('charge-company') ? 'active' : 'collapsed'}}" href="{{url('charge-company')}}">
@@ -259,6 +238,14 @@
                             <a class="nav-link {{Request::is('payment-revert') ? 'active' : 'collapsed'}}" href="{{url('payment-revert')}}">
                                 <i class="bx bxs-dollar-circle"></i>
                                 <span>PAYMENT REVERTS</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if(hasPermission('toDeductLostPackages.index'))
+                        <li>
+                            <a class="nav-link {{Request::is('to-deduct-lost-packages') ? 'active' : 'collapsed'}}" href="{{url('to-deduct-lost-packages')}}">
+                                <i class="bx bxs-dollar-circle"></i>
+                                <span>DEDUCT LOST PACKAGES</span>
                             </a>
                         </li>
                     @endif

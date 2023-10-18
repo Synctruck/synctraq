@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany };
+use App\Models\{ Configuration, HistoryDiesel, PackagePriceCompanyTeam, PeakeSeasonCompany, PackageWeight };
 
 use App\Http\Controllers\{ CompanyController, RangePriceCompanyController };
 
@@ -24,12 +24,24 @@ class PackagePriceCompanyTeamController extends Controller
         if($packagePriceCompanyTeam == null)
         {
             $packagePriceCompanyTeam = new PackagePriceCompanyTeam();
-
-            $packagePriceCompanyTeam->id =  date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
+            $packagePriceCompanyTeam->id = date('YmdHis') .'-'. $packageDispatch->Reference_Number_1;
         }
 
-        $Reference_Number_1    = $packageDispatch->Reference_Number_1;
-        $weight                = $packageDispatch->Weight;
+        $Reference_Number_1 = $packageDispatch->Reference_Number_1;
+
+        $packageWeight = PackageWeight::find($packageDispatch->Reference_Number_1);
+
+        if($packageWeight)
+        {
+            Log::info('weight1 => '. $packageWeight->weight1 .' weight3 => '. $packageWeight->weight3 .' Weight => '. $packageDispatch->Weight);
+            $weightPackage = max($packageWeight->weight1, $packageWeight->weight3, $packageDispatch->Weight);
+        }
+        else
+        {
+            $weightPackage = $packageDispatch->Weight;
+        }
+
+        $weight = $weightPackage;
 
         $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
 
@@ -60,7 +72,7 @@ class PackagePriceCompanyTeamController extends Controller
             }
         }
 
-        $dimWeightCompanyRound = ceil($packageDispatch->Weight);
+        $dimWeightCompanyRound = ceil($weight);
 
         $priceWeightCompany = new RangePriceCompanyController();
         $priceWeightCompany = $priceWeightCompany->GetPriceCompany($packageDispatch->idCompany, $dimWeightCompanyRound, $packageDispatch->Reference_Number_1);

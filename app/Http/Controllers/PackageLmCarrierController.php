@@ -87,6 +87,7 @@ class PackageLmCarrierController extends Controller
                                                             'Dropoff_Province',
                                                             'Dropoff_Postal_Code',
                                                             'Weight',
+                                                            'nameCellar',
                                                             'Route'
                                                         )
                                                         ->paginate(50); 
@@ -157,6 +158,11 @@ class PackageLmCarrierController extends Controller
     {
         $cellar = Cellar::find(Auth::user()->idCellar);
 
+        if(!$cellar)
+        {
+            return ['statusCode' => 'userNotLocation'];
+        }
+
         $company = Company::find(1);
 
         $key_webhook = $company->key_webhook;
@@ -171,8 +177,9 @@ class PackageLmCarrierController extends Controller
                 );
 
         $dataSend =    '{
-                            "status" : "scan_in_last_mile_carrier",
+                            "status" : "reprocessing_at_mc",
                             "datetime" : "'. $created_at .'",
+                            "warehouse": "'. $cellar->id .'",
                             "location" : "'. $cellar->state .','. $cellar->city .'"
                         }';
 
@@ -195,19 +202,13 @@ class PackageLmCarrierController extends Controller
         $response    = json_decode($response, true);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        dd($http_status);
-
-        curl_close($curl);
-
-        Log::info($response);
-
-        Log::info('===========  INLAND - STATUS UPDATE');
-        Log::info('http_status: '. $http_status);
-        Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-        Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-        Log::info('REPONSE STATUS: '. $response['status']);
-        Log::info('============INLAND - END STATUS UPDATE');
-
-        
+        if($http_status >= 200 && $http_status <= 299)
+        {
+            return ['statusCode' => true];
+        }
+        else
+        {
+            return ['statusCode' => false];
+        }
     }
 }

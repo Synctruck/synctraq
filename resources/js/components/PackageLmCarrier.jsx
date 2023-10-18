@@ -526,6 +526,7 @@ function PackageLmCarrier() {
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
@@ -568,7 +569,6 @@ function PackageLmCarrier() {
 
         setOptionsRouteSearch([]);
 
-        console.log(listRoutes);
         listRoutes.map( (route, i) => {
 
             optionsRouteSearch.push({ value: route.name, label: route.name });
@@ -661,9 +661,20 @@ function PackageLmCarrier() {
                 .then(res => res.json())
                 .then((response) => {
 
-                    swal('Correct!', 'PALLET ID sent correctly', 'success');
+                    if(response.statusCode == true)
+                    {
+                        swal('Correct!', 'PALLET ID sent correctly', 'success');
 
-                    setNumberPackage('')
+                        setNumberPackage('')
+                    }
+                    else if(response.statusCode == false)
+                    {
+                        swal('Error!', 'There was an error when sending the PALLET #'+ Reference_Number_1, 'error');
+                    }
+                    else if(response.statusCode == 'userNotLocation')
+                    {
+                        swal('Attention!', 'You are not assigned a location', 'warning');
+                    }
                     
                     setReadInput(false);
                     setSendInbound(1);
@@ -908,6 +919,7 @@ function PackageLmCarrier() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>WEIGHT</th>
+                                                <th>WAREHOUSE</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>

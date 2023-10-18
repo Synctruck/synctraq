@@ -10,6 +10,8 @@ use App\Models\{
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+
 
 use Auth;
 use DateTime;
@@ -272,13 +274,14 @@ class PaymentTeamController extends Controller
         fpassthru($file);
     }
 
-    public function ExportReceipt($idPayment)
+    public function ExportReceipt($idPayment, $type)
     {
+        
         $payment = PaymentTeam::with('team')->find($idPayment);
-
+    
         $delimiter = ",";
-        $filename  = "PAYMENT - RECEIPT - TEAM  " . $payment->id . ".csv";
-        $file      = fopen('php://memory', 'w');
+        $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
+        $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
         
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
@@ -404,13 +407,23 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
+        if($type == 'download')
+        {
+                fseek($file, 0);
 
-        fseek($file, 0);
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
-
-        fpassthru($file);
+                header('Content-Type: text/csv');
+                header('Content-Disposition: attachment; filename="' . $filename . '";');
+    
+                fpassthru($file);
+        }
+        else
+        {
+                rewind($file);
+                fclose($file);
+                
+                SendToTeam('Payment Team', $filename,  $idPayment);
+                return ['stateAction' => true];
+        }
     }
 
     public function StatusChange(Request $request, $idPayment, $status)

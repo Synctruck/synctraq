@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomEmail;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User};
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageDispatch, PackageFailed, PackageHistory, PackageInbound, PackageLost,  PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, User, Cellar, ToDeductLostPackages };
 
 use App\Service\ServicePackageLost;
 
@@ -52,6 +52,7 @@ class PackageLostController extends Controller
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
                                             ->orderBy('actualDate', 'desc')
                                             ->get();
+            
 
             $package = [
 
@@ -67,6 +68,7 @@ class PackageLostController extends Controller
                 "Route" => $packageLost->Route,
                 "Weight" => $packageLost->Weight,
                 "comment" => $packageLost->comment,
+                "nameCellar" => $packageLost->nameCellar,
                 "Last_Status" => (count($packageHistory) > 1 ? $packageHistory[1]->status : $packageHistory[0]->status),
                 "Last_Description" => (count($packageHistory) > 1 ? $packageHistory[1]->Description : $packageHistory[0]->Description)
             ];
@@ -265,6 +267,16 @@ class PackageLostController extends Controller
                 $packageLost->updated_at                   = date('Y-m-d H:i:s');
                 $packageLost->status                       = 'Lost';
 
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if($cellar)
+                {
+                    $packageLost->idCellar    = $cellar->id;
+                    $packageLost->nameCellar  = $cellar->name;
+                    $packageLost->stateCellar = $cellar->state;
+                    $packageLost->cityCellar  = $cellar->city;
+                }
+
                 $packageLost->save();
 
                 //regsister history
@@ -294,6 +306,14 @@ class PackageLostController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+                if($cellar)
+                {
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
                 
                 $packageHistory->save();
 
@@ -303,15 +323,27 @@ class PackageLostController extends Controller
                 $package = $packageInbound;
                 $packageInbound->delete();
                 
+                $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
+
+                if(!$toDeductLostPackages)
+                {
+                    $toDeductLostPackages = new ToDeductLostPackages();
+                    $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
+                    $toDeductLostPackages->idTeam     = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
+
+                    if($packageInbound->company != 'EIGHTVAPE')
+                        $toDeductLostPackages->priceToDeduct = 50;
+
+                    $toDeductLostPackages->save();
+                }
+
                 DB::commit();
 
-                if($package->status=='Dispatch'){
+                if($package->status == 'Dispatch')
+                {
                     $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
                 }
-                if($package->company=='EIGHTVAPE'){
-                    $this->sendCompanyTeam($package->Reference_Number_1, $package->idCompany);
-                }
-               
+                
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
@@ -557,43 +589,33 @@ class PackageLostController extends Controller
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
     
-    public function sendEmailTeam($Reference_Number_1, $idTeam){
-
+    public function sendEmailTeam($Reference_Number_1, $idTeam)
+    {
         $user = User::find($idTeam);
-        $email= $user->email;
-        $message = "Greetings\n\nOur team has been inquiring about the package $Reference_Number_1 but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
 
-        Mail::raw($message, function ($msg) use ($email) {
-            $msg->to($email)->subject('Package Lost Notification');
-        });
+        if($user)
+        {
+            $message = "Greetings\n\nOur team has been inquiring about the package $Reference_Number_1 but since there have been no updates on the status of the package, it will be marked as lost, and $50.00 will be deducted from your next payment.\n\nRegards.";
+
+            Mail::raw($message, function($msg) use($user) {
+                $msg->to($user->email)->subject('Package Lost Notification');
+            });
+        }
     }
 
-    public function sendCompanyTeam($Reference_Number_1, $idCompany){
+    public function sendCompanyTeam($Reference_Number_1, $idCompany)
+    {
         $company = Company::find($idCompany);
-        $emails = $company->email;
-        $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, but since there have been no updates on the status of the package, it will be marked as lost. The total of the invoice will be deducted from your next payment.\n\nRegards.";
+
+        if($company)
+        {
+            $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, 
+                but since there have been no updates on the status of the package, it will be marked as lost. 
+                The total of the invoice will be deducted from your next payment.\n\nRegards.";
     
-        Mail::raw($message, function ($msg) use ($emails) {
-            $msg->to($emails)->subject('Package Lost Notification');
-        });
+            Mail::raw($message, function ($msg) use ($company) {
+                $msg->to($company->email)->subject('Package Lost Notification');
+            });
+        }
     }
 }
-
-    
-
-
-
-
-
-
-
-   
-
-    
-
-    
-
-
-
-
-

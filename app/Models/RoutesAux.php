@@ -19,6 +19,11 @@ class RoutesAux extends Model implements Auditable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function zip_codes()
+    {
+        return $this->hasMany('App\Models\RoutesZipCode', 'idRoute');
+    }
+
     //observers
     protected static function booted()
     {

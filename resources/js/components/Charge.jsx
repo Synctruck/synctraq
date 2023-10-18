@@ -599,7 +599,7 @@ function Charge() {
                                     <dvi className="col-lg-2 mb-3"> 
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                Company:
+                                                COMPANY:
                                             </div>
                                             <div className="col-lg-12">
                                                 <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
@@ -609,71 +609,6 @@ function Charge() {
                                             </div>
                                         </div>
                                     </dvi>
-                                    {
-                                        roleUser == 'Master'
-                                        ?
-                                            <>
-                                                <div className="col-lg-2" style={ {display: 'none'} }>
-                                                    <div className="form-group">
-                                                        <label htmlFor="">Team</label>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                           <option value="0">All</option>
-                                                            { listTeamSelect }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="col-lg-2" style={ {display: 'none'} }>
-                                                    <div className="form-group">
-                                                        <label htmlFor="">Driver</label>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                           <option value="0">All</option>
-                                                            { listDriverSelect }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </>
-                                        :
-                                            ''
-                                    }
-
-                                    {
-                                        roleUser == 'Team'
-                                        ?
-                                            <>
-                                                <div className="col-lg-3" style={ {display: 'none'} }>
-                                                    <div className="form-group">
-                                                        <label htmlFor="">Driver</label>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                           <option value="0">All</option>
-                                                            { listDriverSelect }
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </>
-                                        :
-                                            ''
-                                    }
-
-                                    <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                State :
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-2 mb-3" style={ {display: 'none'} }>
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                Route :
-                                            </div>
-                                            <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div className="col-lg-2">
                                         <div className="row">
                                             <div className="col-lg-12">

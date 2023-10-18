@@ -57,15 +57,17 @@ function Driver() {
             setTotalUser(response.userList.total);
             setRoleUser(response.roleUser);
 
-            if(response.roleUser == 'Master')
+            listAllTeam();
+
+            /*if(response.roleUser == 'Master')
             {
-                listAllTeam();
+                
             }
             else
             {
                 listAllDriverByTeam(idUserGeneral);
                 setIdTeam(idUserGeneral);
-            }
+            }*/
         });
     }
 
@@ -121,7 +123,7 @@ function Driver() {
         const formData = new FormData();
 
         formData.append('idRole', idRole);
-        formData.append('idTeam', (roleUser == 'Master' ? idTeam : idUserGeneral));
+        formData.append('idTeam', idTeam);
         formData.append('name', name);
         formData.append('nameOfOwner', nameOfOwner);
         formData.append('address', address);
@@ -379,15 +381,7 @@ function Driver() {
         return (
 
             <tr key={i}>
-                {
-                    roleUser == 'Master'
-                    ?
-                        <>
-                            <td><b>{ user.nameTeam }</b></td>
-                        </>
-                    :
-                        ''
-                }
+                <td><b>{ user.nameTeam }</b></td>
                 <td>{ user.name +' '+ user.nameOfOwner }</td>
                 <td>{ user.phone }</td> 
                 <td>{ user.email }</td>
@@ -513,23 +507,15 @@ function Driver() {
                                                             </div>
                                                         </div>
 
-                                                        {
-                                                            roleUser == 'Master'
-                                                            ?
-                                                                <>
-                                                                    <div className="col-lg-12">
-                                                                        <div className="form-group">
-                                                                            <label className="form">TEAM</label>
-                                                                            <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
-                                                                                <option value="" style={ {display: 'none'} }>Select a team</option>
-                                                                                { listTeamSelect }
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            :
-                                                                ''
-                                                        }
+                                                        <div className="col-lg-12">
+                                                            <div className="form-group">
+                                                                <label className="form">TEAM</label>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                    <option value="" style={ {display: 'none'} }>Select a team</option>
+                                                                    { listTeamSelect }
+                                                                </select>
+                                                            </div>
+                                                        </div>
 
                                                         <div className="row">
                                                             <div className="col-lg-6">
@@ -635,15 +621,7 @@ function Driver() {
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                {
-                                                    roleUser == 'Master'
-                                                    ?
-                                                        <>
-                                                            <th>TEAM</th>
-                                                        </>
-                                                    :
-                                                        ''
-                                                }
+                                                <th>TEAM</th>
                                                 <th>FULL NAME DRIVER</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>

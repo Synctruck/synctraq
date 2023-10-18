@@ -75,9 +75,9 @@ function Login() {
               <div className="row justify-content-center">
                 <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
-                  <div className="d-flex justify-content-center py-4">
-                    <img src='/img/logo.png'  width={200} alt='img'/>
-                  </div>
+              <div className="d-flex justify-content-center py-4">
+                  <img  src="/img/logo_sync_truck.png" width={200} alt="img"/>
+              </div>
 
                   <div className="card mb-3">
 

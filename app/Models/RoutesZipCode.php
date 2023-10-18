@@ -20,6 +20,11 @@ class RoutesZipCode extends Model implements Auditable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function routes()
+    {
+        return $this->belongsTo('App\Models\RoutesAux', 'idRoute', 'id');
+    }
+
     //observers
     protected static function booted()
     {

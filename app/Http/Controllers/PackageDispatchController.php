@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\{ ServicePackageTerminal, ServicePackageNeedMoreInformation };
 
-use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User, PackageLmCarrier };
+use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam, Driver, PackageHistory, PackageHighPriority, PackageBlocked, PackageDispatch,  PackageFailed, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackagePriceCompanyTeam, PackageReturn, PackageReturnCompany, PackageWarehouse, PaymentTeamReturn, TeamRoute, User, PackageLmCarrier, Cellar };
 
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
@@ -136,6 +136,7 @@ class PackageDispatchController extends Controller
                                                         'Dropoff_Postal_Code',
                                                         'Weight',
                                                         'Route',
+                                                        'nameCellar',
                                                         'taskOnfleet'
                                                     )
                                                     ->paginate(50);
@@ -283,7 +284,6 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'notAutorization'];
         }*/
-
         $packageDispatch = PackageDispatch::with('driver')
                                         ->where('Reference_Number_1', $request->Reference_Number_1)
                                         ->where('status', '!=', 'Delete')
@@ -493,6 +493,16 @@ class PackageDispatchController extends Controller
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
+                        
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                        if($cellar)
+                        {    
+                            $packageDispatch->idCellar    = $cellar->id;
+                            $packageDispatch->nameCellar  = $cellar->name;
+                            $packageDispatch->stateCellar = $cellar->state;
+                            $packageDispatch->cityCellar  = $cellar->city;
+                        }
 
                         $packageHistory = new PackageHistory();
 
@@ -527,6 +537,13 @@ class PackageDispatchController extends Controller
                         $packageHistory->created_at                   = $created_at;
                         $packageHistory->updated_at                   = $created_at;
 
+                        if($cellar){
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
+
                         if($driver->usageApp == 'PODApp')
                         {
                             $registerTask['status'] = 200;
@@ -552,7 +569,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->save();
                             $package->delete();
 
-                            if($driver->usageApp == 'PODApp')
+                           if($driver->usageApp == 'PODApp')
                             {
                                 $warnings = [];
                             }
@@ -658,6 +675,14 @@ class PackageDispatchController extends Controller
                     $packageHistory->actualDate                   = $nowDate;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
+
+                   
+                        if($cellar){
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
                     
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
@@ -675,6 +700,13 @@ class PackageDispatchController extends Controller
 
                         $package->save();
                         $packageHistory->save();
+
+                        if($cellar){
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
 
                         $dataTaskOnfleet = $this->GetOnfleet($idOnfleet);
 
@@ -1063,6 +1095,17 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->status                       = 'Dispatch';
                                 $packageDispatch->created_at                   = $created_at;
                                 $packageDispatch->updated_at                   = $created_at;
+
+                                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                                if($cellar)
+                                {    
+                                    $packageDispatch->idCellar    = $cellar->id;
+                                    $packageDispatch->nameCellar  = $cellar->name;
+                                    $packageDispatch->stateCellar = $cellar->state;
+                                    $packageDispatch->cityCellar  = $cellar->city;
+                                }
+
                                 $packageDispatch->save();
 
                                 $packageHistory = new PackageHistory();
@@ -1095,6 +1138,15 @@ class PackageDispatchController extends Controller
                                 $packageHistory->actualDate                   = $created_at;
                                 $packageHistory->created_at                   = $created_at;
                                 $packageHistory->updated_at                   = $created_at;
+                                
+                                if($cellar)
+                                {
+                                    $packageHistory->idCellar    = $cellar->id;
+                                    $packageHistory->nameCellar  = $cellar->name;
+                                    $packageHistory->stateCellar = $cellar->state;
+                                    $packageHistory->cityCellar  = $cellar->city;
+                                }
+
                                 $packageHistory->save();
 
                                 //data for INLAND
@@ -1279,6 +1331,16 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at_ReInbound;
                     $packageHistory->updated_at                   = $created_at_ReInbound;
 
+                    $cellar = Cellar::find(Auth::user()->idCellar);
+
+                    if($cellar)
+                    {    
+                        $packageHistory->idCellar    = $cellar->id;
+                        $packageHistory->nameCellar  = $cellar->name;
+                        $packageHistory->stateCellar = $cellar->state;
+                        $packageHistory->cityCellar  = $cellar->city;
+                    }
+
                     $packageHistory->save();
 
                     $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+6 second'));
@@ -1329,7 +1391,7 @@ class PackageDispatchController extends Controller
                     $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
-
+                    
                     $packageReturn->save(); 
 
                     if($packageDispatch->idPaymentTeam != '')
@@ -1412,6 +1474,16 @@ class PackageDispatchController extends Controller
                         $packageWarehouse->quantity                     = $packageDispatch->quantity;
                         $packageWarehouse->status                       = 'Warehouse';
 
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                        if($cellar)
+                        {    
+                            $packageWarehouse->idCellar    = $cellar->id;
+                            $packageWarehouse->nameCellar  = $cellar->name;
+                            $packageWarehouse->stateCellar = $cellar->state;
+                            $packageWarehouse->cityCellar  = $cellar->city;
+                        }
+
                         $packageWarehouse->save();
 
                         $packageHistory = new PackageHistory();
@@ -1441,6 +1513,14 @@ class PackageDispatchController extends Controller
                         $packageHistory->actualDate                   = $nowDate;
                         $packageHistory->created_at                   = $created_at_Warehouse;
                         $packageHistory->updated_at                   = $created_at_Warehouse;
+
+                        if($cellar)
+                        {    
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
 
                         $packageHistory->save();
                     }

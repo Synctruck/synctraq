@@ -718,6 +718,7 @@ function PackageInbound() {
                 <td>{ pack.Weight }</td>
                 <td>{ pack.Route }</td>
                 <td>{ pack.Weight }</td>
+                <td>{ pack.nameCellar }</td>
                 <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(pack.Reference_Number_1) } style={ {margin: '3px'}}>
                         <i className="bx bx-edit-alt"></i>
@@ -1126,6 +1127,7 @@ function PackageInbound() {
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
                                                 <th>WEIGHT</th>
+                                                <th>WAREHOUSE</th>
                                                 <th style={ {display: 'none'} }>ACTION</th>
                                             </tr>
                                         </thead>

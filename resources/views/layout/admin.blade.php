@@ -13,7 +13,13 @@
     <!-- Favicons -->
     <link href="{{asset('img/favicon.ico')}}" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Google Fonts -->
 
@@ -31,7 +37,7 @@
     <link href="{{asset('admin/assets/css/style.css')}}?{{time()}}" rel="stylesheet">
     <link href="{{asset('admin/assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="{{asset('js/barcode.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -79,7 +85,7 @@
     }
 
     .text-right{
-       text-align: right; 
+       text-align: right;
     }
 </style>
 <body id="bodyAdmin">
@@ -87,12 +93,12 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="{{url('home')}}" class="logo d-flex align-items-center">
-        <img src="{{asset('img/logo.png')}}" width="200" height="200" alt="">
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
+  <div class="d-flex align-items-center justify-content-between">
+  <a href="{{url('home')}}" class="logo d-flex align-items-center">
+    <img src="{{asset('img/logo.png')}}" width="128" height="240" alt="">
+  </a>
+  <i class="bi bi-list toggle-sidebar-btn"></i>
+</div><!-- End Logo -->
 
     <div class="search-bar">
         @if(Auth::check())
@@ -433,8 +439,8 @@
                                 </div>
                                 <div id="divSynchronizePackage" class="col-lg-3 form-group" style="display: none;">
                                     @if(Auth::user()->role->name == 'Master')
-                                    <br>
-                                    <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
+                                        <br>
+                                        <button type="button" class="btn btn-warning form-control" onclick="RegisterInland();">Synchronize Package</button>
                                     @endif
                                 </div>
                             </div>
@@ -697,7 +703,7 @@
                 if(response.status == 201)
                 {
                     document.getElementById('divSynchronizePackage').style.display = 'none';
-                    
+
                     swal('Correct', 'The package was registered', 'success');
                 }
                 else
@@ -874,14 +880,28 @@
                     let Description        = '';
                     let Description_Return = '';
                     let user               = (package.user ? package.user.name +' '+ package.user.nameOfOwner : '');
+                    let idCellar           = package.idCellar;
+                    let nameCellar     = package.nameCellar;
+                    let stateCellar    = package.stateCellar;
+                    let cityCellar     = package.cityCellar;
 
-                    if(package.Description_Return != '' && package.Description_Return != null)
+                    if(package.status == 'Dispatch' || package.status == 'Warehouse' || package.status == 'NMI')
+                    {
+                        if(idCellar > 0)
+                        {
+                            Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
+                        }
+
+                        Description = package.Description;
+                    }
+                    else if(package.Description_Return != '' && package.Description_Return != null)
                     {
                         Description_Return = '<br><b class="text-danger">'+ package.Description_Return +'</b>';
                     }
-                    
+
                     if(package.status == 'Inbound')
                     {
+                    
                         if(package.Notes)
                         {
                             let dimensions = package.Notes.split('|');
@@ -892,7 +912,11 @@
                                 document.getElementById('heightSearch').value = dimensions[1];
                                 document.getElementById('widthSearch').value  = dimensions[2];
                                 document.getElementById('volumeSearch').value = (parseFloat(dimensions[0]) * parseFloat(dimensions[1]) * parseFloat(dimensions[2])).toFixed(2);
-                            } 
+                            }
+                        }
+                        if(idCellar > 0)
+                        {
+                            Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
 
                         Description = package.Description;

@@ -24,7 +24,7 @@ class RoutesController extends Controller
     public function List(Request $request, $CitySearchList, $CountySearchList, $TypeSearchList, $StateSearchList, $RouteSearchList, $LatitudeSearchList, $LongitudeSearchList)
     {
         $zipCode   = $request->get('zipCode');
-        $routeList = RoutesAux::orderBy('name', 'asc')->paginate($this->paginate);
+        $routeList = RoutesAux::with('zip_codes')->orderBy('name', 'asc')->paginate($this->paginate);
 
         /*if($zipCode)
         {
@@ -159,9 +159,8 @@ class RoutesController extends Controller
     }
 
     public function Import(Request $request)
-    {
+    {        
         $file = $request->file('file');
-
         $file->move(public_path() .'/file-import', 'routes.csv');
 
         $handle = fopen(public_path('file-import/routes.csv'), "r");
@@ -182,53 +181,32 @@ class RoutesController extends Controller
 
                     if($row[0] != '')
                     {
-                        $routesZipCode = RoutesZipCode::where('zipCode', $row[0])
-                                                        ->where('routeName', $row[5])
-                                                        ->first();
-
-                        if($routesZipCode)
+                        $routesAux = RoutesAux::where('name', $row[5])->first();
+                        
+                        if(!$routesAux)
                         {
-                            if($routesZipCode->city != $row[1] || $routesZipCode->county != $row[2] || $routesZipCode->type != $row[3] || $routesZipCode->state = $row[4] || $routesZipCode->name != $row[5] || $routesZipCode->latitude != $row[6] || $routesZipCode->longitude != $row[7])
-                            {
-                                $routesZipCode->city      = $row[1];
-                                $routesZipCode->county    = $row[2];
-                                $routesZipCode->type      = $row[3];
-                                $routesZipCode->state     = $row[4];
-                                $routesZipCode->routeName = $row[5];
-                                $routesZipCode->latitude  = $row[6];
-                                $routesZipCode->longitude = $row[7];
-                                $routesZipCode->save();
-                            }
+                            $routesAux = new RoutesAux();
+                            $routesAux->name = $row[5];
+                            $routesAux->save();
                         }
-                        else
+
+                        $routesZipCode = RoutesZipCode::find($row[0]);
+
+                        if($routesZipCode == null)
                         {
-                            $routesAux = RoutesAux::where('name', $row[5])->first();
-
-                            if($routesAux == null)
-                            {
-                                $routesAux = new RoutesAux();
-                                $routesAux->name = $row[5];
-                                $routesAux->save();
-                            }
-
-                            $routesZipCode = RoutesZipCode::find($row[0]);
-
-                            if($routesZipCode == null)
-                            {
-                                $routesZipCode = new RoutesZipCode();
-                            }
-                            
-                            $routesZipCode->zipCode   = $row[0];
-                            $routesZipCode->idRoute   = $routesAux->id;
-                            $routesZipCode->city      = $row[1];
-                            $routesZipCode->county    = $row[2];
-                            $routesZipCode->type      = $row[3];
-                            $routesZipCode->state     = $row[4];
-                            $routesZipCode->routeName = $row[5];
-                            $routesZipCode->latitude  = $row[6];
-                            $routesZipCode->longitude = $row[7];
-                            $routesZipCode->save();
+                            $routesZipCode = new RoutesZipCode();
                         }
+                        
+                        $routesZipCode->zipCode   = $row[0];
+                        $routesZipCode->idRoute   = $routesAux->id;
+                        $routesZipCode->city      = $row[1];
+                        $routesZipCode->county    = $row[2];
+                        $routesZipCode->type      = $row[3];
+                        $routesZipCode->state     = $row[4];
+                        $routesZipCode->routeName = $row[5];
+                        $routesZipCode->latitude  = $row[6];
+                        $routesZipCode->longitude = $row[7];
+                        $routesZipCode->save();
                     }
                 }
                 
@@ -301,29 +279,30 @@ class RoutesController extends Controller
 
     public function Get($id)
     {
-        $route = Routes::find($id);
+        $route = RoutesAux::with('zip_codes')->find($id);
         
         return ['route' => $route];
     }
 
     public function Update(Request $request, $id)
-    {        
+    {
         $validator = Validator::make($request->all(),
 
             [
-                "zipCode" => ["required", "unique:routes,zipCode,$id", "max:20"],
+                "zipCode" => ["required", "unique:routes_zip_code", "min:5", "max:5"],
                 "city" => ["required", "max:40"],
                 "county" => ["required", "max:40"],
                 "type" => ["required", "max:40"],
                 "state" => ["required", "max:20"],
-                "name" => ["required", "max:20"],
+                "idRoute" => ["required"],
                 "latitude" => ["required", "numeric"],
                 "longitude" => ["required", "numeric"],
             ],
             [
                 "zipCode.unique" => "The zip code exists",
                 "zipCode.required" => "The field is required",
-                "zipCode.max"  => "You must enter a maximum of 20 digits",
+                "zipCode.max"  => "You must enter a minimum of 5 digits",
+                "zipCode.max"  => "You must enter a maximum of 5 digits",
 
                 "city.required" => "The field is required",
                 "city.max"  => "You must enter a maximum of 40 digits",
@@ -337,8 +316,7 @@ class RoutesController extends Controller
                 "state.required" => "The field is required",
                 "state.max"  => "You must enter a maximum of 20 digits",
 
-                "name.required" => "The field is required",
-                "name.max"  => "You must enter a maximum of 20 digits",
+                "idRoute.required" => "The field is required",
 
                 "latitude.required" => "The field is required",
                 "latitude.numeric"  => "Enter a numeric value",
@@ -353,9 +331,19 @@ class RoutesController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $route = Routes::find($id);
-        
-        $route->update($request->all()); 
+        $route = RoutesAux::find($request->idRoute);
+
+        $zipCode = new RoutesZipCode();
+        $zipCode->zipCode   = $request->zipCode;
+        $zipCode->idRoute   = $request->idRoute;
+        $zipCode->routeName = $route->name;
+        $zipCode->city      = $request->city;
+        $zipCode->county    = $request->county;
+        $zipCode->type      = $request->type;
+        $zipCode->state     = $request->state;
+        $zipCode->latitude  = $request->latitude;
+        $zipCode->longitude = $request->longitude;
+        $zipCode->save();
 
         return ['stateAction' => true];
     }
@@ -365,6 +353,14 @@ class RoutesController extends Controller
         $route = Routes::find($id);
 
         $route->delete();
+
+        return ['stateAction' => true];
+    }
+
+    public function DeleteZipCode($zipCode)
+    {
+        $zipCode = RoutesZipCode::find($zipCode);
+        $zipCode->delete();
 
         return ['stateAction' => true];
     }

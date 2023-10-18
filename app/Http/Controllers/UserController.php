@@ -57,7 +57,6 @@ class UserController extends Controller
 
             [
                 "idRole" => ["required"],
-                "idCellar" => ["required"],
                 "name" => ["required", "max:100"],
                 "nameOfOwner" => ["required", "max:100"],
                 "phone" => ["required"],
@@ -65,8 +64,6 @@ class UserController extends Controller
                 "password" => ["required", "max:100"],
             ],
             [
-                "idCellar.required" => "Selected a cellar",
-
                 "idRole.required" => "Seleccione un rol",
 
                 "name.required" => "El campo es requerido",
@@ -90,6 +87,7 @@ class UserController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
+        $request['id']       = User::get()->last()->id + 1;
         $request['password'] = Hash::make($request->get('password'));
 
         User::create($request->all());
@@ -110,7 +108,6 @@ class UserController extends Controller
 
             [
                 "idRole" => ["required"],
-                "idCellar" => ["required"],
                 "name" => ["required","max:100"],
                 "nameOfOwner" => ["required", "unique:user,nameOfOwner,$id", "max:100"],
                 "address" => ["required"],
@@ -118,8 +115,6 @@ class UserController extends Controller
                 "email" => ["required", "unique:user,email,$id", "max:100"],
             ],
             [
-                "idCellar.required" => "Selected a cellar",
-
                 "idRole.required" => "Seleccione un rol",
 
                 "name.required" => "El campo es requerido",
@@ -150,9 +145,9 @@ class UserController extends Controller
         $user->nameOfOwner = $request->get('nameOfOwner');
         $user->phone       = $request->get('phone');
         $user->email       = $request->get('email');
-        $user->status       = $request->get('status');
-        $user->idRole       = $request->get('idRole');
-        $user->idCellar       = $request->get('idCellar');
+        $user->status      = $request->get('status');
+        $user->idRole      = $request->get('idRole');
+        $user->idCellar    = $request->get('idCellar') ? $request->get('idCellar') : 0;
 
         $user->save();
 
