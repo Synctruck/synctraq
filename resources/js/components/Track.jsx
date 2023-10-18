@@ -173,7 +173,7 @@ function Track() {
                         <div className="row">
                             <div className="col-lg-12 text-center">
                                 <div className="form-group">
-                                    <img src="./img/logo.png" alt="" width="220"/>
+                                    <img src="./img/logo_sync_truck.png" alt="" width="220"/>
                                 </div>
                             </div>
                             <div className="col-lg-12">
