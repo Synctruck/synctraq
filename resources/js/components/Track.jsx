@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
 import '../../css/rsuit.css';
-import swal from 'sweetalert'
+import swal from 'sweetalert';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Steps } from 'antd';
+
+
 
 
 function Track() {
@@ -128,58 +131,65 @@ function Track() {
         setSearchFieldChanged(true);
     }
 
-    return (
-        <section className="section">
+    
+        return (
+            <section className="section">
+              <div className="container">
+                <div className="row">
+                  <div className="col-lg-6">
+                    <form id="formSearch" onSubmit={getDetail}>
+                      <div className="form-group">
+                        <input
+                          type="text"
+                          id="textSearch"
+                          className="form-control"
+                          placeholder="Package ID"
+                          required
+                          value={packageId}
+                          onChange={handleSearchFieldChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <button className="btn btn-primary" type="submit">Search</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+          
+            {searchClicked && listDetails.length > 0 &&  !searchFieldChanged &&(
             <div className="container">
                 <div className="row">
-                    <div className="col-lg-6">
-                        <form id="formSearch" onSubmit={getDetail}>
-                            <div className="form-group">
-                                <input
-                                    type="text"
-                                    id="textSearch"
-                                    className="form-control"
-                                    placeholder="Package ID"
-                                    required
-                                    value={packageId}
-                                    onChange={handleSearchFieldChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <button className="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                    <div className="col-lg-12">
+                     <h6 className="pt-4">Tracking Details</h6>
+             <hr />
+            <h5 className="text-center">
+             PACKAGE ID: {packageId} / OWNER: {packageZipCode}
+            </h5>
+            <div className={`col-12 mt-2 tracking-details d-none d-md-block`}>
+                                <Steps current={step}>
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                </Steps>
             </div>
+            <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
+                                <Steps current={step} direction="vertical">
+                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                    <Steps.Item title="Inbound" description={inboundDesc} />
+                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                    <Steps.Item title="Delivery" description={deliveryDesc} />
+                                </Steps>
+            </div>
+      </div>
+    </div>
+  </div>
+)}
 
-            {searchClicked && !searchFieldChanged && listDetails.length > 0 && (
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 d-none d-lg-block">
-                            <h6 className="pt-4">Tracking details</h6>
-                            <hr />
-                            <h5 className="text-center">PACKAGE ID: {packageId}  / OWNER: {packageZipCode}</h5>
-                            <div className={`col-12 mt-2 tracking-details`} style={{ flexDirection: 'column' }}>
-    <Steps current={step}>
-        <Steps.Item title="In Fulfillment" />
-        <Steps.Item title="Inbound" />
-        <Steps.Item title="Out for Delivery" />
-        <Steps.Item title="Delivery" />
-    </Steps>
-</div>
-
-                        </div>
-                    </div>
-
-                    x
-                </div>
-
-
-
-            )}
-        </section>
-    );
+            </section>
+          );
+          
 
 }
 
