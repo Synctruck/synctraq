@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
 import '../../css/rsuit.css';
 import swal from 'sweetalert';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Steps } from 'antd';
+
 
 
 
