@@ -116,7 +116,7 @@ class TaskPaymentTeam extends Command
 
                         Log::info('toDeductLostPackagesList => ');
                         Log::info($totalAdjustmentToDeduct);
-                        
+
                         foreach($toDeductLostPackagesList as $toDeductLostPackages)
                         {
                             $totalAdjustmentToDeduct = $totalAdjustmentToDeduct + $toDeductLostPackages->priceToDeduct;
@@ -217,15 +217,15 @@ class TaskPaymentTeam extends Command
                                 $paymentTeamAdjustment = new PaymentTeamAdjustment();
                                 $paymentTeamAdjustment->id            = uniqid();
                                 $paymentTeamAdjustment->idPaymentTeam = $paymentTeam->id;
-                                $paymentTeamAdjustment->amount        = $totalAdjustmentToDeduct;
+                                $paymentTeamAdjustment->amount        = -$totalAdjustmentToDeduct;
                                 $paymentTeamAdjustment->description   = 'Lost Packages: '. $shipmentIds;
                                 $paymentTeamAdjustment->save();
                             }
 
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
-                            $paymentTeam->totalAdjustment = $totalAdjustment + $totalAdjustmentToDeduct;
-                            $paymentTeam->total          = $totalTeam + $totalAdjustment;
+                            $paymentTeam->totalAdjustment = $totalAdjustment - $totalAdjustmentToDeduct;
+                            $paymentTeam->total          = $totalTeam + $totalAdjustment - $totalAdjustmentToDeduct;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->status         = 'TO APPROVE';
