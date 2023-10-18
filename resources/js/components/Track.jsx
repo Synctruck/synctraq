@@ -4,7 +4,8 @@ import { Steps } from 'rsuite';
 import axios from 'axios';
 import moment from 'moment';
 import '../../css/rsuit.css';
-import swal from 'sweetalert'
+import swal from 'sweetalert';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function Track() {
