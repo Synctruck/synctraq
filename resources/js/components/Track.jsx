@@ -171,16 +171,15 @@ function Track() {
     current={step}
     items={[
       {
-        title: 'In Fulfillment',
-        description,
+        title: 'In Fulfillment'
+       
       },
       {
-        title: 'In Progress',
-        description,
+        title: 'In Progress'
+        
       },
       {
-        title: 'Waiting',
-        description,
+        title: 'Waiting'
       },
     ]}
   />
