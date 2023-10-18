@@ -167,7 +167,7 @@ function Track() {
            <div className="col-12 mt-2 tracking-details">
             <div className="row">
               <div className="col-md-3">
-              <Steps current={step === 0 ? 0 : -1} className="text-center">
+              <Steps current={step} className="text-center">
                 <Steps.Item title="In Fulfillment" />
               </Steps>
              </div>
