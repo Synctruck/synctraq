@@ -14,6 +14,7 @@ function ToDeductLostPackages() {
     const [quantityRevert, setQuantityRevert] = useState(0);
     const [totalDeductLost, setTotalDeductLost] = useState(0);
 
+    const [Reference_1, setReference_1] = useState('');
     const [idTeam, setIdTeam] = useState('');
 
     const [RouteSearch, setRouteSearch]   = useState('all');
@@ -26,8 +27,6 @@ function ToDeductLostPackages() {
     useEffect(() => {
 
         listToDeductLostPackages(1);
-        listAllTeam();
-
     }, []);
 
 
@@ -65,11 +64,18 @@ function ToDeductLostPackages() {
 
     const listAllTeam = () => {
 
+        LoadingShowMap()
+
         fetch(url_general +'team/listall')
         .then(res => res.json())
         .then((response) => {
 
+            $('#modalUpdateTeam').modal('show');
+
             setListTeam(response.listTeam);
+            setIdTeam('')
+
+            LoadingHideMap()
         });
     }
 
@@ -81,40 +87,35 @@ function ToDeductLostPackages() {
         );
     });
 
-    const handlerEditTeam = (shipmentId) => {
+    const handlerUpdateTeam = (e) => {
+
+        e.preventDefault();
 
         if(idTeam)
         {
-            swal({
-                title: "Do you want to assign the package #"+ shipmentId +" to the team "+ $('#idTeam').find('option:selected').text() +"?",
-                text: "Assign to team!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
+            LoadingShowMap()
 
-                if(willDelete)
+            fetch(url_general +'to-deduct-lost-packages/update-team/'+ Reference_1 +'/'+ idTeam)
+            .then(response => response.json())
+            .then(response => {
+
+                $('#modalUpdateTeam').modal('hide');
+                
+                if(response.statusCode)
                 {
-                    LoadingShowMap();
+                    swal("The package was assigned to the team!", {
 
-                    fetch(url_general +'to-deduct-lost-packages/update-team/'+ shipmentId +'/'+ idTeam)
-                    .then(response => response.json())
-                    .then(response => {
-
-                        if(response.statusCode)
-                        {
-                            swal("The package was assigned to the team!", {
-
-                                icon: "success",
-                            });
-
-                            listToDeductLostPackages(page);
-                        }
-
-                        LoadingHideMap();
+                        icon: "success",
                     });
+
+                    let myModal = new bootstrap.Modal(document.getElementById('modalUpdateTeam'), {
+                        keyboard: true
+                    });
+
+                    listToDeductLostPackages(page);
                 }
+
+                LoadingHideMap()
             });
         }
         else
@@ -136,7 +137,6 @@ function ToDeductLostPackages() {
         {
             swal('Attention', 'You must enter an amount in the text box', 'warning');
         }
-
     }
 
     const hanldlerSaveDeductPrice = (shipmentId, priceToDeduct) => {
@@ -189,7 +189,7 @@ function ToDeductLostPackages() {
                         ?
                             toDeductLostPackage.team.name
                         :
-                            <button className="btn btn-success btn-sm" onClick={ () => handlerEditTeam(toDeductLostPackage.shipmentId) }>
+                            <button className="btn btn-success btn-sm" onClick={ () => handlerOpenModal(toDeductLostPackage.shipmentId) }>
                                 <i className="bx bx-edit-alt"></i>
                             </button>
                     }
@@ -200,27 +200,62 @@ function ToDeductLostPackages() {
                         ?
                             <h5><b>{ total +' $' }</b></h5>
                         :
-                            ''
-                    }
-                </td>
-                <td>
-                    {
-                        !toDeductLostPackage.priceToDeduct
-                        ?
                             <button className="btn btn-primary btn-sm" onClick={ () => handlerEditPrice(toDeductLostPackage.shipmentId) }>
                                 <i className="bx bx-edit-alt"></i>
                             </button>
-                        :
-                            ''
                     }
                 </td>
             </tr>
         );
     });
 
+    const handlerOpenModal = (shipmentId) => {
+        setListTeam([]);
+        setReference_1(shipmentId)
+        listAllTeam();
+    }
+
+    const modalUpdateTeam = <React.Fragment>
+                                    <div className="modal fade" id="modalUpdateTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <form onSubmit={ handlerUpdateTeam }>
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Assign Team</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12 form-group">
+                                                                <label className="form">PACKAGE ID</label>
+                                                                <div id="Reference_1" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <input type="text" className="form-control" value={ Reference_1 } maxLength="100" readOnly required/>
+                                                            </div>
+                                                            <div className="col-lg-12 form-group">
+                                                                <div className="form-group">
+                                                                    <label className="form">TEAM</label>
+                                                                    <select name="idTeam" id="idTeam" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button className="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
+
     return (
 
         <section className="section">
+            { modalUpdateTeam }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -247,16 +282,8 @@ function ToDeductLostPackages() {
                                             <tr>
                                                 <th><b>DATE</b></th>
                                                 <th><b>PACKAGE ID</b></th>
-                                                <th style={ {width: '200px'} }>
-                                                    <div className="form-group">
-                                                        <select name="idTeam" id="idTeam" className="form-control" onChange={ (e) => setIdTeam(e.target.value) } required>
-                                                            <option value="">All</option>
-                                                            { listTeamSelect }
-                                                        </select>
-                                                    </div>
-                                                </th>
+                                                <th><b>TEAM</b></th>
                                                 <th><b>PRICE</b></th>
-                                                <th><b>ACTION</b></th>
                                             </tr>
                                         </thead>
                                         <tbody>
