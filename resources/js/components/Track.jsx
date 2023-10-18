@@ -164,7 +164,7 @@ function Track() {
             <h5 className="text-center">
              PACKAGE ID: {packageId} / OWNER: {packageZipCode}
             </h5>
-           <div className="col-12 mt-2 tracking-details d-none d-sm-block">
+           <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
             <div className="row">
               <div className="col-md-3">
               <Steps current={step === 0 ? 0 : -1} className="text-center">
