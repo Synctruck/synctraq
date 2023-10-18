@@ -181,7 +181,7 @@ function Track() {
       </Steps>
     </div>
     <div className="col-md-3">
-      <Steps current={step === 1 ? 0 : 1} showNumber={false} className="text-center">
+      <Steps current={step === 1 ? 0 : 2} showNumber={false} className="text-center">
         <Steps.Item title="Inbound" />
       </Steps>
     </div>
