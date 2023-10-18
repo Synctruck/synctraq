@@ -168,10 +168,10 @@ function Track() {
             <div className="row">
               <div className="col-md-3">
               <Steps current={step === 0 ? 0 : -1} className="text-center">
-              <Steps.Item title="In Fulfillment">
-                {step === 0 ? '2' : ''}
-              </Steps.Item>
-              </Steps>
+  <Steps.Item title="In Fulfillment" className={step === 0 ? '' : 'hidden-number'}>
+    155
+  </Steps.Item>
+</Steps>
              </div>
             <div className="col-md-3">
               <Steps current={step === 1 ? 0 : -1} className="text-center">
