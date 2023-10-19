@@ -506,7 +506,6 @@ class PaymentTeamController extends Controller
 
             $paymentDetailList = PaymentTeamDetail::whereBetween('created_at', [$startDate, $endDate])->get();
 
-            dd(count($paymentDetailList));
             foreach($paymentDetailList as $paymentDetail)
             {
                 $packageDispatch = PackageDispatch::find($paymentDetail->Reference_Number_1);
