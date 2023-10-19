@@ -186,10 +186,9 @@ class TaskPackageSendPreFactura extends Command
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
 
                         $chargeCompanyDetail = new ChargeCompanyDetail();
-
                         $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
                         $chargeCompanyDetail->idChargeCompany    = $idCharge;
-
+                        $chargeCompanyDetail->status             = 'DELIVERY';
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
@@ -244,10 +243,9 @@ class TaskPackageSendPreFactura extends Command
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
 
                         $chargeCompanyDetail = new ChargeCompanyDetail();
-
                         $chargeCompanyDetail->Reference_Number_1 = $packageReturnCompany->Reference_Number_1;
                         $chargeCompanyDetail->idChargeCompany    = $idCharge;
-
+                        $chargeCompanyDetail->status             = 'RTS';
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
