@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback(); 
         }*/
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        if(1)
         {
             try
             {
@@ -94,7 +94,7 @@ class TaskPackageSendPreFactura extends Command
                 $files     = [];
                 $nowDate   = date('Y-m-d');
                 $startDate = date('Y-01-01');
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+                $endDate   = date('Y-m-d', strtotime($nowDate .' +2 day'));
 
                 $companyList = Company::all();
 
@@ -137,7 +137,7 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'STATUS', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -196,6 +196,7 @@ class TaskPackageSendPreFactura extends Command
                                         date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
                                         $packageDelivery->company,
                                         $packageDelivery->Reference_Number_1,
+                                        'DELIVERY',
                                         '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
@@ -253,6 +254,7 @@ class TaskPackageSendPreFactura extends Command
                                         date('m-d-Y', strtotime($packageReturnCompany->created_at)),
                                         $packageReturnCompany->company,
                                         $packageReturnCompany->Reference_Number_1,
+                                        'RTS',
                                         '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
