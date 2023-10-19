@@ -265,5 +265,5 @@ export default PackageTrack;
 
 // DOM element
 if (document.getElementById('track')) {
-    ReactDOM.render(<Track />, document.getElementById('track'));
+    ReactDOM.render(<PackageTrack />, document.getElementById('track'));
 }
