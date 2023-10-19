@@ -21,7 +21,7 @@ class CompanyController extends Controller
 {
     public $paginate = 200;
 
-    public function Index()
+    public function Index() 
     {        
         return view('company.index');
     }
@@ -90,6 +90,8 @@ class CompanyController extends Controller
 
                 "age21.required" => "Select an item",
 
+                "twoAttempts.required" => "Select an item",
+
                 "status.required" => "Select an item",
             ]
         );
@@ -112,6 +114,7 @@ class CompanyController extends Controller
             $company->typeServices = $request->get('typeServices');
             $company->dimensions   = $request->get('dimensions');
             $company->age21        = $request->get('age21');
+            $company->twoAttempts  = $request->get('twoAttempts');
             $company->status       = $request->get('status');
             $company->key_webhook  = '';
             $company->url_webhook  = '';
@@ -245,6 +248,7 @@ class CompanyController extends Controller
             $company->typeServices = $request->get('typeServices');
             $company->dimensions   = $request->get('dimensions');
             $company->age21        = $request->get('age21');
+            $company->twoAttempts  = $request->get('twoAttempts');
             $company->status       = $request->get('status');
 
             if($request->get('typeServices') == 'API')
