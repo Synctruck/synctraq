@@ -289,11 +289,15 @@ class InventoryToolController extends Controller
             {
 
             }
+            else if($statusActual['status'] == 'Warehouse')
+            {
+                $this->UpdateWarehouse($request->Reference_Number_1);
+            }
             else
             {
                 if($statusActual['status'] != 'Warehouse')
                 {
-                    $this->MoveToWarhouse($request->Reference_Number_1);
+                    $this->MoveToWarehouse($request->Reference_Number_1);
                 }
             }
 
@@ -309,7 +313,59 @@ class InventoryToolController extends Controller
         }
     }
 
-    public function MoveToWarhouse($Reference_Number_1)
+    public function UpdateWarehouse($Reference_Number_1)
+    {
+        $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')->find($Reference_Number_1);
+
+        if($packageWarehouse)
+        {
+            $packageWarehouse->created_at = date('Y-m-d H:i:s');
+            $packageWarehouse->updated_at = date('Y-m-d H:i:s');
+            $packageWarehouse->save();
+
+            $cellar = Cellar::find(Auth::user()->idCellar);
+
+            $packageHistory = new PackageHistory();
+
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageWarehouse->idCompany;
+            $packageHistory->company                      = $packageWarehouse->company;
+            $packageHistory->idStore                      = $packageWarehouse->idStore;
+            $packageHistory->store                        = $packageWarehouse->store;
+            $packageHistory->Dropoff_Contact_Name         = $packageWarehouse->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageWarehouse->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageWarehouse->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageWarehouse->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageWarehouse->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageWarehouse->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageWarehouse->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageWarehouse->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageWarehouse->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageWarehouse->Notes;
+            $packageHistory->Weight                       = $packageWarehouse->Weight;
+            $packageHistory->Route                        = $packageWarehouse->Route;
+            $packageHistory->idUser                       = Auth::user()->id;
+            $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $packageHistory->quantity                     = $packageWarehouse->quantity;
+            $packageHistory->status                       = 'Warehouse';
+            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+            $packageHistory->created_at                   = date('Y-m-d H:i:s');
+            $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+            if($cellar)
+            {
+                $packageHistory->idCellar    = $cellar->id;
+                $packageHistory->nameCellar  = $cellar->name;
+                $packageHistory->stateCellar = $cellar->state;
+                $packageHistory->cityCellar  = $cellar->city;
+            }
+
+            $packageHistory->save();
+        }
+    }
+
+    public function MoveToWarehouse($Reference_Number_1)
     {
         $package = PackageManifest::find($Reference_Number_1);
 
@@ -325,7 +381,7 @@ class InventoryToolController extends Controller
         $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
 
-        if($package->status != 'Middle Mile Scan')
+        if($package->status != 'Middle Mile Scan') 
             $packageWarehouse = new PackageWarehouse();
         else
             $packageWarehouse = PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
