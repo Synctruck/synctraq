@@ -25,7 +25,7 @@ function PackageWarehouse() {
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
-    const [idCellar, setCellar]                = useState(0);
+    const [idCellar, setCellar]                  = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -78,7 +78,7 @@ function PackageWarehouse() {
 
         listAllPackageWarehouse(page, RouteSearch, StateSearch);
 
-    }, [ idCompany, idValidator, dateStart, dateEnd ]);
+    }, [ idCompany, idValidator, dateStart, dateEnd, idCellar ]);
 
     useEffect(() => {
 
@@ -664,7 +664,7 @@ function PackageWarehouse() {
                     <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1) }>
                         PDF
                     </button>
-                </td>
+                </td>listCompany
             </tr>
         );
     });
