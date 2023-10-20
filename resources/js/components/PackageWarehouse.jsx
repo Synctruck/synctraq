@@ -664,7 +664,7 @@ function PackageWarehouse() {
                     <button className="btn btn-success btn-sm" onClick={ () => handlerViewPDF(pack.Reference_Number_1) }>
                         PDF
                     </button>
-                </td>listCompany
+                </td>
             </tr>
         );
     });
