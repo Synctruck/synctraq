@@ -15,6 +15,7 @@ function PackageWarehouse() {
     const [listState , setListState]                  = useState([]);
     const [listValidator , setListValidator]          = useState([]);
     const [listCompany , setListCompany]              = useState([]);
+    const [listCellar, setListCellar]                 = useState([]);
 
     const [listRoute, setListRoute]     = useState([]);
 
@@ -24,6 +25,7 @@ function PackageWarehouse() {
     const [Truck, setTruck]                      = useState('');
     const [Client, setClient]                    = useState('');
     const [idCompany, setCompany]                = useState(0);
+    const [idCellar, setCellar]                = useState(0);
 
     const [textMessage, setTextMessage]         = useState('');
     const [textMessage2, setTextMessage2]       = useState('');
@@ -66,6 +68,7 @@ function PackageWarehouse() {
         listAllRoute();
         listAllValidator();
         listAllCompany();
+        listAllCellar();
 
         document.getElementById('Reference_Number_1').focus();
 
@@ -99,7 +102,7 @@ function PackageWarehouse() {
         setIsLoading(true);
         setOptionsStateValidate([]);
 
-        fetch(url_general +'package-warehouse/list/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/?page='+ pageNumber)
+        fetch(url_general +'package-warehouse/list/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+ idCellar +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -129,6 +132,16 @@ function PackageWarehouse() {
         .then((response) => {
 
             setListCompany([{id:0,name:"ALL"},...response.companyList]);
+        });
+    }
+
+    const listAllCellar = () => {
+
+        fetch(url_general +'cellar/get-all')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCellar([{id:0,name:"ALL"},...response.cellarList]);
         });
     }
 
@@ -846,6 +859,13 @@ function PackageWarehouse() {
         return <option value={company.id}>{company.name}</option>
     })
 
+    const optionCellar = listCellar.map( (cellar, i) => {
+
+        return (
+            <option value={ cellar.id }>{ cellar.name }</option>
+        );
+    });
+
     const handlerGoToInventory = () => {
         window.open(url_general +'inventory-tool')
     }
@@ -1007,6 +1027,21 @@ function PackageWarehouse() {
                                                 <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
                                                     <option value="" style={ {display: 'none'} }>Select...</option>
                                                     { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Warehouse:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCellar(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCellar }
                                                 </select>
                                             </div>
                                         </div>
