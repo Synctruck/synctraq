@@ -123,7 +123,7 @@ function PackageDispatch() {
 
         listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
-    }, [idCompany, idTeam, idDriver, dateStart,dateEnd]);
+    }, [idCompany, idTeam, idDriver, dateStart,dateEnd,idCellar]);
 
     useEffect(() => {
 
@@ -2118,6 +2118,21 @@ function PackageDispatch() {
                                                 <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
                                                     <option value="" style={ {display: 'none'} }>Select...</option>
                                                     { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Warehouse:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCellar(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCellar }
                                                 </select>
                                             </div>
                                         </div>
