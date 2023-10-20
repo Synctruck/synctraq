@@ -93,12 +93,12 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
-  <div class="d-flex align-items-center justify-content-between">
-  <a href="{{url('home')}}" class="logo d-flex align-items-center">
-    <img src="{{asset('img/logo.png')}}" width="128" height="240" alt="">
-  </a>
-  <i class="bi bi-list toggle-sidebar-btn"></i>
-</div><!-- End Logo -->
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{{url('home')}}" class="logo d-flex align-items-center">
+        <img src="{{asset('img/logo.png')}}" width="128" height="175" alt="">
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
 
     <div class="search-bar">
         @if(Auth::check())

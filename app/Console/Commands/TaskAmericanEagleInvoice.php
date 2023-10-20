@@ -45,11 +45,10 @@ class TaskAmericanEagleInvoice extends Command
     {
         $dayName = date("l");
         $nowHour = date('H');
-        //if($dayName == 'Monday' && $nowHour == 10)
-        if(1)
+
+        if($dayName == 'Monday' && $nowHour == 10)
         {
-            $chargeCompany = ChargeCompany::find('20230612090024-10');
-            //$chargeCompany = ChargeCompany::with('company')->where('idCompany', 10)->get()->last();
+            $chargeCompany = ChargeCompany::with('company')->where('idCompany', 10)->get()->last();
 
             $filename = "INVOICE-" . date('m-d-H-i-s', strtotime($chargeCompany->startDate)) .'-'. date('m-d-H-i-s', strtotime($chargeCompany->endDate)) . ".csv";
             $contents = public_path($filename);

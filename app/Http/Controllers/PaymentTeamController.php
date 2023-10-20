@@ -494,4 +494,41 @@ class PaymentTeamController extends Controller
 
         fpassthru($file);
     }
+
+    public function DeletePackagesDetail()
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $startDate = date('Y-m-18 00:00:00');
+            $endDate   = date('Y-m-19 23:59:59');
+
+            $paymentDetailList = PaymentTeamDetail::whereBetween('created_at', [$startDate, $endDate])->get();
+
+            foreach($paymentDetailList as $paymentDetail)
+            {
+                $packageDispatch = PackageDispatch::find($paymentDetail->Reference_Number_1);
+
+                if($packageDispatch)
+                {
+                    $packageDispatch->paid = 0;
+                    $packageDispatch->save();
+                }
+                
+                $paymentDetail = PaymentTeamDetail::find($paymentDetail->Reference_Number_1);
+                $paymentDetail->delete();
+            }
+
+            DB::commit();
+
+            return "compleweted";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return "error";
+        }
+    }
 }

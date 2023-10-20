@@ -207,19 +207,22 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
 
-                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                if($company->twoAttempts)
+                {
+                    $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                     ->where('status', 'Dispatch')
-                                                    ->where('company', 'EIGHTVAPE')
+                                                    ->where('idCompany', $company->id)
                                                     ->orderBy('created_at', 'asc')
                                                     ->get();
 
-                if(count($packageHistoryDispatchList) > 1)
-                {
-                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
-
-                    if($hourDifference >= 6)
+                    if(count($packageHistoryDispatchList) > 1)
                     {
-                        $packageReturnCompany->invoice = 1;
+                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+                        if($hourDifference >= 6)
+                        {
+                            $packageReturnCompany->invoice = 1;
+                        }
                     }
                 }
 
