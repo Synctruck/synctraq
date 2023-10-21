@@ -45,9 +45,10 @@ class PackageWarehouseController extends Controller
         return view('package.warehouse');
     }
 
-    public function List($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
+    public function List($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar)
     {
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state);
+
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar);
 
         $quantityWarehouse      = $packageListWarehouse->total();
 
@@ -60,7 +61,7 @@ class PackageWarehouseController extends Controller
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
 
-    private function getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
+    private function getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $type='list'){
 
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -85,6 +86,11 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
         }
+
+        if($idCellar != 0)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idCellar', $idCellar);
+        }
         
         if($idValidator)
         {
@@ -100,6 +106,7 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
         }
+        
         if($type == 'list')
         {
             $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')

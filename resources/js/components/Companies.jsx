@@ -13,6 +13,7 @@ function Companies() {
     const [lengthField, setLengthField]   = useState('');
     const [typeServices, setTypeServices] = useState('');
     const [age21, setAge21]               = useState('');
+    const [twoAttempts, setTwoAttempts]      = useState('');
     const [dimensions, setDimensions]     = useState('');
     const [status, setStatus]             = useState('');
     const [keyWebhook, setKeyWebhook]     = useState('');
@@ -98,6 +99,7 @@ function Companies() {
         formData.append('typeServices', typeServices);
         formData.append('dimensions', dimensions);
         formData.append('age21', age21);
+        formData.append('twoAttempts', twoAttempts);
         formData.append('status', status);
         formData.append('key_webhook', keyWebhook);
         formData.append('url_webhook', urlWebhook);
@@ -230,6 +232,7 @@ function Companies() {
             setTypeServices(company.typeServices);
             setDimensions(company.dimensions);
             setAge21(company.age21);
+            setTwoAttempts(company.twoAttempts);
             setStatus(company.status);
             setLengthField(company.length_field);
             setKeyWebhook(company.key_webhook);
@@ -672,6 +675,7 @@ function Companies() {
         setTypeServices('');
         setDimensions('');
         setAge21('');
+        setTwoAttempts('');
         setLengthField('');
         setStatus('');
         setOnHold('');
@@ -701,6 +705,9 @@ function Companies() {
 
         document.getElementById('age21').style.display = 'none';
         document.getElementById('age21').innerHTML     = '';
+
+        document.getElementById('twoAttempts').style.display = 'none';
+        document.getElementById('twoAttempts').innerHTML     = '';
 
         document.getElementById('length_field').style.display = 'none';
         document.getElementById('length_field').innerHTML     = '';
@@ -853,6 +860,15 @@ function Companies() {
                 <td>
                     {
                         (company.age21)
+                        ?
+                            <div className="alert alert-success"><b>Yes</b></div>
+                        :
+                            <div className="alert alert-danger"><b>Not</b></div>
+                    }
+                </td>
+                <td>
+                    {
+                        (company.twoAttempts)
                         ?
                             <div className="alert alert-success"><b>Yes</b></div>
                         :
@@ -1049,6 +1065,15 @@ function Companies() {
                                                                     <option value="" style={ {display: 'none'} }>Select</option>
                                                                     <option value="1" selected={ (String(age21) == '1' ? 'selected' : '' ) }>Yes</option>
                                                                     <option value="0" selected={ (String(age21) == '0' ? 'selected' : '' ) }>Not</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-lg-6 form-group">
+                                                                <label className="form">Two Attempts</label>
+                                                                <div id="twoAttempts" className="text-danger" style={ {display: 'none'} }></div>
+                                                                <select className="form-control" onChange={ (e) => setTwoAttempts(e.target.value) }  required>
+                                                                    <option value="" style={ {display: 'none'} }>Select</option>
+                                                                    <option value="1" selected={ (String(twoAttempts) == '1' ? 'selected' : '' ) }>Yes</option>
+                                                                    <option value="0" selected={ (String(twoAttempts) == '0' ? 'selected' : '' ) }>Not</option>
                                                                 </select>
                                                             </div>
                                                             <div className="col-lg-6 form-group">
@@ -1316,6 +1341,7 @@ function Companies() {
                                                 <th>TYPE SERVICES</th>
                                                 <th>DIMENSIONS</th>
                                                 <th>AGE 21</th>
+                                                <th>TWO ATTEMPTS</th>
                                                 <th>STATUS CODE</th>
                                                 <th>STATUS</th>
                                                 <th>STORES</th>

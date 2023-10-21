@@ -43,9 +43,9 @@ class PackageDispatchController extends Controller
         return view('package.dispatch');
     }
 
-    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
+    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar)
     {
-        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,  $idCellar);
         $getDataDispatchAll  = $this->getDataDispatchAll($idCompany, $idTeam, $idDriver);
 
         $quantityDispatch     = $packageDispatchList->total();
@@ -78,7 +78,7 @@ class PackageDispatchController extends Controller
         ]; 
     }
 
-    private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
+    private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,  $idCellar, $type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -89,6 +89,11 @@ class PackageDispatchController extends Controller
         if($idCompany != 0)
         {
             $packageDispatchList = $packageDispatchList->where('idCompany', $idCompany);
+        }
+
+        if($idCellar != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idCellar', $idCellar);
         }
 
         if($idTeam && $idDriver)
@@ -298,22 +303,6 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'validated', 'packageDispatch' => $packageDispatch];
         }
 
-        $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
-                                                    ->where('status', 'Dispatch')
-                                                    ->where('company', 'EIGHTVAPE')
-                                                    ->orderBy('created_at', 'asc')
-                                                    ->get();
-
-        if(count($packageHistoryDispatchList) > 1 && $request->forcedDispatch == 'NO')
-        {
-            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
-
-            if($hourDifference >= 6)
-            {
-                return ['stateAction' => 'dispatchedMoreThanTwice'];
-            }
-        }
-
         $validateDispatch = false;
 
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -389,6 +378,27 @@ class PackageDispatchController extends Controller
 
         if($package)
         {
+            $company = Company::find($package->idCompany);
+        
+            if($company->twoAttempts)
+            {
+                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                    ->where('status', 'Dispatch')
+                                                    ->where('idCompany', $company->id)
+                                                    ->orderBy('created_at', 'asc')
+                                                    ->get();
+
+                if(count($packageHistoryDispatchList) > 1 && $request->forcedDispatch == 'NO')
+                {
+                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+                    if($hourDifference >= 6)
+                    {
+                        return ['stateAction' => 'dispatchedMoreThanTwice'];
+                    }
+                }
+            }
+
             if($request->get('RouteSearch'))
             {
                 $routes = explode(',', $request->get('RouteSearch'));
