@@ -187,7 +187,7 @@ class PackageDispatchController extends Controller
         return  $packageDispatchList;
     }
 
-    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $typeExport)
+    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar,$typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - DISPATCH " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - DISPATCH.csv";
@@ -199,7 +199,7 @@ class PackageDispatchController extends Controller
         fputcsv($file, $fields, $delimiter);
 
 
-        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type ='export');
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$idCellar, $type ='export');
 
        foreach($packageDispatchList as $packageDispatch)
         {

@@ -188,7 +188,7 @@ function PackageDispatch() {
 
     const exportAllPackageDispatch = ( StateSearch, RouteSearchList, type) => {
         
-        let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+type;
+        let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+idCellar+'/'+type;
 
         if(type == 'download')
         {
