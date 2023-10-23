@@ -1583,7 +1583,7 @@ class PackageDispatchController extends Controller
 
                     if($packageHistory)
                     {
-                        $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', null, date('Y-m-d H:i:s'));
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
                     }
                             
                     if($deleteDispatch)
