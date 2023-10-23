@@ -346,7 +346,7 @@ class PackageInboundController extends Controller
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
 
-                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageManifest->Reference_Number_1)
                                                 ->where('sendToInland', 1)
                                                 ->where('status', 'Manifest')
                                                 ->first();
