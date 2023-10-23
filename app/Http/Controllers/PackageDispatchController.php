@@ -616,7 +616,7 @@ class PackageDispatchController extends Controller
                                 {
                                     $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
                                 }
-                
+
                                 Log::info('============ CREATED TASK COMPLETED ================');
                                 Log::info('====================================================');
                                 Log::info('====================================================');
@@ -745,6 +745,16 @@ class PackageDispatchController extends Controller
                             $packageController = new PackageController();
                             $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                             //end data for inland
+
+                            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                            if($packageHistory)
+                            {
+                                $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                            }
 
                             Log::info('============ CREATED TASK COMPLETED ================');
                             Log::info('====================================================');
@@ -1174,6 +1184,16 @@ class PackageDispatchController extends Controller
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
+
                                 $package->delete();
                             }
                         }
@@ -1556,6 +1576,16 @@ class PackageDispatchController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
 
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', null, date('Y-m-d H:i:s'));
+                    }
+                            
                     if($deleteDispatch)
                     {
                         $packageDispatch->delete();
