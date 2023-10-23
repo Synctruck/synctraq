@@ -135,7 +135,7 @@ class PackageWarehouseController extends Controller
         return $packageListWarehouse;
     }
 
-    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $typeExport)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
