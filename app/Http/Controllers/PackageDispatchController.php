@@ -607,6 +607,16 @@ class PackageDispatchController extends Controller
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
+                
                                 Log::info('============ CREATED TASK COMPLETED ================');
                                 Log::info('====================================================');
                                 Log::info('====================================================');
