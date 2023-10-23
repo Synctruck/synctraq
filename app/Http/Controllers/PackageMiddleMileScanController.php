@@ -420,6 +420,16 @@ class PackageMiddleMileScanController extends Controller
                 $packageController->SendStatusToInland($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
                 //end data for inland
 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
+                }
+                    
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
