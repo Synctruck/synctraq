@@ -662,7 +662,7 @@ class PackageController extends Controller
         else
         {
             $companyStatus = CompanyStatus::with('company')
-                                                ->where('idCompany', $package->idCompany)
+                                                ->where('idCompany', 1)
                                                 ->where('status', $status)
                                                 ->first();
 
