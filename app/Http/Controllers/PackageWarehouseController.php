@@ -135,7 +135,7 @@ class PackageWarehouseController extends Controller
         return $packageListWarehouse;
     }
 
-    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar,$typeExport)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state ,$typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
@@ -147,7 +147,7 @@ class PackageWarehouseController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
