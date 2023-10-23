@@ -282,7 +282,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
 	Route::get('/package-warehouse/list-in-delivery', [PackageWarehouseController::class, 'ListInDelivery']);
 	Route::get('/package-warehouse/delete-in-delivery', [PackageWarehouseController::class, 'DeleteInDelivery']);
-	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageWarehouseController::class, 'Export']);
+	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{idCellar}/{type}', [PackageWarehouseController::class, 'Export']);
 	Route::post('/package-warehouse/import', [PackageWarehouseController::class, 'Import']);
 
 	//============ Validation warehouse
