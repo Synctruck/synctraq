@@ -117,6 +117,16 @@ class ServicePackageNeedMoreInformation{
             //data for INLAND
             $packageController = new PackageController();
             $packageController->SendStatusToInland($package, 'NMI', null, date('Y-m-d H:i:s'));
+
+            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+            if($packageHistory)
+            {
+                $packageController->SendStatusToOtherCompany($package, 'NMI', null, date('Y-m-d H:i:s'));
+            }
             //end data for inland
 
             return ['stateAction' => true, 'package' => $package];

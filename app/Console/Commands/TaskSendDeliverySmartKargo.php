@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ Company, PackageDispatch };
+use App\Models\{ Company, PackageDispatch, PackageHistory };
 
 use App\Http\Controllers\PackageDispatchController;
 
@@ -92,6 +92,16 @@ class TaskSendDeliverySmartKargo extends Command
                             Log::info('Latitude:'. $packageDelivery['latitude']);
 
                             $packageController->SendStatusToInland($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl), $packageDelivery->Date_Delivery);
+
+                            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                            if($packageHistory)
+                            {
+                                $packageController->SendStatusToOtherCompany($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl);
+                            }
                         }
                     }
                 }
