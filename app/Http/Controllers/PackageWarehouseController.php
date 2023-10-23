@@ -650,13 +650,8 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
-                if($packageWarehouse->idCompany == 1)
-                {
-                    //data for INLAND
-                    $packageController = new PackageController();
-                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                    //end data for inland
-                }
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
                 
                 DB::commit();
 
