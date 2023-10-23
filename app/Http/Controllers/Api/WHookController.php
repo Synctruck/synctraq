@@ -130,6 +130,16 @@ class WHookController extends Controller
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
                         //end data for inland
+
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                        if($packageHistory)
+                        {
+                            $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                        }
                     }
                     else
                     {
@@ -247,12 +257,23 @@ class WHookController extends Controller
                     
                     $packageDispatch->delete();
 
+                    $packageController = new PackageController();
+
                     if($packageDispatch->idCompany == 1)
                     {
                         //data for INLAND
-                        $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
                         //end data for inland
+                    }
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
                     }
                 }
 
