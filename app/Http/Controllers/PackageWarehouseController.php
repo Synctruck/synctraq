@@ -311,10 +311,13 @@ class PackageWarehouseController extends Controller
 
                 $packageWarehouse->save();
 
-                //data for INLAND
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                //end data for inland
+                if($packageWarehouse->idCompany == 1)
+                {
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                    //end data for inland
+                }
 
                 DB::commit();
 
@@ -650,8 +653,13 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                if($packageWarehouse->idCompany == 1)
+                {
+                    //data for INLAND
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                    //end data for inland
+                }
                 
                 DB::commit();
 

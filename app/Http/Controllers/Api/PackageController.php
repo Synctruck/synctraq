@@ -636,141 +636,167 @@ class PackageController extends Controller
                 Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
                 Log::info('REPONSE STATUS: '. $response['status']);
                 Log::info('============INLAND - END STATUS UPDATE');
+            }
+        }
+    }
 
+    public function SendStatusToOtherCompany($package, $status, $idPhoto = null, $created_at)
+    {
+        $statusCodeCompany = '';
+        $key_webhook       = '';
+        $url_webhook       = '';
+        $pod_url           = "";
+        $package_id        = "";
+        $header_curl       = "";
+        $sendStatusCompany = true;
 
-                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
-                                                ->where('sendToInland', 1)
-                                                ->where('status', 'Manifest')
+        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' ||  $status == 'Warehouse' || $status == 'Failed' || $status == 'NMI')
+        {
+            $company = Company::find(1);
+
+            $statusCodeCompany = $idPhoto;
+            $key_webhook       = $company->key_webhook;
+            $url_webhook       = $company->url_webhook;
+            $typeServices      = $company->typeServices;
+        }
+        else
+        {
+            $companyStatus = CompanyStatus::with('company')
+                                                ->where('idCompany', $package->idCompany)
+                                                ->where('status', $status)
                                                 ->first();
 
-                if($packageHistory)
+            Log::info('companyStatus');
+            Log::info('===========');
+            $statusCodeCompany = $companyStatus->statusCodeCompany;
+            $key_webhook       = $companyStatus->company->key_webhook;
+            $url_webhook       = $companyStatus->company->url_webhook;
+            $typeServices      = $companyStatus->company->typeServices;
+        }
+
+        Log::info('SendStatusToInland: '. $package->company);
+
+        if($status == 'ReturnCompany')
+        {
+            $statusCodeCompany = $idPhoto;
+        }
+        elseif($status == 'Lost')
+        {
+            $statusCodeCompany = 'not_delivered_lost';
+        }
+        elseif($status == 'Middle Mile Scan')
+        {
+            $statusCodeCompany = 'scan_pre_middle_mile';
+        }
+        elseif($status == 'Warehouse')
+        {
+            $statusCodeCompany = 'reprocessing_at_mc';
+        }
+        elseif($status == 'NMI')
+        {
+            $statusCodeCompany = 'retry_address_not_found';
+        }
+        elseif($status == 'Failed')
+        {
+            $statusCodeCompany = 'attempted_delivery';
+        }
+
+        if($status == 'Delivery')
+        {
+            Log::info('idPhoto');
+            Log::info($idPhoto);
+            if(count($idPhoto) == 0)
+            {
+                $pod_url = '"pod_url": "",';
+            }
+            else if(count($idPhoto) == 1)
+            {
+                if(strpos($idPhoto[0], 'http') === false)
                 {
-                    $company = Company::find(1);
-
-                    $statusCodeCompany = $idPhoto;
-                    $key_webhook       = $company->key_webhook;
-                    $url_webhook       = $company->url_webhook;
-                    $typeServices      = $company->typeServices;
-
-                    Log::info('SendStatusToInland: '. 1);
-
-                    if($status == 'ReturnCompany')
-                    {
-                        $statusCodeCompany = $idPhoto;
-                    }
-                    elseif($status == 'Lost')
-                    {
-                        $statusCodeCompany = 'not_delivered_lost';
-                    }
-                    elseif($status == 'Middle Mile Scan')
-                    {
-                        $statusCodeCompany = 'scan_pre_middle_mile';
-                    }
-                    elseif($status == 'Warehouse')
-                    {
-                        $statusCodeCompany = 'reprocessing_at_mc';
-                    }
-                    elseif($status == 'NMI')
-                    {
-                        $statusCodeCompany = 'retry_address_not_found';
-                    }
-                    elseif($status == 'Failed')
-                    {
-                        $statusCodeCompany = 'attempted_delivery';
-                    }
-
-                    if($status == 'Delivery')
-                    {
-                        Log::info('idPhoto');
-                        Log::info($idPhoto);
-                        if(count($idPhoto) == 0)
-                        {
-                            $pod_url = '"pod_url": "",';
-                        }
-                        else if(count($idPhoto) == 1)
-                        {
-                            if(strpos($idPhoto[0], 'http') === false)
-                            {
-                                $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
-                            }
-                            else
-                            {
-                                $pod_url = '"pod_url": "'. $idPhoto[0] .'",';
-                            }
-                        }
-                        else
-                        {
-                            if(strpos($idPhoto[0], 'http') === false)
-                            {
-                                $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
-                                $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
-                            }
-                            else
-                            {
-                                $photo1 = $idPhoto[0];
-                                $photo2 = $idPhoto[1];
-                            }
-
-                            $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
-                        }
-                    }
-
-                    Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
-                    Log::info($pod_url);
-
-                    $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
-                    $created_at      = $created_at_temp->format(DateTime::ATOM);
-
-                    $curl = curl_init();
-
-                    $header_curl = array(
-                        'Authorization: '. $key_webhook,
-                        'Content-Type: application/json'
-                    );
-
-                    $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
-
-                    $dataSend = '{
-                        "status": "'. $statusCodeCompany .'",
-                        '. $pod_url .'
-                        "metadata": [
-                            {
-                                "label": "",
-                                "value": ""
-                            }
-                        ],
-                        "datetime" : "'. $created_at .'"
-                    }';
-
-                    curl_setopt_array($curl, array(
-                        CURLOPT_URL => $urlWebhook,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => '',
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => 'POST',
-                        CURLOPT_POSTFIELDS => $dataSend,
-                        CURLOPT_HTTPHEADER => $header_curl,
-                    ));
-
-                    $response    = curl_exec($curl);
-                    $response    = json_decode($response, true);
-                    $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-                    curl_close($curl);
-
-                    Log::info($response);
-
-                    Log::info('===========  INLAND - STATUS UPDATE');
-                    Log::info('http_status: '. $http_status);
-                    Log::info('PACKAGE ID: '. $package->Reference_Number_1);
-                    Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-                    Log::info('REPONSE STATUS: '. $response['status']);
-                    Log::info('============INLAND - END STATUS UPDATE');
+                    $pod_url = '"pod_url": "'. 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png' .'",';
+                }
+                else
+                {
+                    $pod_url = '"pod_url": "'. $idPhoto[0] .'",';
                 }
             }
+            else
+            {
+                if(strpos($idPhoto[0], 'http') === false)
+                {
+                    $photo1 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[0] .'/800x.png';
+                    $photo2 = 'https://d15p8tr8p0vffz.cloudfront.net/'. $idPhoto[1] .'/800x.png';
+                }
+                else
+                {
+                    $photo1 = $idPhoto[0];
+                    $photo2 = $idPhoto[1];
+                }
+
+                $pod_url = '"pod_url": "'. $photo1 .','. $photo2 .'" ,';
+            }
+        }
+
+        Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
+        Log::info($pod_url);
+
+        $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+        $created_at      = $created_at_temp->format(DateTime::ATOM);
+
+        $curl = curl_init();
+
+        $header_curl = array(
+            'Authorization: '. $key_webhook,
+            'Content-Type: application/json'
+        );
+
+        $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
+
+        $dataSend = '{
+            "status": "'. $statusCodeCompany .'",
+            '. $pod_url .'
+            "metadata": [
+                {
+                    "label": "",
+                    "value": ""
+                }
+            ],
+            "datetime" : "'. $created_at .'"
+        }';
+
+        if($sendStatusCompany)
+        {
+            Log::info('DATA SEND WEBHOOK- COMPANY');
+            Log::info($dataSend);
+            Log::info($urlWebhook);
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $urlWebhook,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $dataSend,
+                CURLOPT_HTTPHEADER => $header_curl,
+            ));
+
+            $response    = curl_exec($curl);
+            $response    = json_decode($response, true);
+            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+
+            Log::info($response);
+
+            Log::info('===========  INLAND - STATUS UPDATE');
+            Log::info('http_status: '. $http_status);
+            Log::info('PACKAGE ID: '. $package->Reference_Number_1);
+            Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
+            Log::info('REPONSE STATUS: '. $response['status']);
+            Log::info('============INLAND - END STATUS UPDATE');
         }
     }
 
