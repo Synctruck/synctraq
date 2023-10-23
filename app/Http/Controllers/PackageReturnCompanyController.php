@@ -273,6 +273,16 @@ class PackageReturnCompanyController extends Controller
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
+                }
+
                 $packageInbound->delete();
 
                 DB::commit();
@@ -449,6 +459,16 @@ class PackageReturnCompanyController extends Controller
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                                }
+                
                                 $packageInbound->delete();
                             }
 
@@ -773,6 +793,16 @@ class PackageReturnCompanyController extends Controller
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packagePreRts->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                }
             }
 
             DB::commit();
