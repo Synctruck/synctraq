@@ -100,7 +100,7 @@ class TaskSendDeliverySmartKargo extends Command
 
                             if($packageHistory)
                             {
-                                $packageController->SendStatusToOtherCompany($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl);
+                                $packageController->SendStatusToOtherCompany($packageDelivery, 'Delivery', explode(',', $packageDelivery->photoUrl));
                             }
                         }
                     }
