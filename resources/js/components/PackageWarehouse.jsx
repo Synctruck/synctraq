@@ -671,7 +671,7 @@ function PackageWarehouse() {
 
     const exportAllPackageWarehouse = (route, state, type) => {
 
-        let url = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+type;
+        let url = url_general +'package-warehouse/export/'+ idCompany +'/'+ idValidator +'/'+ dateStart+'/'+ dateEnd +'/'+ route +'/'+ state +'/'+ idCellar +'/'+type;
 
         if(type == 'download')
         {
