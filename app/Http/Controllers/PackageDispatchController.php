@@ -1248,6 +1248,11 @@ class PackageDispatchController extends Controller
         if($packageDispatch == null)
         {
             $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            
+            if($packageDispatch == null)
+            {
+                $packageDispatch = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            }
         }
 
         Log::info('package: '. $packageDispatch);
