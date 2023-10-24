@@ -99,6 +99,7 @@ class PackageInboundController extends Controller
         $description        = $request['description'];
         $require_invoice    = $request['require_invoice'];
         $idTeam             = $request['synctruck_team'];
+        $idCellar           = $request['warehouse'];
 
         Log::info($request);
 
@@ -327,6 +328,16 @@ class PackageInboundController extends Controller
                 $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
+
+                $cellar = Cellar::find($idCellar);
+
+                if($cellar)
+                {    
+                    $packageCreate->idCellar    = $cellar->id;
+                    $packageCreate->nameCellar  = $cellar->name;
+                    $packageCreate->stateCellar = $cellar->state;
+                    $packageCreate->cityCellar  = $cellar->city;
+                }
 
                 if($packageCreate->status == 'Delivery') 
                 {
