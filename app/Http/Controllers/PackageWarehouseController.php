@@ -621,6 +621,7 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->status                       = 'Warehouse';
 
                 $cellar = Cellar::find(Auth::user()->idCellar);
+
                 if($cellar)
                 {
                     $packageWarehouse->idCellar    = $cellar->id;
