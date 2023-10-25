@@ -17,7 +17,10 @@ class FrameHeadersMiddleware
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
-        $response->header('X-Frame-Options', 'ALLOW FROM https://synctruck.com/track-package/');
-         return $response;
+        
+        // Permitir que se muestre en iframes desde cualquier origen
+        $response->header('X-Frame-Options', 'ALLOWALL');
+
+        return $response;
     }
 }
