@@ -620,13 +620,13 @@ class PackageWarehouseController extends Controller
                 $packageWarehouse->quantity                     = $package->quantity;
                 $packageWarehouse->status                       = 'Warehouse';
 
-                $Cellar = Cellar::find(Auth::user()->idCellar);
-                if($Cellar)
+                $cellar = Cellar::find(Auth::user()->idCellar);
+                if($cellar)
                 {
-                    $packageWarehouse->idCellar    = $Cellar->id;
-                    $packageWarehouse->nameCellar  = $Cellar->name;
-                    $packageWarehouse->stateCellar = $Cellar->state;
-                    $packageWarehouse->cityCellar  = $Cellar->city;
+                    $packageWarehouse->idCellar    = $cellar->id;
+                    $packageWarehouse->nameCellar  = $cellar->name;
+                    $packageWarehouse->stateCellar = $cellar->state;
+                    $packageWarehouse->cityCellar  = $cellar->city;
                 }
 
                 $packageWarehouse->save();
@@ -659,12 +659,12 @@ class PackageWarehouseController extends Controller
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
-                if($Cellar)
+                if($cellar)
                 {
-                    $packageHistory->idCellar    = $Cellar->id;
-                    $packageHistory->nameCellar  = $Cellar->name;
-                    $packageHistory->stateCellar = $Cellar->state;
-                    $packageHistory->cityCellar  = $Cellar->city;
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
                 }
 
                 $packageHistory->save();
