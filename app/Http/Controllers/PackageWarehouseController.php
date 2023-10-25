@@ -659,12 +659,12 @@ class PackageWarehouseController extends Controller
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
-                if($cellar)
+                if($Cellar)
                 {
-                    $packageHistory->idCellar    = $cellar->id;
-                    $packageHistory->nameCellar  = $cellar->name;
-                    $packageHistory->stateCellar = $cellar->state;
-                    $packageHistory->cityCellar  = $cellar->city;
+                    $packageHistory->idCellar    = $Cellar->id;
+                    $packageHistory->nameCellar  = $Cellar->name;
+                    $packageHistory->stateCellar = $Cellar->state;
+                    $packageHistory->cityCellar  = $Cellar->city;
                 }
 
                 $packageHistory->save();
