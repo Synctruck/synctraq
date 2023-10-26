@@ -527,7 +527,7 @@ function PackageReturn() {
                 }
                 else if(response.stateAction == 'notDispatch')
                 {
-                    setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch!");
+                    setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch o LM Carrier!");
                     setTypeMessage('warning');
                     setNumberPackage('');
 

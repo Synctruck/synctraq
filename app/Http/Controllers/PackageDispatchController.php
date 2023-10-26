@@ -187,7 +187,7 @@ class PackageDispatchController extends Controller
         return  $packageDispatchList;
     }
 
-    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar,$typeExport)
+    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - DISPATCH " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - DISPATCH.csv";
@@ -199,7 +199,7 @@ class PackageDispatchController extends Controller
         fputcsv($file, $fields, $delimiter);
 
 
-        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$idCellar, $type ='export');
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar, $type ='export');
 
        foreach($packageDispatchList as $packageDispatch)
         {
@@ -607,6 +607,16 @@ class PackageDispatchController extends Controller
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
+
                                 Log::info('============ CREATED TASK COMPLETED ================');
                                 Log::info('====================================================');
                                 Log::info('====================================================');
@@ -735,6 +745,16 @@ class PackageDispatchController extends Controller
                             $packageController = new PackageController();
                             $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                             //end data for inland
+
+                            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                            if($packageHistory)
+                            {
+                                $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                            }
 
                             Log::info('============ CREATED TASK COMPLETED ================');
                             Log::info('====================================================');
@@ -1164,6 +1184,16 @@ class PackageDispatchController extends Controller
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
+
                                 $package->delete();
                             }
                         }
@@ -1218,6 +1248,11 @@ class PackageDispatchController extends Controller
         if($packageDispatch == null)
         {
             $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            
+            if($packageDispatch == null)
+            {
+                $packageDispatch = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            }
         }
 
         Log::info('package: '. $packageDispatch);
@@ -1546,6 +1581,16 @@ class PackageDispatchController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
 
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
+                    }
+                            
                     if($deleteDispatch)
                     {
                         $packageDispatch->delete();

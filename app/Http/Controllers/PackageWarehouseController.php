@@ -135,7 +135,7 @@ class PackageWarehouseController extends Controller
         return $packageListWarehouse;
     }
 
-    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state , $idCellar, $typeExport)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
@@ -311,12 +311,21 @@ class PackageWarehouseController extends Controller
 
                 $packageWarehouse->save();
 
+                $packageController = new PackageController();
+
                 if($packageWarehouse->idCompany == 1)
                 {
-                    //data for INLAND
-                    $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                    //end data for inland
+                }
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
                 }
 
                 DB::commit();
@@ -416,6 +425,16 @@ class PackageWarehouseController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
                     //end data for inland
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageManifest->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
+                    }
                 }
 
                 if($packageDispatch)
@@ -653,14 +672,23 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
+                $packageController = new PackageController();
+
                 if($packageWarehouse->idCompany == 1)
                 {
-                    //data for INLAND
-                    $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                    //end data for inland
                 }
                 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                }
+
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
