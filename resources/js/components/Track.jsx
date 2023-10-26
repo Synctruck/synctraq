@@ -16,20 +16,7 @@ function Track() {
     const [inboundDesc, setInboundDesc] = useState('');
     const [dispatchDesc, setDispatchDesc] = useState('');
     const [deliveryDesc, setDeliveryDesc] = useState('');
-    const [searchClicked, setSearchClicked] = useState(false);
-    const [searchFieldChanged, setSearchFieldChanged] = useState(true);
-    const [showDetails, setShowDetails] = useState(false);
-
-    const clearPackageData = () => {
-        setListDetails([]);
-        setPackageZipCode('');
-        setOnholdDesc('');
-        setInboundDesc('');
-        setDeliveryDesc('');
-        setDispatchDesc('');
-        setStep(null);
-        setShowDetails(false);
-    };
+    const [showDetails, setDisplayDetails] = useState(false);
 
     useEffect(() => {
         handleStep();
@@ -40,41 +27,29 @@ function Track() {
         const urlParams = new URLSearchParams(queryString);
         const textSearch = urlParams.get('textSearch');
         
-        if (textSearch) {
+        if(textSearch) {
             setPackageId(textSearch);
-            setSearchFieldChanged(false);
-            
-            const url = url_general + 'trackpackage/detail/' + textSearch;
-            axios.get(url)
-            .then((response) => {
-                setListDetails(response.data.details);
-                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
-                setShowDetails(true);
-            })
-            .catch(() => {
-                clearPackageData();
-                swal('Error', 'Package was not found', 'error');
-            });
+            fetchDetails(textSearch);
         }
     }, []);
 
+    const fetchDetails = (searchValue) => {
+        const url = url_general + 'trackpackage/detail/' + searchValue;
+        axios.get(url)
+            .then((response) => {
+                setListDetails(response.data.details);
+                setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
+                setDisplayDetails(true);
+            })
+            .catch(() => {
+                swal('Error', 'Package was not found', 'error');
+                setDisplayDetails(false);
+            });
+    }
+
     const getDetail = (e) => {
         e.preventDefault();
-        setSearchClicked(true);
-        setSearchFieldChanged(false);
-
-        const url = url_general + 'trackpackage/detail/' + packageId;
-
-        axios.get(url)
-        .then((response) => {
-            setListDetails(response.data.details);
-            setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
-            setShowDetails(true);
-        })
-        .catch(() => {
-            clearPackageData();
-            swal('Error', 'Package was not found', 'error');
-        });
+        fetchDetails(packageId);
     }
 
     const handleStep = () => {
@@ -93,10 +68,10 @@ function Track() {
 
         const findStep = status => listDetails.find(item => item.status === status);
 
-        if (findStep('Delivery')) finalStep = 'Delivery';
-        else if (findStep('Dispatch')) finalStep = 'Dispatch';
-        else if (findStep('Inbound')) finalStep = 'Inbound';
-        else if (findStep('Manifest')) finalStep = 'Manifest';
+        if(findStep('Delivery')) finalStep = 'Delivery';
+        else if(findStep('Dispatch')) finalStep = 'Dispatch';
+        else if(findStep('Inbound')) finalStep = 'Inbound';
+        else if(findStep('Manifest')) finalStep = 'Manifest';
 
         if (finalStep) {
             const stepMap = {
@@ -111,7 +86,7 @@ function Track() {
 
     const handleSearchFieldChange = (e) => {
         setPackageId(e.target.value);
-        setSearchFieldChanged(true);
+        setDisplayDetails(false);
     }
 
     return (
