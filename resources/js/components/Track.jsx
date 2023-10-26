@@ -18,6 +18,7 @@ function Track() {
     const [deliveryDesc, setDeliveryDesc] = useState('');
     const [searchClicked, setSearchClicked] = useState(false);
     const [searchFieldChanged, setSearchFieldChanged] = useState(true);
+    const [showDetails, setShowDetails] = useState(false);
 
     const clearPackageData = () => {
         setListDetails([]);
@@ -27,6 +28,7 @@ function Track() {
         setDeliveryDesc('');
         setDispatchDesc('');
         setStep(null);
+        setShowDetails(false);
     };
 
     useEffect(() => {
@@ -47,6 +49,7 @@ function Track() {
             .then((response) => {
                 setListDetails(response.data.details);
                 setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
+                setShowDetails(true);
             })
             .catch(() => {
                 clearPackageData();
@@ -66,6 +69,7 @@ function Track() {
         .then((response) => {
             setListDetails(response.data.details);
             setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
+            setShowDetails(true);
         })
         .catch(() => {
             clearPackageData();
@@ -134,7 +138,7 @@ function Track() {
                     </div>
                 </div>
             </div>
-            {!searchFieldChanged && (
+            {showDetails && (
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
