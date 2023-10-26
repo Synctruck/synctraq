@@ -14,7 +14,8 @@ class RangePaymentTeamByCompanyController extends Controller
 {
     public function List($idTeam)
     {
-        $rangeList = RangePriceTeamByCompany::where('idTeam', $idTeam)
+        $rangeList = RangePriceTeamByCompany::with('range_rate_team')
+                                        ->where('idTeam', $idTeam)
                                         ->orderBy('price', 'asc')
                                         ->get();
 
@@ -74,6 +75,7 @@ class RangePaymentTeamByCompanyController extends Controller
 
                 [
                     "idTeam" => ["required"],
+                    "idRangeRate" => ["idRangeRate"],
                     "idCompany" => ["required"],
                     "routeByCompany" => ["required"],
                     "price" => ["required", "max:999", "numeric"],
@@ -82,6 +84,8 @@ class RangePaymentTeamByCompanyController extends Controller
                     "idTeam.required" => "Seleccione un team",
 
                     "idCompany.required" => "Select an item",
+
+                    "idRangeRate.required" => "Select a BASE RATE RANGE",
 
                     "routeByCompany.required" => "The field is required",
 
@@ -99,11 +103,12 @@ class RangePaymentTeamByCompanyController extends Controller
         $company = Company::find($request->get('idCompany'));
 
         $range = new RangePriceTeamByCompany();
-        $range->idTeam    = $request->get('idTeam');
-        $range->idCompany = $request['idCompany'];
-        $range->company   = $company ? $company->name : '';
-        $range->route     = $request['routeByCompany'];
-        $range->price     = $request->get('price');
+        $range->idTeam      = $request->get('idTeam');
+        $range->idCompany   = $request['idCompany'];
+        $range->idRangeRate = $request['idRangeRate'];
+        $range->company     = $company ? $company->name : '';
+        $range->route       = $request['routeByCompany'];
+        $range->price       = $request->get('price');
         $range->save();
 
         return ['stateAction' => true];
@@ -169,6 +174,7 @@ class RangePaymentTeamByCompanyController extends Controller
                 [
                     "idTeam" => ["required"],
                     "idCompany" => ["required"],
+                    "idRangeRate" => ["idRangeRate"],
                     "routeByCompany" => ["required"],
                     "price" => ["required", "max:999", "numeric"],
                 ],
@@ -177,6 +183,8 @@ class RangePaymentTeamByCompanyController extends Controller
 
                     "idCompany.required" => "Select an item",
 
+                    "idRangeRate.required" => "Select a BASE RATE RANGE",
+                    
                     "routeByCompany.required" => "The field is required",
 
                     "price.required" => "The field is required",
@@ -194,6 +202,7 @@ class RangePaymentTeamByCompanyController extends Controller
 
         $range = RangePriceTeamByCompany::find($idRange);
         $range->idCompany = $request->get('idCompany') ? $request->get('idCompany') : 0;
+        $range->idRangeRate = $request['idRangeRate'];
         $range->company   = $company ? $company->name : '';
         $range->route     = $request['routeByCompany'];
         $range->price     = $request->get('price');

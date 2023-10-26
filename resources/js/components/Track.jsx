@@ -26,7 +26,7 @@ function Track() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const textSearch = urlParams.get('textSearch');
-        
+
         if(textSearch) {
             setPackageId(textSearch);
             fetchDetails(textSearch);
@@ -42,7 +42,17 @@ function Track() {
                 setDisplayDetails(true);
             })
             .catch(() => {
-                swal('Error', 'Package was not found', 'error');
+                swal({
+                    title: 'Error',
+                    text: 'Package was not found',
+                    icon: 'error',
+                    buttons: {
+                        confirm: {
+                            text: 'OK',
+                            className: 'custom-button'
+                        }
+                    }
+                });
                 setDisplayDetails(false);
             });
     }
@@ -90,59 +100,87 @@ function Track() {
     }
 
     return (
-        <section className="section">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-6">
-                        <form id="formSearch" onSubmit={getDetail}>
-                            <div className="form-group">
-                                <input
-                                    type="text"
-                                    id="textSearch"
-                                    className="form-control"
-                                    placeholder="Package ID"
-                                    required
-                                    value={packageId}
-                                    onChange={handleSearchFieldChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <button className="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {showDetails && (
+        <><style>
+            {`
+                .custom-button {
+                    background-color: #015E7C !important;
+                    border-color: #015E7C !important;
+                }
+
+                .custom-steps .ant-steps-item-finish .ant-steps-item-icon {
+                    background-color: #0099CC !important;
+                    border-color: #0099CC !important;
+                }
+
+                .custom-steps .ant-steps-item-finish .ant-steps-item-tail::before {
+                    background-color: #0099CC !important;
+                }
+
+                .custom-steps .ant-steps-item-process .ant-steps-item-tail::before {
+                    background-color: #0099CC !important;
+                }
+
+                .custom-steps .ant-steps-item-process .ant-steps-item-icon {
+                    background-color: #0099CC !important;
+                    border-color: #0099CC !important;
+                }
+
+                .custom-steps .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+                    color: white !important;
+                }
+            `}
+        </style><section className="section">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-12">
-                            <h6 className="pt-4">Tracking Details</h6>
-                            <hr />
-                            <h5 className="text-center">
-                                PACKAGE ID: {packageId} / OWNER: {packageZipCode}
-                            </h5>
-                            <div className={`col-12 mt-2 tracking-details d-none d-md-block`}>
-                                <Steps current={step}>
-                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                    <Steps.Item title="Inbound" description={inboundDesc} />
-                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                                    <Steps.Item title="Delivery" description={deliveryDesc} />
-                                </Steps>
-                            </div>
-                            <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
-                                <Steps current={step} direction="vertical">
-                                    <Steps.Item title="In Fulfillment" description={onholdDesc} />
-                                    <Steps.Item title="Inbound" description={inboundDesc} />
-                                    <Steps.Item title="Out for Delivery" description={dispatchDesc} />
-                                    <Steps.Item title="Delivery" description={deliveryDesc} />
-                                </Steps>
-                            </div>
+                        <div className="col-lg-6">
+                            <form id="formSearch" onSubmit={getDetail}>
+                                <div className="form-group">
+                                    <input
+                                        type="text"
+                                        id="textSearch"
+                                        className="form-control"
+                                        placeholder="Package ID"
+                                        required
+                                        value={packageId}
+                                        onChange={handleSearchFieldChange} />
+                                </div>
+                                <div className="form-group">
+                                    <button className="btn btn-primary" type="submit" style={{ backgroundColor: "#015E7C", borderColor: "#015E7C" }}>Search</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            )}
-        </section>
+                {showDetails && (
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-lg-12">
+                                <h6 className="pt-4">Tracking Details</h6>
+                                <hr />
+                                <h5 className="text-center">
+                                    PACKAGE ID: {packageId} / OWNER: {packageZipCode}
+                                </h5>
+                                <div className={`col-12 mt-2 tracking-details d-none d-md-block`}>
+                                    <Steps className="custom-steps" current={step}>
+                                        <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                        <Steps.Item title="Inbound" description={inboundDesc} />
+                                        <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                        <Steps.Item title="Delivery" description={deliveryDesc} />
+                                    </Steps>
+                                </div>
+                                <div className="col-12 mt-2 tracking-details  d-block d-sm-none">
+                                    <Steps className="custom-steps" current={step} direction="vertical">
+                                        <Steps.Item title="In Fulfillment" description={onholdDesc} />
+                                        <Steps.Item title="Inbound" description={inboundDesc} />
+                                        <Steps.Item title="Out for Delivery" description={dispatchDesc} />
+                                        <Steps.Item title="Delivery" description={deliveryDesc} />
+                                    </Steps>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </section></>
     );
 }
 
