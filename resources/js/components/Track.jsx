@@ -191,7 +191,7 @@ function Track() {
                 </div>
               </div>
           
-            {listDetails.length > 0 &&  !searchFieldChanged &&(
+            { !searchFieldChanged &&(
             <div className="container">
                 <div className="row">
                     <div className="col-lg-12">
