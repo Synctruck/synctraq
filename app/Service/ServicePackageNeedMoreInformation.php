@@ -278,6 +278,17 @@ class ServicePackageNeedMoreInformation{
             $packageWarehouse->idUser                       = Auth::user()->id;
             $packageWarehouse->quantity                     = $packageNeedMoreInformation->quantity;
             $packageWarehouse->status                       = 'Warehouse';
+
+            $cellar = Cellar::find(Auth::user()->idCellar);
+
+            if($cellar)
+            {
+                $packageWarehouse->idCellar    = $cellar->id;
+                $packageWarehouse->nameCellar  = $cellar->name;
+                $packageWarehouse->stateCellar = $cellar->state;
+                $packageWarehouse->cityCellar  = $cellar->city;
+            }
+
             $packageWarehouse->save();
 
             $packageHistoryNeeMoreInformation = new PackageHistoryNeeMoreInformation();
@@ -313,6 +324,15 @@ class ServicePackageNeedMoreInformation{
             $packageHistory->actualDate                   = $created_at;
             $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
+                
+            if($cellar)
+            {
+                $packageHistory->idCellar    = $cellar->id;
+                $packageHistory->nameCellar  = $cellar->name;
+                $packageHistory->stateCellar = $cellar->state;
+                $packageHistory->cityCellar  = $cellar->city;
+            }
+
             $packageHistory->save();
 
             $packageNeedMoreInformation->delete();
