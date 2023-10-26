@@ -19,6 +19,16 @@ function Track() {
     const [searchClicked, setSearchClicked] = useState(false);
     const [searchFieldChanged, setSearchFieldChanged] = useState(true);
 
+    const clearPackageData = () => {
+        setListDetails([]);
+        setPackageZipCode('');
+        setOnholdDesc('');
+        setInboundDesc('');
+        setDeliveryDesc('');
+        setDispatchDesc('');
+        setStep(null);
+    };
+
     useEffect(() => {
         handleStep();
     }, [listDetails]);
@@ -28,7 +38,7 @@ function Track() {
         const urlParams = new URLSearchParams(queryString);
         const textSearch = urlParams.get('textSearch');
         
-        if(textSearch) {
+        if (textSearch) {
             setPackageId(textSearch);
             setSearchFieldChanged(false);
             
@@ -39,7 +49,8 @@ function Track() {
                 setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
             })
             .catch(() => {
-                alert('Error: Package not found.');
+                clearPackageData();
+                swal('Error', 'Package was not found', 'error');
             });
         }
     }, []);
@@ -57,6 +68,7 @@ function Track() {
             setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
         })
         .catch(() => {
+            clearPackageData();
             swal('Error', 'Package was not found', 'error');
         });
     }
@@ -77,10 +89,10 @@ function Track() {
 
         const findStep = status => listDetails.find(item => item.status === status);
 
-        if(findStep('Delivery')) finalStep = 'Delivery';
-        else if(findStep('Dispatch')) finalStep = 'Dispatch';
-        else if(findStep('Inbound')) finalStep = 'Inbound';
-        else if(findStep('Manifest')) finalStep = 'Manifest';
+        if (findStep('Delivery')) finalStep = 'Delivery';
+        else if (findStep('Dispatch')) finalStep = 'Dispatch';
+        else if (findStep('Inbound')) finalStep = 'Inbound';
+        else if (findStep('Manifest')) finalStep = 'Manifest';
 
         if (finalStep) {
             const stepMap = {
