@@ -26,7 +26,41 @@ function Track() {
         handleStep();
     }, [listDetails]);
 
+    
+    useEffect( () => {
+
+        if(textSearch != '')
+        {
+            setPackageId(textSearch);
+
+            history.pushState(null, "", "trackpackage-detail?textSearch="+ textSearch);
+
+            console.log('submit');
+
+            let url    = url_general +'trackpackage/detail/'+ textSearch;
+            let method = 'GET'
+
+            axios({
+                method: method,
+                url: url
+            })
+            .then((response) => {
+
+                console.log(response.data);
+                setListDetails(response.data.details);
+                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
+            })
+            .catch(function(error) {
+               alert('Error:',error);
+            })
+            .finally();
+        }
+
+    }, []);
+
     const getDetail = (e) => {
+
+        history.pushState(null, "", "track-detail?textSearch="+ packageId);
         e.preventDefault();
         setSearchClicked(true);
         setSearchFieldChanged(false); // Reiniciar el estado de búsqueda del campo
