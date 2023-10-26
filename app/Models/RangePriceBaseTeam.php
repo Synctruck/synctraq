@@ -19,6 +19,11 @@ class RangePriceBaseTeam extends Authenticatable  implements Auditable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function range_team_company()
+    {
+        return $this->hasMany('\App\Models\RangePriceTeamByCompany', 'idRangeRate');
+    }
+
     //observers
     protected static function booted()
     {
