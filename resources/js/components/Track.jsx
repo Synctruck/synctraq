@@ -60,7 +60,7 @@ function Track() {
 
     const getDetail = (e) => {
 
-        history.pushState(null, "", "track-detail?textSearch="+ packageId);
+        history.pushState(null, "", "trackpackage-detail?textSearch="+ packageId);
         e.preventDefault();
         setSearchClicked(true);
         setSearchFieldChanged(false); // Reiniciar el estado de búsqueda del campo
