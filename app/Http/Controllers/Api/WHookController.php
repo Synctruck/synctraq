@@ -29,6 +29,7 @@ class WHookController extends Controller
             DB::beginTransaction();
 
             $taskOnfleet             = $request['data']['task']['shortId'];
+            Log::info($taskOnfleet);
             $Reference_Number_1      = $request['data']['task']['notes'];
             $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
             $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
