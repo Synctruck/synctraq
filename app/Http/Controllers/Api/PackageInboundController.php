@@ -385,6 +385,15 @@ class PackageInboundController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
+
+                if($cellar)
+                {    
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
+                
                 $packageHistory->save();
 
                 Log::info('$package->status: '. $package->status);
