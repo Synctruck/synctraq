@@ -279,7 +279,7 @@ class WHookController extends Controller
 
                 DB::commit();
 
-                Log::info("==================== CORRECT TASK - FAILED");
+                Log::info("==================== CORRECT TASK - FAILED". $request);
             }
             catch(Exception $e)
             {
