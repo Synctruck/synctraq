@@ -147,7 +147,7 @@ class PackageWarehouseController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
