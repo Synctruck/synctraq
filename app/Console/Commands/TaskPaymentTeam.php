@@ -148,7 +148,7 @@ class TaskPaymentTeam extends Command
                                         $surchargePrice      = 0;
                                     }
                                     
-                                    $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route);
+                                    $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route, $range->id);
                                     $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
                                     $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
@@ -309,27 +309,37 @@ class TaskPaymentTeam extends Command
         return 0;
     }
 
-    public function GetPriceTeamByCompany($idTeam, $idCompany, $route)
+    public function GetPriceTeamByCompany($idTeam, $idCompany, $route, $idRangeRate)
     {
         $rangeByCompanyTeam = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                                         ->where('idCompany', $idCompany)
+                                                        ->where('idRangeRate', $idRangeRate)
                                                         ->where('route', $route)
                                                         ->first();
 
         $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
+                                    ->where('idRangeRate', 0)
+                                    ->where('route', '')
+                                    ->first();
+
+        $rangeByRate = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', 0)
+                                    ->where('idRangeRate', $idRangeRate)
                                     ->where('route', '')
                                     ->first();
 
         $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', 0)
+                                    ->where('idRangeRate', 0)
                                     ->where('route', $route)
                                     ->first();
 
         $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
+        $priceRate        = $rangeByRate ? $rangeByRate->price : 0;
         $priceCompany     = $rangeByCompany ? $rangeByCompany->price : 0;
         $priceTeam        = $rangeByRoute ? $rangeByRoute->price : 0;
-        $totalPrices      = $priceCompanyTeam + $priceCompany + $priceTeam;
+        $totalPrices      = $priceCompanyTeam + $priceRate + $priceCompany + $priceTeam;
 
         return $totalPrices;
     }
