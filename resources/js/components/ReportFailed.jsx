@@ -10,9 +10,12 @@ import ReactLoading from 'react-loading';
 function ReportFailed() {
 
     const [listReport, setListReport] = useState([]);
+    const [listDeliveries, setListDeliveries] = useState([]);
     const [listTeam, setListTeam]     = useState([]);
     const [listDriver, setListDriver] = useState([]);
     const [roleUser, setRoleUser]     = useState([]);
+    const [filePhoto1, setFilePhoto1]                 = useState('');
+    const [filePhoto2, setFilePhoto2]                 = useState('');
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
 
@@ -68,6 +71,7 @@ function ReportFailed() {
             setIsLoading(false);
             setListReport(response.reportList);
             setTotalPackage(response.packageHistoryList.total);
+            setListDeliveries(response.listDeliveries);
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityDispatch(response.packageHistoryList.total);
@@ -207,10 +211,149 @@ function ReportFailed() {
     }
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
-
+        let imgs = '';
+        let urlImage = '';
+        let photoHttp = false;
+        let reVerification = false
+        let urlImageAux = (packageDispatch.photoUrl == null ? '' : packageDispatch.photoUrl);
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
 
+        urlImageAux = urlImageAux.split(',')
+        console.log(urlImageAux);
+
+        if(urlImageAux.length == 1)
+        {
+            if(urlImageAux[0].includes('https'))
+            {
+                imgs     = <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                urlImage = urlImageAux[0];
+            }
+            else
+            {
+                reVerification = true;
+            }
+        }
+        else if(urlImageAux.length > 1)
+        {
+            if(urlImageAux[0].includes('https') && urlImageAux[1].includes('https'))
+            {
+                imgs =  <>
+                            <img src={ urlImageAux[0] } width="50" style={ {border: '2px solid red'} }/>
+                            <img src={ urlImageAux[1] } width="50" style={ {border: '2px solid red'} }/>
+                        </>
+
+                urlImage = urlImageAux[0] + urlImageAux[1];;
+            }
+            else
+            {
+                reVerification = true;
+            }
+        }
+
+        if(reVerification)
+        {
+            if(packageDispatch.filePhoto1 == '' && packageDispatch.filePhoto2 == '')
+            {
+                if(packageDispatch.photoUrl == '')
+                {
+                    if(!packageDispatch.idOnfleet)
+                    {
+                        photoHttp = true;
+                    }
+                    else if(packageDispatch.idOnfleet && packageDispatch.photoUrl == '')
+                    {
+                        photoHttp = true;
+                    }
+                }
+
+                if(photoHttp)
+                {
+                    let team     = ''
+                    let driver   = '';
+
+                    listDeliveries.forEach( delivery => {
+
+                        if(packageDispatch.Reference_Number_1 == delivery.taskDetails)
+                        {
+                            urlImage = delivery.photoUrl;
+
+                            if(urlImage)
+                            {
+                                urlImage = urlImage.split('https');
+
+                                if(urlImage.length == 2)
+                                {
+                                    imgs = <img src={ 'https'+ urlImage[1] } width="100"/>;
+                                }
+                                else if(urlImage.length >= 3)
+                                {
+                                    imgs =  <>
+                                                <img src={ 'https'+ urlImage[1] } width="50" style={ {border: '2px solid red'} }/>
+                                                <img src={ 'https'+ urlImage[2] } width="50" style={ {border: '2px solid red'} }/>
+                                            </>
+                                }
+                            }
+
+                            urlImage = delivery.photoUrl;
+                        }
+                    });
+
+                    if(packageDispatch.driver)
+                    {
+                        if(packageDispatch.driver.nameTeam)
+                        {
+                            team   = packageDispatch.driver.nameTeam;
+                            driver = packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner;
+                        }
+                        else
+                        {
+                            team   = packageDispatch.driver.name;
+                        }
+                    }
+                }
+                else if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                {
+                    let idsImages = packageDispatch.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
+                }
+                else if(packageDispatch.photoUrl != '' && packageDispatch.photoUrl != null)
+                {
+                    let idsImages = packageDispatch.photoUrl.split(',');
+
+                    if(idsImages.length == 1)
+                    {
+                        imgs = <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="100"/>;
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png';
+                    }
+                    else if(idsImages.length >= 2)
+                    {
+                        imgs =  <>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                    <img src={ 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png' } width="50" style={ {border: '2px solid red'} }/>
+                                </>
+
+                        urlImage = 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[0] +'/800x.png' + 'https://d15p8tr8p0vffz.cloudfront.net/'+ idsImages[1] +'/800x.png'
+                    }
+                }
+            }
+        }
         return (
 
             <tr key={i}>
@@ -238,9 +381,60 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
+                <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
+                    { imgs }
+                </td>
             </tr>
         );
     });
+
+    const [listViewImages, setListViewImages] = useState([]);
+
+    const viewImages = (urlImage) => {
+
+        setListViewImages(urlImage.split('https'));
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+    }
+
+    const listViewImagesModal = listViewImages.map( (image, i) => {
+
+        if(i > 0)
+        {
+            return (
+
+                <img src={ 'https'+ image } className="img-fluid mt-2" style={ {width: '100%'} }/>
+            );
+        }
+    });
+
+    const modalViewImages = <React.Fragment>
+                                    <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                            { listViewImagesModal }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
 
     const listTeamSelect = listTeam.map( (team, i) => {
 
@@ -374,6 +568,7 @@ function ReportFailed() {
     return (
 
         <section className="section">
+             { modalViewImages }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -505,6 +700,7 @@ function ReportFailed() {
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>IMAGE</th>
                                             </tr>
                                         </thead>
                                         <tbody>
