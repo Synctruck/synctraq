@@ -70,6 +70,7 @@ class PackageMiddleMileScanController extends Controller
 
         if(Auth::user()->role->name == 'Master')
         {
+            dd(2);
             $packageListWarehouse = PackageWarehouse::with('user');
         }
         else
