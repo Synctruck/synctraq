@@ -81,6 +81,7 @@ class PackageMiddleMileScanController extends Controller
         $packageListWarehouse = $packageListWarehouse->where('status', 'Middle Mile Scan')
                                                     ->whereBetween('created_at', [$dateStart, $dateEnd]);
 
+        dd($packageListWarehouse->get());
         if($idCompany != 0)
         {
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
