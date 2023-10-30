@@ -86,7 +86,7 @@ class PackageMiddleMileScanController extends Controller
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
         }
 
-        if($idValidator)
+        if($idValidator != 0)
         {
             $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
         }
