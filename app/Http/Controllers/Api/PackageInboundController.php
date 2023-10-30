@@ -329,6 +329,7 @@ class PackageInboundController extends Controller
                 $packageCreate->Weight                       = $package->Weight;
                 $packageCreate->Route                        = $package->Route;
                 $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
+                $packageCreate->idUser                       = 0;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
 
