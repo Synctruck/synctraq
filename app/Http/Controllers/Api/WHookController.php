@@ -174,7 +174,8 @@ class WHookController extends Controller
         $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
-        Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
+        Log::info('TASK ONFLEET FAILED: '. $taskOnfleet); 
+        
         
         if($completionDetailsStatus == false)
         {
@@ -258,16 +259,7 @@ class WHookController extends Controller
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $photoUrl = '';
-
-                    foreach($photoUploadIds as $idPhoto)
-                    {
-                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
-                    }
-
-                    Log::info($photoUrl);
-
-                    $packageFailed->photoUrl                     = $photoUrl;
+                    $packageFailed->photoUrl                      = $packageDispatch->photoUrl;
                     $packageHistory->status                       = 'Failed';
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
