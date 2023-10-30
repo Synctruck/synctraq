@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PackageWeight, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -54,20 +54,23 @@ class PackageInboundController extends Controller
                     $length     = $dimensions['length'];
 
                     $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                    $packageWeight    = PackageWeight::find($Reference_Number_1);
 
-                    if(!$packageWeight)
-                    {
-                        $packageWeight = new PackageWeight();
-                    }
-                    
                     if($dimFactorCompany)
                     {
-                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
-                    }
+                        $packageWeight = PackageWeight::find($Reference_Number_1);
 
-                    $packageWeight->weight4 = $weight;
-                    $packageWeight->save();
+                        if(!$packageWeight)
+                        {
+                            $packageWeight = new PackageWeight();
+                        }
+                        
+                        $packageWeight->width2  = $width;
+                        $packageWeight->height2 = $height;
+                        $packageWeight->length2 = $length;
+                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
+                        $packageWeight->weight4 = $weight;
+                        $packageWeight->save();
+                    }
                 }
                 else
                 {
@@ -326,6 +329,7 @@ class PackageInboundController extends Controller
                 $packageCreate->Weight                       = $package->Weight;
                 $packageCreate->Route                        = $package->Route;
                 $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
+                $packageCreate->idUser                       = 0;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
 
