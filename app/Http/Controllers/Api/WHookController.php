@@ -171,7 +171,7 @@ class WHookController extends Controller
         $taskOnfleet             = $request['data']['task']['shortId']; 
         $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
         $Description_Onfleet     = $request['data']['task']['completionDetails']['failureReason'] .': ['. $request['data']['task']['completionDetails']['failureNotes'] .', '. $request['data']['task']['completionDetails']['notes'] .']';
-
+        $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
         Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
@@ -217,6 +217,16 @@ class WHookController extends Controller
                     $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
                     $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
                     $packageFailed->quantity                     = $packageDispatch->quantity;
+                    $photoUrl = '';
+
+                    foreach($photoUploadIds as $idPhoto)
+                    {
+                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
+                    }
+
+                    Log::info($photoUrl);
+
+                    $packageFailed->photoUrl                     = $photoUrl;
                     $packageFailed->status                       = 'Failed';
                     $packageFailed->created_at                   = $created_at;
                     $packageFailed->updated_at                   = $created_at;
@@ -248,6 +258,16 @@ class WHookController extends Controller
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $photoUrl = '';
+
+                    foreach($photoUploadIds as $idPhoto)
+                    {
+                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
+                    }
+
+                    Log::info($photoUrl);
+
+                    $packageFailed->photoUrl                     = $photoUrl;
                     $packageHistory->status                       = 'Failed';
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
