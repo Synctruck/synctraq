@@ -23,6 +23,7 @@ class PackageInboundController extends Controller
 {
     public function Insert(Request $request)
     {
+        dd($request);
         $Reference_Number_1 = $request['responses']['dimension']['info']['barcode'];
         $packageManifest    = PackageManifest::with('blockeds')->find($Reference_Number_1);
 
