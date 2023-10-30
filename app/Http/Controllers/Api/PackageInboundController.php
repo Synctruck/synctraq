@@ -54,20 +54,23 @@ class PackageInboundController extends Controller
                     $length     = $dimensions['length'];
 
                     $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                    $packageWeight    = PackageWeight::find($Reference_Number_1);
 
-                    if(!$packageWeight)
-                    {
-                        $packageWeight = new PackageWeight();
-                    }
-                    
                     if($dimFactorCompany)
                     {
-                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
-                    }
+                        $packageWeight = PackageWeight::find($Reference_Number_1);
 
-                    $packageWeight->weight4 = $weight;
-                    $packageWeight->save();
+                        if(!$packageWeight)
+                        {
+                            $packageWeight = new PackageWeight();
+                        }
+                        
+                        $packageWeight->width2  = $width;
+                        $packageWeight->height2 = $height;
+                        $packageWeight->length2 = $length;
+                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
+                        $packageWeight->weight4 = $weight;
+                        $packageWeight->save();
+                    }
                 }
                 else
                 {
