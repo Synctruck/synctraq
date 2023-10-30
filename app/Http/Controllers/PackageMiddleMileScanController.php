@@ -70,7 +70,6 @@ class PackageMiddleMileScanController extends Controller
 
         if(Auth::user()->role->name == 'Master')
         {
-            dd(2);
             $packageListWarehouse = PackageWarehouse::with('user');
         }
         else
@@ -82,7 +81,6 @@ class PackageMiddleMileScanController extends Controller
         $packageListWarehouse = $packageListWarehouse->where('status', 'Middle Mile Scan')
                                                     ->whereBetween('created_at', [$dateStart, $dateEnd]);
 
-        dd($packageListWarehouse->get());
         if($idCompany != 0)
         {
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
