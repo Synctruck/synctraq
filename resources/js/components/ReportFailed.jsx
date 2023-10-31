@@ -560,7 +560,7 @@ function ReportFailed() {
             <div className="modal-dialog modal-lg">
              <div className="modal-content">
             <div className="modal-header">
-               <h5 class="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                <h5 className="modal-title">View Images</h5>
                 <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
             </div>
             <div className="modal-body">
@@ -583,16 +583,8 @@ function ReportFailed() {
         outline: none;
     }
     .modal-content {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        pointer-events: auto;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid rgba(0,0,0,.2);
-        border-radius: 0.3rem;
-        outline: 0;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .modal-header {
         background-color: #f5f5f5;  // Asume un color claro para el encabezado
@@ -612,16 +604,17 @@ function ReportFailed() {
         padding: 0;   // Elimina el padding del cuerpo del modal
     }
     .image-container {
-        display: flex;
-        flex-direction: column;  /* Alinea las imágenes verticalmente */
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
         overflow-y: auto; 
         max-height: 400px; 
     }
-    
     .img-thumbnail {
         max-width: 100%;
         height: auto;
-        margin-bottom: 10px;  /* Añade un poco de espacio entre cada imagen */
+        border-radius: 5px;  // Asume un pequeño radio de esquina
+        margin: 0;  // Elimina cualquier margen de la imagen
     }
 `}</style>
         </section>
