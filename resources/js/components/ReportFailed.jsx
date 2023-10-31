@@ -588,7 +588,7 @@ function ReportFailed() {
                     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
                     border-radius: 15px;
                     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                    height: 750px;
+                    height: 675px;
                     max-height: 80%;
                     overflow-y: auto; 
                 }
