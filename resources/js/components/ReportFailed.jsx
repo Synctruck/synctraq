@@ -588,7 +588,7 @@ function ReportFailed() {
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            height: 600px;
+            height: 800px;
             max-height: 80%;
             overflow-y: auto; 
         }
@@ -600,7 +600,6 @@ function ReportFailed() {
         .left-border {
             width: 5px;
             height: 100%;
-            background-color: red;  // Cambia este color según lo desees (rojo/azul)
         }
         .modal-title {
             font-size: 24px;
