@@ -591,6 +591,10 @@ function ReportFailed() {
                 height: auto;
                 margin-bottom: 10px;
             }
+
+            .modal:focus {
+                outline: none;
+            }
         `}</style>
 
         </section>
