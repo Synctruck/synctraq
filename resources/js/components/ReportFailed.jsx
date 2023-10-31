@@ -263,9 +263,7 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td>
-                    <td>{viewImageButton}</td>
-                </td>
+                <td>{viewImageButton}</td>
             </tr>
         );
     });
