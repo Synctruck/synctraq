@@ -556,28 +556,26 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
-            <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-lg-12">
-                                                        {modalImages.map((imgUrl, index) => (
-                                                       <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
-                                                         ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+            <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
+            <div className="modal-dialog modal-lg">
+             <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title">View Images</h5>
+                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+                <div className="image-container">
+                    {modalImages.map((imgUrl, index) => (
+                        <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                    ))}
+                </div>
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style jsx>{`
     .modal {
@@ -595,33 +593,18 @@ function ReportFailed() {
     .btn-close {
         background-color: transparent;
         border: none;
-        font-size: 28px;  /* Aumentar el tamaño */
-        position: absolute;  /* Posicionar absolutamente */
-        right: 10px;  /* Mover un poco a la derecha */
-        top: 10px;  /* Mover un poco hacia arriba */
+        font-size: 24px;
     }
     .image-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;  /* Aumentar el espacio entre imágenes */
+        gap: 10px;
         overflow-y: auto; 
         max-height: 400px; 
     }
     .img-thumbnail {
         max-width: 100%;
         height: auto;
-        border-radius: 10px;  /* Esquinas redondeadas para las imágenes */
-    }
-    /* Estilizar la barra de desplazamiento (opcional) */
-    .image-container::-webkit-scrollbar {
-        width: 8px;
-    }
-    .image-container::-webkit-scrollbar-thumb {
-        background-color: #aaa;
-        border-radius: 4px;
-    }
-    .image-container::-webkit-scrollbar-track {
-        background-color: #f1f1f1;
     }
 `}</style>
         </section>
