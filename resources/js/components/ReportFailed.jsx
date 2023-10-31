@@ -560,7 +560,7 @@ function ReportFailed() {
             <div className="modal-dialog modal-lg">
              <div className="modal-content">
             <div className="modal-header">
-            <h5 class="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+               <h5 class="modal-title text-primary" id="exampleModalLabel">View Images</h5>
                 <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
             </div>
             <div className="modal-body">
@@ -595,13 +595,21 @@ function ReportFailed() {
         outline: 0;
     }
     .modal-header {
-        background-color: #f5f5f5; 
+        background-color: #f5f5f5;  // Asume un color claro para el encabezado
+    }
+    .modal-title {
+        font-size: 24px;
+        font-weight: 500;
+        color: #333;  // Asume un color oscuro para el título
     }
     .btn-close {
         background-color: transparent;
         border: none;
         font-size: 24px;
         color: #333;  // Asume un color oscuro para el botón de cierre
+    }
+    .modal-body {
+        padding: 0;   // Elimina el padding del cuerpo del modal
     }
     .image-container {
         display: flex;
