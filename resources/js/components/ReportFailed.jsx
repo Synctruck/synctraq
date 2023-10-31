@@ -584,18 +584,25 @@ function ReportFailed() {
             outline: none;
         }
         .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            height: 800px;
-            max-height: 80%;
-            overflow-y: auto; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.2);
+            border-radius: 0.3rem;
+            outline: 0;
         }
         .modal-header {
-            background-color: #f5f5f5;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 1rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: calc(0.3rem - 1px);
+            border-top-right-radius: calc(0.3rem - 1px);
         }
         .left-border {
             width: 5px;
