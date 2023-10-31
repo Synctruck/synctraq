@@ -239,7 +239,6 @@ function ReportFailed() {
 
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
-        let fullPhotoUrl = baseURL + packageDispatch.photoUrl + "/800x.png";
         const photoUrls = packageDispatch.photoUrl.split(',');
 
         const imageButtons = photoUrls.map((singlePhotoUrl, index) => {
