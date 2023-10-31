@@ -593,18 +593,33 @@ function ReportFailed() {
     .btn-close {
         background-color: transparent;
         border: none;
-        font-size: 24px;
+        font-size: 28px;  /* Aumentar el tamaño */
+        position: absolute;  /* Posicionar absolutamente */
+        right: 10px;  /* Mover un poco a la derecha */
+        top: 10px;  /* Mover un poco hacia arriba */
     }
     .image-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
+        gap: 15px;  /* Aumentar el espacio entre imágenes */
         overflow-y: auto; 
         max-height: 400px; 
     }
     .img-thumbnail {
         max-width: 100%;
         height: auto;
+        border-radius: 10px;  /* Esquinas redondeadas para las imágenes */
+    }
+    /* Estilizar la barra de desplazamiento (opcional) */
+    .image-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    .image-container::-webkit-scrollbar-thumb {
+        background-color: #aaa;
+        border-radius: 4px;
+    }
+    .image-container::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
     }
 `}</style>
         </section>
