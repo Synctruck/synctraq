@@ -556,14 +556,14 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
-    <div className="modal" tabIndex="-1" style={{ display: showModal ? "block" : "none" }}>
-        <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <div className="left-border"></div>
-                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
-                    <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
-                </div>
+            <div className="modal" tabIndex="-1" style={{ display: showModal ? "block" : "none" }}>
+             <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <div className="left-border"></div>
+                        <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                            <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
+                    </div>
                 <div className="modal-body">
                     <div className="image-container">
                         {modalImages.map((imgUrl, index) => (
@@ -574,64 +574,66 @@ function ReportFailed() {
                 <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
                 </div>
+                 </div>
             </div>
-        </div>
-    </div>
+                 </div>
 
-    <style jsx>{`
-        .modal {
-            background-color: rgba(0,0,0,0.5);
-            outline: none;
-        }
-        .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            height: 750px;
-            max-height: 80%;
-            overflow-y: auto; 
-        }
-        .modal-header {
-            background-color: #f5f5f5;
-            display: flex;
-            align-items: center;
-        }
-        .left-border {
-            width: 5px;
-            height: 100%;
-        }
-        .modal-title {
-            font-size: 24px;
-            font-weight: 500;
-            color: #333;
-            margin-left: 15px;
-        }
-        .btn-close {
-            background-color: transparent;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            margin-left: auto;
-        }
-        .modal-body {
-            padding: 0;
-        }
-        .image-container {
-            display: flex;
-            flex-direction: column;  /* Alinea las imágenes verticalmente */
-            overflow-y: auto; 
-            max-height: auto; 
-        }
-        
-        .img-thumbnail {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;  /* Añade un poco de espacio entre cada imagen */
-        }
-    `}</style>
+             <style jsx>{`
+                .modal {
+                background-color: rgba(0,0,0,0.5);
+                    outline: none;
+                }
+                .modal-content {
+                    border-radius: 15px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    border-radius: 15px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    height: 750px;
+                    max-height: 80%;
+                    overflow-y: auto; 
+                }
+                .modal-header {
+                    background-color: #f5f5f5;
+                    display: flex;
+                    align-items: center;
+                }
+                .left-border {
+                    width: 5px;
+                    height: 100%;
+                }
+                .modal-title {
+                    font-size: 24px;
+                    font-weight: 500;
+                    color: #333;
+                    margin-left: 15px;
+                }
+                .btn-close {
+                    background-color: transparent;
+                    border: none;
+                    font-size: 24px;
+                    color: #333;
+                    margin-left: auto;
+                }
+                .modal-body {
+                    padding: 0;
+                }
+                .image-container {
+                    display: flex;
+                    flex-direction: column;  
+                    overflow-y: auto; 
+                    max-height: auto; 
+                }
+                
+                .img-thumbnail {
+                    max-width: 100%;
+                    height: auto;
+                    margin-bottom: 10px; 
+                }
+                .modal-footer {
+                    min-height: 50px;
+                }
 
-
+            `}</style>
         </section>
     );
 }
