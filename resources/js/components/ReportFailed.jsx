@@ -561,7 +561,7 @@ function ReportFailed() {
             <div className="modal-content">
                 <div className="modal-header">
                     <div className="left-border"></div>
-                    <h5 className="modal-title">View Images</h5>
+                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
                     <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
                 </div>
                 <div className="modal-body">
