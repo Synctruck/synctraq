@@ -263,57 +263,9 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td onClick={ () => viewImages(photoUrls.map(url => baseURL + url.trim() + "/800x.png"))} style={ {cursor: 'pointer'} }>
-                    { imgs }
-                </td>
+                <td>{viewImageButton}</td>
             </tr>
         );
-    });
-
-    const modalViewImages = <React.Fragment>
-                                    <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-lg-12">
-                                                            { listViewImagesModal }
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </React.Fragment>;
-
-    const viewImages = (urlImage) => {
-
-        setListViewImages(urlImage.split('https'));
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
-
-            keyboard: true
-        });
-
-        myModal.show();
-    }
-
-    const listViewImagesModal = listViewImages.map( (image, i) => {
-
-        if(i > 0)
-        {
-            return (
-
-                <img src={ 'https'+ image } className="img-fluid mt-2" style={ {width: '100%'} }/>
-            );
-        }
     });
 
     const listTeamSelect = listTeam.map( (team, i) => {
@@ -448,7 +400,6 @@ function ReportFailed() {
     return (
         
         <section className="section">
-            { modalViewImages }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -605,6 +556,45 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
+            <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
+                 <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                        <h5 className="modal-title">Images</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowModal(false)}></button>
+                        </div>
+                <div className="modal-body">
+                <div className="image-container">
+                    {modalImages.map((imgUrl, index) => (
+                        <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                    ))}
+                </div>
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+            </div>
+            </div>
+               </div>
+            </div>
+
+            <style jsx>{`
+            .image-container {
+                display: block;
+                overflow-y: auto; 
+                max-height: 400px; 
+                white-space: normal;
+        
+            .img-thumbnail {
+                max-width: 400px;
+                height: auto;
+                margin-bottom: 10px;
+            }
+
+            .modal:focus {
+                outline: none;
+            }
+        `}</style>
+
         </section>
     );
 }
@@ -615,28 +605,3 @@ if (document.getElementById('reportFailed'))
 {
     ReactDOM.render(<ReportFailed />, document.getElementById('reportFailed'));
 }
-
-
-// Just some styles
-const styles = {
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingTop: 20,
-    },
-    preview: {
-        marginTop: 20,
-        display: "flex",
-        flexDirection: "column",
-    },
-    image: { maxWidth: "100%", maxHeight: 320 },
-        delete: {
-        cursor: "pointer",
-        padding: 15,
-        background: "red",
-        color: "white",
-        border: "none",
-    },
-};
