@@ -622,7 +622,7 @@ function ReportFailed() {
             display: flex;
             flex-direction: column;  /* Alinea las imágenes verticalmente */
             overflow-y: auto; 
-            max-height: 400px; 
+            max-height: auto; 
         }
         
         .img-thumbnail {
