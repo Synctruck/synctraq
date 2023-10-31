@@ -606,15 +606,16 @@ function ReportFailed() {
     .image-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px;
+        gap: 5px;  /* Disminuye el espacio entre las imágenes */
         overflow-y: auto; 
         max-height: 400px; 
+        margin: -15px;  /* Esto moverá las imágenes más cerca del borde del modal */
     }
+    
     .img-thumbnail {
         max-width: 100%;
         height: auto;
-        border-radius: 5px;  // Asume un pequeño radio de esquina
-        margin: 0;  // Elimina cualquier margen de la imagen
+        border-radius: 0;  /* Esto quitará el borde redondeado de las imágenes */
     }
 `}</style>
         </section>
