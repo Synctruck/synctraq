@@ -63,15 +63,18 @@ function SendToTeam($title, $filename, $idPayment)
 
     $idTeam =  PaymentTeam::find($idPayment)->idTeam;
     $email = User::find($idTeam)->email;
-    $email_team_cc_invoice = env('EMAIL_TEAM_CC_INVOICE');
-    $email_team_cc_invoice1= env('EMAIL_TEAM_CC_INVOICE1');
-    $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
-        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $email_team_cc_invoice,$email_team_cc_invoice1, $email_team_cc_invoice2) {
 
-        $message->to($email, 'Syntruck')
+    $emailsToSend = [
+        'alvarogranillo16@gmail.com',
+        'kim-lawler@fxtran.com',
+        'lisa-eng@expressmgt.com',
+        'accounting@expressmgt.com'
+    ];
+
+    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $emailsToSend) {
+
+        $message->to($emailsToSend, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
-       
-        $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
 
         foreach ($files as $file)
         {
