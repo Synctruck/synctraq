@@ -583,6 +583,7 @@ function ReportFailed() {
         outline: none;
     }
     .modal-content {
+        width: 70%;  /* Ajusta este valor según tus necesidades */
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
