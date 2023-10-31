@@ -1227,14 +1227,11 @@ function Team() {
             <tr key={i}>
                 <td>
                     <b className="text-primary">{ user.id }</b><br/>
-                </td>
-                <td>
                     <b>{ user.name }</b><br/>
                     { user.nameOfOwner }
                 </td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
-                <td>{ user.idOnfleet }</td>
                 <td>
                     {
                         (
@@ -1873,16 +1870,14 @@ function Team() {
                                     <br/>
                                 </div>
                             </div>
-                            <div className="row form-group table-responsive">
+                            <div className="row">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th>ID TEAM</th>
                                                 <th>NAME</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>ID ONFLEET</th>
                                                 <th>ROUND WEIGHT</th>
                                                 <th>SURCHARGE</th>
                                                 <th>STATUS</th>
