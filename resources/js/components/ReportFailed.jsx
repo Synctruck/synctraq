@@ -556,77 +556,62 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
-    <div className="modal" tabIndex="-1" style={{ display: showModal ? "block" : "none" }}>
-        <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <div className="left-border"></div>
-                    <h5 className="modal-title">View Images</h5>
-                    <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
+            <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
+    <div className="modal-dialog modal-lg">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title">View Images</h5>
+                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
+            </div>
+            <div className="modal-body">
+                <div className="image-container">
+                    {modalImages.map((imgUrl, index) => (
+                        <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                    ))}
                 </div>
-                <div className="modal-body">
-                    <div className="image-container">
-                        {modalImages.map((imgUrl, index) => (
-                            <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
-                        ))}
-                    </div>
-                </div>
-                <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-                </div>
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <style jsx>{`
-        .modal {
-            background-color: rgba(0,0,0,0.5);
-            outline: none;
-        }
-        .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .modal-header {
-            background-color: #f5f5f5;
-            display: flex;
-            align-items: center;
-        }
-        .left-border {
-            width: 5px;
-            height: 100%;
-            background-color: red;  // Cambia este color según lo desees (rojo/azul)
-        }
-        .modal-title {
-            font-size: 24px;
-            font-weight: 500;
-            color: #333;
-            margin-left: 15px;
-        }
-        .btn-close {
-            background-color: transparent;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            margin-left: auto;
-        }
-        .modal-body {
-            padding: 0;
-        }
-        .image-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            overflow-y: auto;
-            max-height: 400px;
-        }
-        .img-thumbnail {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin: 0;
-        }
-    `}</style>
+<style jsx>{`
+    .modal {
+        background-color: rgba(0,0,0,0.5);
+        outline: none;
+        display: flex;
+        align-items: center;  // Centra el modal verticalmente
+    }
+    .modal-dialog {
+        margin: 0;  // Elimina el margen automático
+    }
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        height: 100vh;  // Ocupa toda la altura de la ventana
+    }
+    .modal-header, .modal-footer {
+        padding: 10px 20px;  // Ajusta según tu preferencia
+    }
+    .modal-body {
+        padding: 10px;  // Ajusta según tu preferencia
+    }
+    .image-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        overflow-y: auto;  // Permite scroll vertical
+        height: calc(100vh - 140px);  // Ajusta según la altura que desees 
+    }
+    .img-thumbnail {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin: 0;
+    }
+`}</style>
 
 
         </section>
