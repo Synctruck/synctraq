@@ -400,7 +400,7 @@ function ReportFailed() {
         );
     });
     return (
-
+        
         <section className="section">
             <div className="row">
                 <div className="col-lg-12">
@@ -559,23 +559,40 @@ function ReportFailed() {
                 </div>
             </div>
             <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
-            <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header">
+                 <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
                         <h5 className="modal-title">Images</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowModal(false)}></button>
-                    </div>
-                    <div className="modal-body">
-                        {modalImages.map((imgUrl, index) => (
-                            <img key={index} src={imgUrl} alt="Dispatch Image" className="img-fluid mb-2" />
-                        ))}
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
-                    </div>
+                        </div>
+                <div className="modal-body">
+                <div className="image-container">
+                    {modalImages.map((imgUrl, index) => (
+                        <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                    ))}
                 </div>
             </div>
-        </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+            </div>
+            </div>
+               </div>
+            </div>
+
+            <style jsx>{`
+            .image-container {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .img-thumbnail {
+                max-width: 150px; 
+                height: auto;
+                margin-right: 10px;
+            }
+        `}</style>
+
         </section>
     );
 }
