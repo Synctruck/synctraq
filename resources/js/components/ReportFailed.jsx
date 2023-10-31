@@ -15,6 +15,8 @@ function ReportFailed() {
     const [roleUser, setRoleUser]     = useState([]);
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
+    const [listViewImages, setListViewImages] = useState([]);
+
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -206,6 +208,14 @@ function ReportFailed() {
         }
     }
 
+    const viewImages = (urls) => {
+        setListViewImages(urls);
+        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
+            keyboard: true
+        });
+        myModal.show();
+    };
+
 
     function handleImageClick(url) {
         fetch(url)
@@ -281,7 +291,9 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                    <td>{imageButtons}</td>
+                    <button className="btn btn-success btn-sm" onClick={() => viewImages(fullPhotoUrls)}>
+                        View Images
+                    </button>
                 </td>
             </tr>
         );
