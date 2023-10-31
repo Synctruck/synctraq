@@ -269,7 +269,7 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                <a href="#" onClick={() => handleImageClick(fullPhotoUrl)}>Check picture</a>
+                   <button className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrl)}>View image</button>
                 </td>
             </tr>
         );
