@@ -561,7 +561,6 @@ function ReportFailed() {
              <div className="modal-content">
             <div className="modal-header">
                 <h5 className="modal-title">View Images</h5>
-                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
             </div>
             <div className="modal-body">
                 <div className="image-container">
@@ -581,6 +580,10 @@ function ReportFailed() {
      .modal {
         background-color: rgba(0,0,0,0.5);
         outline: none;
+    }
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .modal-header {
         background-color: #f5f5f5;  // Asume un color claro para el encabezado
