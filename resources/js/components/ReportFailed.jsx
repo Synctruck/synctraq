@@ -240,6 +240,16 @@ function ReportFailed() {
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
         let fullPhotoUrl = baseURL + packageDispatch.photoUrl + "/800x.png";
+        const photoUrls = packageDispatch.photoUrl.split(',');
+
+        const imageButtons = photoUrls.map((singlePhotoUrl, index) => {
+            const fullPhotoUrl = baseURL + singlePhotoUrl.trim() + "/800x.png";
+            return (
+                <button key={index} className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrl)}>
+                    View Image
+                </button>
+            );
+        });
 
         return (
 
@@ -269,7 +279,7 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                   <button className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrl)}>View image</button>
+                {imageButtons}
                 </td>
             </tr>
         );
