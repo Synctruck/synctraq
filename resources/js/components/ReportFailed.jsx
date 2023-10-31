@@ -587,7 +587,7 @@ function ReportFailed() {
             }
 
             .img-thumbnail {
-                max-width: 150px; 
+                max-width: 250px; 
                 height: auto;
                 margin-right: 10px;
             }
