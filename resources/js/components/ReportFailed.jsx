@@ -15,6 +15,8 @@ function ReportFailed() {
     const [roleUser, setRoleUser]     = useState([]);
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalImages, setModalImages] = useState([]);
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -206,32 +208,46 @@ function ReportFailed() {
         }
     }
 
-
-    function handleImageClick(url) {
-        fetch(url)
-            .then(response => {
-                if (response.ok) {
-                    // Si la imagen se encuentra, abrimos el enlace en una nueva ventana
-                    window.open(url, '_blank');
-                } else {
-                    // Si la imagen no se encuentra, mostramos una SweetAlert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Image not found!',
-                    });
-                }
-            })
-            .catch(error => {
-                // Si hay un error en la petición, también mostramos una SweetAlert
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Image not found!',
+    const handleImageClick = (photoUrls) => {
+        const validUrls = [];
+        let processedUrls = 0;
+        
+        photoUrls.forEach(url => {
+            fetch(url)
+                .then(response => {
+                    processedUrls++;
+                    if (response.ok) {
+                        validUrls.push(url);
+                    }
+                    if (processedUrls === photoUrls.length) {
+                        if (validUrls.length > 0) {
+                            setModalImages(validUrls);
+                            setIsModalOpen(true);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'No valid images found!',
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    processedUrls++;
+                    if (processedUrls === photoUrls.length && validUrls.length === 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'No valid images found!',
+                        });
+                    }
                 });
-            });
-    }
+        });
+    };
 
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     const baseURL = "https://d15p8tr8p0vffz.cloudfront.net/";
 
@@ -239,6 +255,7 @@ function ReportFailed() {
 
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+        const fullPhotoUrls = photoUrls.map(singlePhotoUrl => baseURL + singlePhotoUrl.trim() + "/800x.png");
         
         const photoUrls = packageDispatch.photoUrl 
         ? packageDispatch.photoUrl.split(',') 
@@ -247,9 +264,13 @@ function ReportFailed() {
         const imageButtons = photoUrls.map((singlePhotoUrl, index) => {
         const fullPhotoUrl = baseURL + singlePhotoUrl.trim() + "/800x.png";
         return (
-            <button key={index} className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrl)}>
-                View Image
+            <tr key={i}>
+            <td>
+            <button className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrls)}>
+                View Images
             </button>
+            </td>
+            </tr>
         );
          });
 
@@ -280,7 +301,15 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td>{imageButtons}</td>
+
+                {isModalOpen && (
+                <div className="modal">
+                    <button onClick={closeModal}>Close</button>
+                    {modalImages.map((url, index) => (
+                        <img key={index} src={url} alt={`Package ${index}`} />
+                    ))}
+                </div>
+            )}
             </tr>
         );
     });
