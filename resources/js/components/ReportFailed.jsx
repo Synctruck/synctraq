@@ -604,18 +604,16 @@ function ReportFailed() {
         padding: 0;   // Elimina el padding del cuerpo del modal
     }
     .image-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 5px;  /* Disminuye el espacio entre las imágenes */
+        display: flex;
+        flex-direction: column;  /* Alinea las imágenes verticalmente */
         overflow-y: auto; 
         max-height: 400px; 
-        margin: -15px;  /* Esto moverá las imágenes más cerca del borde del modal */
     }
     
     .img-thumbnail {
         max-width: 100%;
         height: auto;
-        border-radius: 0;  /* Esto quitará el borde redondeado de las imágenes */
+        margin-bottom: 10px;  /* Añade un poco de espacio entre cada imagen */
     }
 `}</style>
         </section>
