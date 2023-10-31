@@ -556,26 +556,28 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
-            <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
-    <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-            <div className="modal-header">
-                <h5 className="modal-title">View Images</h5>
-                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
-            </div>
-            <div className="modal-body">
-                <div className="image-container">
-                    {modalImages.map((imgUrl, index) => (
-                        <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
-                    ))}
-                </div>
-            </div>
-            <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+            <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <div className="row">
+                                                        <div className="col-lg-12">
+                                                        {modalImages.map((imgUrl, index) => (
+                                                       <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                                                         ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
 <style jsx>{`
     .modal {
