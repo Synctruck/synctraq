@@ -227,7 +227,7 @@ function ReportFailed() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'An error occurred while trying to load the image.',
+                    text: 'Image not found!',
                 });
             });
     }
