@@ -259,7 +259,7 @@ class WHookController extends Controller
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageFailed->photoUrl                      = $packageDispatch->photoUrl;
+                    $packageHistory->photoUrl                     = $photoUrl;
                     $packageHistory->status                       = 'Failed';
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
