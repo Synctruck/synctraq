@@ -614,17 +614,16 @@ function ReportFailed() {
             padding: 0;
         }
         .image-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            overflow-y: auto;
-            max-height: 400px;
+            display: flex;
+            flex-direction: column;  /* Alinea las imágenes verticalmente */
+            overflow-y: auto; 
+            max-height: 400px; 
         }
+        
         .img-thumbnail {
             max-width: 100%;
             height: auto;
-            border-radius: 5px;
-            margin: 0;
+            margin-bottom: 10px;  /* Añade un poco de espacio entre cada imagen */
         }
     `}</style>
 
