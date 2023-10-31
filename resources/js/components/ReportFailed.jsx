@@ -579,24 +579,20 @@ function ReportFailed() {
 
 <style jsx>{`
      .modal {
-        display: flex;          
-        align-items: center;     
-        justify-content: center; 
-        position: fixed;        
-        top: 0;                 
-        right: 0;                
-        bottom: 0;               
-        left: 0;               
-        background-color: rgba(0,0,0,0.5); 
-        z-index: 1000;        
+        background-color: rgba(0,0,0,0.5);
+        outline: none;
     }
     .modal-content {
-        width: 80%;              
-        height: 80%;            
-        background-color: white;
-        overflow-y: auto;       
-        border-radius: 15px;    
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        pointer-events: auto;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgba(0,0,0,.2);
+        border-radius: 0.3rem;
+        outline: 0;
     }
     .modal-header {
         background-color: #f5f5f5; 
