@@ -561,6 +561,7 @@ function ReportFailed() {
              <div className="modal-content">
             <div className="modal-header">
                 <h5 className="modal-title">View Images</h5>
+                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
             </div>
             <div className="modal-body">
                 <div className="image-container">
