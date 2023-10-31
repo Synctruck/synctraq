@@ -582,10 +582,6 @@ function ReportFailed() {
         background-color: rgba(0,0,0,0.5);
         outline: none;
     }
-    .modal-content {
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
     .modal-header {
         background-color: #f5f5f5;  // Asume un color claro para el encabezado
     }
