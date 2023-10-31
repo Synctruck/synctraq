@@ -578,7 +578,7 @@ function ReportFailed() {
 </div>
 
 <style jsx>{`
-    .modal {
+     .modal {
         background-color: rgba(0,0,0,0.5);
         outline: none;
     }
@@ -586,14 +586,22 @@ function ReportFailed() {
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
+    .modal-header {
+        background-color: #f5f5f5;  // Asume un color claro para el encabezado
+    }
     .modal-title {
         font-size: 24px;
         font-weight: 500;
+        color: #333;  // Asume un color oscuro para el título
     }
     .btn-close {
         background-color: transparent;
         border: none;
         font-size: 24px;
+        color: #333;  // Asume un color oscuro para el botón de cierre
+    }
+    .modal-body {
+        padding: 0;   // Elimina el padding del cuerpo del modal
     }
     .image-container {
         display: grid;
@@ -605,6 +613,8 @@ function ReportFailed() {
     .img-thumbnail {
         max-width: 100%;
         height: auto;
+        border-radius: 5px;  // Asume un pequeño radio de esquina
+        margin: 0;  // Elimina cualquier margen de la imagen
     }
 `}</style>
         </section>
