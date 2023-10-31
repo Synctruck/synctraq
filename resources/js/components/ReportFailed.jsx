@@ -16,6 +16,10 @@ function ReportFailed() {
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
     const [listViewImages, setListViewImages] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImages, setModalImages] = useState([]);
+
+    
 
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
@@ -209,29 +213,9 @@ function ReportFailed() {
     }
 
 
-    function handleImageClick(url) {
-        fetch(url)
-            .then(response => {
-                if (response.ok) {
-                    // Si la imagen se encuentra, abrimos el enlace en una nueva ventana
-                    window.open(url, '_blank');
-                } else {
-                    // Si la imagen no se encuentra, mostramos una SweetAlert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Image not found!',
-                    });
-                }
-            })
-            .catch(error => {
-                // Si hay un error en la petición, también mostramos una SweetAlert
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Image not found!',
-                });
-            });
+    function handleImageClick(images) {
+        setModalImages(images);
+        setShowModal(true);
     }
 
 
@@ -246,14 +230,11 @@ function ReportFailed() {
         ? packageDispatch.photoUrl.split(',') 
         : [];
 
-        const imageButtons = photoUrls.map((singlePhotoUrl, index) => {
-        const fullPhotoUrl = baseURL + singlePhotoUrl.trim() + "/800x.png";
-        return (
-            <button key={index} className="btn btn-success btn-sm" onClick={() => handleImageClick(fullPhotoUrl)}>
-                View Image
+        const viewImageButton = photoUrls.length > 0 ? (
+            <button className="btn btn-success btn-sm" onClick={() => handleImageClick(photoUrls.map(url => baseURL + url.trim() + "/800x.png"))}>
+                View Images
             </button>
-        );
-         });
+        ) : null;
 
         return (
 
@@ -283,7 +264,7 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                    <td>{imageButtons}</td>
+                    <td>{viewImageButton}</td>
                 </td>
             </tr>
         );
@@ -577,6 +558,24 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
+            <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
+            <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Images</h5>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowModal(false)}></button>
+                    </div>
+                    <div className="modal-body">
+                        {modalImages.map((imgUrl, index) => (
+                            <img key={index} src={imgUrl} alt="Dispatch Image" className="img-fluid mb-2" />
+                        ))}
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         </section>
     );
 }
