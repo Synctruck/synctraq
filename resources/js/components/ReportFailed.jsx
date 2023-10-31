@@ -208,14 +208,6 @@ function ReportFailed() {
         }
     }
 
-    const viewImages = (urls) => {
-        setListViewImages(urls);
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
-            keyboard: true
-        });
-        myModal.show();
-    };
-
 
     function handleImageClick(url) {
         fetch(url)
@@ -291,9 +283,7 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                    <button className="btn btn-success btn-sm" onClick={() => viewImages(fullPhotoUrls)}>
-                        View Images
-                    </button>
+                    <td>{imageButtons}</td>
                 </td>
             </tr>
         );
