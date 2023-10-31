@@ -205,11 +205,13 @@ function ReportFailed() {
             }
         }
     }
+    const baseURL = "https://d15p8tr8p0vffz.cloudfront.net/";
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
 
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+        let fullPhotoUrl = baseURL + packageDispatch.photoUrl + "/800x.png";
 
         return (
 
@@ -238,7 +240,9 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
-                <td>{ packageDispatch.photoUrl }</td>
+                <td>
+                <a href={fullPhotoUrl} target="_blank" rel="noopener noreferrer">Check picture</a>
+                 </td>
             </tr>
         );
     });
@@ -506,7 +510,7 @@ function ReportFailed() {
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
-                                                 <th>IMAGES</th>
+                                                <th>IMAGES</th>
                                             </tr>
                                         </thead>
                                         <tbody>
