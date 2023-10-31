@@ -205,6 +205,34 @@ function ReportFailed() {
             }
         }
     }
+
+
+    function handleImageClick(url) {
+        fetch(url)
+            .then(response => {
+                if (response.ok) {
+                    // Si la imagen se encuentra, abrimos el enlace en una nueva ventana
+                    window.open(url, '_blank');
+                } else {
+                    // Si la imagen no se encuentra, mostramos una SweetAlert
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Image not found!',
+                    });
+                }
+            })
+            .catch(error => {
+                // Si hay un error en la petición, también mostramos una SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'An error occurred while trying to load the image.',
+                });
+            });
+    }
+
+
     const baseURL = "https://d15p8tr8p0vffz.cloudfront.net/";
 
     const listReportTable = listReport.map( (packageDispatch, i) => {
@@ -241,8 +269,8 @@ function ReportFailed() {
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
                 <td>
-                <a href={fullPhotoUrl} target="_blank" rel="noopener noreferrer">Check picture</a>
-                 </td>
+                <a href="#" onClick={() => handleImageClick(fullPhotoUrl)}>Check picture</a>
+                </td>
             </tr>
         );
     });
