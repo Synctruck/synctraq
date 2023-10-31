@@ -581,15 +581,15 @@ function ReportFailed() {
 
             <style jsx>{`
             .image-container {
-                display: flex;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
+                display: block;
+                overflow-y: auto; 
+                max-height: 400px; 
+                white-space: normal;
+        
             .img-thumbnail {
-                max-width: 250px; 
+                max-width: 400px;
                 height: auto;
-                margin-right: 10px;
+                margin-bottom: 10px;
             }
         `}</style>
 
