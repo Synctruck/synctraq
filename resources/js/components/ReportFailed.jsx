@@ -579,24 +579,24 @@ function ReportFailed() {
 
 <style jsx>{`
      .modal {
-        display: flex;           /* Usamos flex para centrar el contenido */
-        align-items: center;     /* Centra verticalmente */
-        justify-content: center; /* Centra horizontalmente */
-        position: fixed;         /* Posición fija para que el modal permanezca en la misma posición al desplazarse */
-        top: 0;                  /* Desde la parte superior de la página */
-        right: 0;                /* Desde el lado derecho */
-        bottom: 0;               /* Hasta la parte inferior */
-        left: 0;                 /* Desde el lado izquierdo */
-        background-color: rgba(0,0,0,0.5); /* Fondo semi-transparente */
-        z-index: 1000;           /* Aseguramos que el modal siempre e
+        display: flex;          
+        align-items: center;     
+        justify-content: center; 
+        position: fixed;        
+        top: 0;                 
+        right: 0;                
+        bottom: 0;               
+        left: 0;               
+        background-color: rgba(0,0,0,0.5); 
+        z-index: 1000;        
     }
     .modal-content {
-        width: 80%;              /* Ancho del modal */
-        height: 90%;             /* Altura del modal */
-        background-color: white;/* Fondo blanco para el contenido del modal */
-        overflow-y: auto;        /* Barra de desplazamiento si el contenido excede la altura del modal */
-        border-radius: 15px;    /* Esquinas redondeadas */
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra alrededor del modal */
+        width: 80%;              
+        height: 80%;            
+        background-color: white;
+        overflow-y: auto;       
+        border-radius: 15px;    
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
     }
     .modal-header {
         background-color: #f5f5f5; 
