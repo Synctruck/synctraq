@@ -557,13 +557,13 @@ function ReportFailed() {
                 </div>
             </div>
             <div className="modal" tabIndex="-1" style={{display: showModal ? "block" : "none"}}>
-                 <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                        <h5 className="modal-title">Images</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowModal(false)}></button>
-                        </div>
-                <div className="modal-body">
+    <div className="modal-dialog modal-lg">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title">View Images</h5>
+                <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
                 <div className="image-container">
                     {modalImages.map((imgUrl, index) => (
                         <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
@@ -571,30 +571,42 @@ function ReportFailed() {
                 </div>
             </div>
             <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => setShowModal(false)}>Close</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
             </div>
-            </div>
-               </div>
-            </div>
+        </div>
+    </div>
+</div>
 
-            <style jsx>{`
-            .image-container {
-                display: block;
-                overflow-y: auto; 
-                max-height: 400px; 
-                white-space: normal;
-        
-            .img-thumbnail {
-                max-width: 400px;
-                height: auto;
-                margin-bottom: 10px;
-            }
-
-            .modal:focus {
-                outline: none;
-            }
-        `}</style>
-
+<style jsx>{`
+    .modal {
+        background-color: rgba(0,0,0,0.5);
+        outline: none;
+    }
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-title {
+        font-size: 24px;
+        font-weight: 500;
+    }
+    .btn-close {
+        background-color: transparent;
+        border: none;
+        font-size: 24px;
+    }
+    .image-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        overflow-y: auto; 
+        max-height: 400px; 
+    }
+    .img-thumbnail {
+        max-width: 100%;
+        height: auto;
+    }
+`}</style>
         </section>
     );
 }
