@@ -66,7 +66,6 @@ function SendToTeam($title, $filename, $idPayment)
 
     $emailsToSend = [
         'alvarogranillo16@gmail.com',
-        'kim-lawler@fxtran.com',
         'lisa-eng@expressmgt.com',
         'accounting@expressmgt.com'
     ];
