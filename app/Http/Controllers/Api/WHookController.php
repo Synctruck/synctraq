@@ -217,16 +217,6 @@ class WHookController extends Controller
                     $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
                     $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
                     $packageFailed->quantity                     = $packageDispatch->quantity;
-                    $photoUrl = '';
-
-                    foreach($photoUploadIds as $idPhoto)
-                    {
-                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
-                    }
-
-                    Log::info($photoUrl);
-
-                    $packageFailed->photoUrl                     = $photoUrl;
                     $packageFailed->status                       = 'Failed';
                     $packageFailed->created_at                   = $created_at;
                     $packageFailed->updated_at                   = $created_at;
@@ -258,16 +248,6 @@ class WHookController extends Controller
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $photoUrl = '';
-
-                    foreach($photoUploadIds as $idPhoto)
-                    {
-                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
-                    }
-
-                    Log::info($photoUrl);
-
-                    $packageFailed->photoUrl                     = $photoUrl;
                     $packageHistory->status                       = 'Failed';
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
