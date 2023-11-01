@@ -223,7 +223,7 @@ class WHookController extends Controller
                     foreach($photoUploadIds as $idPhoto)
                     {
                         $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
-                    }
+                    } 
 
                     Log::info($photoUrl);
 
