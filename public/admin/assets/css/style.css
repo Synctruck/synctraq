@@ -1104,6 +1104,12 @@ table.table > thead
 table.table > thead > tr > th
 {
   font-weight: 590;
+  font-size: 14px;
+}
+
+table.table > tbody > tr > td
+{
+  font-size: 14px;
 }
 
 .page-item.disabled .page-link{

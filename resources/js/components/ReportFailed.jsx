@@ -10,14 +10,17 @@ import ReactLoading from 'react-loading';
 function ReportFailed() {
 
     const [listReport, setListReport] = useState([]);
-    const [listDeliveries, setListDeliveries] = useState([]);
     const [listTeam, setListTeam]     = useState([]);
     const [listDriver, setListDriver] = useState([]);
     const [roleUser, setRoleUser]     = useState([]);
-    const [filePhoto1, setFilePhoto1]                 = useState('');
-    const [filePhoto2, setFilePhoto2]                 = useState('');
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
+    const [listViewImages, setListViewImages] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImages, setModalImages] = useState([]);
+
+
+
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
 
@@ -71,7 +74,6 @@ function ReportFailed() {
             setIsLoading(false);
             setListReport(response.reportList);
             setTotalPackage(response.packageHistoryList.total);
-            setListDeliveries(response.listDeliveries);
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityDispatch(response.packageHistoryList.total);
@@ -210,10 +212,29 @@ function ReportFailed() {
         }
     }
 
+
+    function handleImageClick(images) {
+        setModalImages(images);
+        setShowModal(true);
+    }
+
+
+    const baseURL = "https://d15p8tr8p0vffz.cloudfront.net/";
+
     const listReportTable = listReport.map( (packageDispatch, i) => {
-      
+
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
+
+        const photoUrls = packageDispatch.photoUrl
+        ? packageDispatch.photoUrl.split(',')
+        : [];
+
+        const viewImageButton = photoUrls.length > 0 ? (
+            <button className="btn btn-success btn-sm" onClick={() => handleImageClick(photoUrls.map(url => baseURL + url.trim() + "/800x.png"))}>
+                View Images
+            </button>
+        ) : null;
 
         return (
 
@@ -242,57 +263,10 @@ function ReportFailed() {
                 <td>{ packageDispatch.Dropoff_Postal_Code }</td>
                 <td>{ packageDispatch.Weight }</td>
                 <td>{ packageDispatch.Route }</td>
+                <td>{viewImageButton}</td>
             </tr>
         );
     });
-
-    const [listViewImages, setListViewImages] = useState([]);
-
-    const viewImages = (urlImage) => {
-
-        setListViewImages(urlImage.split('https'));
-
-        let myModal = new bootstrap.Modal(document.getElementById('modalViewImages'), {
-
-            keyboard: true
-        });
-
-        myModal.show();
-    }
-
-    const listViewImagesModal = listViewImages.map( (image, i) => {
-
-        if(i > 0)
-        {
-            return (
-
-                <img src={ 'https'+ image } className="img-fluid mt-2" style={ {width: '100%'} }/>
-            );
-        }
-    });
-
-    const modalViewImages = <React.Fragment>
-                                    <div className="modal fade" id="modalViewImages" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-lg-12">
-                                                            { listViewImagesModal }
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </React.Fragment>;
 
     const listTeamSelect = listTeam.map( (team, i) => {
 
@@ -426,7 +400,6 @@ function ReportFailed() {
     return (
 
         <section className="section">
-             { modalViewImages }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -447,7 +420,7 @@ function ReportFailed() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Failed: { quantityDispatch }</b>
@@ -558,6 +531,7 @@ function ReportFailed() {
                                                 <th>ZIP C</th>
                                                 <th>WEIGHT</th>
                                                 <th>ROUTE</th>
+                                                <th>IMAGES</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -582,6 +556,84 @@ function ReportFailed() {
                     </div>
                 </div>
             </div>
+            <div className="modal" tabIndex="-1" style={{ display: showModal ? "block" : "none" }}>
+             <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <div className="left-border"></div>
+                        <h5 className="modal-title text-primary" id="exampleModalLabel">View Images</h5>
+                            <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
+                    </div>
+                <div className="modal-body">
+                    <div className="image-container">
+                        {modalImages.map((imgUrl, index) => (
+                            <img key={index} src={imgUrl} alt="Dispatch Image" className="img-thumbnail" />
+                        ))}
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                </div>
+                 </div>
+            </div>
+                 </div>
+
+             <style jsx>{`
+                .modal {
+                background-color: rgba(0,0,0,0.5);
+                    outline: none;
+                }
+                .modal-content {
+                    border-radius: 15px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    border-radius: 15px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    height: 675px;
+                    max-height: 80%;
+                    overflow-y: auto;
+                }
+                .modal-header {
+                    background-color: #f5f5f5;
+                    display: flex;
+                    align-items: center;
+                }
+                .left-border {
+                    width: 5px;
+                    height: 100%;
+                }
+                .modal-title {
+                    font-size: 24px;
+                    font-weight: 500;
+                    color: #333;
+                    margin-left: 15px;
+                }
+                .btn-close {
+                    background-color: transparent;
+                    border: none;
+                    font-size: 24px;
+                    color: #333;
+                    margin-left: auto;
+                }
+                .modal-body {
+                    padding: 0;
+                }
+                .image-container {
+                    display: flex;
+                    flex-direction: column;
+                    overflow-y: auto;
+                    max-height: auto;
+                }
+
+                .img-thumbnail {
+                    max-width: 100%;
+                    height: auto;
+                    margin-bottom: 10px;
+                }
+                .modal-footer {
+                    min-height: 50px;
+                }
+
+            `}</style>
         </section>
     );
 }

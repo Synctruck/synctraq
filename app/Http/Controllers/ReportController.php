@@ -945,7 +945,8 @@ class ReportController extends Controller
                                                         'Dropoff_Postal_Code',
                                                         'Description_Onfleet',
                                                         'Weight',
-                                                        'Route'
+                                                        'Route',
+                                                        'photoUrl'
                                                     )
                                                     ->orderBy('created_at', 'desc')
                                                     ->paginate(50);
@@ -980,7 +981,8 @@ class ReportController extends Controller
                 "Dropoff_Province" => $packageFailed->Dropoff_Province,
                 "Dropoff_Postal_Code" => $packageFailed->Dropoff_Postal_Code,
                 "Weight" => $packageFailed->Weight,
-                "Route" => $packageFailed->Route
+                "Route" => $packageFailed->Route,
+                "photoUrl" => $packageFailed->photoUrl
             ];
 
             array_push($packageHistoryListNew, $package);

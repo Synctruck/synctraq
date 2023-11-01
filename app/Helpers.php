@@ -64,7 +64,9 @@ function SendToTeam($title, $filename, $idPayment)
     $idTeam =  PaymentTeam::find($idPayment)->idTeam;
     $email = User::find($idTeam)->email;
 
+    // Correos electrónicos a los que quieres enviar
     $emailsToSend = [
+        'alvarogranillo16@gmail.com',
         'kim-lawler@fxtran.com',
         'lisa-eng@expressmgt.com',
         'accounting@expressmgt.com'

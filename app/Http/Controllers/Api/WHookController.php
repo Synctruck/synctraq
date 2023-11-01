@@ -17,7 +17,7 @@ use Log;
 class WHookController extends Controller
 {
     public function EndPointTaskCompleted(Request $request)
-    {   
+    {
         return response($request->check, 200)
             ->header('Content-Type', 'text/plain');
     }
@@ -36,7 +36,7 @@ class WHookController extends Controller
 
             Log::info("==== TASK COMPLETED");
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
-            
+
             if($completionDetailsStatus == true)
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
@@ -121,7 +121,7 @@ class WHookController extends Controller
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
-                    
+
                     if($packageDispatch->company != 'Smart Kargo')
                     {
                         Log::info($packageDispatch->company);
@@ -168,19 +168,20 @@ class WHookController extends Controller
     {
         $Reference_Number_1      = $request['data']['task']['notes'];
         $idOnfleet               = $request['taskId'];
-        $taskOnfleet             = $request['data']['task']['shortId']; 
+        $taskOnfleet             = $request['data']['task']['shortId'];
         $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
         $Description_Onfleet     = $request['data']['task']['completionDetails']['failureReason'] .': ['. $request['data']['task']['completionDetails']['failureNotes'] .', '. $request['data']['task']['completionDetails']['notes'] .']';
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
         Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
-        
+
+
         if($completionDetailsStatus == false)
         {
             try
             {
                 DB::beginTransaction();
-                
+
                 $packageDispatch  = PackageDispatch::find($Reference_Number_1);
 
                 Log::info('Reference_Number_1: '. $Reference_Number_1);
@@ -253,7 +254,7 @@ class WHookController extends Controller
                     $packageHistory->updated_at                   = $created_at;
 
                     $packageHistory->save();
-                    
+
                     $packageDispatch->delete();
 
                     $packageController = new PackageController();
@@ -502,7 +503,7 @@ class WHookController extends Controller
         $userCreatorOnfleet = $request['actionContext']['type'];
 
         Log::info('Reference_Number_1:'. $Reference_Number_1);
-        
+
         $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
                                     ->where('status', 'Dispatch')
                                     ->first();
