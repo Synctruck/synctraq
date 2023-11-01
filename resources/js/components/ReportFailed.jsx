@@ -19,7 +19,7 @@ function ReportFailed() {
     const [showModal, setShowModal] = useState(false);
     const [modalImages, setModalImages] = useState([]);
 
-    
+
 
 
     const [quantityDispatch, setQuantityDispatch] = useState(0);
@@ -225,9 +225,9 @@ function ReportFailed() {
 
         let team   = (packageDispatch.team ? packageDispatch.team.name : '');
         let driver = (packageDispatch.driver ? packageDispatch.driver.name +' '+ packageDispatch.driver.nameOfOwner : '');
-        
-        const photoUrls = packageDispatch.photoUrl 
-        ? packageDispatch.photoUrl.split(',') 
+
+        const photoUrls = packageDispatch.photoUrl
+        ? packageDispatch.photoUrl.split(',')
         : [];
 
         const viewImageButton = photoUrls.length > 0 ? (
@@ -398,7 +398,7 @@ function ReportFailed() {
         );
     });
     return (
-        
+
         <section className="section">
             <div className="row">
                 <div className="col-lg-12">
@@ -420,7 +420,7 @@ function ReportFailed() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Failed: { quantityDispatch }</b>
@@ -590,7 +590,7 @@ function ReportFailed() {
                     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
                     height: 675px;
                     max-height: 80%;
-                    overflow-y: auto; 
+                    overflow-y: auto;
                 }
                 .modal-header {
                     background-color: #f5f5f5;
@@ -619,15 +619,15 @@ function ReportFailed() {
                 }
                 .image-container {
                     display: flex;
-                    flex-direction: column;  
-                    overflow-y: auto; 
-                    max-height: auto; 
+                    flex-direction: column;
+                    overflow-y: auto;
+                    max-height: auto;
                 }
-                
+
                 .img-thumbnail {
                     max-width: 100%;
                     height: auto;
-                    margin-bottom: 10px; 
+                    margin-bottom: 10px;
                 }
                 .modal-footer {
                     min-height: 50px;
