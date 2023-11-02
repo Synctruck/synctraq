@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if(1)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -11 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -5 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
             try
             {
