@@ -67,6 +67,7 @@ function SendToTeam($title, $filename, $idPayment)
     // Correos electrónicos a los que quieres enviar
     $emailsToSend = [
         'david.bautista@e-globalsupport.com',
+        'alvarogranillo16@gmail.com',
         'finance@synctruck.com',
         'kim-lawler@fxtran.com',
         'lisa-eng@expressmgt.com',
