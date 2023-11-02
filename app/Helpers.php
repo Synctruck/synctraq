@@ -66,9 +66,31 @@ function SendToTeam($title, $filename, $idPayment)
 
     // Correos electrónicos a los que quieres enviar
     $emailsToSend = [
+        'david.bautista@e-globalsupport.com',
+        'finance@synctruck.com',
         'kim-lawler@fxtran.com',
         'lisa-eng@expressmgt.com',
-        'accounting@expressmgt.com'
+        'accounting@expressmgt.com',
+        'bondwilliam2@gmail.com',
+        'leonardobenzan06@gmail.com',
+        'packagexpress@thepacex.com',
+        'johnleon@nycmediamasters.com',
+        'mtfexpress2021@gmail.com',
+        'mangdeliv@yahoo.com',
+        'alejomo1234@gmail.com',
+        'jvmexpresscorp@gmail.com',
+        'erisoninoa@gmail.com',
+        'admin@mhcourierservices.com',
+        'accounting@expressmgt.com',
+        'egawningexpress@gmail.com',
+        'fernando@crnlogistics.com',
+        'j.nurse@corecomfiber.com',
+        'jBrooks@brookscourier.com',
+        'Llcbanff@gmail.com',
+        'mdbaugh@asaplogis.com',
+        '52statescarhauling@gmail.com',
+        '3jaylogisticsllc@gmail.com',
+        'kaathiirocaponce@hotmail.es'
     ];
 
     Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $emailsToSend) {
@@ -82,3 +104,4 @@ function SendToTeam($title, $filename, $idPayment)
         }
     });
 }
+
