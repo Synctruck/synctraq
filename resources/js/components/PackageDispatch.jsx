@@ -649,6 +649,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoWarning').play();
                     }
+                    else if(response.stateAction == 'packageErrorOnfleet')
+                    {
+                        setTextMessage('the package was not registered correctly in ONFLEET #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                     else if(response.stateAction == 'packageTerminal')
                     {
                         setTextMessage('The package is in TERMINAL STATUS #'+ Reference_Number_1);
