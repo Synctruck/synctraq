@@ -382,15 +382,15 @@ class PackageDispatchController extends Controller
         
             if($company->twoAttempts)
             {
-                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
-                                                    ->where('status', 'Dispatch')
-                                                    ->where('idCompany', $company->id)
-                                                    ->orderBy('created_at', 'asc')
-                                                    ->get();
+                $packageHistoryDispatchListCompany = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                    ->where('status', 'Dispatch')
+                                                                    ->where('idCompany', $company->id)
+                                                                    ->orderBy('created_at', 'asc')
+                                                                    ->get();
 
-                if(count($packageHistoryDispatchList) > 1 && $request->forcedDispatch == 'NO')
+                if(count($packageHistoryDispatchListCompany) > 1 && $request->forcedDispatch == 'NO')
                 {
-                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListCompany);
 
                     if($hourDifference >= 6)
                     {
@@ -416,6 +416,26 @@ class PackageDispatchController extends Controller
                 $idUserDispatch = $request->get('idDriver');
 
                 $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+        
+                if($team && $team->twoAttempts)
+                {
+                    $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                    ->where('status', 'Dispatch')
+                                                                    ->where('idTeam', $team->id)
+                                                                    ->orderBy('created_at', 'asc')
+                                                                    ->get();
+
+                    if(count($packageHistoryDispatchListTeam) > 1 && $request->forcedDispatch == 'NO')
+                    {
+                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                        if($hourDifference >= 6)
+                        {
+                            return ['stateAction' => 'dispatchedMoreThanTwice'];
+                        }
+                    }
+                }
+
 
                 if($package->status != 'Delete')
                 {
