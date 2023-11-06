@@ -436,7 +436,6 @@ class PackageDispatchController extends Controller
                     }
                 }
 
-
                 if($package->status != 'Delete')
                 {
                     try
