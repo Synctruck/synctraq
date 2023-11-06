@@ -565,8 +565,15 @@ class PackageDispatchController extends Controller
                         {
                             $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
-                            $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                            $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            if($registerTask['status'] == 200)
+                            {
+                                $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                                $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            }
+                            else
+                            {
+                                return ['stateAction' => 'packageErrorOnfleet'];
+                            }
                         }
                         
                         if($registerTask['status'] == 200)
@@ -1845,6 +1852,8 @@ class PackageDispatchController extends Controller
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
+
+        Log::info('http_status: '. $http_status);
 
         if($http_status == 200)
         {
