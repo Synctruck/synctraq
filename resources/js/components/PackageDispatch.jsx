@@ -651,7 +651,7 @@ function PackageDispatch() {
                     }
                     else if(response.stateAction == 'packageErrorOnfleet')
                     {
-                        setTextMessage('the package was not registered correctly in ONFLEET #'+ Reference_Number_1);
+                        setTextMessage('The package was not registered correctly in ONFLEET #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
