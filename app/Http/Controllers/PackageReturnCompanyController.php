@@ -226,9 +226,33 @@ class PackageReturnCompanyController extends Controller
                     }
                 }
 
-                $packageReturnCompany->status                       = 'ReturnCompany';
-                $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
-                $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
+                if($packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery')
+                {
+                    $team = User::find($packageInbound->idTeam);
+
+                    if($team && $team->twoAttempts)
+                    {
+                        $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                        ->where('status', 'Dispatch')
+                                                                        ->where('idTeam', $team->id)
+                                                                        ->orderBy('created_at', 'asc')
+                                                                        ->get();
+
+                        if(count($packageHistoryDispatchListTeam) > 1)
+                        {
+                            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                            if($hourDifference >= 6)
+                            {
+                                $packageReturnCompany->paid = 1;
+                            }
+                        }
+                    }
+                }
+
+                $packageReturnCompany->status     = 'ReturnCompany';
+                $packageReturnCompany->created_at = date('Y-m-d H:i:s');
+                $packageReturnCompany->updated_at = date('Y-m-d H:i:s');
 
                 $packageReturnCompany->save(); 
 
