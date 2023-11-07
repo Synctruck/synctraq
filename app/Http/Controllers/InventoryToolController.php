@@ -124,7 +124,7 @@ class InventoryToolController extends Controller
         fputcsv($file, array(''), $delimiter);
         //set column headers
 
-        $fields = array('PACKAGE_ID' ,'STATUS');
+        $fields = array('PACKAGE_ID' ,'STATUS','Actual Status');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -135,6 +135,7 @@ class InventoryToolController extends Controller
             $lineData = array(
                 $inventoryToolDetail->Reference_Number_1,
                 $inventoryToolDetail->status,
+                $inventoryToolDetail->statusPackage,
             );
 
             fputcsv($file, $lineData, $delimiter);
