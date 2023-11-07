@@ -232,9 +232,17 @@ class PackageReturnCompanyController extends Controller
 
                     if($team && $team->twoAttempts)
                     {
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                        ->where('status', 'Dispatch')
+                                                        ->orderBy('created_at', 'asc')
+                                                        ->get()
+                                                        ->last();
+
+                        Log::info('packageHistory');
+                        Log::info($packageHistory);
                         $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                                         ->where('status', 'Dispatch')
-                                                                        ->where('idTeam', $team->id)
+                                                                        ->where('idTeam', $packageHistory->idTeam)
                                                                         ->orderBy('created_at', 'asc')
                                                                         ->get();
 
