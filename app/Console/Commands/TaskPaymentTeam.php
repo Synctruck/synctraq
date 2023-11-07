@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        if(1)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -9 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
 
             try
             {
@@ -67,6 +67,7 @@ class TaskPaymentTeam extends Command
                 $teamsList = User::with(['drivers', 'role', 'routes_team'])
                                 ->where('idRole', 3)
                                 ->where('status', 'Active')
+                                ->where('idTeam', 1308)
                                 ->orderBy('name', 'asc')
                                 ->get();
 
