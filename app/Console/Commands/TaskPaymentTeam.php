@@ -67,7 +67,7 @@ class TaskPaymentTeam extends Command
                 $teamsList = User::with(['drivers', 'role', 'routes_team'])
                                 ->where('idRole', 3)
                                 ->where('status', 'Active')
-                                ->where('idTeam', 1308)
+                                ->where('id', 1308)
                                 ->orderBy('name', 'asc')
                                 ->get();
 
