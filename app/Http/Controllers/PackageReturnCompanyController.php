@@ -226,34 +226,31 @@ class PackageReturnCompanyController extends Controller
                     }
                 }
 
-                if($packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery')
-                {
-                    $team = User::find($packageInbound->idTeam);
-
-                    if($team && $team->twoAttempts)
-                    {
-                        $packageHistory = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                $packageHistory = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                         ->where('status', 'Dispatch')
                                                         ->orderBy('created_at', 'asc')
                                                         ->get()
                                                         ->last();
+                                                        
+                $team = User::find($packageHistory->idTeam);
 
-                        Log::info('packageHistory');
-                        Log::info($packageHistory);
-                        $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
-                                                                        ->where('status', 'Dispatch')
-                                                                        ->where('idTeam', $packageHistory->idTeam)
-                                                                        ->orderBy('created_at', 'asc')
-                                                                        ->get();
+                if($team && $team->twoAttempts)
+                {
+                    Log::info('packageHistory');
+                    Log::info($packageHistory);
+                    $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                    ->where('status', 'Dispatch')
+                                                                    ->where('idTeam', $team->id)
+                                                                    ->orderBy('created_at', 'asc')
+                                                                    ->get();
 
-                        if(count($packageHistoryDispatchListTeam) > 1)
+                    if(count($packageHistoryDispatchListTeam) > 1)
+                    {
+                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                        if($hourDifference >= 6)
                         {
-                            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
-
-                            if($hourDifference >= 6)
-                            {
-                                $packageReturnCompany->paid = 1;
-                            }
+                            $packageReturnCompany->paid = 1;
                         }
                     }
                 }
