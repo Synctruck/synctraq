@@ -191,15 +191,15 @@ class TaskPaymentTeam extends Command
 
                         foreach($listPackageReturnCompany as $packageReturnCompany)
                         {
-                            Log::info('packageReturnCompany');
-                            Log::info($packageReturnCompany);
-
                             $dimFactor   = 200;
                             $weight      = $packageReturnCompany->Weight;
                             $weightRound = ceil($weight);
 
                             $dieselPrice = $this->GetDieselPrice($packageReturnCompany);
 
+                            Log::info('dieselPrice');
+                            Log::info($dieselPrice);
+                            
                             if($dieselPrice)
                             {                                
                                 $range = RangePriceBaseTeam::where('idTeam', $packageReturnCompany->idTeam)
