@@ -252,7 +252,8 @@ class PackageReturnCompanyController extends Controller
 
                             if($hourDifference >= 6)
                             {
-                                $packageReturnCompany->paid = 1;
+                                $packageReturnCompany->paid   = 1;
+                                $packageReturnCompany->idTeam = $team->id; 
                             }
                         }
                     }
