@@ -321,6 +321,7 @@ class TaskPaymentTeam extends Command
             $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
             $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
 
+            Log::info($timeChangeDateStart .' <= '. $timeDeliveryDate.' && '. $timeDeliveryDate .' <= '. $timeChangeDateEnd);
             if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
             {
                 $dieselPriceCompany = $historyDiesel->roundPrice;
