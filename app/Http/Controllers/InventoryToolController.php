@@ -59,14 +59,14 @@ class InventoryToolController extends Controller
             $inventoryTool->userName    = Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $inventoryTool->status      = 'New';
             
-            $packageInboundList = PackageInbound::select('Reference_Number_1', 'idCellar', 'status')
+            $packageInboundList = PackageInbound::select('Reference_Number_1', 'idCellar', 'status', 'Dropoff_Province','created_at','Route')
                                                 ->where('idCellar', $request->idCellar)
                                                 ->get();
             $packageWarehouseList = PackageWarehouse::where('status', 'Warehouse')
                                                     ->where('idCellar', $request->idCellar)
-                                                    ->select('Reference_Number_1', 'idCellar', 'status')
+                                                    ->select('Reference_Number_1', 'idCellar', 'status', 'Dropoff_Province','created_at','Route')
                                                     ->get();
-            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'idCellar', 'status')
+            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'idCellar', 'status','Dropoff_Province','created_at','Route')
                                                                         ->where('idCellar', $request->idCellar)
                                                                         ->get();
 
@@ -80,6 +80,9 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->idInventoryTool    = $idInventory;
                 $inventoryToolDetail->Reference_Number_1 = $package->Reference_Number_1;
                 $inventoryToolDetail->statusPackage      = $package->status;
+                $inventoryToolDetail->Dropoff_Province   = $package->Dropoff_Province;
+                $inventoryToolDetail->lastStatusDate     = $package->created_at;
+                $inventoryToolDetail->Route              = $package->Route;                                 
                 $inventoryToolDetail->status             = 'Pending';
                 $inventoryToolDetail->save();
             }
@@ -124,7 +127,7 @@ class InventoryToolController extends Controller
         fputcsv($file, array(''), $delimiter);
         //set column headers
 
-        $fields = array('PACKAGE_ID' ,'STATUS','Actual Status');
+        $fields = array('PACKAGE_ID' ,'STATUS','Actual Status','Status Date','STATE','Route');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -136,6 +139,9 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->Reference_Number_1,
                 $inventoryToolDetail->status,
                 $inventoryToolDetail->statusPackage,
+                $inventoryToolDetail->lastStatusDate,
+                $inventoryToolDetail->Dropoff_Province,
+                $inventoryToolDetail->Route,
             );
 
             fputcsv($file, $lineData, $delimiter);
