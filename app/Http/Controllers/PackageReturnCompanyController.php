@@ -232,25 +232,28 @@ class PackageReturnCompanyController extends Controller
                                                         ->get()
                                                         ->last();
                                                         
-                $team = User::find($packageHistory->idTeam);
-
-                if($team && $team->twoAttempts)
+                if($packageHistory)
                 {
-                    Log::info('packageHistory');
-                    Log::info($packageHistory);
-                    $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
-                                                                    ->where('status', 'Dispatch')
-                                                                    ->where('idTeam', $team->id)
-                                                                    ->orderBy('created_at', 'asc')
-                                                                    ->get();
+                    $team = User::find($packageHistory->idTeam);
 
-                    if(count($packageHistoryDispatchListTeam) > 1)
+                    if($team && $team->twoAttempts)
                     {
-                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+                        Log::info('packageHistory');
+                        Log::info($packageHistory);
+                        $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                        ->where('status', 'Dispatch')
+                                                                        ->where('idTeam', $team->id)
+                                                                        ->orderBy('created_at', 'asc')
+                                                                        ->get();
 
-                        if($hourDifference >= 6)
+                        if(count($packageHistoryDispatchListTeam) > 1)
                         {
-                            $packageReturnCompany->paid = 1;
+                            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                            if($hourDifference >= 6)
+                            {
+                                $packageReturnCompany->paid = 1;
+                            }
                         }
                     }
                 }
