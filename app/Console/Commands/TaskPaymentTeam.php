@@ -94,6 +94,9 @@ class TaskPaymentTeam extends Command
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
+                    Log::info('listPackageReturnCompany');
+                    Log::info($listPackageReturnCompany);
+                    
                     if(count($listPackageDelivery) > 0 || count($listPackageReturnCompany) > 0)
                     {
                         $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
