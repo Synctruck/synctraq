@@ -226,14 +226,8 @@ class TaskPaymentTeam extends Command
 
                                     $paymentTeamDetail = PaymentTeamDetail::find($packageReturnCompany->Reference_Number_1);
 
-                                    Log::info('paymentTeamDetail');
-                                    Log::info($paymentTeamDetail);
                                     if(!$paymentTeamDetail)
                                     {
-                                        $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
-                                        $packageReturnCompany->paid = 2;
-                                        $packageReturnCompany->save();
-
                                         $paymentTeamDetail = new PaymentTeamDetail();
                                         $paymentTeamDetail->Reference_Number_1  = $packageReturnCompany->Reference_Number_1;
                                         $paymentTeamDetail->Route               = $packageReturnCompany->Route;
@@ -256,6 +250,10 @@ class TaskPaymentTeam extends Command
                                         $totalPieces = $totalPieces + 1;
                                         $totalTeam   = $totalTeam + $totalPrice;
                                     }
+
+                                    $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
+                                    $packageReturnCompany->paid = 2;
+                                    $packageReturnCompany->save();
                                 }
                             }
                         }
