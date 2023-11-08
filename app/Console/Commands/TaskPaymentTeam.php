@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{ 
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail, 
-            PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
+            PackageDispatch, PackageReturnCompany, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
             RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User, ToDeductLostPackages };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        if(1)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -3 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' +3 day'));
 
             try
             {
@@ -87,10 +87,14 @@ class TaskPaymentTeam extends Command
                                                             ->where('status', 'Delivery')
                                                             ->get();
 
+                    $listPackageReturnCompany = PackageReturnCompany::where('idTeam', $team->id)
+                                                                    ->where('paid', 1)
+                                                                    ->get();
+
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
-                    if($listPackageDelivery)
+                    if(count($listPackageDelivery) > 0 || count($listPackageReturnCompany) > 0)
                     {
                         $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
                         $totalAdjustment       = $toReversePackagesList->sum('priceToRevert');
@@ -122,7 +126,7 @@ class TaskPaymentTeam extends Command
                             $weight      = $packageDelivery->Weight;
                             $weightRound = ceil($weight);
 
-                            $dieselPrice = $this->GetDieselPrice($packageDelivery);
+                            $dieselPrice = $this->GetDieselPrice($packageDelivery->Date_Delivery);
 
                             if($dieselPrice)
                             {                                
@@ -185,6 +189,75 @@ class TaskPaymentTeam extends Command
                             }
                         }
 
+                        foreach($listPackageReturnCompany as $packageReturnCompany)
+                        {
+                            $dimFactor   = 200;
+                            $weight      = $packageReturnCompany->Weight;
+                            $weightRound = ceil($weight);
+
+                            $dieselPrice = $this->GetDieselPrice($packageReturnCompany->created_at);
+
+                            if($dieselPrice)
+                            {                                
+                                $range = RangePriceBaseTeam::where('idTeam', $packageReturnCompany->idTeam)
+                                                            ->where('minWeight', '<=', $weightRound)
+                                                            ->where('maxWeight', '>=', $weightRound)
+                                                            ->first();
+
+                                if($range)
+                                {
+                                    $priceWeight         = $range->price;
+                                    $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($packageReturnCompany);
+                                    $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
+
+                                    if($team->surcharge)
+                                    {
+                                        $surchargePercentage = $this->GetSurchargePercentage($packageReturnCompany->idTeam, $dieselPrice);
+                                        $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
+                                    }
+                                    else
+                                    {
+                                        $surchargePercentage = 0;
+                                        $surchargePrice      = 0;
+                                    }
+                                    
+                                    $priceByCompany      = $this->GetPriceTeamByCompany($packageReturnCompany->idTeam, $packageReturnCompany->idCompany, $packageReturnCompany->Route, $range->id);
+                                    $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
+
+                                    $paymentTeamDetail = PaymentTeamDetail::find($packageReturnCompany->Reference_Number_1);
+
+                                    if(!$paymentTeamDetail)
+                                    {
+                                        $paymentTeamDetail = new PaymentTeamDetail();
+                                        $paymentTeamDetail->Reference_Number_1  = $packageReturnCompany->Reference_Number_1;
+                                        $paymentTeamDetail->Route               = $packageReturnCompany->Route;
+                                        $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
+                                        $paymentTeamDetail->dimFactor           = $dimFactor;
+                                        $paymentTeamDetail->weight              = $weight;
+                                        $paymentTeamDetail->weightRound         = $weightRound;
+                                        $paymentTeamDetail->priceWeight         = $priceWeight;
+                                        $paymentTeamDetail->peakeSeasonPrice    = $peakeSeasonPrice;
+                                        $paymentTeamDetail->priceBase           = $priceBase;
+                                        $paymentTeamDetail->dieselPrice         = $dieselPrice;
+                                        $paymentTeamDetail->surchargePercentage = $surchargePercentage;
+                                        $paymentTeamDetail->surchargePrice      = $surchargePrice;
+                                        $paymentTeamDetail->priceByRoute        = 0;
+                                        $paymentTeamDetail->priceByCompany      = $priceByCompany;
+                                        $paymentTeamDetail->totalPrice          = $totalPrice;
+                                        $paymentTeamDetail->Date_Delivery       = $packageReturnCompany->created_at;
+                                        $paymentTeamDetail->save();
+
+                                        $totalPieces = $totalPieces + 1;
+                                        $totalTeam   = $totalTeam + $totalPrice;
+                                    }
+
+                                    $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
+                                    $packageReturnCompany->paid = 2;
+                                    $packageReturnCompany->save();
+                                }
+                            }
+                        }
+
                         if($totalTeam > 0)
                         { 
                             if($totalAdjustment != 0)
@@ -232,7 +305,7 @@ class TaskPaymentTeam extends Command
         }
     }
 
-    public function GetDieselPrice($packageDelivery)
+    public function GetDieselPrice($Date_Delivery)
     {
         $dieselPriceCompany = 0;
 
@@ -243,10 +316,10 @@ class TaskPaymentTeam extends Command
             $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
             $timeChangeDateStart = strtotime($nowDate);
             $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
-            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDelivery->Date_Delivery)));
+            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
 
             if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
-            {
+            {                
                 $dieselPriceCompany = $historyDiesel->roundPrice;
             }
         }

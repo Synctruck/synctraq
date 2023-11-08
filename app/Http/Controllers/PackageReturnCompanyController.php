@@ -226,12 +226,20 @@ class PackageReturnCompanyController extends Controller
                     }
                 }
 
-                if($packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery')
+                $packageHistory = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                        ->where('status', 'Dispatch')
+                                                        ->orderBy('created_at', 'asc')
+                                                        ->get()
+                                                        ->last();
+                                                        
+                if($packageHistory)
                 {
-                    $team = User::find($packageInbound->idTeam);
+                    $team = User::find($packageHistory->idTeam);
 
                     if($team && $team->twoAttempts)
                     {
+                        Log::info('packageHistory');
+                        Log::info($packageHistory->idTeam);
                         $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                                         ->where('status', 'Dispatch')
                                                                         ->where('idTeam', $team->id)
@@ -244,7 +252,8 @@ class PackageReturnCompanyController extends Controller
 
                             if($hourDifference >= 6)
                             {
-                                $packageReturnCompany->paid = 1;
+                                $packageReturnCompany->paid   = 1;
+                                $packageReturnCompany->idTeam = $team->id; 
                             }
                         }
                     }
