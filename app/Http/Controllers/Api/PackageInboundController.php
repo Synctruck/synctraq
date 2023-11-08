@@ -45,32 +45,34 @@ class PackageInboundController extends Controller
                             ->where('filter', 1)
                             ->first();
 
+
+                $dimensions = $request['responses']['dimension']['info']['dimensions'];
+                $weight     = $dimensions['weight']['net'];
+                $width      = $dimensions['width'];
+                $height     = $dimensions['height'];
+                $length     = $dimensions['length'];
+
+                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+
+                if($dimFactorCompany)
+                {
+                    $packageWeight = PackageWeight::find($Reference_Number_1);
+
+                    if(!$packageWeight)
+                    {
+                        $packageWeight = new PackageWeight();
+                    }
+                    
+                    $packageWeight->width2  = $width;
+                    $packageWeight->height2 = $height;
+                    $packageWeight->length2 = $length;
+                    $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
+                    $packageWeight->weight4 = $weight;
+                    $packageWeight->save();
+                }
                 if($state == null)
                 {
-                    $dimensions = $request['responses']['dimension']['info']['dimensions'];
-                    $weight     = $dimensions['weight']['net'];
-                    $width      = $dimensions['width'];
-                    $height     = $dimensions['height'];
-                    $length     = $dimensions['length'];
-
-                    $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-
-                    if($dimFactorCompany)
-                    {
-                        $packageWeight = PackageWeight::find($Reference_Number_1);
-
-                        if(!$packageWeight)
-                        {
-                            $packageWeight = new PackageWeight();
-                        }
-                        
-                        $packageWeight->width2  = $width;
-                        $packageWeight->height2 = $height;
-                        $packageWeight->length2 = $length;
-                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
-                        $packageWeight->weight4 = $weight;
-                        $packageWeight->save();
-                    }
+                    
                 }
                 else
                 {
