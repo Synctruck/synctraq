@@ -204,8 +204,6 @@ class TaskPaymentTeam extends Command
                                                             ->where('maxWeight', '>=', $weightRound)
                                                             ->first();
 
-                                                            Log::info('range');
-                            Log::info($range);
                                 if($range)
                                 {
                                     $priceWeight         = $range->price;
@@ -228,6 +226,8 @@ class TaskPaymentTeam extends Command
 
                                     $paymentTeamDetail = PaymentTeamDetail::find($packageReturnCompany->Reference_Number_1);
 
+                                    Log::info('paymentTeamDetail');
+                                    Log::info($paymentTeamDetail);
                                     if(!$paymentTeamDetail)
                                     {
                                         $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
