@@ -197,9 +197,6 @@ class TaskPaymentTeam extends Command
 
                             $dieselPrice = $this->GetDieselPrice($packageReturnCompany->created_at);
 
-                            Log::info('dieselPrice');
-                            Log::info($dieselPrice);
-
                             if($dieselPrice)
                             {                                
                                 $range = RangePriceBaseTeam::where('idTeam', $packageReturnCompany->idTeam)
@@ -207,6 +204,8 @@ class TaskPaymentTeam extends Command
                                                             ->where('maxWeight', '>=', $weightRound)
                                                             ->first();
 
+                                                            Log::info('range');
+                            Log::info($range);
                                 if($range)
                                 {
                                     $priceWeight         = $range->price;
