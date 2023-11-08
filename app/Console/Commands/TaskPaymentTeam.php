@@ -94,9 +94,6 @@ class TaskPaymentTeam extends Command
                     $totalPieces = 0;
                     $totalTeam   = 0;
 
-                    Log::info('listPackageReturnCompany');
-                    Log::info($listPackageReturnCompany);
-                    
                     if(count($listPackageDelivery) > 0 || count($listPackageReturnCompany) > 0)
                     {
                         $toReversePackagesList = ToReversePackages::where('idTeam', $team->id)->get();
@@ -194,6 +191,9 @@ class TaskPaymentTeam extends Command
 
                         foreach($listPackageReturnCompany as $packageReturnCompany)
                         {
+                            Log::info('packageReturnCompany');
+                            Log::info($packageReturnCompany);
+
                             $dimFactor   = 200;
                             $weight      = $packageReturnCompany->Weight;
                             $weightRound = ceil($weight);
