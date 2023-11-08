@@ -126,7 +126,7 @@ class TaskPaymentTeam extends Command
                             $weight      = $packageDelivery->Weight;
                             $weightRound = ceil($weight);
 
-                            $dieselPrice = $this->GetDieselPrice($packageDelivery);
+                            $dieselPrice = $this->GetDieselPrice($packageDelivery->Date_Delivery);
 
                             if($dieselPrice)
                             {                                
@@ -195,11 +195,11 @@ class TaskPaymentTeam extends Command
                             $weight      = $packageReturnCompany->Weight;
                             $weightRound = ceil($weight);
 
-                            $dieselPrice = $this->GetDieselPrice($packageReturnCompany);
+                            $dieselPrice = $this->GetDieselPrice($packageReturnCompany->created_at);
 
                             Log::info('dieselPrice');
                             Log::info($dieselPrice);
-                            
+
                             if($dieselPrice)
                             {                                
                                 $range = RangePriceBaseTeam::where('idTeam', $packageReturnCompany->idTeam)
@@ -308,7 +308,7 @@ class TaskPaymentTeam extends Command
         }
     }
 
-    public function GetDieselPrice($packageDelivery)
+    public function GetDieselPrice($Date_Delivery)
     {
         $dieselPriceCompany = 0;
 
@@ -319,7 +319,7 @@ class TaskPaymentTeam extends Command
             $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
             $timeChangeDateStart = strtotime($nowDate);
             $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
-            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($packageDelivery->Date_Delivery)));
+            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
 
             if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
             {
