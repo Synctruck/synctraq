@@ -46,9 +46,176 @@ class PaymentTeamController extends Controller
     {
         $payment = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
 
+        foreach($listPackageDelivery as $packageDelivery)
+        {
+            $dimFactor   = 200;
+            $weight      = $packageDelivery->Weight;
+            $weightRound = ceil($weight);
+
+            $dieselPrice = $this->GetDieselPrice($packageDelivery->Date_Delivery);
+
+            if($dieselPrice)
+            {                                
+                $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
+                                            ->where('minWeight', '<=', $weightRound)
+                                            ->where('maxWeight', '>=', $weightRound)
+                                            ->first();
+
+                if($range)
+                {
+                    $priceWeight         = $range->price;
+                    $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($packageDelivery);
+                    $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
+
+                    if($team->surcharge)
+                    {
+                        $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
+                        $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
+                    }
+                    else
+                    {
+                        $surchargePercentage = 0;
+                        $surchargePrice      = 0;
+                    }
+                    
+                    $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route, $range->id);
+                    $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
+
+                    $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
+
+                    if(!$paymentTeamDetail)
+                    {
+                        $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                        $packageDelivery->paid = 1;
+                        $packageDelivery->save();
+
+                        $paymentTeamDetail = new PaymentTeamDetail();
+                        $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
+                        $paymentTeamDetail->Route               = $packageDelivery->Route;
+                        $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
+                        $paymentTeamDetail->dimFactor           = $dimFactor;
+                        $paymentTeamDetail->weight              = $weight;
+                        $paymentTeamDetail->weightRound         = $weightRound;
+                        $paymentTeamDetail->priceWeight         = $priceWeight;
+                        $paymentTeamDetail->peakeSeasonPrice    = $peakeSeasonPrice;
+                        $paymentTeamDetail->priceBase           = $priceBase;
+                        $paymentTeamDetail->dieselPrice         = $dieselPrice;
+                        $paymentTeamDetail->surchargePercentage = $surchargePercentage;
+                        $paymentTeamDetail->surchargePrice      = $surchargePrice;
+                        $paymentTeamDetail->priceByRoute        = 0;
+                        $paymentTeamDetail->priceByCompany      = $priceByCompany;
+                        $paymentTeamDetail->totalPrice          = $totalPrice;
+                        $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
+                        $paymentTeamDetail->save();
+
+                        $totalPieces = $totalPieces + 1;
+                        $totalTeam   = $totalTeam + $totalPrice;
+                    }
+                }
+            }
+        }
+
         return ['payment' => $payment];
     }
 
+    public function GetDieselPrice($Date_Delivery)
+    {
+        $dieselPriceCompany = 0;
+
+        $historyDieselList = HistoryDiesel::orderBy('changeDate', 'asc')->get();
+
+        foreach($historyDieselList as $historyDiesel)
+        {
+            $nowDate             = date('Y-m-d', strtotime($historyDiesel->changeDate));
+            $timeChangeDateStart = strtotime($nowDate);
+            $timeChangeDateEnd   = strtotime(date('Y-m-d', strtotime($nowDate .' +6 day')));
+            $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
+
+            if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
+            {                
+                $dieselPriceCompany = $historyDiesel->roundPrice;
+            }
+        }
+
+        return $dieselPriceCompany;
+    }
+
+    public function GetPeakeSeasonTeam($packageDelivery)
+    {
+        $peakeSeasonTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
+        
+        $peakeSeasonPriceTeam = 0;
+
+        if($peakeSeasonTeam)
+        {
+            $date = strtotime(date('Y-m-d'));
+
+            if($date >= strtotime($peakeSeasonTeam->start_date)  && $date <= strtotime($peakeSeasonTeam->end_date))
+            {
+                if($dimWeightCompanyRound <= $peakeSeasonTeam->lb1_weight)
+                {
+                    $peakeSeasonPriceTeam = $peakeSeasonTeam->lb1_weight_price;
+                }
+                else if($dimWeightCompanyRound > $peakeSeasonTeam->lb1_weight)
+                {
+                    $peakeSeasonPriceTeam = $peakeSeasonTeam->lb2_weight_price;
+                }
+            }
+        }
+        
+        return $peakeSeasonPriceTeam;
+    }
+
+    public function GetSurchargePercentage($idTeam, $dieselPrice)
+    {
+        $surchargePercentage = RangeDieselTeam::where('idTeam', $idTeam)
+                                            ->where('at_least', '<=', $dieselPrice)
+                                            ->where('but_less', '>=',  $dieselPrice)
+                                            ->first();
+
+        if($surchargePercentage)
+        {
+            return $surchargePercentage->surcharge_percentage;
+        }
+
+        return 0;
+    }
+
+    public function GetPriceTeamByCompany($idTeam, $idCompany, $route, $idRangeRate)
+    {
+        $rangeByCompanyTeam = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                                        ->where('idCompany', $idCompany)
+                                                        ->where('idRangeRate', $idRangeRate)
+                                                        ->where('route', $route)
+                                                        ->first();
+
+        $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->where('idRangeRate', 0)
+                                    ->where('route', '')
+                                    ->first();
+
+        $rangeByRate = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', 0)
+                                    ->where('idRangeRate', $idRangeRate)
+                                    ->where('route', '')
+                                    ->first();
+
+        $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', 0)
+                                    ->where('idRangeRate', 0)
+                                    ->where('route', $route)
+                                    ->first();
+
+        $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
+        $priceRate        = $rangeByRate ? $rangeByRate->price : 0;
+        $priceCompany     = $rangeByCompany ? $rangeByCompany->price : 0;
+        $priceTeam        = $rangeByRoute ? $rangeByRoute->price : 0;
+        $totalPrices      = $priceCompanyTeam + $priceRate + $priceCompany + $priceTeam;
+
+        return $totalPrices;
+    }
+    
     public function ListByRoute($idPayment) 
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
