@@ -72,7 +72,8 @@ class InventoryToolController extends Controller
 
             $packageList = $packageInboundList->merge($packageWarehouseList);
             $packageList = $packageList->merge($packageNeedMoreInformationList);
-
+            $packageController = new PackageController();
+            
             foreach($packageList as $package)
             {
                 $inventoryToolDetail = new InventoryToolDetail();
@@ -81,8 +82,7 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->Reference_Number_1 = $package->Reference_Number_1;
                 $inventoryToolDetail->statusPackage      = $package->status;
                 $inventoryToolDetail->Dropoff_Province   = $package->Dropoff_Province;
-                $inventoryToolDetail->lastStatusDate     = $package->created_at;
-                $inventoryToolDetail->Route              = $package->Route;                                 
+                $inventoryToolDetail->Route              = $package->Route;                          
                 $inventoryToolDetail->status             = 'Pending';
                 $inventoryToolDetail->save();
             }
@@ -132,14 +132,19 @@ class InventoryToolController extends Controller
         fputcsv($file, $fields, $delimiter);
 
         $inventoryToolList = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)->get();
+ 
 
         foreach($inventoryToolList as $inventoryToolDetail)
         {
+            $statusData       = $this->GetStatus($inventoryToolDetail->Reference_Number_1);
+            $actualStatus     = $statusData['status'];
+            $lastStatusDate   = $statusData['created_at'];
+            
             $lineData = array(
                 $inventoryToolDetail->Reference_Number_1,
                 $inventoryToolDetail->status,
-                $inventoryToolDetail->statusPackage,
-                $inventoryToolDetail->lastStatusDate,
+                $actualStatus,
+                $lastStatusDate,
                 $inventoryToolDetail->Dropoff_Province,
                 $inventoryToolDetail->Route,
             );
@@ -189,7 +194,7 @@ class InventoryToolController extends Controller
     {
         $packageController = new PackageController();
         $statusActual = $packageController->GetStatus($request->Reference_Number_1);
-
+     
         if($statusActual['status'] == "")
             return ['statusCode' => 'notExists'];
 
@@ -465,5 +470,31 @@ class InventoryToolController extends Controller
         $packageHistory->save();
 
         $package->delete();
+    }
+
+
+    public function GetStatus($Reference_Number_1)
+    {
+        $package = PackageManifest::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+
+        if($package)
+        {
+            return ['status' => $package->status, 'created_at' => $package->created_at, 'package' => $package];
+            
+        }
+
+        return ['status' => '', 'created_at' => ''];
     }
 }
