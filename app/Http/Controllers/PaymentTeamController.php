@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{ 
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamAdjustment, PaymentTeamDetailReturn, 
-            PackageDispatch, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
+            PackageDispatch, PackageHistory, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
 use Illuminate\Support\Facades\Validator;
@@ -46,30 +46,34 @@ class PaymentTeamController extends Controller
     {
         $payment = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
 
-        foreach($listPackageDelivery as $packageDelivery)
+        $totalPieces = 0;
+        $totalTeam   = 0;
+
+        foreach($payment->payments_detail as $paymentDetail)
         {
             $dimFactor   = 200;
-            $weight      = $packageDelivery->Weight;
+            $weight      = $paymentDetail->weight;
             $weightRound = ceil($weight);
 
-            $dieselPrice = $this->GetDieselPrice($packageDelivery->Date_Delivery);
+            $dieselPrice = $this->GetDieselPrice($paymentDetail->Date_Delivery);
 
             if($dieselPrice)
             {                                
-                $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
+                $range = RangePriceBaseTeam::where('idTeam', $payment->idTeam)
                                             ->where('minWeight', '<=', $weightRound)
                                             ->where('maxWeight', '>=', $weightRound)
                                             ->first();
 
                 if($range)
                 {
+                    $team                = User::find($payment->idTeam);
                     $priceWeight         = $range->price;
-                    $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($packageDelivery);
+                    $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($payment);
                     $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
 
                     if($team->surcharge)
                     {
-                        $surchargePercentage = $this->GetSurchargePercentage($packageDelivery->idTeam, $dieselPrice);
+                        $surchargePercentage = $this->GetSurchargePercentage($payment->idTeam, $dieselPrice);
                         $surchargePrice      = number_format(($priceBase * $surchargePercentage) / 100, 4);
                     }
                     else
@@ -78,42 +82,45 @@ class PaymentTeamController extends Controller
                         $surchargePrice      = 0;
                     }
                     
-                    $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route, $range->id);
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
+
+                    $priceByCompany      = $this->GetPriceTeamByCompany($paymentDetail->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
                     $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
-                    $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
+                    $paymentTeamDetail = PaymentTeamDetail::find($paymentDetail->Reference_Number_1);
+                    $paymentTeamDetail->Reference_Number_1  = $packageHistory->Reference_Number_1;
+                    $paymentTeamDetail->Route               = $packageHistory->Route;
+                    $paymentTeamDetail->idPaymentTeam       = $payment->idTeam;
+                    $paymentTeamDetail->dimFactor           = $dimFactor;
+                    $paymentTeamDetail->weight              = $weight;
+                    $paymentTeamDetail->weightRound         = $weightRound;
+                    $paymentTeamDetail->priceWeight         = $priceWeight;
+                    $paymentTeamDetail->peakeSeasonPrice    = $peakeSeasonPrice;
+                    $paymentTeamDetail->priceBase           = $priceBase;
+                    $paymentTeamDetail->dieselPrice         = $dieselPrice;
+                    $paymentTeamDetail->surchargePercentage = $surchargePercentage;
+                    $paymentTeamDetail->surchargePrice      = $surchargePrice;
+                    $paymentTeamDetail->priceByRoute        = 0;
+                    $paymentTeamDetail->priceByCompany      = $priceByCompany;
+                    $paymentTeamDetail->totalPrice          = $totalPrice;
+                    $paymentTeamDetail->Date_Delivery       = $paymentDetail->Date_Delivery;
+                    $paymentTeamDetail->save();
 
-                    if(!$paymentTeamDetail)
-                    {
-                        $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                        $packageDelivery->paid = 1;
-                        $packageDelivery->save();
-
-                        $paymentTeamDetail = new PaymentTeamDetail();
-                        $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
-                        $paymentTeamDetail->Route               = $packageDelivery->Route;
-                        $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
-                        $paymentTeamDetail->dimFactor           = $dimFactor;
-                        $paymentTeamDetail->weight              = $weight;
-                        $paymentTeamDetail->weightRound         = $weightRound;
-                        $paymentTeamDetail->priceWeight         = $priceWeight;
-                        $paymentTeamDetail->peakeSeasonPrice    = $peakeSeasonPrice;
-                        $paymentTeamDetail->priceBase           = $priceBase;
-                        $paymentTeamDetail->dieselPrice         = $dieselPrice;
-                        $paymentTeamDetail->surchargePercentage = $surchargePercentage;
-                        $paymentTeamDetail->surchargePrice      = $surchargePrice;
-                        $paymentTeamDetail->priceByRoute        = 0;
-                        $paymentTeamDetail->priceByCompany      = $priceByCompany;
-                        $paymentTeamDetail->totalPrice          = $totalPrice;
-                        $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
-                        $paymentTeamDetail->save();
-
-                        $totalPieces = $totalPieces + 1;
-                        $totalTeam   = $totalTeam + $totalPrice;
-                    }
+                    $totalPieces = $totalPieces + 1;
+                    $totalTeam   = $totalTeam + $totalPrice;
                 }
             }
         }
+
+        /*$paymentTeam->totalPieces    = $totalPieces;
+        $paymentTeam->totalDelivery  = $totalTeam;
+        $paymentTeam->totalAdjustment = $totalAdjustment - $totalAdjustmentToDeduct;
+        $paymentTeam->total          = $totalTeam + $totalAdjustment - $totalAdjustmentToDeduct;
+        $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
+        $paymentTeam->surcharge      = $team->surcharge;
+        $paymentTeam->status         = 'TO APPROVE';
+        $paymentTeam->save();*/
+
 
         return ['payment' => $payment];
     }

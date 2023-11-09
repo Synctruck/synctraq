@@ -441,7 +441,7 @@ function PaymentAdjustment() {
                                                         paymentStatus == 'TO APPROVE'
                                                         ? 
                                                             <>
-                                                                <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" style={ {display: 'none'} } onClick={ () => handlerRecalculate(paymentId) }>
+                                                                <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" onClick={ () => handlerRecalculate(paymentId) }>
                                                                     RECALCULATE
                                                                 </button>
                                                                 <button className="btn btn-info font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAYABLE') }>
