@@ -53,14 +53,14 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if(1)
+        if($dayName == 'Monday' && $nowHour == 10)
         {
-            $files     = [];
+            $files     = []; 
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -3 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' +3 day'));
+            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
 
-            try
+            try 
             {
                 DB::beginTransaction();
 
