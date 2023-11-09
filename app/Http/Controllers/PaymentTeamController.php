@@ -42,7 +42,14 @@ class PaymentTeamController extends Controller
         return view('payment.edit', compact('payment'));
     }
 
-    public function ListByRoute($idPayment)
+    public function Recalculate($idPayment)
+    {
+        $payment = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
+
+        return ['payment' => $payment];
+    }
+
+    public function ListByRoute($idPayment) 
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                 ->where('podFailed', 0)
