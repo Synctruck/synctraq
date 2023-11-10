@@ -83,7 +83,7 @@ class PaymentTeamController extends Controller
                 }
                 
                 $packageHistory = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
-                
+
                 $priceByCompany      = $this->GetPriceTeamByCompany($paymentDetail->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
                 $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
@@ -110,7 +110,6 @@ class PaymentTeamController extends Controller
                 $totalTeam   = $totalTeam + $totalPrice;
             }
 
-            dd($totalTeam);
             $totalAdjustment = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
                                                     ->get('amount')
                                                     ->sum('amount');
