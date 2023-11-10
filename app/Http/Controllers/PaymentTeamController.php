@@ -90,7 +90,7 @@ class PaymentTeamController extends Controller
                 $paymentDetail = PaymentTeamDetail::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
                 $paymentDetail->Reference_Number_1  = $packageHistory->Reference_Number_1;
                 $paymentDetail->Route               = $packageHistory->Route;
-                /*$paymentDetail->idPaymentTeam       = $payment->idTeam;
+                $paymentDetail->idPaymentTeam       = $payment->idTeam;
                 $paymentDetail->dimFactor           = $dimFactor;
                 $paymentDetail->weight              = $weight;
                 $paymentDetail->weightRound         = $weightRound;
@@ -103,7 +103,7 @@ class PaymentTeamController extends Controller
                 $paymentDetail->priceByRoute        = 0;
                 $paymentDetail->priceByCompany      = $priceByCompany;
                 $paymentDetail->totalPrice          = $totalPrice;
-                $paymentDetail->Date_Delivery       = $paymentDetail->Date_Delivery;*/
+                $paymentDetail->Date_Delivery       = $paymentDetail->Date_Delivery;
                 $paymentDetail->save();
 
                 $totalPieces = $totalPieces + 1;
