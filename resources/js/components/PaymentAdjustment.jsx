@@ -402,14 +402,24 @@ function PaymentAdjustment() {
                 .then(response => response.json())
                 .then(response => {
 
-                    if(response.stateAction)
+                    if(response.statusCode)
                     {
-                        swal("PAYMENT TEAM status changed!", {
+                        swal("PAYMENT TEAM was recalculated!", {
 
                             icon: "success",
                         });
 
-                        setPaymentStatus(status);
+                        listByRoute(idPaymentGeneral);
+                        listByPODFailed(idPaymentGeneral);
+                        listRevertShipments(idPaymentGeneral);
+                        ListAdjustmentPayment(idPaymentGeneral);
+                    }
+                    else
+                    {
+                       swal("There was an error, try again!", {
+
+                            icon: "success",
+                        }); 
                     }
                 });
             }
