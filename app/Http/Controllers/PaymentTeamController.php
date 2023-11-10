@@ -114,13 +114,13 @@ class PaymentTeamController extends Controller
                                                     ->get('amount')
                                                     ->sum('amount');
 
-            $payment->totalPieces     = $totalPieces;
+            /*$payment->totalPieces     = $totalPieces;
             $payment->totalDelivery   = $totalTeam;
             $payment->totalAdjustment = $totalAdjustment;
             $payment->total           = $totalTeam + $totalAdjustment;
             $payment->averagePrice    = $totalTeam / $totalPieces;
             $payment->surcharge       = $team->surcharge;
-            $payment->save();
+            $payment->save();*/
 
             DB::commit();
 
