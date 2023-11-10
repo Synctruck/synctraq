@@ -48,12 +48,12 @@ class PaymentTeamController extends Controller
         {
             DB::beginTransaction();
 
-            $payment = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
-
+            $payment           = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
+            $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();                                                
             $totalPieces = 0;
             $totalTeam   = 0;
 
-            foreach($payment->payments_detail as $paymentDetail)
+            foreach($paymentDetailList as $paymentDetail)
             {
                 $dimFactor   = 200;
                 $weight      = $paymentDetail->weight;
