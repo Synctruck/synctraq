@@ -92,18 +92,6 @@ class PaymentTeamController extends Controller
                 $paymentDetail->Route               = $packageHistory->Route;
                 $paymentDetail->idPaymentTeam       = $payment->idTeam;
                 $paymentDetail->dimFactor           = $dimFactor;
-                $paymentDetail->weight              = $weight;
-                $paymentDetail->weightRound         = $weightRound;
-                $paymentDetail->priceWeight         = $priceWeight;
-                $paymentDetail->peakeSeasonPrice    = $peakeSeasonPrice;
-                $paymentDetail->priceBase           = $priceBase;
-                $paymentDetail->dieselPrice         = $dieselPrice;
-                $paymentDetail->surchargePercentage = $surchargePercentage;
-                $paymentDetail->surchargePrice      = $surchargePrice;
-                $paymentDetail->priceByRoute        = 0;
-                $paymentDetail->priceByCompany      = $priceByCompany;
-                $paymentDetail->totalPrice          = $totalPrice;
-                $paymentDetail->Date_Delivery       = $paymentDetail->Date_Delivery;
                 $paymentDetail->save();
 
                 $totalPieces = $totalPieces + 1;
