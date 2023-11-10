@@ -87,7 +87,7 @@ class PaymentTeamController extends Controller
                 $priceByCompany      = $this->GetPriceTeamByCompany($paymentDetail->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
                 $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
-                $paymentTeamDetail = PaymentTeamDetail::find($paymentDetail->Reference_Number_1);
+                /*$paymentTeamDetail = PaymentTeamDetail::find($paymentDetail->Reference_Number_1);
                 $paymentTeamDetail->Reference_Number_1  = $packageHistory->Reference_Number_1;
                 $paymentTeamDetail->Route               = $packageHistory->Route;
                 $paymentTeamDetail->idPaymentTeam       = $payment->idTeam;
@@ -104,7 +104,7 @@ class PaymentTeamController extends Controller
                 $paymentTeamDetail->priceByCompany      = $priceByCompany;
                 $paymentTeamDetail->totalPrice          = $totalPrice;
                 $paymentTeamDetail->Date_Delivery       = $paymentDetail->Date_Delivery;
-                $paymentTeamDetail->save();
+                $paymentTeamDetail->save();*/
 
                 $totalPieces = $totalPieces + 1;
                 $totalTeam   = $totalTeam + $totalPrice;
