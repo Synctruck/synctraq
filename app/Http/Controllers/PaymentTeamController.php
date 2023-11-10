@@ -88,7 +88,7 @@ class PaymentTeamController extends Controller
                 $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
                 $paymentDetail = PaymentTeamDetail::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
-                $paymentDetail->Reference_Number_1  = $packageHistory->Reference_Number_1;
+                $paymentDetail->Route               = $packageHistory->Route;
                 $paymentDetail->save();
 
                 $totalPieces = $totalPieces + 1;
