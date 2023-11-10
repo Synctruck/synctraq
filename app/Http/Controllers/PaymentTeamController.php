@@ -48,7 +48,7 @@ class PaymentTeamController extends Controller
         {
             DB::beginTransaction();
 
-            $payment           = PaymentTeam::with(['team', 'payments_detail'])->find($idPayment);
+            $payment           = PaymentTeam::with(['team'])->find($idPayment);
             $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();                                                
             $totalPieces = 0;
             $totalTeam   = 0;
@@ -113,6 +113,7 @@ class PaymentTeamController extends Controller
             $totalAdjustment = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
                                                     ->get('amount')
                                                     ->sum('amount');
+
             $payment->totalPieces     = $totalPieces;
             $payment->totalDelivery   = $totalTeam;
             $payment->totalAdjustment = $totalAdjustment;
