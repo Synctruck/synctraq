@@ -89,6 +89,7 @@ class PaymentTeamController extends Controller
 
                 $paymentDetail = PaymentTeamDetail::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
                 $paymentDetail->Route               = $packageHistory->Route;
+                $paymentDetail->idPaymentTeam       = $payment->idTeam;
                 $paymentDetail->save();
 
                 $totalPieces = $totalPieces + 1;
