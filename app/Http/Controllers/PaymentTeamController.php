@@ -90,7 +90,7 @@ class PaymentTeamController extends Controller
                 $paymentDetail = PaymentTeamDetail::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
                 $paymentDetail->Reference_Number_1  = $packageHistory->Reference_Number_1;
                 $paymentDetail->Route               = $packageHistory->Route;
-                $paymentDetail->idPaymentTeam       = $payment->idTeam;
+                $paymentDetail->idPaymentTeam       = $team->idTeam;
                 $paymentDetail->dimFactor           = $dimFactor;
                 $paymentDetail->save();
 
