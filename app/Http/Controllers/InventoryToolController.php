@@ -139,14 +139,16 @@ class InventoryToolController extends Controller
             $statusData       = $this->GetStatus($inventoryToolDetail->Reference_Number_1);
             $actualStatus     = $statusData['status'];
             $lastStatusDate   = $statusData['created_at'];
+            $Route            = $statusData['Route'];
+            $State            = $statusData['Dropoff_Province'];
             
             $lineData = array(
                 $inventoryToolDetail->Reference_Number_1,
                 $inventoryToolDetail->status,
                 $actualStatus,
                 $lastStatusDate,
-                $inventoryToolDetail->Dropoff_Province,
-                $inventoryToolDetail->Route,
+                $State,
+                $Route,
             );
 
             fputcsv($file, $lineData, $delimiter);
@@ -491,10 +493,10 @@ class InventoryToolController extends Controller
 
         if($package)
         {
-            return ['status' => $package->status, 'created_at' => $package->created_at, 'package' => $package];
+            return ['status' => $package->status, 'created_at' => $package->created_at,'Route'=>$package->Route,'Dropoff_Province'=>$package->Dropoff_Province, 'package' => $package];
             
         }
 
-        return ['status' => '', 'created_at' => ''];
+        return ['status' => '', 'created_at' => '','Route' => '','Dropoff_Province' => '' ];
     }
 }
