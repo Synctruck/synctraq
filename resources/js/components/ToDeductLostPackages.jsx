@@ -66,7 +66,7 @@ function ToDeductLostPackages() {
 
         LoadingShowMap()
 
-        fetch(url_general +'team/list-all-filter')
+        fetch(url_general +'team/listall')
         .then(res => res.json())
         .then((response) => {
 
