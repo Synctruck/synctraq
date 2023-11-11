@@ -402,14 +402,24 @@ function PaymentAdjustment() {
                 .then(response => response.json())
                 .then(response => {
 
-                    if(response.stateAction)
+                    if(response.statusCode)
                     {
-                        swal("PAYMENT TEAM status changed!", {
+                        swal("PAYMENT TEAM was recalculated!", {
 
                             icon: "success",
                         });
 
-                        setPaymentStatus(status);
+                        listByRoute(idPaymentGeneral);
+                        listByPODFailed(idPaymentGeneral);
+                        listRevertShipments(idPaymentGeneral);
+                        ListAdjustmentPayment(idPaymentGeneral);
+                    }
+                    else
+                    {
+                       swal("There was an error, try again!", {
+
+                            icon: "success",
+                        }); 
                     }
                 });
             }
@@ -441,7 +451,7 @@ function PaymentAdjustment() {
                                                         paymentStatus == 'TO APPROVE'
                                                         ? 
                                                             <>
-                                                                <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" style={ {display: 'none'} } onClick={ () => handlerRecalculate(paymentId) }>
+                                                                <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" onClick={ () => handlerRecalculate(paymentId) }>
                                                                     RECALCULATE
                                                                 </button>
                                                                 <button className="btn btn-info font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAYABLE') }>
