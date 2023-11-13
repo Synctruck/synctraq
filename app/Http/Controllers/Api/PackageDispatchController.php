@@ -138,6 +138,76 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function Insert(Request $request, $apiKey)
+    {
+        $company = Company::where('id', 1)
+                            ->where('key_api', $apiKey)
+                            ->first();
+
+        if($company)
+        {
+            $packageDispatch = new PackageDispatch();
+            $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+            $packageDispatch->idCompany                    = $package->idCompany;
+            $packageDispatch->company                      = $package->company;
+            $packageDispatch->idStore                      = $package->idStore;
+            $packageDispatch->store                        = $package->store;
+            $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+            $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+            $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+            $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+            $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+            $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+            $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+            $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+            $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+            $packageDispatch->Notes                        = $package->Notes;
+            $packageDispatch->Weight                       = $package->Weight;
+            $packageDispatch->Route                        = $package->Route;
+            $packageDispatch->idUser                       = Auth::user()->id;
+            $packageDispatch->idTeam                       = $request->get('idTeam');
+            $packageDispatch->idUserDispatch               = $idUserDispatch;
+            $packageDispatch->Date_Dispatch                = $created_at;
+            $packageDispatch->quantity                     = $package->quantity;
+            $packageDispatch->idPaymentTeam                = '';
+            $packageDispatch->status                       = 'Dispatch';
+            $packageDispatch->created_at                   = $created_at;
+            $packageDispatch->updated_at                   = $created_at;
+            $packageDispatch->save();
+
+            $packageHistory = new PackageHistory();
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageDispatch->idCompany;
+            $packageHistory->company                      = $packageDispatch->company;
+            $packageHistory->idStore                      = $packageDispatch->idStore;
+            $packageHistory->store                        = $packageDispatch->store;
+            $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageDispatch->Notes;
+            $packageHistory->Weight                       = $packageDispatch->Weight;
+            $packageHistory->Route                        = $packageDispatch->Route;
+            $packageHistory->idTeam                       = $packageDispatch->idTeam;
+            $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+            $packageHistory->idUser                       = $packageDispatch->idUser;
+            $packageHistory->idUserDelivery               = $packageDispatch->idUserDispatch;
+            $packageHistory->Date_Delivery                = $Date_Delivery;
+            $packageHistory->Description                  = $Description;
+            $packageHistory->status                       = 'Delivery';
+            $packageHistory->actualDate                   = $created_at;
+            $packageHistory->created_at                   = $created_at;
+            $packageHistory->updated_at                   = $created_at;
+            $packageHistory->save();
+        }
+    }
+
     /*
         * Actualiza los status de los packages Dispatch de synctruck, que manda la PODApp y  que fueron asignados a un driver
         * @parametro: apiKey
