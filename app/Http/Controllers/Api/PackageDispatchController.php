@@ -150,7 +150,7 @@ class PackageDispatchController extends Controller
 
             if($company)
             {
-                $package = PackageWarehouse::find($request['package_id']);
+                $package = PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
                 $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
 
                 if($package)
@@ -164,7 +164,7 @@ class PackageDispatchController extends Controller
                         if($team)
                         {
                             $created_at = date('Y-m-d H:i:s');
-                            
+
                             if($package->status == 'Warehouse')
                             {
                                 $packageDispatch = new PackageDispatch();
