@@ -471,6 +471,45 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function UpdatePhotos(Request $request, $apiKey)
+    {
+        $Reference_Number_1 = $request['barcode'];
+        $photoUrl           = $request['pictures'];
+
+        $company = Company::where('id', 1)
+                            ->where('key_api', $apiKey)
+                            ->first();
+
+        if($company)
+        {
+            $packageDispatch = PackageDispatch::find($Reference_Number_1);
+
+            if($packageDispatch)
+            {
+                $packageDispatch->photoUrl = $photoUrl;
+                $packageDispatch->save();
+
+                DB::commit();
+                
+                return response()->json([
+                    'package_id' => $Reference_Number_1,
+                    'message' => "Package photos were updated."
+                ], 200);
+            }
+            else
+            {
+                return response()->json([
+                    'package_id' => $Reference_Number_1,
+                    'message' => "The package is not in DISPATCH."
+                ], 400);
+            }
+        }
+        else
+        {
+            return response()->json(['message' => "Authentication Failed: incorrect api-key"], 401);
+        }
+    }
+
     /*
         * Actualiza los status de los packages Dispatch de synctruck, que manda la PODApp y  que fueron asignados a un driver
         * @parametro: apiKey

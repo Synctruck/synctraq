@@ -52,3 +52,4 @@ Route::get('package-dispatch/get-package/{apiKey}/{Reference_Number_1}', [Packag
 Route::post('package-dispatch/move-dispatch/{apiKey}', [PackageDispatchController::class, 'InsertDispatch']);
 Route::post('package-dispatch/move-delivery/{apiKey}', [PackageDispatchController::class, 'InsertDelivery']);
 Route::post('package-dispatch/move-failed/{apiKey}', [PackageDispatchController::class, 'InsertFailed']);
+Route::post('package-dispatch/update-photos/{apiKey}', [PackageDispatchController::class, 'UpdatePhotos']);
