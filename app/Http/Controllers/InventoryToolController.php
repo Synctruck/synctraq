@@ -59,9 +59,6 @@ class InventoryToolController extends Controller
             $inventoryTool->userName    = Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $inventoryTool->status      = 'New';
             
-            $packageInboundList = PackageInbound::select('Reference_Number_1', 'idCellar', 'status', 'Dropoff_Province','created_at','Route')
-                                                ->where('idCellar', $request->idCellar)
-                                                ->get();
             $packageWarehouseList = PackageWarehouse::where('status', 'Warehouse')
                                                     ->where('idCellar', $request->idCellar)
                                                     ->select('Reference_Number_1', 'idCellar', 'status', 'Dropoff_Province','created_at','Route')
@@ -70,8 +67,7 @@ class InventoryToolController extends Controller
                                                                         ->where('idCellar', $request->idCellar)
                                                                         ->get();
 
-            $packageList = $packageInboundList->merge($packageWarehouseList);
-            $packageList = $packageList->merge($packageNeedMoreInformationList);
+            $packageList = $packageWarehouseList->merge($packageNeedMoreInformationList);
             $packageController = new PackageController();
             
             foreach($packageList as $package)
