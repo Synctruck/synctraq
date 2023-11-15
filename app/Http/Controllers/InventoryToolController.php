@@ -165,7 +165,7 @@ class InventoryToolController extends Controller
     public function ListInventoryDetail($idInventoryTool)
     {
         $inventoryTool = InventoryTool::find($idInventoryTool);
-        $dateInventory = date('m/d/Y');
+        $dateInventory = date('m/d/Y', strtotime($inventoryTool->created_at));
 
         $listInventoryToolDetailPending = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
                                                     ->where('statusPackage', '!=', 'NMI')
