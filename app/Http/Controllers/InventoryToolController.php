@@ -475,7 +475,6 @@ class InventoryToolController extends Controller
     {
         $package = PackageManifest::find($Reference_Number_1);
 
-        $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
