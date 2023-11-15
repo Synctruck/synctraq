@@ -500,7 +500,7 @@ class PackageDispatchController extends Controller
             {
                 return response()->json([
                     'package_id' => $Reference_Number_1,
-                    'message' => "The package is not in DISPATCH."
+                    'message' => "The package is not in DISPATCH or DELIVERY."
                 ], 400);
             }
         }
