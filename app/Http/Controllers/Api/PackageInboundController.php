@@ -101,7 +101,7 @@ class PackageInboundController extends Controller
         $status             = $request['status'];
         $created_at         = $request['datetime'];
         $pod_url            = $request['pod_url'];
-        $description        = $request['description'];
+        $description        = str_replace("\n", "", $request['description']);
         $require_invoice    = $request['require_invoice'];
         $idTeam             = $request['synctruck_team'];
         $idCellar           = $request['warehouse'];
