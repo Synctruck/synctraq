@@ -329,6 +329,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->Description                  = 'From SyncPOD';
                     $packageHistory->Date_Delivery                = $created_at;
                     $packageHistory->status                       = 'Delivery';
                     $packageHistory->actualDate                   = $created_at;
