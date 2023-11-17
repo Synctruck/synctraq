@@ -304,6 +304,7 @@ class PackageDispatchController extends Controller
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
                     $packageDispatch->status        = 'Delivery';
+                    $packageDispatch->Date_Delivery = $created_at;
                     $packageDispatch->save();
 
                     $packageHistory = new PackageHistory();
