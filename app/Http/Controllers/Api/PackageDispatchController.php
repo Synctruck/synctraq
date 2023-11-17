@@ -329,9 +329,10 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
+                    $packageHistory->Date_Delivery                = $created_at;
                     $packageHistory->status                       = 'Delivery';
                     $packageHistory->actualDate                   = $created_at;
-                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->created_at                   = $created_at; 
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
 
