@@ -240,6 +240,17 @@ function InventoryTool() {
 
                     document.getElementById('soundPitidoSuccess').play();
                 }
+                else if(response.statusCode == 'Overage')
+                {
+                    setTextMessage('Package was validated as Overage#'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    handlerInventoryDetailList(idInventory)
+                    setNumberPackage('')
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+
                 else if(response.statusCode == 'notExists')
                 {
                     setTextMessage('The package does not exist #'+ Reference_Number_1);

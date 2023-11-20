@@ -192,6 +192,7 @@ class InventoryToolController extends Controller
     {
         $packageController = new PackageController();
         $statusActual = $packageController->GetStatus($request->Reference_Number_1);
+        $isOverage = false;
      
         if($statusActual['status'] == "")
             return ['statusCode' => 'notExists'];
@@ -238,7 +239,9 @@ class InventoryToolController extends Controller
                     $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
                     $inventoryToolDetail->statusPackage      = $statusActual['status'];
                     $inventoryToolDetail->status             = 'Overage';
+                    $isOverage = true;
                     $inventoryToolDetail->save();
+                
                 }
 
                 $inventoryTool->save();
@@ -252,7 +255,9 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
                 $inventoryToolDetail->statusPackage      = $statusActual['status'];
                 $inventoryToolDetail->status             = 'Overage';
+                $isOverage = true;
                 $inventoryToolDetail->save();
+                
 
                 $packageWarehouse = PackageWarehouse::find($request->Reference_Number_1);
                 $packageWarehouse->idCellar    = $inventoryTool->idCellar;
@@ -313,7 +318,11 @@ class InventoryToolController extends Controller
 
             DB::commit();
 
-            return ['statusCode' => true];
+            if ($isOverage) {
+                return ['statusCode' => 'Overage']; 
+            } else {
+                return ['statusCode' => true];
+            }
         }
         catch(Exception $e)
         {
