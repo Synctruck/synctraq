@@ -263,7 +263,7 @@ class PackageDispatchController extends Controller
                 {
                     return response()->json([
                         'package_id' => $request['package_id'],
-                        'message' => "The package is not in DISPATCH or WAREHOUSE status."
+                        'message' => "The package is not in MANIFEST or DISPATCH or WAREHOUSE status."
                     ], 400);
                 }
             }
