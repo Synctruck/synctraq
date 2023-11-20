@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, PackageWarehouse, User };
+use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, PackageManifest, PackageWarehouse, User };
 
 use DB;
 use DateTime;
@@ -150,7 +150,8 @@ class PackageDispatchController extends Controller
 
             if($company)
             {
-                $package = PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
+                $package = PackageManifest::find($request['package_id']);
+                $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
                 $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
 
                 if($package)
