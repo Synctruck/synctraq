@@ -255,6 +255,7 @@ function InventoryTool() {
                 {
                     setTextMessage('The package does not exist #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -262,6 +263,7 @@ function InventoryTool() {
                 {
                     setTextMessage('You have not assigned the warehouse for this inventory #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -269,6 +271,7 @@ function InventoryTool() {
                 {
                     setTextMessage('The package does not belong to the current warehouse #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }
