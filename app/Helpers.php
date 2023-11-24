@@ -85,12 +85,12 @@ function SendToTeam($title, $filename, $idPayment)
     $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
 
     Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $emailCC, $email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2) {
-        console.log($emailCC);
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
 
         // Agregar correos electrónicos CC si existen
         foreach ($emailCC as $cc) {
+            console.log($emailCC);
             if (!empty(trim($cc))) {
                 $message->cc(trim($cc)); // Trim para eliminar espacios en blanco
             }
