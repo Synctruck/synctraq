@@ -75,8 +75,6 @@ function SendToTeam($title, $filename, $idPayment)
 
     $allCCs = array_merge($emailCC, $additionalCCs);
 
-
-    try {
     Mail::send('mail.export', ['data' => $data], function ($message) use ($data, $date, $files, $email, $allCCs) {
         $message->to($email, 'Syntruck')
                 ->subject($data['title'] . ' (' . $date . ')');
@@ -91,11 +89,6 @@ function SendToTeam($title, $filename, $idPayment)
             $message->attach($file);
         }
     });
-    } catch (Swift_RfcComplianceException $e) {
-    // Aquí manejas el error, por ejemplo, mostrando un mensaje de alerta
-    // Puedes registrar el error, devolver una respuesta, etc.
-    return "Alerta: Algunos correos electrónicos pueden no ser válidos. Error: " . $e->getMessage();
-    }
 }
 
 
