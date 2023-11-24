@@ -62,33 +62,40 @@ function SendToTeam($title, $filename, $idPayment)
     $data      = ['title' => $title, 'date' => $date];
 
     $idTeam  =  PaymentTeam::find($idPayment)->idTeam;
-    $email   =  User::find($idTeam)->email;
+    $email   = User::find($idTeam)->email;
     $emailCCString = User::find($idTeam)->emailCC;
 
+    // Inicializar emailCC como array vacío
+    $emailCC = [];
 
-    if(!is_null($emailCCString)){
-        if(strpos($emailCCString, ',' !== false)){
+    // Verificar si emailCCString no es nulo y no está vacío
+    if (!is_null($emailCCString) && $emailCCString != '') {
+        // Verificar si hay múltiples correos electrónicos o solo uno
+        if (strpos($emailCCString, ',') !== false) {
+            // Múltiples correos electrónicos, separarlos
             $emailCC = explode(',', $emailCCString);
-        }else {
+        } else {
+            // Un solo correo electrónico, ponerlo en un array
             $emailCC = [$emailCCString];
         }
     }
-    else {
-        $emailCC = [];
-    }
+
     $email_team_cc_invoice = env('EMAIL_TEAM_CC_INVOICE');
     $email_team_cc_invoice1= env('EMAIL_TEAM_CC_INVOICE1');
     $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
 
-        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email,$emailCC, $email_team_cc_invoice,$email_team_cc_invoice1, $email_team_cc_invoice2) {
+    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $emailCC, $email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2) {
 
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
 
+        // Agregar correos electrónicos CC si existen
         foreach ($emailCC as $cc) {
-            $message->cc(trim($cc));
+            if (!empty(trim($cc))) {
+                $message->cc(trim($cc)); // Trim para eliminar espacios en blanco
+            }
         }
-       
+
         $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
 
         foreach ($files as $file)
@@ -97,4 +104,5 @@ function SendToTeam($title, $filename, $idPayment)
         }
     });
 }
+
 
