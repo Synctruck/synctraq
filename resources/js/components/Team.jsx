@@ -1646,7 +1646,7 @@ function Team() {
                                                                 <div className="form-group">
                                                                     <label className="form">Additional Emails (optional)</label>
                                                                     <div id="emailCC" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ emailCC } className="form-control" onChange={ (e) => setEmailCC(e.target.value) }/>
+                                                                    <input type="text" value={ emailCC } className="form-control" onChange={ (e) => setEmailCC(e.target.value) } placeholder="example@email.com, example2@myemail.com" />
                                                                 </div>
                                                             </div>
                                                         </div>
