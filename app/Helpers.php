@@ -64,31 +64,26 @@ function SendToTeam($title, $filename, $idPayment)
     $email = User::find($idTeam)->email;
     $emailCCString = User::find($idTeam)->emailCC;
 
-    // Convertir la cadena de correos electrónicos CC en un array
     $emailCC = !empty($emailCCString) ? array_filter(array_map('trim', explode(',', $emailCCString))) : [];
 
-    // Agregar correos electrónicos adicionales desde variables de entorno
     $additionalCCs = array_filter([
         env('EMAIL_TEAM_CC_INVOICE'),
         env('EMAIL_TEAM_CC_INVOICE1'),
         env('EMAIL_TEAM_CC_INVOICE2')
     ]);
 
-    // Combinar todos los correos electrónicos CC
     $allCCs = array_merge($emailCC, $additionalCCs);
 
     Mail::send('mail.export', ['data' => $data], function ($message) use ($data, $date, $files, $email, $allCCs) {
         $message->to($email, 'Syntruck')
                 ->subject($data['title'] . ' (' . $date . ')');
 
-        // Agregar correos electrónicos CC
         foreach ($allCCs as $cc) {
             if (!empty($cc)) {
                 $message->cc($cc);
             }
         }
 
-        // Adjuntar archivos
         foreach ($files as $file) {
             $message->attach($file);
         }
