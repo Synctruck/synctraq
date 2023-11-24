@@ -61,15 +61,33 @@ function SendToTeam($title, $filename, $idPayment)
     $date      = date('Y-m-d H:i:s');
     $data      = ['title' => $title, 'date' => $date];
 
-    $idTeam =  PaymentTeam::find($idPayment)->idTeam;
-    $email = User::find($idTeam)->email;
+    $idTeam  =  PaymentTeam::find($idPayment)->idTeam;
+    $email   =  User::find($idTeam)->email;
+    $emailCCString = User::find($idTeam)->emailCC;
+
+
+    if(!is_null($emailCCString)){
+        if(strpos($emailCCString, ',' !== false)){
+            $emailCC = explode(',', $emailCCString);
+        }else {
+            $emailCC = [$emailCCString];
+        }
+    }
+    else {
+        $emailCC = [];
+    }
     $email_team_cc_invoice = env('EMAIL_TEAM_CC_INVOICE');
     $email_team_cc_invoice1= env('EMAIL_TEAM_CC_INVOICE1');
     $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
-        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $email_team_cc_invoice,$email_team_cc_invoice1, $email_team_cc_invoice2) {
+
+        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email,$emailCC, $email_team_cc_invoice,$email_team_cc_invoice1, $email_team_cc_invoice2) {
 
         $message->to($email, 'Syntruck')
         ->subject($data['title'] . ' (' . $date . ')');
+
+        foreach ($emailCC as $cc) {
+            $message->cc(trim($cc));
+        }
        
         $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
 
