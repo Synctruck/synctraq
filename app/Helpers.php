@@ -6,7 +6,6 @@ use App\Models\PermissionUser;
 use App\Models\User;
 use App\Models\PaymentTeam;
 use Illuminate\Support\Facades\Auth;
-use Swift_RfcComplianceException;
 
 //funcion que evalua si el usuario tiene permiso para una acción
 function hasPermission($slug)
