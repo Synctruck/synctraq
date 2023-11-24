@@ -90,9 +90,7 @@ function SendToTeam($title, $filename, $idPayment)
 
         // Agregar correos electrónicos CC si existen
         foreach ($emailCC as $cc) {
-            if (!empty(($cc))) {
-                $message->cc(($cc)); // Trim para eliminar espacios en blanco
-            }
+                $message->cc([$cc]); // Trim para eliminar espacios en blanco
         }
 
         $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
