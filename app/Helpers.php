@@ -56,50 +56,44 @@ function SendGeneralExport($title, $filename)
 
 function SendToTeam($title, $filename, $idPayment)
 {
-    $filename  = $filename;
-    $files     = [public_path($filename)];
-    $date      = date('Y-m-d H:i:s');
-    $data      = ['title' => $title, 'date' => $date];
+    $files = [public_path($filename)];
+    $date = date('Y-m-d H:i:s');
+    $data = ['title' => $title, 'date' => $date];
 
-    $idTeam  =  PaymentTeam::find($idPayment)->idTeam;
-    $email   = User::find($idTeam)->email;
+    $idTeam = PaymentTeam::find($idPayment)->idTeam;
+    $email = User::find($idTeam)->email;
     $emailCCString = User::find($idTeam)->emailCC;
 
-    // Inicializar emailCC como array vacío
-    $emailCC = [];
+    // Convertir la cadena de correos electrónicos CC en un array
+    $emailCC = !empty($emailCCString) ? array_filter(array_map('trim', explode(',', $emailCCString))) : [];
 
-    // Verificar si emailCCString no es nulo y no está vacío
-    if (!is_null($emailCCString) && $emailCCString != '') {
-        // Verificar si hay múltiples correos electrónicos o solo uno
-        if (explode($emailCCString, ',') !== false) {
-            // Múltiples correos electrónicos, separarlos
-            $emailCC = explode(',', $emailCCString);
-        } else {
-            // Un solo correo electrónico, ponerlo en un array
-            $emailCC = [$emailCCString];
-        }
-    }
+    // Agregar correos electrónicos adicionales desde variables de entorno
+    $additionalCCs = array_filter([
+        env('EMAIL_TEAM_CC_INVOICE'),
+        env('EMAIL_TEAM_CC_INVOICE1'),
+        env('EMAIL_TEAM_CC_INVOICE2')
+    ]);
 
-    $email_team_cc_invoice = env('EMAIL_TEAM_CC_INVOICE');
-    $email_team_cc_invoice1= env('EMAIL_TEAM_CC_INVOICE1');
-    $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
+    // Combinar todos los correos electrónicos CC
+    $allCCs = array_merge($emailCC, $additionalCCs);
 
-    Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $emailCC, $email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2) {
+    Mail::send('mail.export', ['data' => $data], function ($message) use ($data, $date, $files, $email, $allCCs) {
         $message->to($email, 'Syntruck')
-        ->subject($data['title'] . ' (' . $date . ')');
+                ->subject($data['title'] . ' (' . $date . ')');
 
-        // Agregar correos electrónicos CC si existen
-        foreach ($emailCC as $cc) {
-                $message->cc([$cc]); // Trim para eliminar espacios en blanco
+        // Agregar correos electrónicos CC
+        foreach ($allCCs as $cc) {
+            if (!empty($cc)) {
+                $message->cc($cc);
+            }
         }
 
-        $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
-
-        foreach ($files as $file)
-        {
+        // Adjuntar archivos
+        foreach ($files as $file) {
             $message->attach($file);
         }
     });
 }
+
 
 
