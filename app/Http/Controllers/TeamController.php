@@ -151,7 +151,7 @@ class TeamController extends Controller
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->status             = $request->get('status');
                 
-                if($request->get('emailCC')!=null){
+                if($request->get('emailCC')!="null"){
                 $user->emailCC            = $request->get('emailCC');
                 }
                 $user->save();
@@ -278,7 +278,7 @@ class TeamController extends Controller
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->status             = $request->get('status');
                 
-                if($request->get('emailCC')!=null){
+                if($request->get('emailCC')!="null"){
                 $user->emailCC            = $request->get('emailCC');
                 }
                 $user->save();
