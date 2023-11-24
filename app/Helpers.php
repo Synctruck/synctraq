@@ -71,7 +71,7 @@ function SendToTeam($title, $filename, $idPayment)
     // Verificar si emailCCString no es nulo y no está vacío
     if (!is_null($emailCCString) && $emailCCString != '') {
         // Verificar si hay múltiples correos electrónicos o solo uno
-        if (strpos($emailCCString, ',') !== false) {
+        if (explode($emailCCString, ',') !== false) {
             // Múltiples correos electrónicos, separarlos
             $emailCC = explode(',', $emailCCString);
         } else {
@@ -90,9 +90,8 @@ function SendToTeam($title, $filename, $idPayment)
 
         // Agregar correos electrónicos CC si existen
         foreach ($emailCC as $cc) {
-            console.log($emailCC);
-            if (!empty(trim($cc))) {
-                $message->cc(trim($cc)); // Trim para eliminar espacios en blanco
+            if (!empty(($cc))) {
+                $message->cc(($cc)); // Trim para eliminar espacios en blanco
             }
         }
 
