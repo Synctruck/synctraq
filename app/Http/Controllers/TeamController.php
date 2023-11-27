@@ -104,6 +104,7 @@ class TeamController extends Controller
                 "email.unique" => "El correo ya existe",
                 "email.required" => "El campo es requerido",
                 "email.max"  => "Debe ingresar máximo 100 dígitos",
+
             ]
         );
 
@@ -149,6 +150,10 @@ class TeamController extends Controller
                 $user->surcharge          = $request->get('surcharge');
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->status             = $request->get('status');
+                
+                if($request->get('emailCC')!="null"){
+                $user->emailCC            = $request->get('emailCC');
+                }
                 $user->save();
 
                 DB::commit();
@@ -272,6 +277,10 @@ class TeamController extends Controller
                 $user->roundWeight        = $request->get('roundWeight');
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->status             = $request->get('status');
+                
+                if($request->get('emailCC')!="null"){
+                $user->emailCC            = $request->get('emailCC');
+                }
                 $user->save();
 
                 DB::commit();

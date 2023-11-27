@@ -14,6 +14,7 @@ function Team() {
     const [address, setAddress]                       = useState('');
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
+    const [emailCC, setEmailCC]                       = useState('');//cambio
     const [surcharge, setSurcharge]                   = useState(1);
     const [roundWeight, setRoundWeight]               = useState(1);
     const [twoAttempts, setTwoAttempts]               = useState(1);
@@ -168,6 +169,7 @@ function Team() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('emailCC', emailCC);
         formData.append('status', status);
         formData.append('surcharge', surcharge);
         formData.append('roundWeight', roundWeight);
@@ -300,6 +302,7 @@ function Team() {
             setAddress(team.address);
             setPhone(team.phone);
             setEmail(team.email);
+            setEmailCC(team.emailCC);
             setPermissionDispatch(team.permissionDispatch);
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
@@ -1142,6 +1145,7 @@ function Team() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setEmailCC('');
         setStatus('Active');
     }
 
@@ -1636,6 +1640,13 @@ function Team() {
                                                                         <option value="Active" >Active</option>
                                                                         <option value="Inactive" >Inactive</option>
                                                                     </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">Additional Emails (optional)</label>
+                                                                    <div id="emailCC" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ emailCC } className="form-control" onChange={ (e) => setEmailCC(e.target.value) } placeholder="example@email.com, example2@myemail.com" />
                                                                 </div>
                                                             </div>
                                                         </div>
