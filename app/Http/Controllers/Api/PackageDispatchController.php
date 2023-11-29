@@ -288,7 +288,7 @@ class PackageDispatchController extends Controller
         $photoUrl           = $request['pictures'];
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
+        $created_at         = (string)date('Y-m-d H:i:s', strtotime($request['statusDate']));
 
         try
         {
@@ -342,7 +342,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->save();
 
                     Log::info('created_at: '. $created_at);
-                    
+
                     $packageController = new PackageController();
 
                     if($packageDispatch->idCompany == 1)
