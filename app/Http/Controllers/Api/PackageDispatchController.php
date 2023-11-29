@@ -341,6 +341,8 @@ class PackageDispatchController extends Controller
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
 
+                    Log::info('created_at: '. $created_at);
+                    
                     $packageController = new PackageController();
 
                     if($packageDispatch->idCompany == 1)
