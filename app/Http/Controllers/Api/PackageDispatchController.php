@@ -344,7 +344,7 @@ class PackageDispatchController extends Controller
                     $packageController = new PackageController();
 
                     if($packageDispatch->idCompany == 1)
-                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', $photoUrl, $created_at);
+                        $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
 
                     $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
                                                 ->where('sendToInland', 1)
