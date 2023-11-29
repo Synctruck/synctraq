@@ -442,8 +442,8 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
-        Log::info('created_at: '. $created_at);
-        
+        Log::info('created_at: '. date('Y-m-d H:i:s', $created_at));
+
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
