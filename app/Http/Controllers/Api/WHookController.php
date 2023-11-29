@@ -189,103 +189,106 @@ class WHookController extends Controller
 
                 if($packageDispatch)
                 {
-                    $created_at          = date('Y-m-d H:i:s');
-                    $Description_Onfleet = $Description_Onfleet;
-
-                    $packageFailed = new PackageFailed();
-
-                    $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageFailed->idCompany                    = $packageDispatch->idCompany;
-                    $packageFailed->company                      = $packageDispatch->company;
-                    $packageFailed->idStore                      = $packageDispatch->idStore;
-                    $packageFailed->store                        = $packageDispatch->store;
-                    $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageFailed->Notes                        = $packageDispatch->Notes;
-                    $packageFailed->Weight                       = $packageDispatch->Weight;
-                    $packageFailed->Route                        = $packageDispatch->Route;
-                    $packageFailed->idTeam                       = $packageDispatch->idTeam;
-                    $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
-                    $packageFailed->Description_Onfleet          = $Description_Onfleet;
-                    $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
-                    $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
-                    $packageFailed->quantity                     = $packageDispatch->quantity;
-                    $photoUrl = '';
-
-                    foreach($photoUploadIds as $idPhoto)
+                    if($packageDispatch->status == 'Dispatch')
                     {
-                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
-                    }
+                        $created_at          = date('Y-m-d H:i:s');
+                        $Description_Onfleet = $Description_Onfleet;
 
-                    Log::info($photoUrl);
+                        $packageFailed = new PackageFailed();
 
-                    $packageFailed->photoUrl                     = $photoUrl;
-                    $packageFailed->status                       = 'Failed';
-                    $packageFailed->created_at                   = $created_at;
-                    $packageFailed->updated_at                   = $created_at;
+                        $packageFailed->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageFailed->idCompany                    = $packageDispatch->idCompany;
+                        $packageFailed->company                      = $packageDispatch->company;
+                        $packageFailed->idStore                      = $packageDispatch->idStore;
+                        $packageFailed->store                        = $packageDispatch->store;
+                        $packageFailed->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageFailed->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageFailed->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageFailed->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageFailed->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageFailed->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageFailed->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageFailed->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageFailed->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageFailed->Notes                        = $packageDispatch->Notes;
+                        $packageFailed->Weight                       = $packageDispatch->Weight;
+                        $packageFailed->Route                        = $packageDispatch->Route;
+                        $packageFailed->idTeam                       = $packageDispatch->idTeam;
+                        $packageFailed->idUserDispatch               = $packageDispatch->idUserDispatch;
+                        $packageFailed->idUser                       = $packageDispatch->idUserDispatch;
+                        $packageFailed->Description_Onfleet          = $Description_Onfleet;
+                        $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
+                        $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
+                        $packageFailed->quantity                     = $packageDispatch->quantity;
+                        $photoUrl = '';
 
-                    $packageFailed->save();
+                        foreach($photoUploadIds as $idPhoto)
+                        {
+                            $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
+                        }
 
-                    $packageHistory = new PackageHistory();
+                        Log::info($photoUrl);
 
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
-                    $packageHistory->idCompany                    = $packageDispatch->idCompany;
-                    $packageHistory->company                      = $packageDispatch->company;
-                    $packageHistory->idStore                      = $packageDispatch->idStore;
-                    $packageHistory->store                        = $packageDispatch->store;
-                    $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
-                    $packageHistory->Notes                        = $packageDispatch->Notes;
-                    $packageHistory->Weight                       = $packageDispatch->Weight;
-                    $packageHistory->Route                        = $packageDispatch->Route;
-                    $packageHistory->idTeam                       = $packageDispatch->idTeam;
-                    $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
-                    $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
-                    $packageHistory->Description_Onfleet          = $Description_Onfleet;
-                    $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->status                       = 'Failed';
-                    $packageHistory->photoUrl                     = $photoUrl;
-                    $packageHistory->actualDate                   = $created_at;
-                    $packageHistory->created_at                   = $created_at;
-                    $packageHistory->updated_at                   = $created_at;
+                        $packageFailed->photoUrl                     = $photoUrl;
+                        $packageFailed->status                       = 'Failed';
+                        $packageFailed->created_at                   = $created_at;
+                        $packageFailed->updated_at                   = $created_at;
 
-                    $packageHistory->save();
+                        $packageFailed->save();
 
-                    $packageDispatch->delete();
+                        $packageHistory = new PackageHistory();
 
-                    $packageController = new PackageController();
+                        $packageHistory->id                           = uniqid();
+                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                        $packageHistory->company                      = $packageDispatch->company;
+                        $packageHistory->idStore                      = $packageDispatch->idStore;
+                        $packageHistory->store                        = $packageDispatch->store;
+                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageHistory->Notes                        = $packageDispatch->Notes;
+                        $packageHistory->Weight                       = $packageDispatch->Weight;
+                        $packageHistory->Route                        = $packageDispatch->Route;
+                        $packageHistory->idTeam                       = $packageDispatch->idTeam;
+                        $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+                        $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
+                        $packageHistory->Description_Onfleet          = $Description_Onfleet;
+                        $packageHistory->quantity                     = $packageDispatch->quantity;
+                        $packageHistory->status                       = 'Failed';
+                        $packageHistory->photoUrl                     = $photoUrl;
+                        $packageHistory->actualDate                   = $created_at;
+                        $packageHistory->created_at                   = $created_at;
+                        $packageHistory->updated_at                   = $created_at;
 
-                    if($packageDispatch->idCompany == 1)
-                    {
-                        //data for INLAND
-                        $packageController->SendStatusToInland($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
-                        //end data for inland
-                    }
+                        $packageHistory->save();
 
-                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
-                                                ->where('sendToInland', 1)
-                                                ->where('status', 'Manifest')
-                                                ->first();
+                        $packageDispatch->delete();
 
-                    if($packageHistory)
-                    {
-                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
+                        $packageController = new PackageController();
+
+                        if($packageDispatch->idCompany == 1)
+                        {
+                            //data for INLAND
+                            $packageController->SendStatusToInland($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
+                            //end data for inland
+                        }
+
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                    ->where('sendToInland', 1)
+                                                    ->where('status', 'Manifest')
+                                                    ->first();
+
+                        if($packageHistory)
+                        {
+                            $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
+                        }
                     }
                 }
 
