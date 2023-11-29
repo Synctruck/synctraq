@@ -442,6 +442,8 @@ class PackageController extends Controller
 
     public function SendStatusToInland($package, $status, $idPhoto = null, $created_at)
     {
+        Log::info('created_at: '. $created_at);
+        
         $statusCodeCompany = '';
         $key_webhook       = '';
         $url_webhook       = '';
@@ -545,7 +547,7 @@ class PackageController extends Controller
             $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
 
             Log::info('created_at_temp:'. $created_at_temp);
-            
+
             $created_at      = $created_at_temp->format(DateTime::ATOM);
 
             $curl = curl_init();

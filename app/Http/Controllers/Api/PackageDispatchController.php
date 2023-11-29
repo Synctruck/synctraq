@@ -343,7 +343,6 @@ class PackageDispatchController extends Controller
 
                     $packageController = new PackageController();
 
-                    Log::info('created_at: '. $created_at);
                     if($packageDispatch->idCompany == 1)
                         $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
 
