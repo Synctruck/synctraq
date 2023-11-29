@@ -352,7 +352,7 @@ class PackageDispatchController extends Controller
                                                 ->first();
 
                     if($packageHistory)
-                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', $photoUrl, $created_at);
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
 
                     DB::commit();
                     
