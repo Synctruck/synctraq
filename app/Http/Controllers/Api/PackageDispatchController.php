@@ -386,7 +386,7 @@ class PackageDispatchController extends Controller
     {
         $Reference_Number_1 = $request['barcode'];
         $Description_POD    = '['. $request['failure_reason'] .', '. $request['notes'] .']';
-        $created_at         = $request['statusDate'];
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
 
         try
         {
