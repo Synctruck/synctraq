@@ -545,9 +545,6 @@ class PackageController extends Controller
             Log::info($pod_url);
 
             $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
-
-            Log::info('created_at_temp:'. $created_at_temp);
-
             $created_at      = $created_at_temp->format(DateTime::ATOM);
 
             $curl = curl_init();
