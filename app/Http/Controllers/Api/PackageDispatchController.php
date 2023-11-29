@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, PackageManifest, PackageWarehouse, User };
 
+use App\Http\Controllers\Api\PackageController;
+
 use DB;
 use DateTime;
 use Log;
@@ -339,6 +341,19 @@ class PackageDispatchController extends Controller
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
 
+                    $packageController = new PackageController();
+
+                    if($packageDispatch->idCompany == 1)
+                        $packageController->SendStatusToInland($packageDispatch, 'Failed', null, $created_at);
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, $created_at);
+                    
                     DB::commit();
                     
                     return response()->json([
@@ -445,8 +460,21 @@ class PackageDispatchController extends Controller
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
 
-                    $packageDispatch->delete();
+                    $packageController = new PackageController();
 
+                    if($packageDispatch->idCompany == 1)
+                        $packageController->SendStatusToInland($packageDispatch, 'Failed', null, $created_at);
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, $created_at);
+
+                    $packageDispatch->delete();
+                    
                     DB::commit();
                     
                     return response()->json([
