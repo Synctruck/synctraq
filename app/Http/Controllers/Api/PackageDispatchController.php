@@ -340,7 +340,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at; 
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
-
+                    
                     $packageController = new PackageController();
 
                     if($packageDispatch->idCompany == 1)
