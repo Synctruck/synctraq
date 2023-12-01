@@ -438,10 +438,11 @@ class InventoryToolController extends Controller
         }
 
         $deleteonfleet = new PackageDispatchController();
-        $OnFleet= $deleteonfleet->GetOnfleet($package->idOnfleet);
+        $OnFleet       = $deleteonfleet->GetOnfleet($package->idOnfleet);
 
-        if($OnFleet){
-            Log::info("Package Deleted on OnFleet");
+        if($OnFleet)
+        {
+            Log::info("============ TASK DELETE - ONFLEET ================  ");
             $deleteonfleet->DeleteOnfleet($package->idOnfleet);
         }
 
