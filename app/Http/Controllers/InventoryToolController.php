@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PackageDispatchController;
 
 use App\Models\{ Cellar, InventoryTool, InventoryToolDetail, PackageBlocked, PackageTerminal, 
         PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch, 
@@ -17,7 +18,7 @@ use Auth;
 use DB;
 use Log;
 use Session;
-use DateTime; 
+use DateTime;
  
 class InventoryToolController extends Controller
 {
@@ -434,6 +435,14 @@ class InventoryToolController extends Controller
             $packageWarehouse->nameCellar  = $cellar->name;
             $packageWarehouse->stateCellar = $cellar->state;
             $packageWarehouse->cityCellar  = $cellar->city;
+        }
+
+        $deleteonfleet = new PackageDispatchController();
+        $OnFleet= $deleteonfleet->GetOnfleet($package->idOnfleet);
+
+        if($OnFleet){
+            Log::info("Package Deleted on OnFleet");
+            $deleteonfleet->DeleteOnfleet($package->idOnfleet);
         }
 
         $packageWarehouse->save();
