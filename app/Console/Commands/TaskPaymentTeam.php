@@ -57,8 +57,8 @@ class TaskPaymentTeam extends Command
         {
             $files     = []; 
             $nowDate   = date('Y-m-d');
-            $startDate = date('Y-m-d', strtotime($nowDate .' -8 day'));
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $startDate = '2023-11-19 00:00:00';
+            $endDate   = '2023-11-25 23:59:59';
 
             try 
             {
