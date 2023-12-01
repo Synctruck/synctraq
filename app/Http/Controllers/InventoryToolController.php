@@ -437,12 +437,16 @@ class InventoryToolController extends Controller
             $packageWarehouse->cityCellar  = $cellar->city;
         }
 
-        $deleteonfleet = new PackageDispatchController();
-        $OnFleet= $deleteonfleet->GetOnfleet($package->idOnfleet);
+        if($package->status == 'Dispatch')
+        {
+            $packageDispatchController = new PackageDispatchController();
+            $onfleet = $packageDispatchController->GetOnfleet($package->idOnfleet);
 
-        if($OnFleet){
-            Log::info("Package Deleted on OnFleet");
-            $deleteonfleet->DeleteOnfleet($package->idOnfleet);
+            if($onfleet)
+            {
+                Log::info("Package Deleted on OnFleet");
+                $packageDispatchController->DeleteOnfleet($package->idOnfleet);
+            }
         }
 
         $packageWarehouse->save();
