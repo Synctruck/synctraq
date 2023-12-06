@@ -453,7 +453,7 @@ function PackageReturn() {
             setReadOnly(true);
             setIsLoading(true);
             setSendDispatch(0);
-            
+
             fetch(url_general +'package/return/dispatch', {
                 headers: { "X-CSRF-TOKEN": token },
                 method: 'post',
@@ -569,6 +569,7 @@ function PackageReturn() {
                     }
 
                     setReadOnly(false);
+                    setSendDispatch(1);
                 },
             );
         }
