@@ -40,6 +40,7 @@ require('./components/ReportNotExists');
 require('./components/ReportAssigns');
 require('./components/ReportDelete');
 require('./components/ReportFailed');
+require('./components/ReportLost');
 require('./components/ReportReturnCompany');
 require('./components/ReportAllPending');
 require('./components/Routes');

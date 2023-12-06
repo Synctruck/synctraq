@@ -482,6 +482,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
 	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportInbound']);
 
+	//lost
+	Route::get('/report/lost', [ReportController::class, 'IndexLost'])->middleware('permission:reportInbound.index');
+	Route::get('/report/list/lost/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListLost']);
+	Route::get('/report/export/lost/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportLost']);
+
 	Route::get('/report/delivery', [ReportController::class, 'IndexDelivery'])->middleware('permission:reportDelivery.index');
 	Route::get('/report/list/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDelivery']);
 	Route::get('/report/export/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}/{type}', [ReportController::class, 'ExportDelivery']);
