@@ -1341,8 +1341,8 @@ class ReportController extends Controller
         foreach($listPackageLost as $packageLost)
         {
             $lineData = array(
-                                date('m-d-Y', strtotime($packageInbound['created_at'])),
-                                date('H:i:s', strtotime($packageInbound['created_at'])),
+                                date('m-d-Y', strtotime($packageLost['created_at'])),
+                                date('H:i:s', strtotime($packageLost['created_at'])),
                                 $packageLost['company'],
                                 $packageLost['validator'],
                                 $packageLost['Reference_Number_1'],
