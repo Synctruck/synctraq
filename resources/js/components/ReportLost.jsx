@@ -385,16 +385,6 @@ function ReportLost() {
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
-                                                        Truck :
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <Select isMulti onChange={ (e) => handlerChangeTruck(e) } options={ optionsTruckSearch } />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-2">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
                                                         Route :
                                                     </div>
                                                     <div className="col-lg-12">
