@@ -1405,7 +1405,7 @@ class PackageDispatchController extends Controller
                     $cellar = Cellar::find(Auth::user()->idCellar);
 
                     if($cellar)
-                    {    
+                    {
                         $packageHistory->idCellar    = $cellar->id;
                         $packageHistory->nameCellar  = $cellar->name;
                         $packageHistory->stateCellar = $cellar->state;
@@ -1506,8 +1506,6 @@ class PackageDispatchController extends Controller
 
                         $packageHistory->save();
                     }
-
-                    
 
                     $packageWarehouse = PackageWarehouse::find($packageDispatch->Reference_Number_1);
 
