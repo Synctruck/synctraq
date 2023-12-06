@@ -1323,6 +1323,65 @@ class ReportController extends Controller
         }
     }
 
+
+    public function ExportLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $typeExport)
+    {
+        $delimiter = ",";
+        $filename  = $typeExport == 'download' ? "Report Lost " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Lost.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR','COMPANY', 'VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageLost = $this->getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
+        $listPackageLost = $listPackageLost['listAll'];
+
+        foreach($listPackageLost as $packageLost)
+        {
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageInbound['created_at'])),
+                                date('H:i:s', strtotime($packageInbound['created_at'])),
+                                $packageLost['company'],
+                                $packageLost['validator'],
+                                $packageLost['Reference_Number_1'],
+                                $packageLost['status'],
+                                $packageLost['statusDate'],
+                                $packageLost['statusDescription'],
+                                $packageLost['Dropoff_Contact_Name'],
+                                $packageLost['Dropoff_Contact_Phone_Number'],
+                                $packageLost['Dropoff_Address_Line_1'],
+                                $packageLost['Dropoff_City'],
+                                $packageLost['Dropoff_Province'],
+                                $packageLost['Dropoff_Postal_Code'],
+                                $packageLost['Route'],
+                                $packageLost['Weight']
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
+
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Lost', $filename);
+
+            return ['stateAction' => true];
+        }
+    }
+
     public function ExportDispatch($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $typeExport)
     {
         $delimiter = ",";
