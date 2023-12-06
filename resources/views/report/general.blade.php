@@ -98,7 +98,7 @@
             </a>
         </div><!-- End Customers Card -->
         @endif
-        @if(hasPermission('reportManifest.index'))
+        @if(hasPermission('reportLost.index'))
         <div class="col-xxl-3 col-xl-12">
             <a href="{{url('/report/lost')}}" style="text-decoration: none">
             <div class="card info-card ">

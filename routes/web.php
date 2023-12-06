@@ -483,7 +483,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportInbound']);
 
 	//lost
-	Route::get('/report/lost', [ReportController::class, 'IndexLost'])->middleware('permission:reportInbound.index');
+	Route::get('/report/lost', [ReportController::class, 'IndexLost'])->middleware('permission:reportLost.index');
 	Route::get('/report/list/lost/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListLost']);
 	Route::get('/report/export/lost/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportLost']);
 
