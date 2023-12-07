@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Auth;
 use DateTime;
 use DB;
+use Log;
 use Session;
 
 class PaymentTeamController extends Controller
@@ -206,7 +207,7 @@ class PaymentTeamController extends Controller
                                                         ->first();
 
         Log::info('rangeByCompanyTeam => '. $rangeByCompanyTeam);
-        
+
         $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
                                     ->where('idRangeRate', 0)
