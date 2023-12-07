@@ -324,7 +324,7 @@ class ReportController extends Controller
             $listAll = $listAll->select(
                                     'created_at',
                                     'company',
-                                    'idUserInbound',
+                                    'idUser',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
@@ -358,8 +358,7 @@ class ReportController extends Controller
                                             ->get()
                                             ->last();
             
-            $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
-
+            $validator = $packageHistory->user ? $packageHistory->user->name .' '. $packageHistory->user->nameOfOwner : '';
             $timeDispatchDate = 0;
             $timeDeliveryDate = 0;
 
