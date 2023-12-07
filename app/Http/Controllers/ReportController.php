@@ -265,12 +265,12 @@ class ReportController extends Controller
         $packageHistoryListNew = $data['listAll'];
 
         $listState = PackageHistory::select('Dropoff_Province')
-                                    ->where('status', 'Inbound')
+                                    ->where('status', 'Lost')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
         $listTruck = PackageHistory::select('TRUCK')
-                                    ->where('status', 'Inbound')
+                                    ->where('status', 'Lost')
                                     ->groupBy('TRUCK')
                                     ->get();
 
@@ -324,7 +324,7 @@ class ReportController extends Controller
             $listAll = $listAll->select(
                                     'created_at',
                                     'company',
-                                    'idUserInbound',
+                                    'idUserLost',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
