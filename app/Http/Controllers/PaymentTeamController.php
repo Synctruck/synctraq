@@ -222,6 +222,8 @@ class PaymentTeamController extends Controller
                                     ->where('route', $route)
                                     ->first();
 
+        Log::info('idTeam => '. $idTeam .' idCompany => '. $idCompany .' route => '. $route .' idRangeRate => '. $idRangeRate);
+        Log::info('rangeByRoute => '. $rangeByRoute);
         $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
         $priceRate        = $rangeByRate ? $rangeByRate->price : 0;
         $priceCompany     = $rangeByCompany ? $rangeByCompany->price : 0;
