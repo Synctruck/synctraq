@@ -423,150 +423,158 @@ function PackageReturn() {
                                     </div>
                                 </React.Fragment>;
 
+    const [sendDispatch, setSendDispatch] = useState(1);
+
     const handlerSaveReturn = (e) => {
 
         e.preventDefault();
 
-        const formData = new FormData();
-
-        formData.append('Reference_Number_1', returnReference_Number_1);
-        formData.append('CategoryReturn', CategoryReturn);
-        formData.append('Description_Return', descriptionReturn);
-        formData.append('latitude', latitude);
-        formData.append('longitude', longitude);
-
-        if(latitude == 0 || longitude == 0)
+        if(sendDispatch)
         {
-            swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
+            const formData = new FormData();
 
-            return 0;
-        }
-            
-        clearValidation();
+            formData.append('Reference_Number_1', returnReference_Number_1);
+            formData.append('CategoryReturn', CategoryReturn);
+            formData.append('Description_Return', descriptionReturn);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
 
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if(latitude == 0 || longitude == 0)
+            {
+                swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
 
-        setReadOnly(true);
-        setIsLoading(true);
+                return 0;
+            }
+                
+            clearValidation();
 
-        fetch(url_general +'package/return/dispatch', {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: formData
-        })
-        .then(res => res.json()).
-        then((response) => {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                clearForm();
-                setIsLoading(false);
+            setReadOnly(true);
+            setIsLoading(true);
+            setSendDispatch(0);
 
-                if(response.stateAction == 'validatedFilterPackage')
-                {
-                    let packageBlocked  = response.packageBlocked;
+            fetch(url_general +'package/return/dispatch', {
+                headers: { "X-CSRF-TOKEN": token },
+                method: 'post',
+                body: formData
+            })
+            .then(res => res.json()).
+            then((response) => {
 
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'PACKAGE BLOCKED #'+ returnReference_Number_1,
-                        text: packageBlocked.comment,
-                        showConfirmButton: false,
-                        timer: 2000,
-                    });
+                    clearForm();
+                    setIsLoading(false);
 
-                    setTypeMessage('primary');
-                    setNumberPackage('');
-
-                    document.getElementById('soundPitidoBlocked').play();
-                }
-                else if(response.stateAction == 'validatedReturnCompany')
-                {
-                    setTextMessage("The package was registered before for return to the company #"+ returnReference_Number_1);
-                }
-                else if(response.stateAction == 'packageInPreDispatch')
-                {
-                    setTextMessage('The package is in  PRE DISPATCH #'+ returnReference_Number_1);
-                    setTypeMessage('warning');
-                    setNumberPackage('');
-
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == 'validatedLost')
-                {
-                    setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                    setTypeMessage('warning');
-
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction == true)
-                {
-                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
-                    setTypeMessage('success');
-                    setNumberPackage('');
-
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoSuccess').play();
-
-                    listAllPackageReturn(page, RouteSearch, StateSearch);
-                }
-                else if(response.stateAction == 'taskWasNotDelete')
-                {
-                    setTextMessage("The task was not deleted in Onfleet #"+ returnReference_Number_1);
-                    setTypeMessage('error');
-                    setReturnNumberPackage('');
-
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notUser')
-                {
-                    setTextMessage("The package N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
-                    setTypeMessage('error');
-                    setReturnNumberPackage('');
-
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
-                else if(response.stateAction == 'notDispatch')
-                {
-                    setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch o LM Carrier!");
-                    setTypeMessage('warning');
-                    setNumberPackage('');
-
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoWarning').play();
-                }
-                else if(response.stateAction)
-                {
-                    setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
-                    setTypeMessage('success');
-                    setNumberPackage('');
-
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoSuccess').play();
-
-                    listAllPackageReturn(page, RouteSearch, StateSearch);
-                }
-                else if(response.status == 422)
-                {
-                    for(const index in response.errors)
+                    if(response.stateAction == 'validatedFilterPackage')
                     {
-                        document.getElementById(index).style.display = 'block';
-                        document.getElementById(index).innerHTML     = response.errors[index][0];
+                        let packageBlocked  = response.packageBlocked;
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'PACKAGE BLOCKED #'+ returnReference_Number_1,
+                            text: packageBlocked.comment,
+                            showConfirmButton: false,
+                            timer: 2000,
+                        });
+
+                        setTypeMessage('primary');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoBlocked').play();
                     }
-                }
-                else
-                {
-                    setTextMessage("Hubo un problema, intente nuevamente realizar la misma acción.");
-                    setTypeMessage('error');
-                    setNumberPackage('');
+                    else if(response.stateAction == 'validatedReturnCompany')
+                    {
+                        setTextMessage("The package was registered before for return to the company #"+ returnReference_Number_1);
+                    }
+                    else if(response.stateAction == 'packageInPreDispatch')
+                    {
+                        setTextMessage('The package is in  PRE DISPATCH #'+ returnReference_Number_1);
+                        setTypeMessage('warning');
+                        setNumberPackage('');
 
-                    document.getElementById('return_Reference_Number_1').focus();
-                    document.getElementById('soundPitidoError').play();
-                }
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'validatedLost')
+                    {
+                        setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessage('warning');
 
-                setReadOnly(false);
-            },
-        );
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == true)
+                    {
+                        setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
+                        setTypeMessage('success');
+                        setNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
+
+                        listAllPackageReturn(page, RouteSearch, StateSearch);
+                    }
+                    else if(response.stateAction == 'taskWasNotDelete')
+                    {
+                        setTextMessage("The task was not deleted in Onfleet #"+ returnReference_Number_1);
+                        setTypeMessage('error');
+                        setReturnNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notUser')
+                    {
+                        setTextMessage("The package N° "+ returnReference_Number_1 +" fue validado por otro Driver!");
+                        setTypeMessage('error');
+                        setReturnNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+                    else if(response.stateAction == 'notDispatch')
+                    {
+                        setTextMessage("The package #"+ returnReference_Number_1 +" was not validated as Dispatch o LM Carrier!");
+                        setTypeMessage('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction)
+                    {
+                        setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
+                        setTypeMessage('success');
+                        setNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoSuccess').play();
+
+                        listAllPackageReturn(page, RouteSearch, StateSearch);
+                    }
+                    else if(response.status == 422)
+                    {
+                        for(const index in response.errors)
+                        {
+                            document.getElementById(index).style.display = 'block';
+                            document.getElementById(index).innerHTML     = response.errors[index][0];
+                        }
+                    }
+                    else
+                    {
+                        setTextMessage("Hubo un problema, intente nuevamente realizar la misma acción.");
+                        setTypeMessage('error');
+                        setNumberPackage('');
+
+                        document.getElementById('return_Reference_Number_1').focus();
+                        document.getElementById('soundPitidoError').play();
+                    }
+
+                    setReadOnly(false);
+                    setSendDispatch(1);
+                },
+            );
+        }
     }
+
     const exportAllPackageReturn = (route, state, type) => {
 
         let url = url_general +'package/list/return/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ route +'/'+ state +'/'+type;
