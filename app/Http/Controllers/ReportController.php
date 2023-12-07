@@ -324,7 +324,7 @@ class ReportController extends Controller
             $listAll = $listAll->select(
                                     'created_at',
                                     'company',
-                                    'idUserLost',
+                                    'idUserInbound',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
