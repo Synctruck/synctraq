@@ -151,11 +151,13 @@ class PackageWarehouseController extends Controller
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
+            $user = $packageWarehouse->user ? $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner : '';
+
             $lineData = array(
                                 date('m-d-Y', strtotime($packageWarehouse->created_at)),
                                 date('H:i:s', strtotime($packageWarehouse->created_at)),
                                 $packageWarehouse->company,
-                                $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
+                                $user,
                                 $packageWarehouse->Reference_Number_1,
                                 $packageWarehouse->Dropoff_Contact_Name,
                                 $packageWarehouse->Dropoff_Contact_Phone_Number,
