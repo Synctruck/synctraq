@@ -186,7 +186,6 @@ function ReportLost() {
                 <td>{ pack.dispatchDate }</td>
                 <td><b>{ pack.company }</b></td>
                 <td><b>{ pack.validator }</b></td>
-                console.log(pack.validator);
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.status }</td>
                 <td>

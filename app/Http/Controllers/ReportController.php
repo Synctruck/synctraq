@@ -350,16 +350,15 @@ class ReportController extends Controller
         foreach($listAll as $packageHistory)
         {
             $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                            ->where('status', 'Lost')
+                                            ->where('status', 'Dispatch')
                                             ->first();
 
             $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                            ->where('status', 'Lost')
+                                            ->where('status', 'Delivery')
                                             ->get()
                                             ->last();
             
             $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
-
             $timeDispatchDate = 0;
             $timeDeliveryDate = 0;
 
