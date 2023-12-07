@@ -198,15 +198,11 @@ class PaymentTeamController extends Controller
 
     public function GetPriceTeamByCompany($idTeam, $idCompany, $route, $idRangeRate)
     {
-        Log::info($idTeam .' => '. $idCompany .' => '. $route .' => '. $idRangeRate);
-
         $rangeByCompanyTeam = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                                         ->where('idCompany', $idCompany)
                                                         ->where('idRangeRate', $idRangeRate)
                                                         ->where('route', $route)
                                                         ->first();
-
-        Log::info('rangeByCompanyTeam => '. $rangeByCompanyTeam);
 
         $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
@@ -214,23 +210,17 @@ class PaymentTeamController extends Controller
                                     ->where('route', '')
                                     ->first();
 
-        Log::info('rangeByCompany => '. $rangeByCompany);
-
         $rangeByRate = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', 0)
                                     ->where('idRangeRate', $idRangeRate)
                                     ->where('route', '')
                                     ->first();
 
-        Log::info('rangeByRate => '. $rangeByRate);
-
         $rangeByRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', 0)
                                     ->where('idRangeRate', 0)
                                     ->where('route', $route)
                                     ->first();
-
-        Log::info('rangeByRoute => '. $rangeByRoute);
 
         $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
         $priceRate        = $rangeByRate ? $rangeByRate->price : 0;
