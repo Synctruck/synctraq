@@ -265,12 +265,12 @@ class ReportController extends Controller
         $packageHistoryListNew = $data['listAll'];
 
         $listState = PackageHistory::select('Dropoff_Province')
-                                    ->where('status', 'Inbound')
+                                    ->where('status', 'Lost')
                                     ->groupBy('Dropoff_Province')
                                     ->get();
 
         $listTruck = PackageHistory::select('TRUCK')
-                                    ->where('status', 'Inbound')
+                                    ->where('status', 'Lost')
                                     ->groupBy('TRUCK')
                                     ->get();
 
@@ -350,15 +350,16 @@ class ReportController extends Controller
         foreach($listAll as $packageHistory)
         {
             $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                            ->where('status', 'Lost')
+                                            ->where('status', 'Dispatch')
                                             ->first();
 
             $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                            ->where('status', 'Lost')
+                                            ->where('status', 'Delivery')
                                             ->get()
                                             ->last();
             
-            $validator = $packageHistory->user ? $packageHistory->user->name .' '. $packageHistory->user->nameOfOwner : '';
+            $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
+
             $timeDispatchDate = 0;
             $timeDeliveryDate = 0;
 
