@@ -306,7 +306,7 @@ class PaymentTeamController extends Controller
         }
 
         $totalPayments = $paymentList->get()->sum('total');
-        $paymentList   = $paymentList->orderBy('created_at', 'desc');
+        $paymentList   = $paymentList->orderBy('created_at', 'asc');
 
         if($typeAction == 'list')
         {
