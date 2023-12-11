@@ -358,7 +358,7 @@ class ReportController extends Controller
                                             ->get()
                                             ->last();
             
-            $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
+            $validator = $packageHistory->user ? $packageHistory->user->name .' '. $packageHistory->user->nameOfOwner : '';
 
             $timeDispatchDate = 0;
             $timeDeliveryDate = 0;
