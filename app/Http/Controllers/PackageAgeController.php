@@ -138,9 +138,9 @@ class PackageAgeController extends Controller
         {
             $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
         }
-        else if($status == 'Lm Carrier')
+        else if($status == 'LM Carrier')
         {
-            $idsAll = PackageLmCarrier::where('status', '=', 'Lm Carrier')->get('Reference_Number_1');
+            $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')->get('Reference_Number_1');
         }
 
         $states = $states == 'all' ? [] : explode(',', $states);
@@ -246,6 +246,7 @@ class PackageAgeController extends Controller
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
