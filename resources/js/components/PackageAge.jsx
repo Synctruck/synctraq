@@ -281,7 +281,6 @@ function PackageAge() {
                                                     <option value="Failed">Failed</option>
                                                     <option value="NMI">NMI</option>
                                                     <option value="Middle Mile Scan">Middle Mile Scan</option>
-                                                    <option value="LM Carrier">LM Carrier</option>
                                                 </select>
                                             </div>
                                         </div>
