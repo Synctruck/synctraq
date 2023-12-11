@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, 
-                PackageHistory, PackageBlocked, PackageDispatch, PackageFailed, PackageLost, 
+                PackageHistory, PackageBlocked, PackageDispatch, PackageLmCarrier, PackageFailed, PackageLost,
                 PackageInbound, PackageManifest, PackageNeedMoreInformation, PackageNotExists, 
                 PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
@@ -102,8 +102,9 @@ class PackageAgeController extends Controller
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
+            $idsPackageLmCarrier = PackageLmCarrier::get('Reference_Number_1');
 
-            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI);
+            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI)->merge($idsPackageLmCarrier);
         }
         else if($status == 'Inbound')
         {
@@ -136,6 +137,10 @@ class PackageAgeController extends Controller
         else if($status == 'Middle Mile Scan')
         {
             $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
+        }
+        else if($status == 'Lm Carrier')
+        {
+            $idsAll = PackageLmCarrier::where('status', '=', 'Lm Carrier')->get('Reference_Number_1');
         }
 
         $states = $states == 'all' ? [] : explode(',', $states);
