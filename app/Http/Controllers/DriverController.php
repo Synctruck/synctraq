@@ -124,13 +124,14 @@ class DriverController extends Controller
             if($registerTeam)
             {
                 $driverLast = Driver::all()->last();
-                
+
                 $request['id']        = $driverLast->id + 1;
                 $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
                 $request['idRole']    = 4;
                 $request['password']  = Hash::make($request->get('email'));
                 $request['idTeam']    = $team->id;
                 $request['nameTeam']  = $team->name;
+                $request['usageApp']  = 'Onfleet';
 
                 Driver::create($request->all());
 
