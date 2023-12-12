@@ -19,7 +19,7 @@ class Driver extends Model implements Auditable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'idTeam', 'nameTeam', 'idOnfleet','status'];
+    protected $fillable = ['id', 'idRole', 'name', 'nameOfOwner', 'phone', 'email', 'password', 'idTeam', 'nameTeam', 'idOnfleet','status', 'usageApp'];
 
     public function role()
     {
