@@ -188,21 +188,9 @@ class DriverController extends Controller
             $driver->idTeam      = $team->id;
             $driver->nameTeam    = $team->name;      
 
-            $registerPODApp = $this->RegisterPODApp($driver);
+            $this->SynchronizeNewSystem($driver->id);
 
-            if($registerPODApp['statusCode'] === true)
-            {
-                $driver->idOnfleet = $registerPODApp['response']['data']['_id'];
-                $driver->save();
-
-                $this->SynchronizeNewSystem($driver->id);
-
-                return ['stateAction' => true];
-            }
-            else
-            {
-                return ['stateAction' => 'notRegisterPODApp', 'response' => $registerPODApp['response']];
-            }
+            return ['stateAction' => true];
         }
     }
 
