@@ -185,6 +185,7 @@ function ReportLost() {
                 </td>
                 <td>{ pack.dispatchDate }</td>
                 <td><b>{ pack.company }</b></td>
+                <td><b>{ pack.team }</b></td>
                 <td><b>{ pack.validator }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.status }</td>
@@ -404,6 +405,7 @@ function ReportLost() {
                                                 <th>DATE</th>
                                                 <th>DISPATCH DATE</th>
                                                 <th>COMPANY</th>
+                                                <th>TEAM</th>
                                                 <th>VALIDATOR</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>
