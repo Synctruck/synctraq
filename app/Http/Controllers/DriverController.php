@@ -187,7 +187,8 @@ class DriverController extends Controller
             $driver->status      = $request->status;
             $driver->idTeam      = $team->id;
             $driver->nameTeam    = $team->name;      
-
+            $driver->save();
+            
             $this->SynchronizeNewSystem($driver->id);
 
             return ['stateAction' => true];
