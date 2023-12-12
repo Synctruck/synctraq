@@ -579,7 +579,7 @@ class DriverController extends Controller
                     "email" => $request->email,
                     "roles" => [],
                     "meta" => [
-                        "syncDriverId" => '"'. $idDriver .'"'
+                        "syncDriverId" => $idDriver
                     ]
                 ];
 
