@@ -47,7 +47,7 @@ class PackageCheckController extends Controller
                 $row = str_getcsv($raw_string);
 
                 Log::info($row);
-
+                Log::info($lineNumber);
                 $data = [
 
                     'package' => $row[20],
