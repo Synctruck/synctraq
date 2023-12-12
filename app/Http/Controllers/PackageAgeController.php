@@ -104,7 +104,7 @@ class PackageAgeController extends Controller
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
             $idsPackageLmCarrier = PackageLmCarrier::get('Reference_Number_1');
 
-            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI);
+            $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI)->merge($idsPackageLmCarrier);
         }
         else if($status == 'Inbound')
         {
