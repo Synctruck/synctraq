@@ -356,6 +356,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);
 	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
+	Route::get('driver/synchronize/{id}', [DriverController::class, 'SynchronizeNewSystem']);
 	Route::get('driver/defrief', [DriverController::class, 'IndexDebrief']);
 	Route::get('driver/defrief/list/{idTeam}', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
