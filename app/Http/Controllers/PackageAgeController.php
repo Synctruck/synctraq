@@ -138,6 +138,10 @@ class PackageAgeController extends Controller
         {
             $idsAll = PackageWarehouse::where('status', '=', 'Middle Mile Scan')->get('Reference_Number_1');
         }
+        else if($status == 'LM Carrier')
+        {
+            $idsAll = PackageWarehouse::where('status', '=', 'LM Carrier')->get('Reference_Number_1');
+        }
 
         $states = $states == 'all' ? [] : explode(',', $states);
         $routes = $routes == 'all' ? [] : explode(',', $routes);
