@@ -376,6 +376,35 @@ function Driver() {
         document.getElementById('status').innerHTML     = '';
     }
 
+    const synchronize = async (id) => {
+
+        LoadingShowMap();
+
+        await fetch(url_general +'driver/synchronize/'+ id)
+        .then(response => response.json())
+        .then(response => {
+
+            if(response.statusCode == true)
+            {
+                swal("Driver data was synchronized correctly!", {
+
+                    icon: "success",
+                });
+
+                listAllUser(page);
+            }
+            else
+            {
+                swal("There was an error try again!", {
+
+                    icon: "error",
+                });
+            }
+
+            LoadingHideMap();
+        });
+    }
+
     const listDriverTable = listUser.map( (user, i) => {
 
         return (
@@ -399,17 +428,33 @@ function Driver() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-primary btn-sm" title="Edit" onClick={ () => getUser(user.id) }>
+                    <button className="btn btn-primary btn-sm m-1" title="Edit" onClick={ () => getUser(user.id) }>
                         <i className="bx bx-edit-alt"></i>
-                    </button> &nbsp;
-
+                    </button>
+                    
                     {
                         (
                             user.deleteUser == 0
                             ?
-                                <button className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteUser(user.id) }>
-                                    <i className="bx bxs-trash-alt"></i>
-                                </button>
+                                <div>
+                                    <button className="btn btn-danger btn-sm m-1" title="Delete" onClick={ () => deleteUser(user.id) }>
+                                        <i className="bx bxs-trash-alt"></i>
+                                    </button>
+                                </div>
+                            :
+                                ''
+                        )
+                    }
+
+                    {
+                        (
+                            user.registerNewSystem == 0
+                            ?
+                                <div>
+                                    <button className="btn btn-success btn-sm" title="Synchronize with new system" onClick={ () => synchronize(user.id) }>
+                                        <i className="bx bxs-user-plus"></i>
+                                    </button>
+                                </div>
                             :
                                 ''
                         )
