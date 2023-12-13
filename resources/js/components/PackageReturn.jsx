@@ -370,7 +370,7 @@ function PackageReturn() {
                 <td onClick={ () => viewImages(urlImage)} style={ {cursor: 'pointer'} }>
                     { imgs }
                 </td>
-                <td>
+                <td style={ {display: 'none'} }>
                     <button className="btn btn-primary btn-sm" onClick={ () => handlerOpenModal(packageReturn.Reference_Number_1) }>
                         <i className="bx bx-edit-alt"></i>
                     </button>
@@ -857,7 +857,6 @@ function PackageReturn() {
                                                 <th>TASK ONFLEET</th>
                                                 <th>STATUS ONFLEET</th>
                                                 <th>IMG ONFLEET</th>
-                                                <th>ACTION</th>
                                             </tr>
                                         </thead>
                                         <tbody>
