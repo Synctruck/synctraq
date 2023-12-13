@@ -258,9 +258,9 @@ class ReportController extends Controller
     }
 
     
-    public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $truck)
+    public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state)
     {
-        $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $truck);
+        $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state);
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
 
@@ -282,14 +282,13 @@ class ReportController extends Controller
         ];
     }
 
-    private function getDataLost($idCompany,$idTeam, $dateInit, $dateEnd,$route, $state, $truck, $type = 'list')
+    private function getDataLost($idCompany,$idTeam, $dateInit, $dateEnd,$route, $state, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
         $routes = explode(',', $route);
         $states = explode(',', $state);
-        $trucks = explode(',', $truck);
 
         $listAll = PackageHistory::with(
                                 [
@@ -311,11 +310,6 @@ class ReportController extends Controller
         if($idTeam != 'all')
         {
             $listAll = $listAll->where('idTeam', $idTeam);
-        }
-
-        if($truck != 'all')
-        {
-            $listAll = $listAll->whereIn('TRUCK', $trucks);
         }
 
         if($idCompany && $idCompany !=0)
@@ -387,7 +381,7 @@ class ReportController extends Controller
                 "created_at" => $packageHistory->created_at,
                 "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
                 "company" => $packageHistory->company,
-                "team" => $packageHistory->team,
+                "team" => $packageHistory->idTeam,
                 "validator" => $validator,
                 "status" => $status['status'],
                 "statusDate" => $status['statusDate'],

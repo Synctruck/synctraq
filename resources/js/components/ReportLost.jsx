@@ -18,11 +18,11 @@ function ReportLost() {
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
-    const [listTruck , setListTruck] = useState([]);
-
+    
     const [listCompany , setListCompany]  = useState([]);
+    const [listTeam , setListTeam]  = useState([]);
     const [idCompany, setCompany] = useState(0);
-    const [idTeam, setIdTeam]     = useState(0);
+    const [idTeam, setIdTeam]     = useState('all');
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -44,14 +44,14 @@ function ReportLost() {
 
         listReportInbound(page, RouteSearch, StateSearch,truckSearch);
 
-    }, [dateInit, dateEnd,idCompany,idTeam]);
+    }, [dateInit, dateEnd,idCompany, idTeam]);
 
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
         setIsLoading(true);
 
-        fetch(url_general +'report/list/lost/'+ idCompany+'/'+idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/lost/'+ idCompany+'/'+idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ '?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -61,9 +61,8 @@ function ReportLost() {
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityInbound(response.packageHistoryList.total);
-
+            setListTeam(response.listTeam)
             setListState(response.listState);
-            setListTruck(response.listTruck);
 
             if(listState.length == 0)
             {
@@ -71,6 +70,10 @@ function ReportLost() {
             }
 
             if(listTruck.length == 0)
+            {
+                listOptionTruck(response.listTruck);
+            }
+            if(listTeam.length == 0)
             {
                 listOptionTruck(response.listTruck);
             }
@@ -91,8 +94,6 @@ function ReportLost() {
 
         });
     }
-
-
 
     const optionCompany = listCompany.map( (company, i) => {
 
@@ -126,6 +127,8 @@ function ReportLost() {
 
         listReportInbound(pageNumber, RouteSearch, StateSearch,truckSearch);
     }
+
+    
 
     const handlerExport = (type) => {
 
@@ -270,31 +273,7 @@ function ReportLost() {
         }
     };
 
-    const handlerChangeTruck = (items) => {
-
-        if(items.length != 0)
-        {
-            let trucksSearch = '';
-
-            items.map( (item) => {
-
-                trucksSearch = trucksSearch == '' ? item.value : trucksSearch +','+ item.value;
-            });
-
-            setTruckSearch(trucksSearch);
-
-            listReportInbound(1, RouteSearch, StateSearch, trucksSearch);
-        }
-        else
-        {
-            setTruckSearch('all');
-
-            listReportInbound(1, RouteSearch, StateSearch,'all');
-        }
-    };
-
     const [optionsStateSearch, setOptionsStateSearch] = useState([]);
-    const [optionsTruckSearch, setOptionsTruckSearch] = useState([]);
 
     const listOptionState = (listState) => {
 
@@ -305,18 +284,6 @@ function ReportLost() {
             optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
 
             setOptionsStateSearch(optionsStateSearch);
-        });
-    }
-
-    const listOptionTruck = (listTruck) => {
-
-        setOptionsTruckSearch([]);
-
-        listTruck.map( (item, i) => {
-
-            optionsTruckSearch.push({ value: item.TRUCK, label: item.TRUCK });
-
-            setOptionsTruckSearch(optionsTruckSearch);
         });
     }
 
