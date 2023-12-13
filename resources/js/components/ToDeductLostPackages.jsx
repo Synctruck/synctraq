@@ -197,16 +197,14 @@ function ToDeductLostPackages() {
                     }
                 </td>
                 <td className="text-danger text-right">
-                    <button className="btn btn-primary btn-sm" onClick={ () => handlerEditPrice(toDeductLostPackage.shipmentId) }>
-                        <i className="bx bx-edit-alt"></i>
-                    </button><br/>
-
                     {
                         toDeductLostPackage.priceToDeduct
                         ?
                             <h5><b>{ total +' $' }</b></h5>
                         :
-                            ''
+                            <button className="btn btn-primary btn-sm" onClick={ () => handlerEditPrice(toDeductLostPackage.shipmentId) }>
+                                <i className="bx bx-edit-alt"></i>
+                            </button>
                     }
                 </td>
             </tr>
