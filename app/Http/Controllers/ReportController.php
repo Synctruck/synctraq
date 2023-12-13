@@ -307,7 +307,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
-        if($idTeam != 'all')
+        if($idTeam != 0)
         {
             $listAll = $listAll->where('idTeam', $idTeam);
         }

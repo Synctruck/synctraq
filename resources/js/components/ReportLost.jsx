@@ -22,7 +22,7 @@ function ReportLost() {
     const [listCompany , setListCompany]  = useState([]);
     const [listTeam , setListTeam]  = useState([]);
     const [idCompany, setCompany] = useState(0);
-    const [idTeam, setIdTeam]     = useState('all');
+    const [idTeam, setIdTeam]     = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -36,6 +36,7 @@ function ReportLost() {
     useEffect( () => {
 
         listAllRoute();
+        listAllTeam();
         listAllCompany();
 
     }, []);
@@ -61,21 +62,11 @@ function ReportLost() {
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityInbound(response.packageHistoryList.total);
-            setListTeam(response.listTeam)
             setListState(response.listState);
 
             if(listState.length == 0)
             {
                 listOptionState(response.listState);
-            }
-
-            if(listTruck.length == 0)
-            {
-                listOptionTruck(response.listTruck);
-            }
-            if(listTeam.length == 0)
-            {
-                listOptionTruck(response.listTruck);
             }
         });
     }
@@ -95,10 +86,30 @@ function ReportLost() {
         });
     }
 
+    
+    const listAllTeam = () => {
+
+        setListTeam([]);
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setIdTeam(0);
+            setListTeam(response.listTeam);
+        });
+    }
+
     const optionCompany = listCompany.map( (company, i) => {
 
         return <option value={company.id}>{company.name}</option>
     })
+
+    const optionTeam = listTeam.map( (team, i) => {
+
+        return <option value={team.id}>{team.name}</option>
+    })
+    
 
     const listAllRoute = () => {
 
@@ -211,6 +222,7 @@ function ReportLost() {
             </tr>
         );
     });
+
 
     const handlerChangeRoute = (routes) => {
 
@@ -339,6 +351,19 @@ function ReportLost() {
                                                         <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
                                                             <option value="" style={ {display: 'none'} }>Select...</option>
                                                             { optionCompany }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Team:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionTeam }
                                                         </select>
                                                     </div>
                                                 </div>
