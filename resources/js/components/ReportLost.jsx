@@ -153,7 +153,7 @@ function ReportLost() {
         }
         else
         {
-            let url = url_general +'report/export/lost/'+ idCompany +'/'+ idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch +'/'+ type;
+            let url = url_general +'report/export/lost/'+ idCompany +'/'+ idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ type;
 
             if(type == 'download')
             {
