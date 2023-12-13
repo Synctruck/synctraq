@@ -91,7 +91,7 @@ function ReportLost() {
         fetch(url_general +'team/listall')
         .then(res => res.json())
         .then((response) => {
-            let CustomListTeam = [{id:0,name:"All companies"},...response.listTeam];
+            let CustomListTeam = [{id:0,name:"All Teams"},...response.listTeam];
             setIdTeam(0);
             setListTeam(CustomListTeam);
         });
