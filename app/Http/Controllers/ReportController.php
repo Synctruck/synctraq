@@ -307,6 +307,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
+        
         if($idTeam != 0)
         {
             $listAll = $listAll->where('idTeam', $idTeam);
@@ -1324,14 +1325,14 @@ class ReportController extends Controller
     }
 
 
-    public function ExportLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $typeExport)
+    public function ExportLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $truck, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "Report Lost " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Lost.csv";
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR','COMPANY', 'VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+        $fields = array('DATE', 'HOUR','COMPANY', 'TEAM','VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1344,6 +1345,7 @@ class ReportController extends Controller
                                 date('m-d-Y', strtotime($packageLost['created_at'])),
                                 date('H:i:s', strtotime($packageLost['created_at'])),
                                 $packageLost['company'],
+                                $packageLost['team'],
                                 $packageLost['validator'],
                                 $packageLost['Reference_Number_1'],
                                 $packageLost['status'],
