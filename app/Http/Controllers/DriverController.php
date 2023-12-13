@@ -68,11 +68,17 @@ class DriverController extends Controller
 
     public function ListAllByTeam($idTeam)
     {
-        $listDriver = Driver::where('idTeam', $idTeam)
-                            ->where('idOnfleet', '!=', '')
-                            ->where('status', 'Active')
-                            ->orderBy('name', 'asc')
-                            ->get();
+        $usageApp   = Configuration::first()->usageApp;
+        $listDriver = Driver::where('idTeam', $idTeam);
+
+        if($usageApp == 'Onfleet')
+            $listDriver = $listDriver->where('usageApp', 'Onfleet');
+        else
+            $listDriver = $listDriver->where('usageApp', 'PODApp');
+
+        $listDriver = $listDriver->where('status', 'Active')
+                                    ->orderBy('name', 'asc')
+                                    ->get();
 
         return ['listDriver' => $listDriver];
     }

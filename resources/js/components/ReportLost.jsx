@@ -18,10 +18,11 @@ function ReportLost() {
 
     const [listRoute, setListRoute]  = useState([]);
     const [listState , setListState] = useState([]);
-    const [listTruck , setListTruck] = useState([]);
-
+    
     const [listCompany , setListCompany]  = useState([]);
+    const [listTeam , setListTeam]  = useState([]);
     const [idCompany, setCompany] = useState(0);
+    const [idTeam, setIdTeam]     = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -35,6 +36,7 @@ function ReportLost() {
     useEffect( () => {
 
         listAllRoute();
+        listAllTeam();
         listAllCompany();
 
     }, []);
@@ -43,14 +45,14 @@ function ReportLost() {
 
         listReportInbound(page, RouteSearch, StateSearch,truckSearch);
 
-    }, [dateInit, dateEnd,idCompany]);
+    }, [dateInit, dateEnd,idCompany, idTeam]);
 
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
         setIsLoading(true);
 
-        fetch(url_general +'report/list/lost/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/lost/'+ idCompany+'/'+idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ '?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -60,18 +62,11 @@ function ReportLost() {
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityInbound(response.packageHistoryList.total);
-
             setListState(response.listState);
-            setListTruck(response.listTruck);
 
             if(listState.length == 0)
             {
                 listOptionState(response.listState);
-            }
-
-            if(listTruck.length == 0)
-            {
-                listOptionTruck(response.listTruck);
             }
         });
     }
@@ -91,10 +86,27 @@ function ReportLost() {
         });
     }
 
+    const listAllTeam = () => {
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+            let CustomListTeam = [{id:0,name:"All Teams"},...response.listTeam];
+            setIdTeam(0);
+            setListTeam(CustomListTeam);
+        });
+    }
+
     const optionCompany = listCompany.map( (company, i) => {
 
         return <option value={company.id}>{company.name}</option>
     })
+
+    const optionTeam = listTeam.map( (team, i) => {
+
+        return <option value={team.id}>{team.name}</option>
+    })
+    
 
     const listAllRoute = () => {
 
@@ -124,6 +136,8 @@ function ReportLost() {
         listReportInbound(pageNumber, RouteSearch, StateSearch,truckSearch);
     }
 
+    
+
     const handlerExport = (type) => {
 
         let date1      = moment(dateInit);
@@ -139,7 +153,7 @@ function ReportLost() {
         }
         else
         {
-            let url = url_general +'report/export/lost/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch +'/'+ type;
+            let url = url_general +'report/export/lost/'+ idCompany +'/'+ idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ type;
 
             if(type == 'download')
             {
@@ -175,7 +189,7 @@ function ReportLost() {
     }
 
     const listReportTable = listReport.map( (pack, i) => {
-
+        let team   = (pack.team ? pack.team.name : '');
         return (
 
             <tr key={i} className="alert-success">
@@ -185,6 +199,7 @@ function ReportLost() {
                 </td>
                 <td>{ pack.dispatchDate }</td>
                 <td><b>{ pack.company }</b></td>
+                <td><b>{ team }</b></td>
                 <td><b>{ pack.validator }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.status }</td>
@@ -204,6 +219,7 @@ function ReportLost() {
             </tr>
         );
     });
+
 
     const handlerChangeRoute = (routes) => {
 
@@ -266,31 +282,7 @@ function ReportLost() {
         }
     };
 
-    const handlerChangeTruck = (items) => {
-
-        if(items.length != 0)
-        {
-            let trucksSearch = '';
-
-            items.map( (item) => {
-
-                trucksSearch = trucksSearch == '' ? item.value : trucksSearch +','+ item.value;
-            });
-
-            setTruckSearch(trucksSearch);
-
-            listReportInbound(1, RouteSearch, StateSearch, trucksSearch);
-        }
-        else
-        {
-            setTruckSearch('all');
-
-            listReportInbound(1, RouteSearch, StateSearch,'all');
-        }
-    };
-
     const [optionsStateSearch, setOptionsStateSearch] = useState([]);
-    const [optionsTruckSearch, setOptionsTruckSearch] = useState([]);
 
     const listOptionState = (listState) => {
 
@@ -301,18 +293,6 @@ function ReportLost() {
             optionsStateSearch.push({ value: state.Dropoff_Province, label: state.Dropoff_Province });
 
             setOptionsStateSearch(optionsStateSearch);
-        });
-    }
-
-    const listOptionTruck = (listTruck) => {
-
-        setOptionsTruckSearch([]);
-
-        listTruck.map( (item, i) => {
-
-            optionsTruckSearch.push({ value: item.TRUCK, label: item.TRUCK });
-
-            setOptionsTruckSearch(optionsTruckSearch);
         });
     }
 
@@ -372,6 +352,19 @@ function ReportLost() {
                                                     </div>
                                                 </div>
                                             </dvi>
+                                            <dvi className="col-lg-2">
+                                                <div className="row">
+                                                    <div className="col-lg-12">
+                                                        Team:
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
+                                                            <option value="" style={ {display: 'none'} }>Select...</option>
+                                                            { optionTeam }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </dvi>
                                             <div className="col-lg-2">
                                                 <div className="row">
                                                     <div className="col-lg-12">
@@ -404,6 +397,7 @@ function ReportLost() {
                                                 <th>DATE</th>
                                                 <th>DISPATCH DATE</th>
                                                 <th>COMPANY</th>
+                                                <th>TEAM</th>
                                                 <th>VALIDATOR</th>
                                                 <th>PACKAGE ID</th>
                                                 <th>ACTUAL STATUS</th>

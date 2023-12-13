@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageAgeController;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, PackageLost, TeamRoute, User };
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -258,9 +258,9 @@ class ReportController extends Controller
     }
 
     
-    public function ListLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck)
+    public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state)
     {
-        $data                  = $this->getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck);
+        $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state);
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
 
@@ -282,14 +282,13 @@ class ReportController extends Controller
         ];
     }
 
-    private function getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'list')
+    private function getDataLost($idCompany,$idTeam, $dateInit, $dateEnd,$route, $state, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
 
         $routes = explode(',', $route);
         $states = explode(',', $state);
-        $trucks = explode(',', $truck);
 
         $listAll = PackageHistory::with(
                                 [
@@ -308,10 +307,10 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
-
-        if($truck != 'all')
+        
+        if($idTeam != 0)
         {
-            $listAll = $listAll->whereIn('TRUCK', $trucks);
+            $listAll = $listAll->where('idTeam', $idTeam);
         }
 
         if($idCompany && $idCompany !=0)
@@ -325,6 +324,7 @@ class ReportController extends Controller
                                     'created_at',
                                     'company',
                                     'idUser',
+                                    'idTeam',
                                     'Reference_Number_1',
                                     'Dropoff_Contact_Name',
                                     'Dropoff_Contact_Phone_Number',
@@ -382,6 +382,7 @@ class ReportController extends Controller
                 "created_at" => $packageHistory->created_at,
                 "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
                 "company" => $packageHistory->company,
+                "team" => $packageHistory->Team,
                 "validator" => $validator,
                 "status" => $status['status'],
                 "statusDate" => $status['statusDate'],
@@ -1324,26 +1325,28 @@ class ReportController extends Controller
     }
 
 
-    public function ExportLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $typeExport)
+    public function ExportLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "Report Lost " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Lost.csv";
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'HOUR','COMPANY', 'VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+        $fields = array('DATE', 'HOUR','COMPANY','TEAM','VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
 
         fputcsv($file, $fields, $delimiter);
 
-        $listPackageLost = $this->getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'export');
+        $listPackageLost = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $type = 'export');
         $listPackageLost = $listPackageLost['listAll'];
 
         foreach($listPackageLost as $packageLost)
         {
+            $team   = isset($packageLost['team']) ? $packageLost['team']['name'] : '';
             $lineData = array(
                                 date('m-d-Y', strtotime($packageLost['created_at'])),
                                 date('H:i:s', strtotime($packageLost['created_at'])),
                                 $packageLost['company'],
+                                $team,
                                 $packageLost['validator'],
                                 $packageLost['Reference_Number_1'],
                                 $packageLost['status'],
