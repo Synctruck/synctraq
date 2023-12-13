@@ -86,17 +86,14 @@ function ReportLost() {
         });
     }
 
-    
     const listAllTeam = () => {
-
-        setListTeam([]);
 
         fetch(url_general +'team/listall')
         .then(res => res.json())
         .then((response) => {
-
+            let CustomListTeam = [{id:0,name:"All companies"},...response.listTeam];
             setIdTeam(0);
-            setListTeam(response.listTeam);
+            setListTeam(CustomListTeam);
         });
     }
 
@@ -361,7 +358,7 @@ function ReportLost() {
                                                         Team:
                                                     </div>
                                                     <div className="col-lg-12">
-                                                        <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdTeam(e.target.value) }>
                                                             <option value="" style={ {display: 'none'} }>Select...</option>
                                                             { optionTeam }
                                                         </select>
