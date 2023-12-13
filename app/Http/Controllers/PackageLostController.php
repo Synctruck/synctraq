@@ -297,6 +297,12 @@ class PackageLostController extends Controller
                 $packageHistory->Dropoff_Province             = $packageInbound->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageHistory->Notes                        = $packageInbound->Notes;
+               
+                $idTeam   = $packageInbound->idTeam;
+                if($idTeam){
+                    $packageHistory->idTeam                       = $packageInbound->idTeam;
+                }
+                
                 $packageHistory->Weight                       = $packageInbound->Weight;
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
