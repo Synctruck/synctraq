@@ -381,7 +381,7 @@ class ReportController extends Controller
                 "created_at" => $packageHistory->created_at,
                 "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
                 "company" => $packageHistory->company,
-                "team" => $packageHistory->idTeam,
+                "team" => $packageHistory->Team,
                 "validator" => $validator,
                 "status" => $status['status'],
                 "statusDate" => $status['statusDate'],
