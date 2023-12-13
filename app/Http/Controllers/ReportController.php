@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageAgeController;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, PackageLost, TeamRoute, User };
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -258,9 +258,9 @@ class ReportController extends Controller
     }
 
     
-    public function ListLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck)
+    public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $truck)
     {
-        $data                  = $this->getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck);
+        $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $truck);
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
 
@@ -282,7 +282,7 @@ class ReportController extends Controller
         ];
     }
 
-    private function getDataLost($idCompany, $dateInit, $dateEnd, $route, $state, $truck, $type = 'list')
+    private function getDataLost($idCompany,$idTeam, $dateInit, $dateEnd,$route, $state, $truck, $type = 'list')
     {
         $dateInit = $dateInit .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -307,6 +307,10 @@ class ReportController extends Controller
         if($state != 'all')
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }
+        if($idTeam != 'all')
+        {
+            $listAll = $listAll->where('idTeam', $idTeam);
         }
 
         if($truck != 'all')

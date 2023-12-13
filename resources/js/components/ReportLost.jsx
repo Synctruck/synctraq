@@ -22,6 +22,7 @@ function ReportLost() {
 
     const [listCompany , setListCompany]  = useState([]);
     const [idCompany, setCompany] = useState(0);
+    const [idTeam, setIdTeam]     = useState(0);
 
     const [RouteSearch, setRouteSearch] = useState('all');
     const [StateSearch, setStateSearch] = useState('all');
@@ -43,14 +44,14 @@ function ReportLost() {
 
         listReportInbound(page, RouteSearch, StateSearch,truckSearch);
 
-    }, [dateInit, dateEnd,idCompany]);
+    }, [dateInit, dateEnd,idCompany,idTeam]);
 
 
     const listReportInbound = (pageNumber, routeSearch, stateSearch,truckSearch ) => {
 
         setIsLoading(true);
 
-        fetch(url_general +'report/list/lost/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
+        fetch(url_general +'report/list/lost/'+ idCompany+'/'+idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ routeSearch +'/'+stateSearch+'/'+ truckSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -90,6 +91,8 @@ function ReportLost() {
 
         });
     }
+
+
 
     const optionCompany = listCompany.map( (company, i) => {
 
@@ -139,7 +142,7 @@ function ReportLost() {
         }
         else
         {
-            let url = url_general +'report/export/lost/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch +'/'+ type;
+            let url = url_general +'report/export/lost/'+ idCompany +'/'+ idTeam +'/'+ dateInit +'/'+ dateEnd +'/'+ RouteSearch +'/'+ StateSearch+'/'+ truckSearch +'/'+ type;
 
             if(type == 'download')
             {
@@ -175,7 +178,7 @@ function ReportLost() {
     }
 
     const listReportTable = listReport.map( (pack, i) => {
-
+        let team   = (pack.team ? pack.team.name : '');
         return (
 
             <tr key={i} className="alert-success">
@@ -185,7 +188,7 @@ function ReportLost() {
                 </td>
                 <td>{ pack.dispatchDate }</td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.team }</b></td>
+                <td><b>{ team }</b></td>
                 <td><b>{ pack.validator }</b></td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.status }</td>
