@@ -184,25 +184,29 @@ function ToDeductLostPackages() {
                 </td>
                 <td><b>{ toDeductLostPackage.shipmentId }</b></td>
                 <td className="text-center">
+                    <button className="btn btn-success btn-sm" onClick={ () => handlerOpenModal(toDeductLostPackage.shipmentId) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button><br/>
+
                     {
                         toDeductLostPackage.team
                         ?
-                            toDeductLostPackage.team.name
+                            <b>{toDeductLostPackage.team.name}</b>
                         :
-                            <button className="btn btn-success btn-sm" onClick={ () => handlerOpenModal(toDeductLostPackage.shipmentId) }>
-                                <i className="bx bx-edit-alt"></i>
-                            </button>
+                            ''
                     }
                 </td>
                 <td className="text-danger text-right">
+                    <button className="btn btn-primary btn-sm" onClick={ () => handlerEditPrice(toDeductLostPackage.shipmentId) }>
+                        <i className="bx bx-edit-alt"></i>
+                    </button><br/>
+
                     {
                         toDeductLostPackage.priceToDeduct
                         ?
                             <h5><b>{ total +' $' }</b></h5>
                         :
-                            <button className="btn btn-primary btn-sm" onClick={ () => handlerEditPrice(toDeductLostPackage.shipmentId) }>
-                                <i className="bx bx-edit-alt"></i>
-                            </button>
+                            ''
                     }
                 </td>
             </tr>
@@ -283,7 +287,7 @@ function ToDeductLostPackages() {
                                                 <th><b>DATE</b></th>
                                                 <th><b>PACKAGE ID</b></th>
                                                 <th><b>TEAM</b></th>
-                                                <th><b>PRICE</b></th>
+                                                <th><b>PRICEwefew</b></th>
                                             </tr>
                                         </thead>
                                         <tbody>
