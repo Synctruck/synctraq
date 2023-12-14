@@ -102,7 +102,7 @@ class PackageAgeController extends Controller
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
-            $idsPackageLmCarrier = PackageLmCarrier::get('Reference_Number_1');
+            $idsPackageLmCarrier = PackageLmCarrier::where('status', '!=', 'Delivery')->get('Reference_Number_1');
 
             $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI)->merge($idsPackageLmCarrier);
         }
@@ -246,7 +246,7 @@ class PackageAgeController extends Controller
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
-        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::where('status', '!=', 'LM Carrier')->find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
