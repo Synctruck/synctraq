@@ -246,7 +246,7 @@ class PackageAgeController extends Controller
         $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
         $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
         $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
-        $package = $package != null ? $package : PackageLmCarrier::where('status', '!=', 'LM Carrier')->find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::where('status', '!=', 'Delivery')->find($Reference_Number_1);
 
         $packageLast = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
