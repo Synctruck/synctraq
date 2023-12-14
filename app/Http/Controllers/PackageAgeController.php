@@ -149,7 +149,7 @@ class PackageAgeController extends Controller
             $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')
                              ->whereNotIn('Reference_Number_1', function($query) {
                                  $query->select('Reference_Number_1')
-                                       ->from('PackageHistory')
+                                       ->from('packagehistory')
                                        ->where('status', '=', 'Delivery');
                              })
                              ->get('Reference_Number_1');
