@@ -102,10 +102,10 @@ class PackageAgeController extends Controller
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
-            $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')
+            $idsPackageLmCarrier = PackageLmCarrier::where('status', '=', 'LM Carrier')
                              ->whereNotIn('Reference_Number_1', function($query) {
                                  $query->select('Reference_Number_1')
-                                       ->from('PackageHistory')
+                                       ->from('packagehistory')
                                        ->where('status', '=', 'Delivery');
                              })
                              ->get('Reference_Number_1');
@@ -149,7 +149,7 @@ class PackageAgeController extends Controller
             $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')
                              ->whereNotIn('Reference_Number_1', function($query) {
                                  $query->select('Reference_Number_1')
-                                       ->from('PackageHistory')
+                                       ->from('packagehistory')
                                        ->where('status', '=', 'Delivery');
                              })
                              ->get('Reference_Number_1');
