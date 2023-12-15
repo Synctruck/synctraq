@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User, Cellar};
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse,PackageLmCarrier, States, User, Cellar};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -755,17 +755,17 @@ class PackageWarehouseController extends Controller
 
     public function ListInDelivery()
     {
-        $listPackageWarehouse = PackageWarehouse::where('status', 'Warehouse')->get();
+        $listPackageWarehouse = PackageLmCarrier::where('status', 'LM Carrier')->get();
 
         $packagesInDelivery = [];
 
         foreach($listPackageWarehouse as $packageWarehouse)
         {
-            $packageDelivery = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+            $packageHistory = PackageHistory::where('Reference_Number_1',$packageWarehouse->Reference_Number_1)->get()->last();
 
-            if($packageDelivery)
+            if($packageHistory->status== 'Delivery')
             {
-                array_push($packagesInDelivery, $packageWarehouse->Reference_Number_1);
+                array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
         }
 
@@ -782,7 +782,7 @@ class PackageWarehouseController extends Controller
 
             foreach($packagesListInDelivery as $Reference_Number_1)
             {
-                $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')
+                $packageWarehouse = PackageLmCarrier::where('status', 'LM Carrier')
                                                     ->where('Reference_Number_1', $Reference_Number_1)
                                                     ->first();
 
