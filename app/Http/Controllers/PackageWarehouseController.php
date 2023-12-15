@@ -755,13 +755,17 @@ class PackageWarehouseController extends Controller
 
     public function ListInDelivery()
     {
-        $listPackageWarehouse = PackageLmCarrier::where('status', 'LM Carrier')->get();
+        $id = new PackageLmCarrier();
+        $listPackageLmCarrier = PackageLmCarrier::where('Reference_Number_1', $id->Reference_Number_1)
+                                        ->whereDate('created_at', '2023-08-20') // Ejemplo de fecha específica
+                                        ->get();
+
 
         $packagesInDelivery = [];
 
-        foreach($listPackageWarehouse as $packageWarehouse)
+        foreach($listPackageLmCarrier as $packageLmCarrier)
         {
-            $packageHistory = PackageHistory::where('Reference_Number_1',$packageWarehouse->Reference_Number_1)->get()->last();
+            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1);
 
             if($packageHistory->status== 'Delivery')
             {
@@ -782,13 +786,13 @@ class PackageWarehouseController extends Controller
 
             foreach($packagesListInDelivery as $Reference_Number_1)
             {
-                $packageWarehouse = PackageLmCarrier::where('status', 'LM Carrier')
+                $packageLmCarrier = PackageLmCarrier::where('status', 'LM Carrier')
                                                     ->where('Reference_Number_1', $Reference_Number_1)
                                                     ->first();
 
-                if($packageWarehouse)
+                if($packageLmCarrier)
                 {
-                    $packageWarehouse->delete();
+                    $packageLmCarrier->delete();
                 }
             }
 
