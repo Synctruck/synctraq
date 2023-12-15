@@ -772,7 +772,7 @@ class PackageWarehouseController extends Controller
                 array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
         }
-
+        dd($packagesInDelivery);
         return $packagesInDelivery;
     }
 
