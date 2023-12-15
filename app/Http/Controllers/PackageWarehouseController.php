@@ -765,9 +765,9 @@ class PackageWarehouseController extends Controller
 
         foreach($listPackageLmCarrier as $packageLmCarrier)
         {
-            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1)->get();
+            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1)->get()->last();
 
-            if($packageHistory->status== 'Delivery')
+            if($packageHistory->status== '')
             {
                 array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
