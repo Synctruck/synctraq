@@ -765,14 +765,14 @@ class PackageWarehouseController extends Controller
 
         foreach($listPackageLmCarrier as $packageLmCarrier)
         {
-            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1)->get()->last();
+            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1);
 
-            if($packageHistory->status== 'LM Carrier')
+            if($packageHistory->status== 'Delivery')
             {
                 array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
         }
-
+        dd($packagesInDelivery);
         return $packagesInDelivery;
     }
 
