@@ -755,7 +755,8 @@ class PackageWarehouseController extends Controller
 
     public function ListInDelivery()
     {
-        $listPackageLmCarrier = PackageLmCarrier::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1)->get();
+        $id = new PackageLmCarrier();
+        $listPackageLmCarrier = PackageLmCarrier::where('Reference_Number_1',$id->Reference_Number_1)->get();
 
         $packagesInDelivery = [];
 
