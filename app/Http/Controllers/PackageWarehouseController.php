@@ -756,7 +756,8 @@ class PackageWarehouseController extends Controller
     public function ListInDelivery()
     {
         $id = new PackageLmCarrier();
-        $listPackageLmCarrier = PackageLmCarrier::where('created_at', '2023-08-20 03:08:28') // Ejemplo de fecha específica
+        $listPackageLmCarrier = PackageLmCarrier::where('Reference_Number_1', $id->Reference_Number_1)
+                                        ->whereDate('created_at', '2023-08-20') // Ejemplo de fecha específica
                                         ->get();
 
 
@@ -771,7 +772,7 @@ class PackageWarehouseController extends Controller
                 array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
         }
-       dd($packagesInDelivery);
+
         return $packagesInDelivery;
     }
 
