@@ -767,7 +767,7 @@ class PackageWarehouseController extends Controller
         {
             $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1)->get()->last();
 
-            if($packageHistory->status== '')
+            if($packageHistory->status== 'LM Carrier')
             {
                 array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
