@@ -429,7 +429,7 @@ class PackageInboundController extends Controller
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost')
+                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost' || $status == 'LM Carrier')
                     {                        
                         $package->delete();
                     }
