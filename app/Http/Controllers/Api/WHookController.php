@@ -17,7 +17,7 @@ use Log;
 class WHookController extends Controller
 {
     public function EndPointTaskCompleted(Request $request)
-    {   
+    {
         return response($request->check, 200)
             ->header('Content-Type', 'text/plain');
     }
@@ -36,7 +36,7 @@ class WHookController extends Controller
 
             Log::info("==== TASK COMPLETED");
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
-            
+
             if($completionDetailsStatus == true)
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
@@ -121,7 +121,7 @@ class WHookController extends Controller
                         $packagePriceCompanyTeamController = new PackagePriceCompanyTeamController();
                         $packagePriceCompanyTeamController->Insert($packageDispatch, 'today');
                     }
-                    
+
                     if($packageDispatch->company != 'Smart Kargo')
                     {
                         Log::info($packageDispatch->company);
@@ -130,6 +130,16 @@ class WHookController extends Controller
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
                         //end data for inland
+
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                        if($packageHistory)
+                        {
+                            $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), date('Y-m-d H:i:s'));
+                        }
                     }
                     else
                     {
@@ -158,21 +168,22 @@ class WHookController extends Controller
     {
         $Reference_Number_1      = $request['data']['task']['notes'];
         $idOnfleet               = $request['taskId'];
-        $taskOnfleet             = $request['data']['task']['shortId']; 
+        $taskOnfleet             = $request['data']['task']['shortId'];
         $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
         $Description_Onfleet     = $request['data']['task']['completionDetails']['failureReason'] .': ['. $request['data']['task']['completionDetails']['failureNotes'] .', '. $request['data']['task']['completionDetails']['notes'] .']';
-
+        $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
         Log::info('================================================');
         Log::info('============ START TASK FAILED ================');
         Log::info('TASK ONFLEET FAILED: '. $taskOnfleet);
-        
+
+
         if($completionDetailsStatus == false)
         {
             try
             {
                 DB::beginTransaction();
-                
-                $packageDispatch  = PackageDispatch::find($Reference_Number_1);
+
+                $packageDispatch = PackageDispatch::find($Reference_Number_1);
 
                 Log::info('Reference_Number_1: '. $Reference_Number_1);
 
@@ -207,6 +218,16 @@ class WHookController extends Controller
                     $packageFailed->idOnfleet                    = $packageDispatch->idOnfleet;
                     $packageFailed->taskOnfleet                  = $packageDispatch->taskOnfleet;
                     $packageFailed->quantity                     = $packageDispatch->quantity;
+                    $photoUrl = '';
+
+                    foreach($photoUploadIds as $idPhoto)
+                    {
+                        $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
+                    }
+
+                    Log::info($photoUrl);
+
+                    $packageFailed->photoUrl                     = $photoUrl;
                     $packageFailed->status                       = 'Failed';
                     $packageFailed->created_at                   = $created_at;
                     $packageFailed->updated_at                   = $created_at;
@@ -239,26 +260,38 @@ class WHookController extends Controller
                     $packageHistory->Description_Onfleet          = $Description_Onfleet;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->status                       = 'Failed';
+                    $packageHistory->photoUrl                     = $photoUrl;
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
 
                     $packageHistory->save();
-                    
+
                     $packageDispatch->delete();
+
+                    $packageController = new PackageController();
 
                     if($packageDispatch->idCompany == 1)
                     {
                         //data for INLAND
-                        $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
                         //end data for inland
+                    }
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, date('Y-m-d H:i:s'));
                     }
                 }
 
                 DB::commit();
 
-                Log::info("==================== CORRECT TASK - FAILED");
+                Log::info("==================== CORRECT TASK - FAILED". $request);
             }
             catch(Exception $e)
             {
@@ -482,7 +515,7 @@ class WHookController extends Controller
         $userCreatorOnfleet = $request['actionContext']['type'];
 
         Log::info('Reference_Number_1:'. $Reference_Number_1);
-        
+
         $package = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)
                                     ->where('status', 'Dispatch')
                                     ->first();

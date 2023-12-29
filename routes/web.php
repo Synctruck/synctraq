@@ -140,8 +140,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ Dispatch package
 	Route::get('/package-dispatch', [PackageDispatchController::class, 'Index'])->middleware('permission:dispatch.index');
-	Route::get('/package-dispatch/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}', [PackageDispatchController::class, 'List']);
-	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{type}', [PackageDispatchController::class, 'Export']);
+	Route::get('/package-dispatch/list/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{idCellar}', [PackageDispatchController::class, 'List']);
+	Route::get('/package-dispatch/export/{idCompany}/{dateStart}/{dateEnd}/{idTeam}/{idDriver}/{states}/{routes}/{idCellar}/{type}', [PackageDispatchController::class, 'Export']);
 	Route::get('/package-dispatch/getAll', [PackageDispatchController::class, 'GetAll']);
 	Route::get('/package-dispatch/get-by-team-driver/{idTeam}/{idDriver}', [PackageDispatchController::class, 'GetByTeamDriver']);
 	Route::post('/package-dispatch/insert', [PackageDispatchController::class, 'Insert']);
@@ -231,7 +231,9 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/export/{id}', [PaymentTeamController::class, 'Export']);
 	Route::get('/payment-team/export-receipt/{id}/{type}', [PaymentTeamController::class, 'ExportReceipt']);
 	Route::get('/payment-team/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
-
+	Route::get('/payment-team/delete-detail', [PaymentTeamController::class, 'DeletePackagesDetail']);
+	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
+	
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
 
@@ -277,11 +279,11 @@ Route::group(['middleware' => 'auth'], function() {
 
 	//============ Validation warehouse
 	Route::get('/package-warehouse', [PackageWarehouseController::class, 'Index'])->middleware('permission:warehouse.index');
-	Route::get('/package-warehouse/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}', [PackageWarehouseController::class, 'List']);
+	Route::get('/package-warehouse/list/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{idCellar}', [PackageWarehouseController::class, 'List']);
 	Route::post('/package-warehouse/insert', [PackageWarehouseController::class, 'Insert']);
 	Route::get('/package-warehouse/list-in-delivery', [PackageWarehouseController::class, 'ListInDelivery']);
 	Route::get('/package-warehouse/delete-in-delivery', [PackageWarehouseController::class, 'DeleteInDelivery']);
-	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{type}', [PackageWarehouseController::class, 'Export']);
+	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{idCellar}/{type}', [PackageWarehouseController::class, 'Export']);
 	Route::post('/package-warehouse/import', [PackageWarehouseController::class, 'Import']);
 
 	//============ Validation warehouse
@@ -348,12 +350,13 @@ Route::group(['middleware' => 'auth'], function() {
 	//============ Maintenance of drivers
 	Route::get('driver', [DriverController::class, 'Index'])->middleware('permission:driver.index');
 	Route::get('driver/list', [DriverController::class, 'List']);
-	Route::get('driver/team/list/{idTeam}', [DriverController::class, 'ListAllByTeam']);
+	Route::get('driver/team/list/{idTeam}/{usageApp}', [DriverController::class, 'ListAllByTeam']);
 	Route::post('driver/insert', [DriverController::class, 'Insert']);
 	Route::get('driver/get/{id}', [DriverController::class, 'Get']);
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);
 	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
+	Route::get('driver/synchronize/{id}', [DriverController::class, 'SynchronizeNewSystem']);
 	Route::get('driver/defrief', [DriverController::class, 'IndexDebrief']);
 	Route::get('driver/defrief/list/{idTeam}', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
@@ -479,6 +482,11 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/report/inbound', [ReportController::class, 'IndexInbound'])->middleware('permission:reportInbound.index');
 	Route::get('/report/list/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}', [ReportController::class, 'ListInbound']);
 	Route::get('/report/export/inbound/{idCompany}/{dateInit}/{dateEnd}/{routes}/{states}/{truck}/{type}', [ReportController::class, 'ExportInbound']);
+
+	//lost
+	Route::get('/report/lost', [ReportController::class, 'IndexLost'])->middleware('permission:reportLost.index');
+	Route::get('/report/list/lost/{idCompany}/{idTeam}/{dateInit}/{dateEnd}/{routes}/{states}', [ReportController::class, 'ListLost']);
+	Route::get('/report/export/lost/{idCompany}/{idTeam}/{dateInit}/{dateEnd}/{routes}/{states}/{type}', [ReportController::class, 'ExportLost']);
 
 	Route::get('/report/delivery', [ReportController::class, 'IndexDelivery'])->middleware('permission:reportDelivery.index');
 	Route::get('/report/list/delivery/{idCompany}/{dateInit}/{dateEnd}/{idTeam}/{idDriver}/{routes}/{states}', [ReportController::class, 'ListDelivery']);

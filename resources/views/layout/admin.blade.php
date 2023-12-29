@@ -93,12 +93,12 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
-  <div class="d-flex align-items-center justify-content-between">
-  <a href="{{url('home')}}" class="logo d-flex align-items-center">
-    <img src="{{asset('img/logo.png')}}" width="128" height="240" alt="">
-  </a>
-  <i class="bi bi-list toggle-sidebar-btn"></i>
-</div><!-- End Logo -->
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{{url('home')}}" class="logo d-flex align-items-center">
+        <img src="{{asset('img/logo.png')}}" width="128" height="175" alt="">
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
 
     <div class="search-bar">
         @if(Auth::check())
@@ -954,6 +954,45 @@
                     if(packageDispatch.filePhoto1 == '' && packageDispatch.filePhoto2 == '')
                     {
                         if(packageDispatch.idOnfleet && packageDispatch.photoUrl)
+                        {
+                            let urlsPhoto = packageDispatch.photoUrl.includes('https:')
+
+                            console.log('https: '+ urlsPhoto);
+                            console.log(packageDispatch.photoUrl);
+
+                            if(urlsPhoto)
+                            {
+                                urlsPhoto = packageDispatch.photoUrl.split(',');
+
+                                urlsPhoto.forEach( url => {
+
+                                    if(url)
+                                    {
+                                        tr =    '<tr>'+
+                                                    '<td colspan="5" class="text-center"><img src="'+ url +'" class="img-fluid"/></td>'+
+                                                '</tr>';
+
+                                        tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                urlsPhoto = packageDispatch.photoUrl.split(',')
+
+                                urlsPhoto.forEach( photoCode => {
+
+                                    let urlOnfleetPhoto = 'https://d15p8tr8p0vffz.cloudfront.net/'+ photoCode +'/800x.png';
+
+                                    tr =    '<tr>'+
+                                                '<td colspan="5" class="text-center"><img src="'+ urlOnfleetPhoto +'" class="img-fluid"/></td>'+
+                                            '</tr>';
+
+                                    tableHistoryPackage.insertRow(-1).innerHTML = tr;
+                                });
+                            }
+                        }
+                        else if(packageDispatch.idOnfleet == '' && packageDispatch.photoUrl)
                         {
                             let urlsPhoto = packageDispatch.photoUrl.includes('https:')
 

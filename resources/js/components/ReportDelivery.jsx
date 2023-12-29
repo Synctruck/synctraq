@@ -511,7 +511,6 @@ function ReportDelivery() {
                 <td>{ packageDelivery.Weight }</td>
                 <td>{ packageDelivery.Route }</td>
                 <td>
-                    { packageDelivery.taskOnfleet }
                     <br/>
                     {
                         ( packageDelivery.taskOnfleet != '' || packageDelivery.arrivalLonLat != '')

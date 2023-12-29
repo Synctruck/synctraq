@@ -56,26 +56,40 @@ function SendGeneralExport($title, $filename)
 
 function SendToTeam($title, $filename, $idPayment)
 {
-    $filename  = $filename;
-    $files     = [public_path($filename)];
-    $date      = date('Y-m-d H:i:s');
-    $data      = ['title' => $title, 'date' => $date];
+    $files = [public_path($filename)];
+    $date = date('Y-m-d H:i:s');
+    $data = ['title' => $title, 'date' => $date];
 
-    $idTeam =  PaymentTeam::find($idPayment)->idTeam;
+    $idTeam = PaymentTeam::find($idPayment)->idTeam;
     $email = User::find($idTeam)->email;
-    $email_team_cc_invoice = env('EMAIL_TEAM_CC_INVOICE');
-    $email_team_cc_invoice1= env('EMAIL_TEAM_CC_INVOICE1');
-    $email_team_cc_invoice2= env('EMAIL_TEAM_CC_INVOICE2');
-        Mail::send('mail.export', ['data' => $data ], function($message) use($data, $date, $files, $email, $email_team_cc_invoice,$email_team_cc_invoice1, $email_team_cc_invoice2) {
+    $emailCCString = User::find($idTeam)->emailCC;
 
+    $emailCC = !empty($emailCCString) ? array_filter(array_map('trim', explode(',', $emailCCString))) : [];
+
+    $additionalCCs = array_filter([
+        env('EMAIL_TEAM_CC_INVOICE'),
+        env('EMAIL_TEAM_CC_INVOICE1'),
+        env('EMAIL_TEAM_CC_INVOICE2')
+    ]);
+
+    $allCCs = array_merge($emailCC, $additionalCCs);
+
+    Mail::send('mail.export', ['data' => $data], function ($message) use ($data, $date, $files, $email, $allCCs) {
         $message->to($email, 'Syntruck')
-        ->subject($data['title'] . ' (' . $date . ')');
-       
-        $message->cc([$email_team_cc_invoice, $email_team_cc_invoice1, $email_team_cc_invoice2]);
+                ->subject($data['title'] . ' (' . $date . ')');
 
-        foreach ($files as $file)
-        {
+        foreach ($allCCs as $cc) {
+            if (!empty($cc)) {
+                $message->cc($cc);
+            }
+        }
+
+        foreach ($files as $file) {
             $message->attach($file);
         }
     });
 }
+
+
+
+

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageAgeController;
 
-use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageLost, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Comment, Configuration, Driver, Package, PackageDelivery, PackageHistory, PackageBlocked, PackageDispatch,PackageFailed,  PackageInbound, PackageLmCarrier, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, PackageLost, TeamRoute, User };
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -96,6 +96,11 @@ class ReportController extends Controller
     public function IndexInbound()
     {
         return view('report.indexinbound');
+    }
+
+    public function IndexLost()
+    {
+        return view('report.indexlost');
     }
 
     public function ListInbound($idCompany, $dateInit, $dateEnd, $route, $state, $truck)
@@ -225,6 +230,159 @@ class ReportController extends Controller
                 "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
                 "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
                 "company" => $packageHistory->company,
+                "validator" => $validator,
+                "status" => $status['status'],
+                "statusDate" => $status['statusDate'],
+                "statusDescription" => $status['statusDescription'],
+                "Reference_Number_1" => $packageHistory->Reference_Number_1,
+                "Dropoff_Contact_Name" => $packageHistory->Dropoff_Contact_Name,
+                "Dropoff_Contact_Phone_Number" => $packageHistory->Dropoff_Contact_Phone_Number,
+                "Dropoff_Address_Line_1" => $packageHistory->Dropoff_Address_Line_1,
+                "Dropoff_City" => $packageHistory->Dropoff_City,
+                "Dropoff_Province" => $packageHistory->Dropoff_Province,
+                "Dropoff_Postal_Code" => $packageHistory->Dropoff_Postal_Code,
+                "Route" => $packageHistory->Route,
+                "Weight" => $packageHistory->Weight
+            ];
+
+            array_push($packageHistoryListNew, $package);
+            array_push($idsExists, $packageHistory->Reference_Number_1);
+            
+        }
+
+        return [
+
+            'packageHistoryList' => $listAll,
+            'listAll' => $packageHistoryListNew,
+        ];
+    }
+
+    
+    public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state)
+    {
+        $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state);
+        $packageHistoryList    = $data['packageHistoryList'];
+        $packageHistoryListNew = $data['listAll'];
+
+        $listState = PackageHistory::select('Dropoff_Province')
+                                    ->where('status', 'Lost')
+                                    ->groupBy('Dropoff_Province')
+                                    ->get();
+
+        $listTruck = PackageHistory::select('TRUCK')
+                                    ->where('status', 'Lost')
+                                    ->groupBy('TRUCK')
+                                    ->get();
+
+        return [
+            'packageHistoryList' => $packageHistoryList,
+            'listAll' => $packageHistoryListNew,
+            'listState' => $listState,
+            'listTruck'=>$listTruck
+        ];
+    }
+
+    private function getDataLost($idCompany,$idTeam, $dateInit, $dateEnd,$route, $state, $type = 'list')
+    {
+        $dateInit = $dateInit .' 00:00:00';
+        $dateEnd  = $dateEnd .' 23:59:59';
+
+        $routes = explode(',', $route);
+        $states = explode(',', $state);
+
+        $listAll = PackageHistory::with(
+                                [
+                                    'validator' => function($query){ $query->select('id', 'name', 'nameOfOwner'); },
+
+                                ])
+                                ->whereBetween('created_at', [$dateInit, $dateEnd])
+                                ->where('status', 'Lost');
+
+        if($route != 'all')
+        {
+            $listAll = $listAll->whereIn('Route', $routes);
+        }
+
+        if($state != 'all')
+        {
+            $listAll = $listAll->whereIn('Dropoff_Province', $states);
+        }
+        
+        if($idTeam != 0)
+        {
+            $listAll = $listAll->where('idTeam', $idTeam);
+        }
+
+        if($idCompany && $idCompany !=0)
+        {
+            $listAll = $listAll->where('idCompany', $idCompany);
+        }
+
+        if($type =='list')
+        {
+            $listAll = $listAll->select(
+                                    'created_at',
+                                    'company',
+                                    'idUser',
+                                    'idTeam',
+                                    'Reference_Number_1',
+                                    'Dropoff_Contact_Name',
+                                    'Dropoff_Contact_Phone_Number',
+                                    'Dropoff_Address_Line_1',
+                                    'Dropoff_City',
+                                    'Dropoff_Province',
+                                    'Dropoff_Postal_Code',
+                                    'Weight',
+                                    'Route',
+                                    'Weight'
+                                )
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(50);
+        }
+        else
+        {
+            $listAll = $listAll->orderBy('created_at', 'desc')->get();
+        }
+
+        $idsExists             = [];
+        $packageHistoryListNew = [];
+
+        foreach($listAll as $packageHistory)
+        {
+            $packageDispatch = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Dispatch')
+                                            ->first();
+
+            $packageDelivery = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Delivery')
+                                            ->get()
+                                            ->last();
+            
+            $validator = $packageHistory->user ? $packageHistory->user->name .' '. $packageHistory->user->nameOfOwner : '';
+
+            $timeDispatchDate = 0;
+            $timeDeliveryDate = 0;
+
+            if($packageDispatch)
+            {
+                $timeDispatchDate = (strtotime($packageDispatch->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                $timeDispatchDate = number_format($timeDispatchDate, 2);
+            }
+
+            if($packageDelivery)
+            {
+                $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageHistory->created_at)) / 86400;
+                $timeDeliveryDate = number_format($timeDeliveryDate, 2);
+            }
+
+            $status = $this->GetStatus($packageHistory->Reference_Number_1);
+
+            $package = [
+
+                "created_at" => $packageHistory->created_at,
+                "dispatchDate" => ($packageDispatch ? $packageDispatch->created_at : ''),
+                "company" => $packageHistory->company,
+                "team" => $packageHistory->Team,
                 "validator" => $validator,
                 "status" => $status['status'],
                 "statusDate" => $status['statusDate'],
@@ -945,7 +1103,8 @@ class ReportController extends Controller
                                                         'Dropoff_Postal_Code',
                                                         'Description_Onfleet',
                                                         'Weight',
-                                                        'Route'
+                                                        'Route',
+                                                        'photoUrl'
                                                     )
                                                     ->orderBy('created_at', 'desc')
                                                     ->paginate(50);
@@ -980,7 +1139,8 @@ class ReportController extends Controller
                 "Dropoff_Province" => $packageFailed->Dropoff_Province,
                 "Dropoff_Postal_Code" => $packageFailed->Dropoff_Postal_Code,
                 "Weight" => $packageFailed->Weight,
-                "Route" => $packageFailed->Route
+                "Route" => $packageFailed->Route,
+                "photoUrl" => $packageFailed->photoUrl
             ];
 
             array_push($packageHistoryListNew, $package);
@@ -1159,6 +1319,67 @@ class ReportController extends Controller
             fclose($file);
 
             SendGeneralExport('Report Inbound', $filename);
+
+            return ['stateAction' => true];
+        }
+    }
+
+
+    public function ExportLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $typeExport)
+    {
+        $delimiter = ",";
+        $filename  = $typeExport == 'download' ? "Report Lost " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- Report Lost.csv";
+        $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
+
+        //set column headers
+        $fields = array('DATE', 'HOUR','COMPANY','TEAM','VALIDATOR', 'PACKAGE ID', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'ROUTE', 'WEIGHT');
+
+        fputcsv($file, $fields, $delimiter);
+
+        $listPackageLost = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state, $type = 'export');
+        $listPackageLost = $listPackageLost['listAll'];
+
+        foreach($listPackageLost as $packageLost)
+        {
+            $team   = isset($packageLost['team']) ? $packageLost['team']['name'] : '';
+            $lineData = array(
+                                date('m-d-Y', strtotime($packageLost['created_at'])),
+                                date('H:i:s', strtotime($packageLost['created_at'])),
+                                $packageLost['company'],
+                                $team,
+                                $packageLost['validator'],
+                                $packageLost['Reference_Number_1'],
+                                $packageLost['status'],
+                                $packageLost['statusDate'],
+                                $packageLost['statusDescription'],
+                                $packageLost['Dropoff_Contact_Name'],
+                                $packageLost['Dropoff_Contact_Phone_Number'],
+                                $packageLost['Dropoff_Address_Line_1'],
+                                $packageLost['Dropoff_City'],
+                                $packageLost['Dropoff_Province'],
+                                $packageLost['Dropoff_Postal_Code'],
+                                $packageLost['Route'],
+                                $packageLost['Weight']
+                            );
+
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+        if($typeExport == 'download')
+        {
+            fseek($file, 0);
+
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+            fpassthru($file);
+        }
+        else
+        {
+            rewind($file);
+            fclose($file);
+
+            SendGeneralExport('Report Lost', $filename);
 
             return ['stateAction' => true];
         }

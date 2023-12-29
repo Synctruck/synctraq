@@ -632,7 +632,15 @@ function PackageMiddleMileScan() {
                     { pack.created_at.substring(11, 19) }
                 </td>
                 <td><b>{ pack.company }</b></td>
-                <td><b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b></td>
+                <td>
+                    {
+                        pack.user
+                        ?
+                            <b>{ pack.user.name +' '+ pack.user.nameOfOwner }</b>
+                        :
+                            ''
+                    }
+                </td>
                 <td><b>{ pack.Reference_Number_1 }</b></td>
                 <td>{ pack.Dropoff_Contact_Name }</td>
                 <td>{ pack.Dropoff_Contact_Phone_Number }</td>

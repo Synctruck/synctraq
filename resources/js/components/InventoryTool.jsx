@@ -240,10 +240,22 @@ function InventoryTool() {
 
                     document.getElementById('soundPitidoSuccess').play();
                 }
+                else if(response.statusCode == 'Overage')
+                {
+                    setTextMessage('Package was validated as Overage#'+ Reference_Number_1);
+                    setTypeMessage('warning');
+
+                    handlerInventoryDetailList(idInventory)
+                    setNumberPackage('')
+
+                    document.getElementById('soundPitidoWarning').play();
+                }
+
                 else if(response.statusCode == 'notExists')
                 {
                     setTextMessage('The package does not exist #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -251,6 +263,7 @@ function InventoryTool() {
                 {
                     setTextMessage('You have not assigned the warehouse for this inventory #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }
@@ -258,6 +271,7 @@ function InventoryTool() {
                 {
                     setTextMessage('The package does not belong to the current warehouse #'+ Reference_Number_1);
                     setTypeMessage('warning');
+                    setNumberPackage('')
 
                     document.getElementById('soundPitidoWarning').play();
                 }

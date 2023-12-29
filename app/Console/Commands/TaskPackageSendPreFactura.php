@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback(); 
         }*/
 
-        if($dayName == 'Monday' && $nowHour == 10)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
@@ -137,7 +137,7 @@ class TaskPackageSendPreFactura extends Command
         $endDate   = $endDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
-        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
+        $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'STATUS', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -186,16 +186,16 @@ class TaskPackageSendPreFactura extends Command
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
 
                         $chargeCompanyDetail = new ChargeCompanyDetail();
-
                         $chargeCompanyDetail->Reference_Number_1 = $packageDelivery->Reference_Number_1;
                         $chargeCompanyDetail->idChargeCompany    = $idCharge;
-
+                        $chargeCompanyDetail->status             = 'DELIVERY';
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
                                         date('m-d-Y', strtotime($packageDelivery->Date_Delivery)),
                                         $packageDelivery->company,
                                         $packageDelivery->Reference_Number_1,
+                                        'DELIVERY',
                                         '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,
@@ -243,16 +243,16 @@ class TaskPackageSendPreFactura extends Command
                         $totalCharge = $totalCharge + $packagePriceCompanyTeam->totalPriceCompany;
 
                         $chargeCompanyDetail = new ChargeCompanyDetail();
-
                         $chargeCompanyDetail->Reference_Number_1 = $packageReturnCompany->Reference_Number_1;
                         $chargeCompanyDetail->idChargeCompany    = $idCharge;
-
+                        $chargeCompanyDetail->status             = 'RTS';
                         $chargeCompanyDetail->save();
 
                         $lineData = array(
                                         date('m-d-Y', strtotime($packageReturnCompany->created_at)),
                                         $packageReturnCompany->company,
                                         $packageReturnCompany->Reference_Number_1,
+                                        'RTS',
                                         '$'. $packagePriceCompanyTeam->dieselPriceCompany,
                                         $packagePriceCompanyTeam->weight,
                                         $packagePriceCompanyTeam->dimWeightCompanyRound,

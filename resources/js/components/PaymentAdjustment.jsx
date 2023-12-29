@@ -383,6 +383,49 @@ function PaymentAdjustment() {
         }
     }
 
+    const handlerRecalculate = (id) => {
+
+        swal({
+            title: "You want RECALCULATE?",
+            text: "Change status!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShow();
+
+                fetch(url_general +'payment-team/recalculate/'+ id)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.statusCode)
+                    {
+                        swal("PAYMENT TEAM was recalculated!", {
+
+                            icon: "success",
+                        });
+
+                        listByRoute(idPaymentGeneral);
+                        listByPODFailed(idPaymentGeneral);
+                        listRevertShipments(idPaymentGeneral);
+                        ListAdjustmentPayment(idPaymentGeneral);
+                    }
+                    else
+                    {
+                       swal("There was an error, try again!", {
+
+                            icon: "success",
+                        }); 
+                    }
+                });
+            }
+        });
+    }
+
     return (
         <section className="section">
             <div className="row">
@@ -407,9 +450,14 @@ function PaymentAdjustment() {
                                                     (
                                                         paymentStatus == 'TO APPROVE'
                                                         ? 
-                                                            <button className="btn btn-info font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAYABLE') }>
-                                                                { paymentStatus }
-                                                            </button>
+                                                            <>
+                                                                <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" onClick={ () => handlerRecalculate(paymentId) }>
+                                                                    RECALCULATE
+                                                                </button>
+                                                                <button className="btn btn-info font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAYABLE') }>
+                                                                    { paymentStatus }
+                                                                </button>
+                                                            </>
                                                         : ''
                                                     )
                                                 }

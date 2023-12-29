@@ -297,6 +297,12 @@ class PackageLostController extends Controller
                 $packageHistory->Dropoff_Province             = $packageInbound->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageHistory->Notes                        = $packageInbound->Notes;
+               
+                $idTeam   = $packageInbound->idTeam;
+                if($idTeam){
+                    $packageHistory->idTeam                       = $packageInbound->idTeam;
+                }
+                
                 $packageHistory->Weight                       = $packageInbound->Weight;
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
@@ -320,6 +326,16 @@ class PackageLostController extends Controller
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+                }
+                        
                 $package = $packageInbound;
                 $packageInbound->delete();
                 
@@ -523,6 +539,16 @@ class PackageLostController extends Controller
 
                         $packageController = new PackageController();
                         $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                        if($packageHistory)
+                        {
+                            $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+                        }
 
                         $package = $packageInbound;
 

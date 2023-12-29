@@ -217,7 +217,7 @@ class PackageMiddleMileScanController extends Controller
 
         $stateValidate = $request->get('StateValidate');
         //$stateValidate = $stateValidate != '' ? explode(',', $stateValidate) : [];
-        $stateValidate = ['MD', 'DC', 'DE', 'VA', 'PA', 'NJ'];
+        $stateValidate = ['MD', 'DC', 'DE', 'VA', 'PA', 'NJ','J2'];
 
         if($packageWarehouse)
         {
@@ -296,6 +296,16 @@ class PackageMiddleMileScanController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
                     //end data for inland
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
+                    }
 
                     DB::commit();
 
@@ -410,6 +420,16 @@ class PackageMiddleMileScanController extends Controller
                 $packageController->SendStatusToInland($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
                 //end data for inland
 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Middle Mile Scan', null, date('Y-m-d H:i:s'));
+                }
+                    
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];

@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PackageWeight, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -45,29 +45,34 @@ class PackageInboundController extends Controller
                             ->where('filter', 1)
                             ->first();
 
-                if($state == null)
-                {
-                    $dimensions = $request['responses']['dimension']['info']['dimensions'];
-                    $weight     = $dimensions['weight']['net'];
-                    $width      = $dimensions['width'];
-                    $height     = $dimensions['height'];
-                    $length     = $dimensions['length'];
 
-                    $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
-                    $packageWeight    = PackageWeight::find($Reference_Number_1);
+                $dimensions = $request['responses']['dimension']['info']['dimensions'];
+                $weight     = $dimensions['weight']['net'];
+                $width      = $dimensions['width'];
+                $height     = $dimensions['height'];
+                $length     = $dimensions['length'];
+
+                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+
+                if($dimFactorCompany)
+                {
+                    $packageWeight = PackageWeight::find($Reference_Number_1);
 
                     if(!$packageWeight)
                     {
                         $packageWeight = new PackageWeight();
                     }
                     
-                    if($dimFactorCompany)
-                    {
-                        $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
-                    }
-
+                    $packageWeight->width2  = $width;
+                    $packageWeight->height2 = $height;
+                    $packageWeight->length2 = $length;
+                    $packageWeight->weight2 = ($width * $height * $length) / $dimFactorCompany->factor;
                     $packageWeight->weight4 = $weight;
                     $packageWeight->save();
+                }
+                if($state == null)
+                {
+                    
                 }
                 else
                 {
@@ -96,9 +101,10 @@ class PackageInboundController extends Controller
         $status             = $request['status'];
         $created_at         = $request['datetime'];
         $pod_url            = $request['pod_url'];
-        $description        = $request['description'];
+        $description        = str_replace("\n", "", $request['description']);
         $require_invoice    = $request['require_invoice'];
         $idTeam             = $request['synctruck_team'];
+        $idCellar           = $request['warehouse'];
 
         Log::info($request);
 
@@ -325,8 +331,19 @@ class PackageInboundController extends Controller
                 $packageCreate->Weight                       = $package->Weight;
                 $packageCreate->Route                        = $package->Route;
                 $packageCreate->status                       = $status == 'ReInbound' ? 'Inbound': $status;
+                $packageCreate->idUser                       = 0;
                 $packageCreate->created_at                   = $created_at;
                 $packageCreate->updated_at                   = $created_at;
+
+                $cellar = Cellar::find($idCellar);
+
+                if($cellar)
+                {    
+                    $packageCreate->idCellar    = $cellar->id;
+                    $packageCreate->nameCellar  = $cellar->name;
+                    $packageCreate->stateCellar = $cellar->state;
+                    $packageCreate->cityCellar  = $cellar->city;
+                }
 
                 if($packageCreate->status == 'Delivery') 
                 {
@@ -374,6 +391,15 @@ class PackageInboundController extends Controller
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
                 $packageHistory->updated_at                   = $created_at;
+
+                if($cellar)
+                {    
+                    $packageHistory->idCellar    = $cellar->id;
+                    $packageHistory->nameCellar  = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar  = $cellar->city;
+                }
+                
                 $packageHistory->save();
 
                 Log::info('$package->status: '. $package->status);
@@ -403,7 +429,7 @@ class PackageInboundController extends Controller
                 }
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
-                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost')
+                    if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost' || $status == 'LM Carrier')
                     {                        
                         $package->delete();
                     }

@@ -23,6 +23,8 @@ function PackageDispatch() {
     const [listRole, setListRole]                       = useState([]);
     const [listState , setListState]                    = useState([]);
     const [listCompany , setListCompany]                = useState([]);
+    const [listCellar, setListCellar]                   = useState([]);
+
 
     const [id, setId]                                 = useState(0);
     const [idRole, setIdRole]                         = useState(0);
@@ -34,6 +36,7 @@ function PackageDispatch() {
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
     const [dayNight, setDayNight]                     = useState('');
+    const [idCellar, setCellar]                       = useState(0);
 
     const [readOnly, setReadOnly] = useState(false);
     const [checkAll, setCheckAll] = useState(0);
@@ -104,6 +107,7 @@ function PackageDispatch() {
 
         listAllCompany();
         listAllRoute();
+        listAllCellar();
 
         document.getElementById('Reference_Number_1').focus();
 
@@ -119,7 +123,7 @@ function PackageDispatch() {
 
         listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
-    }, [idCompany, idTeam, idDriver, dateStart,dateEnd]);
+    }, [idCompany, idTeam, idDriver, dateStart,dateEnd,idCellar]);
 
     useEffect(() => {
 
@@ -138,7 +142,7 @@ function PackageDispatch() {
 
         setIsLoading(true);
 
-        fetch(url_general +'package-dispatch/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/?page='+ pageNumber)
+        fetch(url_general +'package-dispatch/list/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+ idCellar +'/?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -184,7 +188,7 @@ function PackageDispatch() {
 
     const exportAllPackageDispatch = ( StateSearch, RouteSearchList, type) => {
         
-        let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+type;
+        let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+ idCellar +'/'+type;
 
         if(type == 'download')
         {
@@ -245,6 +249,16 @@ function PackageDispatch() {
         });
     }
 
+    const listAllCellar = () => {
+
+        fetch(url_general +'cellar/get-all')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListCellar([{id:0,name:"ALL"},...response.cellarList]);
+        });
+    }
+
     const listAllRoute = (pageNumber) => {
 
         setListRoute([]);
@@ -287,6 +301,13 @@ function PackageDispatch() {
 
         return <option value={company.id}>{company.name}</option>
     })
+
+    const optionCellar = listCellar.map( (cellar, i) => {
+
+        return (
+            <option value={ cellar.id }>{ cellar.name }</option>
+        );
+    });
 
     const handlerOpenModalEditPackage = (PACKAGE_ID) => {
 
@@ -529,7 +550,7 @@ function PackageDispatch() {
             setIdDriver(0);
             setListDriver([]);
 
-            fetch(url_general +'driver/team/list/'+ idTeam)
+            fetch(url_general +'driver/team/list/'+ idTeam +'/'+ usageApp)
             .then(res => res.json())
             .then((response) => {
 
@@ -617,10 +638,20 @@ function PackageDispatch() {
                     else if(response.stateAction == 'validatedReturnCompany')
                     {
                         setTextMessage("The package was registered before for return to the company #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
                     }
                     else if(response.stateAction == 'packageInPreDispatch')
                     {
                         setTextMessage('The package is in  PRE DISPATCH #'+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'packageErrorOnfleet')
+                    {
+                        setTextMessage('The package was not registered correctly in ONFLEET #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
 
@@ -1861,6 +1892,13 @@ function PackageDispatch() {
         }
     }
 
+    const [usageApp, setUsageApp] = React.useState(false);
+
+    const handleChangeUsageApp = () => {
+
+        setUsageApp(!usageApp);
+    }
+
     return (
 
         <section className="section">
@@ -1940,7 +1978,7 @@ function PackageDispatch() {
                                                 </div>
                                                 <div className="col-lg-3">
                                                     <div className="form-group">
-                                                        <label htmlFor="">TEAM</label>
+                                                        <label htmlFor="">TEAM <input type="checkbox" title="List drivers for PODapp" checked={ usageApp } onChange={ handleChangeUsageApp }/></label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
                                                             { listTeamSelect }
@@ -2095,6 +2133,21 @@ function PackageDispatch() {
                                                 <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
                                                     <option value="" style={ {display: 'none'} }>Select...</option>
                                                     { optionCompany }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-2">
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group">
+                                                    Warehouse:
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-12">
+                                                <select name="" id="" className="form-control" onChange={ (e) => setCellar(e.target.value) }>
+                                                    <option value="" style={ {display: 'none'} }>Select...</option>
+                                                    { optionCellar }
                                                 </select>
                                             </div>
                                         </div>

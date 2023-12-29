@@ -207,25 +207,61 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $request->get('client');
 
-                $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                if($company->twoAttempts)
+                {
+                    $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
                                                     ->where('status', 'Dispatch')
-                                                    ->where('company', 'EIGHTVAPE')
+                                                    ->where('idCompany', $company->id)
                                                     ->orderBy('created_at', 'asc')
                                                     ->get();
 
-                if(count($packageHistoryDispatchList) > 1)
-                {
-                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
-
-                    if($hourDifference >= 6)
+                    if(count($packageHistoryDispatchList) > 1)
                     {
-                        $packageReturnCompany->invoice = 1;
+                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
+
+                        if($hourDifference >= 6)
+                        {
+                            $packageReturnCompany->invoice = 1;
+                        }
                     }
                 }
 
-                $packageReturnCompany->status                       = 'ReturnCompany';
-                $packageReturnCompany->created_at                   = date('Y-m-d H:i:s');
-                $packageReturnCompany->updated_at                   = date('Y-m-d H:i:s');
+                $packageHistory = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                        ->where('status', 'Dispatch')
+                                                        ->orderBy('created_at', 'asc')
+                                                        ->get()
+                                                        ->last();
+                                                        
+                if($packageHistory)
+                {
+                    $team = User::find($packageHistory->idTeam);
+
+                    if($team && $team->twoAttempts)
+                    {
+                        Log::info('packageHistory');
+                        Log::info($packageHistory->idTeam);
+                        $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                        ->where('status', 'Dispatch')
+                                                                        ->where('idTeam', $team->id)
+                                                                        ->orderBy('created_at', 'asc')
+                                                                        ->get();
+
+                        if(count($packageHistoryDispatchListTeam) > 1)
+                        {
+                            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                            if($hourDifference >= 6)
+                            {
+                                $packageReturnCompany->paid   = 1;
+                                $packageReturnCompany->idTeam = $team->id; 
+                            }
+                        }
+                    }
+                }
+
+                $packageReturnCompany->status     = 'ReturnCompany';
+                $packageReturnCompany->created_at = date('Y-m-d H:i:s');
+                $packageReturnCompany->updated_at = date('Y-m-d H:i:s');
 
                 $packageReturnCompany->save(); 
 
@@ -269,6 +305,16 @@ class PackageReturnCompanyController extends Controller
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
+                }
 
                 $packageInbound->delete();
 
@@ -446,6 +492,16 @@ class PackageReturnCompanyController extends Controller
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                                }
+                
                                 $packageInbound->delete();
                             }
 
@@ -770,6 +826,16 @@ class PackageReturnCompanyController extends Controller
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packagePreRts->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                }
             }
 
             DB::commit();

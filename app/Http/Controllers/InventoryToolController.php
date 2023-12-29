@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PackageDispatchController;
 
 use App\Models\{ Cellar, InventoryTool, InventoryToolDetail, PackageBlocked, PackageTerminal, 
         PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch, 
@@ -17,7 +18,7 @@ use Auth;
 use DB;
 use Log;
 use Session;
-use DateTime; 
+use DateTime;
  
 class InventoryToolController extends Controller
 {
@@ -59,20 +60,17 @@ class InventoryToolController extends Controller
             $inventoryTool->userName    = Auth::user()->name .' '. Auth::user()->nameOfOwner;
             $inventoryTool->status      = 'New';
             
-            $packageInboundList = PackageInbound::select('Reference_Number_1', 'idCellar', 'status')
-                                                ->where('idCellar', $request->idCellar)
-                                                ->get();
             $packageWarehouseList = PackageWarehouse::where('status', 'Warehouse')
                                                     ->where('idCellar', $request->idCellar)
-                                                    ->select('Reference_Number_1', 'idCellar', 'status')
+                                                    ->select('Reference_Number_1', 'idCellar', 'status', 'Dropoff_Province','created_at','Route')
                                                     ->get();
-            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'idCellar', 'status')
+            $packageNeedMoreInformationList = PackageNeedMoreInformation::select('Reference_Number_1', 'idCellar', 'status','Dropoff_Province','created_at','Route')
                                                                         ->where('idCellar', $request->idCellar)
                                                                         ->get();
 
-            $packageList = $packageInboundList->merge($packageWarehouseList);
-            $packageList = $packageList->merge($packageNeedMoreInformationList);
-
+            $packageList = $packageWarehouseList->merge($packageNeedMoreInformationList);
+            $packageController = new PackageController();
+            
             foreach($packageList as $package)
             {
                 $inventoryToolDetail = new InventoryToolDetail();
@@ -80,6 +78,8 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->idInventoryTool    = $idInventory;
                 $inventoryToolDetail->Reference_Number_1 = $package->Reference_Number_1;
                 $inventoryToolDetail->statusPackage      = $package->status;
+                $inventoryToolDetail->Dropoff_Province   = $package->Dropoff_Province;
+                $inventoryToolDetail->Route              = $package->Route;                          
                 $inventoryToolDetail->status             = 'Pending';
                 $inventoryToolDetail->save();
             }
@@ -124,17 +124,28 @@ class InventoryToolController extends Controller
         fputcsv($file, array(''), $delimiter);
         //set column headers
 
-        $fields = array('PACKAGE_ID' ,'STATUS');
+        $fields = array('PACKAGE_ID' ,'STATUS','Actual Status','Status Date','STATE','Route');
 
         fputcsv($file, $fields, $delimiter);
 
         $inventoryToolList = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)->get();
+ 
 
         foreach($inventoryToolList as $inventoryToolDetail)
         {
+            $statusData       = $this->GetStatus($inventoryToolDetail->Reference_Number_1);
+            $actualStatus     = $statusData['status'];
+            $lastStatusDate   = $statusData['created_at'];
+            $Route            = $statusData['Route'];
+            $State            = $statusData['Dropoff_Province'];
+            
             $lineData = array(
                 $inventoryToolDetail->Reference_Number_1,
                 $inventoryToolDetail->status,
+                $actualStatus,
+                $lastStatusDate,
+                $State,
+                $Route,
             );
 
             fputcsv($file, $lineData, $delimiter);
@@ -151,7 +162,7 @@ class InventoryToolController extends Controller
     public function ListInventoryDetail($idInventoryTool)
     {
         $inventoryTool = InventoryTool::find($idInventoryTool);
-        $dateInventory = date('m/d/Y');
+        $dateInventory = date('m/d/Y', strtotime($inventoryTool->created_at));
 
         $listInventoryToolDetailPending = InventoryToolDetail::where('idInventoryTool', $idInventoryTool)
                                                     ->where('statusPackage', '!=', 'NMI')
@@ -182,7 +193,8 @@ class InventoryToolController extends Controller
     {
         $packageController = new PackageController();
         $statusActual = $packageController->GetStatus($request->Reference_Number_1);
-
+        $isOverage = false;
+     
         if($statusActual['status'] == "")
             return ['statusCode' => 'notExists'];
 
@@ -228,7 +240,9 @@ class InventoryToolController extends Controller
                     $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
                     $inventoryToolDetail->statusPackage      = $statusActual['status'];
                     $inventoryToolDetail->status             = 'Overage';
+                    $isOverage = true;
                     $inventoryToolDetail->save();
+                
                 }
 
                 $inventoryTool->save();
@@ -242,7 +256,9 @@ class InventoryToolController extends Controller
                 $inventoryToolDetail->Reference_Number_1 = $request->Reference_Number_1;
                 $inventoryToolDetail->statusPackage      = $statusActual['status'];
                 $inventoryToolDetail->status             = 'Overage';
+                $isOverage = true;
                 $inventoryToolDetail->save();
+                
 
                 $packageWarehouse = PackageWarehouse::find($request->Reference_Number_1);
                 $packageWarehouse->idCellar    = $inventoryTool->idCellar;
@@ -289,17 +305,25 @@ class InventoryToolController extends Controller
             {
 
             }
+            else if($statusActual['status'] == 'Warehouse')
+            {
+                $this->UpdateWarehouse($request->Reference_Number_1);
+            }
             else
             {
                 if($statusActual['status'] != 'Warehouse')
                 {
-                    $this->MoveToWarhouse($request->Reference_Number_1);
+                    $this->MoveToWarehouse($request->Reference_Number_1);
                 }
             }
 
             DB::commit();
 
-            return ['statusCode' => true];
+            if ($isOverage) {
+                return ['statusCode' => 'Overage']; 
+            } else {
+                return ['statusCode' => true];
+            }
         }
         catch(Exception $e)
         {
@@ -309,7 +333,59 @@ class InventoryToolController extends Controller
         }
     }
 
-    public function MoveToWarhouse($Reference_Number_1)
+    public function UpdateWarehouse($Reference_Number_1)
+    {
+        $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')->find($Reference_Number_1);
+
+        if($packageWarehouse)
+        {
+            $packageWarehouse->created_at = date('Y-m-d H:i:s');
+            $packageWarehouse->updated_at = date('Y-m-d H:i:s');
+            $packageWarehouse->save();
+
+            $cellar = Cellar::find(Auth::user()->idCellar);
+
+            $packageHistory = new PackageHistory();
+
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageWarehouse->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageWarehouse->idCompany;
+            $packageHistory->company                      = $packageWarehouse->company;
+            $packageHistory->idStore                      = $packageWarehouse->idStore;
+            $packageHistory->store                        = $packageWarehouse->store;
+            $packageHistory->Dropoff_Contact_Name         = $packageWarehouse->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageWarehouse->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageWarehouse->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageWarehouse->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageWarehouse->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageWarehouse->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageWarehouse->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageWarehouse->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageWarehouse->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageWarehouse->Notes;
+            $packageHistory->Weight                       = $packageWarehouse->Weight;
+            $packageHistory->Route                        = $packageWarehouse->Route;
+            $packageHistory->idUser                       = Auth::user()->id;
+            $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+            $packageHistory->quantity                     = $packageWarehouse->quantity;
+            $packageHistory->status                       = 'Warehouse';
+            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+            $packageHistory->created_at                   = date('Y-m-d H:i:s');
+            $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+
+            if($cellar)
+            {
+                $packageHistory->idCellar    = $cellar->id;
+                $packageHistory->nameCellar  = $cellar->name;
+                $packageHistory->stateCellar = $cellar->state;
+                $packageHistory->cityCellar  = $cellar->city;
+            }
+
+            $packageHistory->save();
+        }
+    }
+
+    public function MoveToWarehouse($Reference_Number_1)
     {
         $package = PackageManifest::find($Reference_Number_1);
 
@@ -323,8 +399,12 @@ class InventoryToolController extends Controller
         $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
         $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
 
-        $packageWarehouse = new PackageWarehouse();
+        if($package->status != 'Middle Mile Scan') 
+            $packageWarehouse = new PackageWarehouse();
+        else
+            $packageWarehouse = PackageWarehouse::where('status', 'Middle Mile Scan')->find($Reference_Number_1);
 
         $packageWarehouse->Reference_Number_1           = $package->Reference_Number_1;
         $packageWarehouse->idCompany                    = $package->idCompany;
@@ -355,6 +435,18 @@ class InventoryToolController extends Controller
             $packageWarehouse->nameCellar  = $cellar->name;
             $packageWarehouse->stateCellar = $cellar->state;
             $packageWarehouse->cityCellar  = $cellar->city;
+        }
+
+        if($package->status == 'Dispatch')
+        {
+            $packageDispatchController = new PackageDispatchController();
+            $onfleet = $packageDispatchController->GetOnfleet($package->idOnfleet);
+
+            if($onfleet)
+            {
+                Log::info("Package Deleted on OnFleet");
+                $packageDispatchController->DeleteOnfleet($package->idOnfleet);
+            }
         }
 
         $packageWarehouse->save();
@@ -398,5 +490,30 @@ class InventoryToolController extends Controller
         $packageHistory->save();
 
         $package->delete();
+    }
+
+
+    public function GetStatus($Reference_Number_1)
+    {
+        $package = PackageManifest::find($Reference_Number_1);
+
+        $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackagePreDispatch::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+        $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+
+        if($package)
+        {
+            return ['status' => $package->status, 'created_at' => $package->created_at,'Route'=>$package->Route,'Dropoff_Province'=>$package->Dropoff_Province, 'package' => $package];
+            
+        }
+
+        return ['status' => '', 'created_at' => '','Route' => '','Dropoff_Province' => '' ];
     }
 }

@@ -43,9 +43,9 @@ class PackageDispatchController extends Controller
         return view('package.dispatch');
     }
 
-    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes)
+    public function List(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar)
     {
-        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes);
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,  $idCellar);
         $getDataDispatchAll  = $this->getDataDispatchAll($idCompany, $idTeam, $idDriver);
 
         $quantityDispatch     = $packageDispatchList->total();
@@ -78,7 +78,7 @@ class PackageDispatchController extends Controller
         ]; 
     }
 
-    private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type='list')
+    private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,  $idCellar, $type='list')
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -89,6 +89,11 @@ class PackageDispatchController extends Controller
         if($idCompany != 0)
         {
             $packageDispatchList = $packageDispatchList->where('idCompany', $idCompany);
+        }
+
+        if($idCellar != 0)
+        {
+            $packageDispatchList = $packageDispatchList->where('idCellar', $idCellar);
         }
 
         if($idTeam && $idDriver)
@@ -182,7 +187,7 @@ class PackageDispatchController extends Controller
         return  $packageDispatchList;
     }
 
-    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $typeExport)
+    public function Export(Request $request, $idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - DISPATCH " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - DISPATCH.csv";
@@ -194,7 +199,7 @@ class PackageDispatchController extends Controller
         fputcsv($file, $fields, $delimiter);
 
 
-        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,$type ='export');
+        $packageDispatchList = $this->getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes, $idCellar, $type ='export');
 
        foreach($packageDispatchList as $packageDispatch)
         {
@@ -298,22 +303,6 @@ class PackageDispatchController extends Controller
             return ['stateAction' => 'validated', 'packageDispatch' => $packageDispatch];
         }
 
-        $packageHistoryDispatchList = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
-                                                    ->where('status', 'Dispatch')
-                                                    ->where('company', 'EIGHTVAPE')
-                                                    ->orderBy('created_at', 'asc')
-                                                    ->get();
-
-        if(count($packageHistoryDispatchList) > 1 && $request->forcedDispatch == 'NO')
-        {
-            $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchList);
-
-            if($hourDifference >= 6)
-            {
-                return ['stateAction' => 'dispatchedMoreThanTwice'];
-            }
-        }
-
         $validateDispatch = false;
 
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -389,6 +378,27 @@ class PackageDispatchController extends Controller
 
         if($package)
         {
+            $company = Company::find($package->idCompany);
+        
+            if($company->twoAttempts)
+            {
+                $packageHistoryDispatchListCompany = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                    ->where('status', 'Dispatch')
+                                                                    ->where('idCompany', $company->id)
+                                                                    ->orderBy('created_at', 'asc')
+                                                                    ->get();
+
+                if(count($packageHistoryDispatchListCompany) > 1 && $request->forcedDispatch == 'NO')
+                {
+                    $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListCompany);
+
+                    if($hourDifference >= 6)
+                    {
+                        return ['stateAction' => 'dispatchedMoreThanTwice'];
+                    }
+                }
+            }
+
             if($request->get('RouteSearch'))
             {
                 $routes = explode(',', $request->get('RouteSearch'));
@@ -406,6 +416,25 @@ class PackageDispatchController extends Controller
                 $idUserDispatch = $request->get('idDriver');
 
                 $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+        
+                if($team && $team->twoAttempts)
+                {
+                    $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
+                                                                    ->where('status', 'Dispatch')
+                                                                    ->where('idTeam', $team->id)
+                                                                    ->orderBy('created_at', 'asc')
+                                                                    ->get();
+
+                    if(count($packageHistoryDispatchListTeam) > 1 && $request->forcedDispatch == 'NO')
+                    {
+                        $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
+
+                        if($hourDifference >= 6)
+                        {
+                            return ['stateAction' => 'dispatchedMoreThanTwice'];
+                        }
+                    }
+                }
 
                 if($package->status != 'Delete')
                 {
@@ -555,8 +584,15 @@ class PackageDispatchController extends Controller
                         {
                             $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
-                            $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                            $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            if($registerTask['status'] == 200)
+                            {
+                                $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
+                                $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
+                            }
+                            else
+                            {
+                                return ['stateAction' => 'packageErrorOnfleet'];
+                            }
                         }
                         
                         if($registerTask['status'] == 200)
@@ -596,6 +632,16 @@ class PackageDispatchController extends Controller
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
+
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
 
                                 Log::info('============ CREATED TASK COMPLETED ================');
                                 Log::info('====================================================');
@@ -725,6 +771,16 @@ class PackageDispatchController extends Controller
                             $packageController = new PackageController();
                             $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                             //end data for inland
+
+                            $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                            if($packageHistory)
+                            {
+                                $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                            }
 
                             Log::info('============ CREATED TASK COMPLETED ================');
                             Log::info('====================================================');
@@ -1154,6 +1210,16 @@ class PackageDispatchController extends Controller
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
                                 //end data for inland
 
+                                $packageHistory = PackageHistory::where('Reference_Number_1', $package->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                                if($packageHistory)
+                                {
+                                    $packageController->SendStatusToOtherCompany($package, 'Dispatch', null, date('Y-m-d H:i:s'));
+                                }
+
                                 $package->delete();
                             }
                         }
@@ -1208,6 +1274,11 @@ class PackageDispatchController extends Controller
         if($packageDispatch == null)
         {
             $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            
+            if($packageDispatch == null)
+            {
+                $packageDispatch = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+            }
         }
 
         Log::info('package: '. $packageDispatch);
@@ -1536,6 +1607,16 @@ class PackageDispatchController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
 
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
+                    }
+                            
                     if($deleteDispatch)
                     {
                         $packageDispatch->delete();
@@ -1790,6 +1871,8 @@ class PackageDispatchController extends Controller
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
+
+        Log::info('http_status: '. $http_status);
 
         if($http_status == 200)
         {

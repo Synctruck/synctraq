@@ -14,8 +14,10 @@ function Team() {
     const [address, setAddress]                       = useState('');
     const [phone, setPhone]                           = useState('');
     const [email, setEmail]                           = useState('');
+    const [emailCC, setEmailCC]                       = useState('');//cambio
     const [surcharge, setSurcharge]                   = useState(1);
     const [roundWeight, setRoundWeight]               = useState(1);
+    const [twoAttempts, setTwoAttempts]               = useState(1);
     const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
@@ -167,9 +169,11 @@ function Team() {
         formData.append('address', address);
         formData.append('phone', phone);
         formData.append('email', email);
+        formData.append('emailCC', emailCC);
         formData.append('status', status);
         formData.append('surcharge', surcharge);
         formData.append('roundWeight', roundWeight);
+        formData.append('twoAttempts', twoAttempts);
 
         clearValidation();
 
@@ -298,12 +302,13 @@ function Team() {
             setAddress(team.address);
             setPhone(team.phone);
             setEmail(team.email);
+            setEmailCC(team.emailCC);
             setPermissionDispatch(team.permissionDispatch);
             setStatus(team.status);
             setIdOnfleet(team.idOnfleet);
             setSurcharge(team.surcharge);
             setRoundWeight(team.roundWeight);
-            
+            setTwoAttempts(team.twoAttempts)
             /*setTimeout( () => {
 
                 console.log(listPrices);
@@ -440,6 +445,7 @@ function Team() {
     const [priceByCompany, setPriceByCompany]           = useState('');
     const [routeByCompany, setRouteByCompany]           = useState('');
     const [companyPrice, setCompanyPrice]               = useState(0);
+    const [baseRateRange, setBaseRateRange]             = useState(0);
     const [fuelPercentageRange, setfuelPercentageRange] = useState('');
 
     const handlerAddRange = () => {
@@ -533,6 +539,8 @@ function Team() {
      
             myModal.show();
         });
+
+        listAllRangePriceBaseTeam(idTeam)
     }
 
     const listAllRange = (idTeam, idCompany, route) => {
@@ -898,6 +906,7 @@ function Team() {
         formData.append('idCompany', companyPrice);
         formData.append('routeByCompany', routeByCompany);
         formData.append('price', priceByCompany);
+        formData.append('idRangeRate', baseRateRange)
 
         clearValidationPriceByCompany();
 
@@ -1011,8 +1020,12 @@ function Team() {
             let select = document.getElementById("selectIdCompany");
             select.value = range.idCompany;
 
+            let selectRangeRateTeam = document.getElementById("selectIdRangeRate");
+            selectRangeRateTeam.value = range.idRangeRate;
+
             setIdRange(range.id);
             setCompanyPrice(range.idCompany);
+            setBaseRateRange(range.idRangeRate)
             setRouteByCompany(range.route);
             setPriceByCompany(range.price);
             setViewAddRange('block');
@@ -1100,6 +1113,15 @@ function Team() {
 
             <tr key={i}>
                 <td><b>{ range.company }</b></td>
+                <td>
+                    {
+                        range.range_rate_team
+                        ?
+                            <b>{ range.range_rate_team.minWeight +' - '+ range.range_rate_team.maxWeight }</b>
+                        :
+                            ''
+                    }
+                </td>
                 <td><b>{ range.route }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
                 <td className="text-center">
@@ -1123,6 +1145,7 @@ function Team() {
         setAddress('');
         setPhone('');
         setEmail('');
+        setEmailCC('');
         setStatus('Active');
     }
 
@@ -1149,6 +1172,7 @@ function Team() {
 
         setIdRange(0);
         setRouteByCompany('');
+        setBaseRateRange('')
         setCompanyPrice('');
         setPriceByCompany('');
     }
@@ -1188,8 +1212,12 @@ function Team() {
 
     const clearValidationPriceByCompany = () => {
 
+        idRangeRate
         document.getElementById('idCompanyByCompany').style.display = 'none';
         document.getElementById('idCompanyByCompany').innerHTML     = '';
+
+        document.getElementById('idRangeRate').style.display = 'none';
+        document.getElementById('idRangeRate').innerHTML     = '';
 
         document.getElementById('routeByCompanyByCompany').style.display = 'none';
         document.getElementById('routeByCompanyByCompany').innerHTML     = '';
@@ -1205,14 +1233,11 @@ function Team() {
             <tr key={i}>
                 <td>
                     <b className="text-primary">{ user.id }</b><br/>
-                </td>
-                <td>
                     <b>{ user.name }</b><br/>
                     { user.nameOfOwner }
                 </td>
                 <td>{ user.phone }</td>
                 <td>{ user.email }</td>
-                <td>{ user.idOnfleet }</td>
                 <td>
                     {
                         (
@@ -1228,6 +1253,17 @@ function Team() {
                     {
                         (
                             user.surcharge
+                            ?
+                                <div className="alert alert-success font-weight-bold">YES</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">NO</div>
+                        )
+                    }
+                </td>
+                <td>
+                    {
+                        (
+                            user.twoAttempts
                             ?
                                 <div className="alert alert-success font-weight-bold">YES</div>
                             :
@@ -1488,6 +1524,11 @@ function Team() {
         return <option value={ company.id }>{ company.name }</option>
     });
 
+    const optionBaseRateRange = listRange.map( (rate, i) => {
+
+        return <option value={ rate.id }>{ rate.minWeight +' - '+ rate.maxWeight }</option>
+    });
+
     const modalCategoryInsert = <React.Fragment>
                                     <div className="modal fade" id="modalCategoryInsert" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div className="modal-dialog modal-md">
@@ -1583,12 +1624,29 @@ function Team() {
                                                         <div className="row">
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
+                                                                    <label className="form">Two Attempts</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ twoAttempts } className="form-control" onChange={ (e) => setTwoAttempts(e.target.value) } required>
+                                                                        <option value="1" >YES</option>
+                                                                        <option value="0" >NO</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
                                                                     <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
                                                                         <option value="Active" >Active</option>
                                                                         <option value="Inactive" >Inactive</option>
                                                                     </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
+                                                                    <label className="form">Additional Emails (optional)</label>
+                                                                    <div id="emailCC" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ emailCC } className="form-control" onChange={ (e) => setEmailCC(e.target.value) } placeholder="example@email.com, example2@myemail.com" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1752,6 +1810,14 @@ function Team() {
                                                                             </select>
                                                                         </div>
                                                                         <div className="col-lg-3 form-group">
+                                                                            <label className="form">BASE RATE RANGE</label>
+                                                                            <div id="idRangeRate" className="text-danger" style={ {display: 'none'} }></div>
+                                                                            <select id="selectIdRangeRate" className="form-control" onChange={ (e) => setBaseRateRange(e.target.value) }>
+                                                                                <option value="0">Select...</option>
+                                                                                { optionBaseRateRange }
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="col-lg-3 form-group">
                                                                             <label className="form">ROUTE</label>
                                                                             <div id="routeByCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
                                                                             <input type="text" className="form-control" value={ routeByCompany } maxLength="20" step="0.0001" onChange={ (e) => setRouteByCompany(e.target.value) }/>
@@ -1761,8 +1827,9 @@ function Team() {
                                                                             <div id="priceByCompany" className="text-danger" style={ {display: 'none'} }></div>
                                                                             <input type="number" className="form-control" value={ priceByCompany } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByCompany(e.target.value) } required/>
                                                                         </div>
+                                                                    </div>
+                                                                    <div className="row">
                                                                         <div className="col-lg-3 form-group">
-                                                                            <label className="text-white">--</label>
                                                                             <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
                                                                         </div>
                                                                     </div>
@@ -1780,6 +1847,7 @@ function Team() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th>COMPANY</th>
+                                                                            <th>BASE RATE RANGE</th>
                                                                             <th>ROUTE</th>
                                                                             <th>PRICE</th>
                                                                             <th>ACTIONS</th>
@@ -1836,18 +1904,17 @@ function Team() {
                                     <br/>
                                 </div>
                             </div>
-                            <div className="row form-group">
+                            <div className="row">
                                 <div className="col-lg-12">
                                     <table className="table table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th>ID TEAM</th>
                                                 <th>NAME</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
-                                                <th>ID ONFLEET</th>
                                                 <th>ROUND WEIGHT</th>
                                                 <th>SURCHARGE</th>
+                                                <th>TWO ATTEMPTS</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>

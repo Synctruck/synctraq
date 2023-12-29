@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse, States, User, Cellar};
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse,PackageLmCarrier, States, User, Cellar};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -45,9 +45,10 @@ class PackageWarehouseController extends Controller
         return view('package.warehouse');
     }
 
-    public function List($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state)
+    public function List($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar)
     {
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state);
+
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar);
 
         $quantityWarehouse      = $packageListWarehouse->total();
 
@@ -60,7 +61,7 @@ class PackageWarehouseController extends Controller
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
 
-    private function getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state,$type='list'){
+    private function getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $type='list'){
 
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd  = $dateEnd .' 23:59:59';
@@ -85,6 +86,11 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->where('idCompany', $idCompany);
         }
+
+        if($idCellar != 0)
+        {
+            $packageListWarehouse = $packageListWarehouse->where('idCellar', $idCellar);
+        }
         
         if($idValidator)
         {
@@ -100,6 +106,7 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
         }
+        
         if($type == 'list')
         {
             $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')
@@ -128,7 +135,7 @@ class PackageWarehouseController extends Controller
         return $packageListWarehouse;
     }
 
-    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $typeExport)
+    public function Export($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $typeExport)
     {
         $delimiter = ",";
         $filename  = $typeExport == 'download' ? "PACKAGES - WAREHOUSE " . date('Y-m-d H:i:s') . ".csv" : Auth::user()->id ."- PACKAGES - WAREHOUSE.csv";
@@ -140,15 +147,17 @@ class PackageWarehouseController extends Controller
 
         fputcsv($file, $fields, $delimiter);
 
-        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $type='export');
+        $packageListWarehouse = $this->getDataWarehouse($idCompany, $idValidator, $dateStart,$dateEnd, $route, $state, $idCellar, $type='export');
 
         foreach($packageListWarehouse as $packageWarehouse)
         {
+            $user = $packageWarehouse->user ? $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner : '';
+
             $lineData = array(
                                 date('m-d-Y', strtotime($packageWarehouse->created_at)),
                                 date('H:i:s', strtotime($packageWarehouse->created_at)),
                                 $packageWarehouse->company,
-                                $packageWarehouse->user->name .' '. $packageWarehouse->user->nameOfOwner,
+                                $user,
                                 $packageWarehouse->Reference_Number_1,
                                 $packageWarehouse->Dropoff_Contact_Name,
                                 $packageWarehouse->Dropoff_Contact_Phone_Number,
@@ -304,12 +313,21 @@ class PackageWarehouseController extends Controller
 
                 $packageWarehouse->save();
 
+                $packageController = new PackageController();
+
                 if($packageWarehouse->idCompany == 1)
                 {
-                    //data for INLAND
-                    $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                    //end data for inland
+                }
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
                 }
 
                 DB::commit();
@@ -409,6 +427,16 @@ class PackageWarehouseController extends Controller
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
                     //end data for inland
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packageManifest->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packageManifest, 'Inbound', null, date('Y-m-d H:i:s'));
+                    }
                 }
 
                 if($packageDispatch)
@@ -646,14 +674,23 @@ class PackageWarehouseController extends Controller
 
                 $package->delete();
 
+                $packageController = new PackageController();
+
                 if($packageWarehouse->idCompany == 1)
                 {
-                    //data for INLAND
-                    $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
-                    //end data for inland
                 }
                 
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
+                                                ->where('sendToInland', 1)
+                                                ->where('status', 'Manifest')
+                                                ->first();
+
+                if($packageHistory)
+                {
+                    $packageController->SendStatusToOtherCompany($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
+                }
+
                 DB::commit();
 
                 return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
@@ -718,20 +755,22 @@ class PackageWarehouseController extends Controller
 
     public function ListInDelivery()
     {
-        $listPackageWarehouse = PackageWarehouse::where('status', 'Warehouse')->get();
+        $id = new PackageLmCarrier();
+        $listPackageLmCarrier = PackageLmCarrier::whereDate('created_at', '2023-08-20 03:08:28')->get();
+
 
         $packagesInDelivery = [];
 
-        foreach($listPackageWarehouse as $packageWarehouse)
+        foreach($listPackageLmCarrier as $packageLmCarrier)
         {
-            $packageDelivery = PackageDispatch::find($packageWarehouse->Reference_Number_1);
+            $packageHistory = PackageHistory::where('Reference_Number_1',$packageLmCarrier->Reference_Number_1);
 
-            if($packageDelivery)
+            if($packageHistory->status== 'Delivery')
             {
-                array_push($packagesInDelivery, $packageWarehouse->Reference_Number_1);
+                array_push($packagesInDelivery, $packageHistory->Reference_Number_1);
             }
         }
-
+        dd($packagesInDelivery);
         return $packagesInDelivery;
     }
 
@@ -745,13 +784,13 @@ class PackageWarehouseController extends Controller
 
             foreach($packagesListInDelivery as $Reference_Number_1)
             {
-                $packageWarehouse = PackageWarehouse::where('status', 'Warehouse')
+                $packageLmCarrier = PackageLmCarrier::where('status', 'LM Carrier')
                                                     ->where('Reference_Number_1', $Reference_Number_1)
                                                     ->first();
 
-                if($packageWarehouse)
+                if($packageLmCarrier)
                 {
-                    $packageWarehouse->delete();
+                    $packageLmCarrier->delete();
                 }
             }
 

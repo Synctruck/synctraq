@@ -66,13 +66,22 @@ class DriverController extends Controller
         return ['userList' => $userList, 'roleUser' => $roleUser];
     }
 
-    public function ListAllByTeam($idTeam)
+    public function ListAllByTeam($idTeam, $usageApp)
     {
-        $listDriver = Driver::where('idTeam', $idTeam)
-                            ->where('idOnfleet', '!=', '')
-                            ->where('status', 'Active')
-                            ->orderBy('name', 'asc')
-                            ->get();
+        $listDriver = Driver::where('idTeam', $idTeam);
+
+        if($usageApp == 'false')
+        {    
+            $listDriver = $listDriver->where('usageApp', 'Onfleet');
+        }
+        else
+        {
+            $listDriver = $listDriver->where('usageApp', 'PODApp');
+        }
+
+        $listDriver = $listDriver->where('status', 'Active')
+                                    ->orderBy('name', 'asc')
+                                    ->get();
 
         return ['listDriver' => $listDriver];
     }
@@ -123,13 +132,21 @@ class DriverController extends Controller
 
             if($registerTeam)
             {
+                $driverLast = Driver::all()->last();
+
+                $request['id']        = $driverLast->id + 1;
                 $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
                 $request['idRole']    = 4;
                 $request['password']  = Hash::make($request->get('email'));
                 $request['idTeam']    = $team->id;
                 $request['nameTeam']  = $team->name;
+                $request['usageApp']  = 'Onfleet';
 
                 Driver::create($request->all());
+
+                $driver = Driver::where('email', $request->email)->first();
+
+                $this->SynchronizeNewSystem($driver->id);
 
                 return ['stateAction' => true];
             }
@@ -178,21 +195,12 @@ class DriverController extends Controller
             $driver->usageApp    = $request->usageApp;
             $driver->status      = $request->status;
             $driver->idTeam      = $team->id;
-            $driver->nameTeam    = $team->name;      
+            $driver->nameTeam    = $team->name;
+            $driver->save();
 
-            $registerPODApp = $this->RegisterPODApp($driver);
+            $this->SynchronizeNewSystem($driver->id);
 
-            if($registerPODApp['statusCode'] === true)
-            {
-                $driver->idOnfleet = $registerPODApp['response']['data']['_id'];
-                $driver->save();
-
-                return ['stateAction' => true];
-            }
-            else
-            {
-                return ['stateAction' => 'notRegisterPODApp', 'response' => $registerPODApp['response']];
-            }
+            return ['stateAction' => true];
         }
     }
 
@@ -544,6 +552,76 @@ class DriverController extends Controller
         else
         {
             return false;
+        }
+    }
+
+    public function SynchronizeNewSystem($id)
+    {
+        $user = User::find($id);
+
+        $registerSystemNew = $this->RegisterSystemNew($user, $user->id);
+
+        if($registerSystemNew['statusCode'])
+        {
+            $user->registerNewSystem = 1;
+            $user->save();
+
+            return ['statusCode' => true];
+        }
+
+        return ['statusCode' => false];
+    }
+
+    public function RegisterSystemNew($request, $idDriver)
+    {
+        $data = [
+                    "firstName" => $request->name,
+                    "lastName" => $request->nameOfOwner,
+                    "email" => $request->email,
+                    "roles" => [],
+                    "meta" => [
+                        "syncDriverId" => $idDriver
+                    ]
+                ];
+
+        $configuration = Configuration::first();
+
+        $headers =  array(
+                        'Content-Type: application/json',
+                        'Authorization: '. $configuration->podAppKey
+                    );
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $configuration->podAppUrl .'/users',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => $headers,
+        ));
+
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        Log::info('response');
+        Log::info($response);
+
+        if($http_status >= 200 && $http_status <= 299)
+        {
+            return ['response' => $response, 'statusCode' => true];
+        }
+        else
+        {
+            return ['response' => $response, 'statusCode' => false];
         }
     }
 
