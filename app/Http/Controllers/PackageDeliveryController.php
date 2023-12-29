@@ -560,14 +560,6 @@ class PackageDeliveryController extends Controller
                         $contador++;
                     }
 
-                    $packageLmCarrier = PackageLmCarrier::find($row[0]);
-
-                    if($packageLmCarrier)
-                    {
-                        $packageAux = $packageLmCarrier;
-
-                        $contador++;
-                    }
 
                     $packageDispatch = $packageAux;
 
