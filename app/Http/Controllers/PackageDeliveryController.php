@@ -560,7 +560,6 @@ class PackageDeliveryController extends Controller
                         $contador++;
                     }
 
-
                     $packageDispatch = $packageAux;
 
                     if($contador == 1)
