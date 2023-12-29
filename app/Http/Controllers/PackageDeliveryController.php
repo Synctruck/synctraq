@@ -559,7 +559,6 @@ class PackageDeliveryController extends Controller
 
                         $contador++;
                     }
-
                     $packageReturnCompany = PackageReturnCompany::find($row[0]);
 
                     if($packageReturnCompany)
