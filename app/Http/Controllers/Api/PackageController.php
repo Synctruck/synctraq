@@ -549,26 +549,47 @@ class PackageController extends Controller
 
             $curl = curl_init();
 
-            if($package->idCompany == 1)
+            if($package->idCompany == 1 || $package->company == 'OCHESTRO')
             {
                 $header_curl = array(
                     'Authorization: '. $key_webhook,
                     'Content-Type: application/json'
                 );
 
-                $urlWebhook  = $url_webhook . $package->Reference_Number_1 .'/update-status';
+                $urlWebhook  = $package->idCompany == 1 ? $url_webhook . $package->Reference_Number_1 .'/update-status' : $url_webhook;
 
-                $dataSend = '{
-                    "status": "'. $statusCodeCompany .'",
-                    '. $pod_url .'
-                    "metadata": [
-                        {
-                            "label": "",
-                            "value": ""
+                if($package->idCompany == 1)
+                {
+                    $dataSend = '{
+                        "status": "'. $statusCodeCompany .'",
+                        '. $pod_url .'
+                        "metadata": [
+                            {
+                                "label": "",
+                                "value": ""
+                            }
+                        ],
+                        "datetime" : "'. $created_at .'"
+                    }';
+                }
+                else if($package->company == 'OCHESTRO')
+                {
+                    $dataSend = '{
+                        "trackingNumber" : "'. $package->Reference_Number_1 .'",
+                        "carrierName" : "Synctruck",
+                        "event": {
+                            "comments": "Left at front door",
+                            "status":"'. $status .'",
+                            "alternateStatusCode":"",
+                            "deliverySignature": "Yes",
+                            "timestamp" :"",
+                            "timezone" :"",
+                            "city" : "",
+                            "state": "",
+                            "zip": ""
                         }
-                    ],
-                    "datetime" : "'. $created_at .'"
-                }';
+                    }';
+                }
             }
             else
             {
@@ -636,7 +657,7 @@ class PackageController extends Controller
                 Log::info('http_status: '. $http_status);
                 Log::info('PACKAGE ID: '. $package->Reference_Number_1);
                 Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
-                Log::info('REPONSE STATUS: '. $response['status']);
+                //Log::info('REPONSE STATUS: '. $response['status']);
                 Log::info('============INLAND - END STATUS UPDATE');
             }
         }
