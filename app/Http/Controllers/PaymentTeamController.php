@@ -693,8 +693,8 @@ class PaymentTeamController extends Controller
         {
             DB::beginTransaction();
 
-            $startDate = date('Y-m-08 00:00:00');
-            $endDate   = date('Y-m-09 23:59:59');
+            $startDate = date('Y-m-01 00:00:00');
+            $endDate   = date('Y-m-01 23:59:59');
 
             $paymentDetailList = PaymentTeamDetail::whereBetween('created_at', [$startDate, $endDate])->get();
 
