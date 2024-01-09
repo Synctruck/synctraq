@@ -107,6 +107,36 @@ class WHookController extends Controller
                     $packageHistory->updated_at                   = date('Y-m-d H:i:s');
 
                     $packageHistory->save();
+ 
+                    if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delivery')
+                    {
+                        $packageOther = $packageDispatch;
+
+                        $packageDispatch = new PackageDispatch();
+
+                        $packageDispatch->Reference_Number_1           = $packageOther->Reference_Number_1;
+                        $packageDispatch->idCompany                    = $packageOther->idCompany;
+                        $packageDispatch->company                      = $packageOther->company;
+                        $packageDispatch->idStore                      = $packageOther->idStore;
+                        $packageDispatch->store                        = $packageOther->store;
+                        $packageDispatch->Dropoff_Contact_Name         = $packageOther->Dropoff_Contact_Name;
+                        $packageDispatch->Dropoff_Company              = $packageOther->Dropoff_Company;
+                        $packageDispatch->Dropoff_Contact_Phone_Number = $packageOther->Dropoff_Contact_Phone_Number;
+                        $packageDispatch->Dropoff_Contact_Email        = $packageOther->Dropoff_Contact_Email;
+                        $packageDispatch->Dropoff_Address_Line_1       = $packageOther->Dropoff_Address_Line_1;
+                        $packageDispatch->Dropoff_Address_Line_2       = $packageOther->Dropoff_Address_Line_2;
+                        $packageDispatch->Dropoff_City                 = $packageOther->Dropoff_City;
+                        $packageDispatch->Dropoff_Province             = $packageOther->Dropoff_Province;
+                        $packageDispatch->Dropoff_Postal_Code          = $packageOther->Dropoff_Postal_Code;
+                        $packageDispatch->Notes                        = $packageOther->Notes;
+                        $packageDispatch->Weight                       = $packageOther->Weight;
+                        $packageDispatch->Route                        = $packageOther->Route;
+                        $packageDispatch->Date_Dispatch                = $created_at;
+                        $packageDispatch->quantity                     = $packageOther->quantity;
+                        $packageDispatch->idPaymentTeam                = '';
+                        $packageDispatch->created_at                   = $created_at;
+                        $packageDispatch->updated_at                   = $created_at;
+                    }
 
                     $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
                     $packageDispatch->workerName         = $user ? $user->name .' '. $user->nameOfOwner : '';
@@ -128,6 +158,11 @@ class WHookController extends Controller
                     $packageDispatch->updated_at    = date('Y-m-d H:i:s');
 
                     $packageDispatch->save();
+
+                    if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delivery')
+                    {
+                        $packageOther->delete();
+                    }
 
                     if($packageDispatch->company == 'INLAND LOGISTICS' || $packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
