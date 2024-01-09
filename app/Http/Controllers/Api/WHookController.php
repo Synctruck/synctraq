@@ -76,7 +76,7 @@ class WHookController extends Controller
                     }
 
                     $created_at = date('Y-m-d H:i:s');
-                    
+
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -163,6 +163,9 @@ class WHookController extends Controller
 
                     if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delivery')
                     {
+                        Log::info('packageOther');
+                        Log::info($packageOther);
+                        
                         $packageOther->delete();
                     }
 
