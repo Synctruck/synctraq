@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -41,10 +41,24 @@ class WHookController extends Controller
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
-                if($packageDispatch)
+                if($packageDispatch == nul)
                 {
-                    $user = User::find($packageDispatch->idUserDispatch);
-
+                    $package = PackageManifest::find($Reference_Number_1);
+        
+                    $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
+                    $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+                }
+                
+                if($packageDispatch) 
+                {
+                    $user = User::find(($packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : null));
+                    
                     if($user)
                     {
                         if($user->nameTeam)
