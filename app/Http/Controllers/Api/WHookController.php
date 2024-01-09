@@ -41,20 +41,18 @@ class WHookController extends Controller
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
-                Log::info("==== packageDispatch");
-                Log::info($packageDispatch);
                 if($packageDispatch == null)
                 {
-                    $package = PackageManifest::find($Reference_Number_1);
+                    $packageDispatch = PackageManifest::find($Reference_Number_1);
         
-                    $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageNeedMoreInformation::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackagelmCarrier::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageLost::find($Reference_Number_1);
-                    $package = $package != null ? $package : PackageDispatchToMiddleMile::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageInbound::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageNeedMoreInformation::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageWarehouse::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageReturnCompany::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackagelmCarrier::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageTerminal::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageLost::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageDispatchToMiddleMile::find($Reference_Number_1);
                 }
                 
                 if($packageDispatch) 
