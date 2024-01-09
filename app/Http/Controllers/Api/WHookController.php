@@ -161,11 +161,11 @@ class WHookController extends Controller
 
                     $packageDispatch->save();
 
-                    if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delivery')
+                    if(isset($packageOther))
                     {
                         Log::info('packageOther');
                         Log::info($packageOther);
-                        
+
                         $packageOther->delete();
                     }
 
