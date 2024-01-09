@@ -41,6 +41,8 @@ class WHookController extends Controller
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
+                Log::info("==== packageDispatch");
+                Log::info($packageDispatch);
                 if($packageDispatch == null)
                 {
                     $package = PackageManifest::find($Reference_Number_1);
