@@ -109,9 +109,9 @@ class WHookController extends Controller
                     $packageHistory->save();
 
                     $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                    $packageDispatch->workerName         = $user->name .' '. $user->nameOfOwner;
+                    $packageDispatch->workerName         = $user ? $user->name .' '. $user->nameOfOwner : '';
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageDispatch->recipientNotes     = $user->nameTeam;
+                    $packageDispatch->recipientNotes     = $user ? $user->nameTeam : '';
 
                     $photoUrl = '';
 
