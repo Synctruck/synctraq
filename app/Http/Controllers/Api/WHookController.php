@@ -75,6 +75,8 @@ class WHookController extends Controller
                         $description = 'For: Not exist Team';
                     }
 
+                    $created_at = date('Y-m-d H:i:s');
+                    
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -102,9 +104,9 @@ class WHookController extends Controller
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Delivery';
-                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->actualDate                   = $created_at;
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
 
                     $packageHistory->save();
  
@@ -155,7 +157,7 @@ class WHookController extends Controller
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->Date_Delivery = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageDispatch->status        = 'Delivery';
-                    $packageDispatch->updated_at    = date('Y-m-d H:i:s');
+                    $packageDispatch->updated_at    = $created_at;
 
                     $packageDispatch->save();
 
