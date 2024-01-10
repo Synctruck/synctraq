@@ -66,6 +66,9 @@ class WHookController extends Controller
                     else
                     {
                         $user = User::where('idOnfleet', $workerId)->first();
+
+                        Log::info("USER FIND: ");
+                        Log::info($user);
                     }
                     
                     if($user)
