@@ -34,6 +34,7 @@ class WHookController extends Controller
             $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
             $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
 
+            Log::info($request);
             Log::info("==== TASK COMPLETED");
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
 
