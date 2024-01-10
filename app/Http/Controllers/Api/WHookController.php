@@ -166,6 +166,12 @@ class WHookController extends Controller
 
                     Log::info($photoUrl);
 
+                    if($user)
+                    {
+                        $packageDispatch->idUserDispatch = $user->id;
+                        $packageDispatch->idTeam         = $user->idTeam;
+                    }
+
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->Date_Delivery = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageDispatch->status        = 'Delivery';
