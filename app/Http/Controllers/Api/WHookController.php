@@ -36,7 +36,6 @@ class WHookController extends Controller
             $workerId                = $request['workerId'];
 
             Log::info("==== TASK COMPLETED");
-            Log::info("workerId: ". $workerId);
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
 
             if($completionDetailsStatus == true)
@@ -66,9 +65,6 @@ class WHookController extends Controller
                     else
                     {
                         $user = User::where('idOnfleet', $workerId)->first();
-
-                        Log::info("USER FIND: ");
-                        Log::info($user);
                     }
                     
                     if($user)
@@ -163,8 +159,6 @@ class WHookController extends Controller
                     {
                         $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
                     }
-
-                    Log::info($photoUrl);
 
                     if($user)
                     {
