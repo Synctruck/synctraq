@@ -33,6 +33,7 @@ class WHookController extends Controller
             $completionDetailsStatus = $request['data']['task']['completionDetails']['success'];
             $Date_Delivery           = $request['data']['task']['completionDetails']['time'];
             $photoUploadIds          = $request['data']['task']['completionDetails']['unavailableAttachments'];
+            $workerId                = $request['workerId'];
 
             Log::info("==== TASK COMPLETED");
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
@@ -55,9 +56,16 @@ class WHookController extends Controller
                     $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageDispatchToMiddleMile::find($Reference_Number_1);
                 }
                 
-                if($packageDispatch) 
+                if($packageDispatch)
                 {
-                    $user = User::find(($packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : null));
+                    if($packageDispatch->status == 'Dispatch')
+                    {
+                        $user = User::find($packageDispatch->idUserDispatch);
+                    }
+                    else
+                    {
+                        $user = User::where('idOnfleet', $workerId)->first();
+                    }
                     
                     if($user)
                     {
@@ -152,7 +160,11 @@ class WHookController extends Controller
                         $photoUrl = $photoUrl == '' ? $idPhoto['attachmentId'] : $photoUrl .','. $idPhoto['attachmentId'];
                     }
 
-                    Log::info($photoUrl);
+                    if($user)
+                    {
+                        $packageDispatch->idUserDispatch = $user->id;
+                        $packageDispatch->idTeam         = $user->idTeam;
+                    }
 
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->Date_Delivery = date('Y-m-d H:i:s', $Date_Delivery / 1000);
