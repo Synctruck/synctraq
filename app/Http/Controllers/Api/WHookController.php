@@ -36,6 +36,7 @@ class WHookController extends Controller
             $workerId                = $request['workerId'];
 
             Log::info("==== TASK COMPLETED");
+            Log::info("workerId: ". $workerId);
             Log::info("==== Reference_Number_1: ". $Reference_Number_1);
 
             if($completionDetailsStatus == true)
