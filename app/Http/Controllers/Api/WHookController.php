@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, PackageReturnCompany, PackageLmCarrier, PackageTerminal, PackageLost, PackageDispatchToMiddleMile, TeamRoute, User };
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -41,10 +41,24 @@ class WHookController extends Controller
             {
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
-                if($packageDispatch)
+                if($packageDispatch == null)
                 {
-                    $user = User::find($packageDispatch->idUserDispatch);
-
+                    $packageDispatch = PackageManifest::find($Reference_Number_1);
+         
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageInbound::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageNeedMoreInformation::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageWarehouse::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageReturnCompany::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageLmCarrier::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageTerminal::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageLost::find($Reference_Number_1);
+                    $packageDispatch = $packageDispatch != null ? $packageDispatch : PackageDispatchToMiddleMile::find($Reference_Number_1);
+                }
+                
+                if($packageDispatch) 
+                {
+                    $user = User::find(($packageDispatch->status == 'Dispatch' ? $packageDispatch->idUserDispatch : null));
+                    
                     if($user)
                     {
                         if($user->nameTeam)
@@ -60,6 +74,8 @@ class WHookController extends Controller
                     {
                         $description = 'For: Not exist Team';
                     }
+
+                    $created_at = date('Y-m-d H:i:s');
 
                     $packageHistory = new PackageHistory();
 
@@ -88,16 +104,46 @@ class WHookController extends Controller
                     $packageHistory->Date_Delivery                = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageHistory->Description                  = $description;
                     $packageHistory->status                       = 'Delivery';
-                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->actualDate                   = $created_at;
+                    $packageHistory->created_at                   = $created_at;
+                    $packageHistory->updated_at                   = $created_at;
 
                     $packageHistory->save();
+ 
+                    if($packageDispatch->status != 'Dispatch' && $packageDispatch->status != 'Delivery')
+                    {
+                        $packageOther = $packageDispatch;
+
+                        $packageDispatch = new PackageDispatch();
+
+                        $packageDispatch->Reference_Number_1           = $packageOther->Reference_Number_1;
+                        $packageDispatch->idCompany                    = $packageOther->idCompany;
+                        $packageDispatch->company                      = $packageOther->company;
+                        $packageDispatch->idStore                      = $packageOther->idStore;
+                        $packageDispatch->store                        = $packageOther->store;
+                        $packageDispatch->Dropoff_Contact_Name         = $packageOther->Dropoff_Contact_Name;
+                        $packageDispatch->Dropoff_Company              = $packageOther->Dropoff_Company;
+                        $packageDispatch->Dropoff_Contact_Phone_Number = $packageOther->Dropoff_Contact_Phone_Number;
+                        $packageDispatch->Dropoff_Contact_Email        = $packageOther->Dropoff_Contact_Email;
+                        $packageDispatch->Dropoff_Address_Line_1       = $packageOther->Dropoff_Address_Line_1;
+                        $packageDispatch->Dropoff_Address_Line_2       = $packageOther->Dropoff_Address_Line_2;
+                        $packageDispatch->Dropoff_City                 = $packageOther->Dropoff_City;
+                        $packageDispatch->Dropoff_Province             = $packageOther->Dropoff_Province;
+                        $packageDispatch->Dropoff_Postal_Code          = $packageOther->Dropoff_Postal_Code;
+                        $packageDispatch->Notes                        = $packageOther->Notes;
+                        $packageDispatch->Weight                       = $packageOther->Weight;
+                        $packageDispatch->Route                        = $packageOther->Route;
+                        $packageDispatch->Date_Dispatch                = $created_at;
+                        $packageDispatch->quantity                     = $packageOther->quantity;
+                        $packageDispatch->idPaymentTeam                = '';
+                        $packageDispatch->created_at                   = $created_at;
+                        $packageDispatch->updated_at                   = $created_at;
+                    }
 
                     $packageDispatch->taskDetails        = $packageDispatch->Reference_Number_1;
-                    $packageDispatch->workerName         = $user->name .' '. $user->nameOfOwner;
+                    $packageDispatch->workerName         = $user ? $user->name .' '. $user->nameOfOwner : '';
                     $packageDispatch->destinationAddress = $packageDispatch->Dropoff_Address_Line_1;
-                    $packageDispatch->recipientNotes     = $user->nameTeam;
+                    $packageDispatch->recipientNotes     = $user ? $user->nameTeam : '';
 
                     $photoUrl = '';
 
@@ -111,9 +157,14 @@ class WHookController extends Controller
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->Date_Delivery = date('Y-m-d H:i:s', $Date_Delivery / 1000);
                     $packageDispatch->status        = 'Delivery';
-                    $packageDispatch->updated_at    = date('Y-m-d H:i:s');
+                    $packageDispatch->updated_at    = $created_at;
 
                     $packageDispatch->save();
+
+                    if(isset($packageOther))
+                    {
+                        $packageOther->delete();
+                    }
 
                     if($packageDispatch->company == 'INLAND LOGISTICS' || $packageDispatch->company == 'AMERICAN EAGLE' || $packageDispatch->company == 'EIGHTVAPE' || $packageDispatch->company == 'Smart Kargo')
                     {
