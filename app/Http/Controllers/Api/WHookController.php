@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, TeamRoute, User };
+use App\Models\{ AuxDispatchUser, Configuration, Driver, Package, PackageDelivery, PackageDispatch, PackageFailed, PackagePreFailed, PackageHistory, PackageInbound, PackageNeedMoreInformation, PackageManifest, PackageNotExists, PackageReturn, PackageWarehouse, PackageReturnCompany, PackagelmCarrier, PackageTerminal, PackageLost, PackageDispatchToMiddleMile, TeamRoute, User };
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -163,9 +163,6 @@ class WHookController extends Controller
 
                     if(isset($packageOther))
                     {
-                        Log::info('packageOther');
-                        Log::info($packageOther);
-
                         $packageOther->delete();
                     }
 
