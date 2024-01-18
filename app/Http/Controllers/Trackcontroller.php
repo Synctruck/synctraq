@@ -20,7 +20,7 @@ class Trackcontroller extends Controller
                                             ->whereIn('status',['Manifest','Inbound','Dispatch','Delivery'])
                                             ->groupBy('status')
                                             ->orderBy('created_at','DESC')
-                                            ->select('status', 'created_at', 'Dropoff_Contact_Name', 'Reference_Number_1')
+                                            ->select('status', 'created_at', 'Dropoff_Contact_Name', 'Reference_Number_1', 'Dropoff_Postal_Code')
                                             ->get();
 
         return [

@@ -38,7 +38,7 @@ function Track() {
         axios.get(url)
             .then((response) => {
                 setListDetails(response.data.details);
-                setPackageZipCode(response.data.details[0].Dropoff_Contact_Name);
+                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
                 setDisplayDetails(true);
             })
             .catch(() => {
