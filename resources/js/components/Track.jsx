@@ -38,7 +38,7 @@ function Track() {
         axios.get(url)
             .then((response) => {
                 setListDetails(response.data.details);
-                setPackageZipCode(response.data.details[0].Dropoff_Postal_Code);
+                setPackageZipCode(response.data.details[0].Dropoff_Province);
                 setDisplayDetails(true);
             })
             .catch(() => {
@@ -158,7 +158,7 @@ function Track() {
                                 <h6 className="pt-4">Tracking Details</h6>
                                 <hr />
                                 <h5 className="text-center">
-                                    PACKAGE ID: {packageId} / OWNER: {packageZipCode}
+                                    PACKAGE ID: {packageId} / STATE: {Dropoff_Province}
                                 </h5>
                                 <div className={`col-12 mt-2 tracking-details d-none d-md-block`}>
                                     <Steps className="custom-steps" current={step}>
