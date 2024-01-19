@@ -19,7 +19,9 @@ class Trackcontroller extends Controller
         $packageHistoryList = PackageHistory::where('Reference_Number_1', $package_id)
                                             ->whereIn('status',['Manifest','Inbound','Dispatch','Delivery'])
                                             ->groupBy('status')
-                                            ->orderBy('created_at','DESC')->get();
+                                            ->orderBy('created_at','DESC')
+                                            ->select('status', 'created_at', 'Reference_Number_1', 'Dropoff_Province')
+                                            ->get();
 
         return [
             "details" =>$packageHistoryList
