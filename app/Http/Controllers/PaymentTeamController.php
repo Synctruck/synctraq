@@ -203,6 +203,8 @@ class PaymentTeamController extends Controller
                                                         ->where('route', $route)
                                                         ->first();
 
+
+
         $rangeByCompany = RangePriceTeamByCompany::where('idTeam', $idTeam)
                                     ->where('idCompany', $idCompany)
                                     ->where('idRangeRate', 0)
@@ -221,11 +223,32 @@ class PaymentTeamController extends Controller
                                     ->where('route', $route)
                                     ->first();
 
-        $priceCompanyTeam = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
-        $priceRate        = $rangeByRate ? $rangeByRate->price : 0;
-        $priceCompany     = $rangeByCompany ? $rangeByCompany->price : 0;
-        $priceTeam        = $rangeByRoute ? $rangeByRoute->price : 0;
-        $totalPrices      = $priceCompanyTeam + $priceRate + $priceCompany + $priceTeam;
+        $rangeByCompanyRate = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->where('idRangeRate', $idRangeRate)
+                                    ->where('route', '')
+                                    ->first();
+
+        $rangeByCompanyRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', $idCompany)
+                                    ->where('idRangeRate', 0)
+                                    ->where('route', $route)
+                                    ->first();
+
+        $rangeByRateRoute = RangePriceTeamByCompany::where('idTeam', $idTeam)
+                                    ->where('idCompany', 0)
+                                    ->where('idRangeRate', $idRangeRate)
+                                    ->where('route', $route)
+                                    ->first();
+
+        $priceCompanyTeam  = $rangeByCompanyTeam ? $rangeByCompanyTeam->price : 0;
+        $priceRate         = $rangeByRate ? $rangeByRate->price : 0;
+        $priceCompany      = $rangeByCompany ? $rangeByCompany->price : 0;
+        $priceTeam         = $rangeByRoute ? $rangeByRoute->price : 0;
+        $priceCompanyRate  = $rangeByCompanyRate ? $rangeByCompanyRate->price : 0;
+        $priceCompanyRoute = $rangeByCompanyRoute ? $rangeByCompanyRoute->price : 0;
+        $priceRateRoute    = $rangeByRateRoute ? $rangeByRateRoute->price : 0;
+        $totalPrices       = $priceCompanyTeam + $priceRate + $priceCompany + $priceTeam + $priceCompanyRate + $priceCompanyRoute + $priceRateRoute;
 
         return $totalPrices;
     }
