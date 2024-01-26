@@ -287,7 +287,7 @@ class PackageController extends Controller
         $noteOnfleet       = '';
         $latitudeLongitude = [0, 0];
 
-        if($packageDispatch && $packageDispatch->taskOnfleet != '' && $packageDispatch->status == 'Delivery')
+        if($packageDispatch && $packageDispatch->taskOnfleet != '' && $packageDispatch->status == 'Delivery' && $packageDispatch->Reference_Number_1 != $packageDispatch->taskOnfleet)
         {
             $responseOnfleet   = $this->SearchTask($packageDispatch->taskOnfleet);
             $noteOnfleet       = $responseOnfleet['stateAction'] == false ? null : $responseOnfleet['onfleet']['destination']['notes'];
