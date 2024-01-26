@@ -226,7 +226,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->idTeam                       = $team->id;
                             $packageHistory->idUserDispatch               = $driver->id;
-                            $packageHistory->Description                  = 'Dispatch for APP POD';
+                            $packageHistory->Description                  = 'Dispatch for APP POD to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
                             $packageHistory->status                       = 'Dispatch';
                             $packageHistory->actualDate                   = $created_at;
                             $packageHistory->created_at                   = $created_at;
