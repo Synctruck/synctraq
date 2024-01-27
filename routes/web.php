@@ -233,7 +233,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 	Route::get('/payment-team/delete-detail', [PaymentTeamController::class, 'DeletePackagesDetail']);
 	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
-	
+
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
 
@@ -351,6 +351,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('driver', [DriverController::class, 'Index'])->middleware('permission:driver.index');
 	Route::get('driver/list', [DriverController::class, 'List']);
 	Route::get('driver/team/list/{idTeam}/{usageApp}', [DriverController::class, 'ListAllByTeam']);
+    Route::get('driver/team/list/{idTeam}', [DriverController::class, 'ListUserByTeam']);
 	Route::post('driver/insert', [DriverController::class, 'Insert']);
 	Route::get('driver/get/{id}', [DriverController::class, 'Get']);
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);

@@ -107,7 +107,7 @@ function ReportDelivery() {
             history.pushState(null, "", urlActual.split('?')[0]);
 
             setReference_Number_1(auxReference_Number);
-            handlerOpenModalInsertDelivery(); 
+            handlerOpenModalInsertDelivery();
         }
 
         listReportDispatch(1, RouteSearch, StateSearch);
@@ -131,7 +131,7 @@ function ReportDelivery() {
             setTotalPage(response.packageHistoryList.per_page);
             setPage(response.packageHistoryList.current_page);
             setQuantityDispatch(response.packageHistoryList.total);
- 
+
             setRoleUser(response.roleUser);
             setListState(response.listState);
 
@@ -178,16 +178,23 @@ function ReportDelivery() {
     }
 
     const listAllDriverByTeam = (idTeam) => {
-        console.log('listando driver por team')
-        setListDriver([]);
-        setIdTeam(idTeam);
-        setIdDriver(0);
-
-        fetch(url_general +'driver/team/list/'+ idTeam)
-        .then(res => res.json())
-        .then((response) => {
-
-            setListDriver(response.listDriver);
+        console.log('Listando drivers para el equipo:', idTeam);
+        fetch(url_general + 'driver/team/list/' + idTeam)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error en la respuesta del servidor: ' + response.statusText);
+            }
+        })
+        .then(data => {
+            console.log('Drivers recibidos:', data.listDriver);
+            setListDriver(data.listDriver || []);
+            setIdDriver(0); // Resetea la selección del driver
+        })
+        .catch(error => {
+            console.error('Error al obtener drivers:', error);
+            setListDriver([]);
         });
     }
 
@@ -286,7 +293,7 @@ function ReportDelivery() {
                     let lastLocation = response['completionDetails']['lastLocation'];
                     let latitude     = lastLocation[1];
                     let longitude    = lastLocation[0];
-                    
+
                     window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
                 }
                 else
@@ -302,7 +309,7 @@ function ReportDelivery() {
             let longitudeLat = arrivalLonLat.split(',');
             let latitude     = longitudeLat[1];
             let longitude    = longitudeLat[0].split('`')[1];
-                    
+
             window.open('https://maps.google.com/?q='+ latitude +','+ longitude);
 
             LoadingHideMap();
@@ -463,7 +470,7 @@ function ReportDelivery() {
 
                     urlImage = url_general +'img/deliveries/'+ packageDelivery.filePhoto1 + url_general +'img/deliveries/'+ packageDelivery.filePhoto2
 
-                    
+
                 }
                 else if(packageDelivery.filePhoto1 != '')
                 {
@@ -941,7 +948,7 @@ function ReportDelivery() {
                                                                         )
                                                                     }
                                                                 </div>
-                                                            </div> 
+                                                            </div>
                                                             <div className="col-lg-6 mb-2">
                                                                 <div className="form-group">
                                                                     <label className="form">PHOTO 2</label>
@@ -1058,7 +1065,7 @@ function ReportDelivery() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px', fontSize: '14px'} }>Delivery: { quantityDispatch }</b>
@@ -1132,7 +1139,7 @@ function ReportDelivery() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
