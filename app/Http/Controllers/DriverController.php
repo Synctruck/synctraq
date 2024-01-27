@@ -71,7 +71,7 @@ class DriverController extends Controller
         $listDriver = Driver::where('idTeam', $idTeam);
 
         if($usageApp == 'false')
-        {    
+        {
             $listDriver = $listDriver->where('usageApp', 'Onfleet');
         }
         else
@@ -86,10 +86,21 @@ class DriverController extends Controller
         return ['listDriver' => $listDriver];
     }
 
+    public function ListUserByTeam($idTeam)
+    {
+        $listDriver = Driver::where('idTeam', $idTeam);
+
+        $listDriver = $listDriver->where('status', 'Active')
+                                    ->orderBy('name', 'asc')
+                                    ->get();
+
+        return ['listDriver' => $listDriver];
+    }
+
     public function Insert(Request $request)
-    {        
+    {
         $team = User::find($request->get('idTeam'));
-        
+
         if($request->usageApp == 'Onfleet')
         {
             $validator = Validator::make($request->all(),
@@ -394,7 +405,7 @@ class DriverController extends Controller
         if($http_status >= 200 && $http_status <= 209)
         {
             Log::info($response);
-            
+
             return ['statusCode' => true, 'response' => $response];
         }
         else
@@ -647,7 +658,7 @@ class DriverController extends Controller
 
             if($driver)
             {
-                $data = [ 
+                $data = [
                     'team' => $driver->nameTeam,
                     'idDriver' => $driver->id,
                     'fullName' => $driver->name .' '. $driver->nameOfOwner,
@@ -658,8 +669,8 @@ class DriverController extends Controller
                 array_push($newDriverList, $data);
             }
         }
- 
-        return ['driverList' => $newDriverList]; 
+
+        return ['driverList' => $newDriverList];
     }
 
     public function ListPackagesDebrief($idDriver)
