@@ -678,7 +678,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fietotalPayments, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
-        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL ADJUSMENT','TOTAL DELIVERY', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
+        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL DELIVERY','TOTAL ADJUSTMENT', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
 
         foreach($paymentList as $payment)
         {
@@ -690,8 +690,8 @@ class PaymentTeamController extends Controller
                 date('m-d-Y', strtotime($payment->startDate)),
                 date('m-d-Y', strtotime($payment->endDate)),
                 $payment->totalPieces,
-                $payment->totalAdjustment,
                 $payment->totalDelivery,
+                $payment->totalAdjustment,
                 $payment->total,
                 $payment->averagePrice,
                 $payment->status
