@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ 
-            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamAdjustment, PaymentTeamDetailReturn, 
-            PackageDispatch, PackageHistory, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
+use App\Models\{
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamDetail, PaymentTeamAdjustment, PaymentTeamDetailReturn,
+            PackageDispatch, PackageHistory, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,
             RangePriceTeamByRoute, RangePriceTeamByCompany, User };
 
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +24,7 @@ class PaymentTeamController extends Controller
     {
         return view('payment.payment');
     }
-    
+
     public function List($dateStart, $dateEnd, $idTeam, $status)
     {
         $data = $this->GetDataListExport($dateStart, $dateEnd, $idTeam, $status, 'list');
@@ -49,7 +49,7 @@ class PaymentTeamController extends Controller
             DB::beginTransaction();
 
             $payment           = PaymentTeam::with(['team'])->find($idPayment);
-            $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();                                                
+            $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
             $totalPieces = 0;
             $totalTeam   = 0;
 
@@ -81,7 +81,7 @@ class PaymentTeamController extends Controller
                     $surchargePercentage = 0;
                     $surchargePrice      = 0;
                 }
-                
+
                 $packageHistory = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
 
                 $priceByCompany      = $this->GetPriceTeamByCompany($paymentDetail->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
@@ -146,7 +146,7 @@ class PaymentTeamController extends Controller
             $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
 
             if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
-            {                
+            {
                 $dieselPriceCompany = $historyDiesel->roundPrice;
             }
         }
@@ -157,7 +157,7 @@ class PaymentTeamController extends Controller
     public function GetPeakeSeasonTeam($packageDelivery)
     {
         $peakeSeasonTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
-        
+
         $peakeSeasonPriceTeam = 0;
 
         if($peakeSeasonTeam)
@@ -176,7 +176,7 @@ class PaymentTeamController extends Controller
                 }
             }
         }
-        
+
         return $peakeSeasonPriceTeam;
     }
 
@@ -252,8 +252,8 @@ class PaymentTeamController extends Controller
 
         return $totalPrices;
     }
-    
-    public function ListByRoute($idPayment) 
+
+    public function ListByRoute($idPayment)
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                 ->where('podFailed', 0)
@@ -350,7 +350,7 @@ class PaymentTeamController extends Controller
         $delimiter = ",";
         $filename  = "PAYMENT - TEAM  " . $payment->id . ".csv";
         $file      = fopen('php://memory', 'w');
-        
+
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
@@ -367,7 +367,7 @@ class PaymentTeamController extends Controller
         {
             fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
         }
-        
+
         fputcsv($file, $fieldTeamTotal, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
 
@@ -433,7 +433,7 @@ class PaymentTeamController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
         $totalRevert = 0;
@@ -487,13 +487,13 @@ class PaymentTeamController extends Controller
 
     public function ExportReceipt($idPayment, $type)
     {
-        
+
         $payment = PaymentTeam::with('team')->find($idPayment);
-    
+
         $delimiter = ",";
         $filename = $type == 'download' ? "PAYMENT - RECEIPT - TEAM " . $payment->id . ".csv" : Auth::user()->id . "- PAYMENT - RECEIPT - TEAM.csv";
         $file = $type == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
-        
+
         $fieldStartDate = array('START DATE', date('m/d/Y', strtotime($payment->startDate)));
         $fieldEndDate   = array('END DATE', date('m/d/Y', strtotime($payment->endDate)));
         $fieldIdPayment = array('ID PAYMENT', $idPayment);
@@ -507,7 +507,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
-        
+
         if($payment->surcharge)
         {
             fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
@@ -567,7 +567,7 @@ class PaymentTeamController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-        
+
         //LIST REVERTS
         $paymentTeamDetailReturnList = PaymentTeamDetailReturn::where('idPaymentTeam', $idPayment)->get();
 
@@ -624,14 +624,14 @@ class PaymentTeamController extends Controller
 
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '";');
-    
+
                 fpassthru($file);
         }
         else
         {
                 rewind($file);
                 fclose($file);
-                
+
                 SendToTeam('Payment Team', $filename,  $idPayment);
                 return ['stateAction' => true];
         }
@@ -676,8 +676,8 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldDate, $delimiter);
         fputcsv($file, $fietotalPayments, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-        
-        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL DELIVERY','TOTAL ADJUSTMENT', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
+
+        fputcsv($file, array('DATE', 'ID INVOICE', 'TEAM', 'START DATE', 'END DATE', 'PIECES', 'TOTAL ADJUSTMENT','TOTAL DELIVERY', 'TOTAL', 'AVERAGE PRICE', 'STATUS'), $delimiter);
 
         foreach($paymentList as $payment)
         {
@@ -698,7 +698,7 @@ class PaymentTeamController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
- 
+
         fseek($file, 0);
 
         header('Content-Type: text/csv');
@@ -727,7 +727,7 @@ class PaymentTeamController extends Controller
                     $packageDispatch->paid = 0;
                     $packageDispatch->save();
                 }
-                
+
                 $paymentDetail = PaymentTeamDetail::find($paymentDetail->Reference_Number_1);
                 $paymentDetail->delete();
             }
