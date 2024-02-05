@@ -169,7 +169,7 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
 
-                            if($package->status == 'Manifest' || $package->status == 'Warehouse')
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse')
                             {
                                 $packageDispatch = new PackageDispatch();
                                 $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
