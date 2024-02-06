@@ -70,6 +70,8 @@ require('./components/Track');
 require('./components/PackageTrack');
 require('./components/Login');
 
+require('./components/DashboardDeliveries');
+
 //rutas públicas (usuarios externos a la empresa)
 require('./components/partner/Dashboard');
 require('./components/partner/LoginCompany');

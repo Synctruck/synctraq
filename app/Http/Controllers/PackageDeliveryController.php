@@ -1207,4 +1207,33 @@ class PackageDeliveryController extends Controller
             return false;
         }
     }
+
+    public function DashboardIndex()
+    {
+        return view('delivery.dashboard');
+    }
+
+    public function GetDeliveriesDashboard($dateRange)
+    {
+        $dataDeliveries = [];
+
+        if($dateRange == '24h')
+        {
+            $dataDeliveries = $this->GetRangeTwentyFour();
+        }
+
+        return ['dataDeliveries' => $dataDeliveries];
+    }
+
+    public function GetRangeTwentyFour()
+    {
+        $startDate = date('2023-m-d 00:00:00');
+        $endDate  = date('Y-m-d 23:59:59');
+
+        $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                        ->whereIn('status', ['Delivery', 'Failed'])
+                                        ->get();
+
+        return $packageDispatchList;
+    }
 }
