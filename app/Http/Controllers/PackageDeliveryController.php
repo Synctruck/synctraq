@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 use Log;
 use Session;
 
@@ -1215,25 +1218,59 @@ class PackageDeliveryController extends Controller
 
     public function GetDeliveriesDashboard($dateRange)
     {
-        $dataDeliveries = [];
-
         if($dateRange == '24h')
         {
-            $dataDeliveries = $this->GetRangeTwentyFour();
+            return $this->GetRangeTwentyFour();
         }
-
-        return ['dataDeliveries' => $dataDeliveries];
     }
 
     public function GetRangeTwentyFour()
     {
-        $startDate = date('2023-m-d 00:00:00');
-        $endDate  = date('Y-m-d 23:59:59');
+        $hour = date('H:i:s');
 
-        $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
-                                        ->whereIn('status', ['Delivery', 'Failed'])
-                                        ->get();
+        $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -1 day'));
+        $endDate   = date('Y-m-d');
 
-        return $packageDispatchList;
+        $startDate = new DateTime($startDate);
+        $endDate   = new DateTime($endDate);
+        $endDate   = $endDate->modify('+1 day');
+
+        $interval  = DateInterval::createFromDateString('1 day');
+        $datesList = new DatePeriod($startDate , $interval, $endDate);
+
+        $dataDateList = [];
+        $dataDeliveriesList = [];
+        $dataFailedsList = [];
+
+        foreach($datesList as $key => $date)
+        {
+            if($key == 0)
+            {
+                $startDate = $date->format("Y-m-d") .' '. $hour;
+                $endDate   = $date->format("Y-m-d") .' 23:59:59';
+            }
+            else
+            {
+                $startDate = $date->format("Y-m-d") .' 00:00:00';
+                $endDate   = $date->format("Y-m-d") .' '. $hour;;
+            }
+
+            $quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->count();
+
+            $quantityFailed = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                ->where('status', 'Failed')
+                                                ->get()
+                                                ->count();
+
+            array_push($dataDateList, $date->format("Y-m-d"));
+            array_push($dataDeliveriesList, $quantityDelivery);
+            array_push($dataFailedsList, $quantityFailed);
+        }
+        
+
+        return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
     }
 }

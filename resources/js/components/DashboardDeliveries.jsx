@@ -32,16 +32,14 @@ function DashboardDeliveries() {
     const getDeliveries = async (rangeType) => {
         setLoading('block');
 
-        graphOne();
-
         await fetch(`${url_general}package-deliveries-dashboard/${rangeType}`)
         .then(res => res.json())
         .then((response) => {
-
+            graphOne(response);
         });
     }
 
-    const graphOne = () => {
+    const graphOne = (response) => {
 
         Highcharts.chart('container', {
             chart: {
@@ -52,7 +50,7 @@ function DashboardDeliveries() {
                 align: 'center'
             },
             xAxis: {
-                categories: ['Arsenal', 'Chelsea', 'Liverpool', 'Manchester United']
+                categories: response.dataDateList
             },
             yAxis: {
                 min: 0,
@@ -88,14 +86,11 @@ function DashboardDeliveries() {
                 }
             },
             series: [{
-                name: 'BPL',
-                data: [3, 5, 1, 13]
+                name: 'Deliveries',
+                data: response.dataDeliveriesList
             }, {
-                name: 'FA Cup',
-                data: [14, 8, 8, 12]
-            }, {
-                name: 'CL',
-                data: [0, 2, 6, 3]
+                name: 'Faileds',
+                data: response.dataFailedsList
             }]
         });
     }
