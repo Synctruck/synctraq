@@ -1261,6 +1261,8 @@ class PackageDeliveryController extends Controller
                 }
             }
 
+            Log::info($startDate .' => '. $endDate);
+            
             $quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('status', 'Delivery')
                                                 ->get()
