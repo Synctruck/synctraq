@@ -59,6 +59,7 @@ function DashboardDeliveries() {
                 }
             });
 
+            console.log(dataDeliveriesList, dataFailedsList);
             graphOne(response, dataDeliveriesList, dataFailedsList);
         });
     }
@@ -111,10 +112,10 @@ function DashboardDeliveries() {
             },
             series: [{
                 name: 'Deliveries',
-                data: response.dataDeliveriesList
+                data: dataDeliveriesList
             }, {
                 name: 'Faileds',
-                data: response.dataFailedsList
+                data: dataFailedsList
             }]
         });
     }
