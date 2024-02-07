@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\{ ChargeCompany, ChargeCompanyDetail, ChargeCompanyAdjustment, PackageDelivery, 
-                PackageDispatch, PackageHistory, PackagePriceCompanyTeam, 
+use App\Models\{ ChargeCompany, ChargeCompanyDetail, ChargeCompanyAdjustment, PackageDelivery,
+                PackageDispatch, PackageHistory, PackagePriceCompanyTeam,
                 PeakeSeasonCompany, RangeDieselCompany, PackageReturnCompany };
 
 use Illuminate\Support\Facades\Validator;
@@ -23,10 +23,10 @@ class ChargeCompanyController extends Controller
     {
         return view('charge.company');
     }
- 
-    public function List($dateStart, $dateEnd, $idCompany, $status)
+
+    public function List($dateStart, $initDate, $dateEnd, $idCompany, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'list');
+        $data = $this->GetDataListExport($dateStart,$initDate, $dateEnd, $idCompany, $status, 'list');
 
         $chargeList  = $data['chargeList'];
         $totalCharge = $data['totalCharge'];
@@ -34,7 +34,7 @@ class ChargeCompanyController extends Controller
         return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
     }
 
-    public function GetDataListExport($dateStart, $dateEnd, $idCompany, $status, $typeAction)
+    public function GetDataListExport($dateStart,$initDate, $dateEnd, $idCompany, $status, $typeAction)
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -95,9 +95,9 @@ class ChargeCompanyController extends Controller
     {
         $filename = "INVOICE -" . $charge->id . ".csv";
         $contents = public_path('american-eagle/'. $filename);
-        
+
         $this->Export($charge->id, 'saveInLocal', $contents);
-        
+
         Storage::disk('sftp')->putFileAs('inbox/invoice', $contents, $filename);
     }
 
@@ -132,7 +132,7 @@ class ChargeCompanyController extends Controller
                     $countSave++;
                 }
             }
-            
+
             /*$package_notexist= [];
             $packages_inland = [];
             $package_ae      = [];
@@ -222,7 +222,7 @@ class ChargeCompanyController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
             fputcsv($file, $fielBlank, $delimiter);
         }
-        
+
         fputcsv($file, array('DATE', 'COMPANY', 'TEAM', 'PACKAGE ID', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY'), $delimiter);
 
         $chargeCompanyDetailList = ChargeCompanyDetail::where('idChargeCompany', $idCharge)->get();
@@ -273,7 +273,7 @@ class ChargeCompanyController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
-    
+
         if($typeExport == 'saveInLocal')
         {
             rewind($file);
@@ -281,7 +281,7 @@ class ChargeCompanyController extends Controller
         }
         else if($typeExport == 'download')
         {
-            fseek($file, 0); 
+            fseek($file, 0);
 
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename="' . $filename . '";');
@@ -308,7 +308,7 @@ class ChargeCompanyController extends Controller
         fputcsv($file, $fieldDate, $delimiter);
         fputcsv($file, $fietotalCharges, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-        
+
         fputcsv($file, array('DATE', 'ID INVOICE', 'COMPANY', 'START DATE', 'END DATE', 'TOTAL DELIVERY', 'TOTAL ADJUSTMENT', 'TOTAL', 'STATUS'), $delimiter);
 
         foreach($chargeList as $charge)
@@ -328,7 +328,7 @@ class ChargeCompanyController extends Controller
 
             fputcsv($file, $lineData, $delimiter);
         }
- 
+
         fseek($file, 0);
 
         header('Content-Type: text/csv');
@@ -357,7 +357,7 @@ class ChargeCompanyController extends Controller
                     $packageDispatch->invoiced = 0;
                     $packageDispatch->save();
                 }
-                
+
                 $chargeDetail = ChargeCompanyDetail::find($chargeDetail->Reference_Number_1);
                 $chargeDetail->delete();
             }

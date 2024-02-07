@@ -21,6 +21,7 @@ function Charge() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit]             = useState(auxDateInit);
+    const [initDate, setInitDate]             = useState(auxDateInit);
     const [dateEnd, setDateEnd]               = useState(auxDateInit);
     const [fuelPrice, setFuelPrice]           = useState('');
     const [fuelPercentage, setFuelPercentage] = useState('');
@@ -55,7 +56,7 @@ function Charge() {
 
         setListReport([]);
 
-        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch  +'?page='+ pageNumber)
+        fetch(url_general +'charge-company/list/'+ dateInit +'/'+ initDate +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch  +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -152,7 +153,7 @@ function Charge() {
         listReportDispatch(pageNumber, RouteSearch, StateSearch);
     }
 
-    const handlerExportCharge = (id) => { 
+    const handlerExportCharge = (id) => {
 
         location.href = url_general +'charge-company/export/'+ id +'/download';
     }
@@ -217,16 +218,16 @@ function Charge() {
                 </td>
                 <td><b>{ charge.id }</b></td>
                 <td><b>{ charge.company.name }</b></td>
-                <td>{ charge.startDate.substring(5, 7) }-{ charge.startDate.substring(8, 10) }-{ charge.startDate.substring(0, 4) }</td>
+                <td>{ charge.initDate.substring(5, 7) }-{ charge.initDate.substring(8, 10) }-{ charge.initDate.substring(0, 4) }</td>
                 <td>{ charge.endDate.substring(5, 7) }-{ charge.endDate.substring(8, 10) }-{ charge.endDate.substring(0, 4) }</td>
                 <td className="text-primary text-right"><h5><b>{ '$ '+ totalDelivery }</b></h5></td>
                 <td className="text-danger text-right"><h5><b>{ '$ '+ totalRevert }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ '$ '+ total }</b></h5></td>
                 <td>
-                    { 
+                    {
                         (
                             charge.status == 'TO APPROVE'
-                            ? 
+                            ?
                                 <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(charge.id, 'APPROVED') }>
                                     { charge.status }
                                 </button>
@@ -236,17 +237,17 @@ function Charge() {
                     {
                         (
                             charge.status == 'APPROVED'
-                            ? 
+                            ?
                                 <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(charge.id, 'PAID') }>
                                     { charge.status }
                                 </button>
                             : ''
                         )
                     }
-                    { 
+                    {
                         (
                             charge.status == 'PAID'
-                            ? 
+                            ?
                                 <span className="alert-success font-weight-bold text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
                                     { charge.status }
                                 </span>
@@ -255,13 +256,13 @@ function Charge() {
                     }
                 </td>
                 <td>
-                    { 
+                    {
                         (
                             charge.status == 'TO APPROVE'
-                            ? 
+                            ?
                                 <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditCharge(charge.id, charge.totalDelivery) } title="Export Payment">
                                     <i className="bx bx-edit-alt"></i>
-                                </button>  
+                                </button>
                             : ''
                         )
                     }
@@ -293,7 +294,7 @@ function Charge() {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
 
-            keyboard: true 
+            keyboard: true
         });
 
         myModal.show();
@@ -408,7 +409,7 @@ function Charge() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            
+
                                                             <div className="col-lg-3 mb-3">
                                                                 <label htmlFor="" className="form">AMOUNT</label>
                                                                 <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
@@ -569,7 +570,7 @@ function Charge() {
                 handlerExportCharge(charge.id);
             }, index * 1500);
         });
-    } 
+    }
 
     return (
 
@@ -596,7 +597,7 @@ function Charge() {
                                         <label htmlFor="">End date:</label>
                                         <input type="date" value={ dateEnd } onChange={ (e) => handlerChangeDateEnd(e.target.value) } className="form-control"/>
                                     </div>
-                                    <dvi className="col-lg-2 mb-3"> 
+                                    <dvi className="col-lg-2 mb-3">
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 COMPANY:

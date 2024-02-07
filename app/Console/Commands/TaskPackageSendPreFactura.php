@@ -71,7 +71,7 @@ class TaskPackageSendPreFactura extends Command
                     $contents  = public_path($filename);
 
                     array_push($files, $contents);
-                
+
                     $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
                 }
             }
@@ -82,7 +82,7 @@ class TaskPackageSendPreFactura extends Command
         }
         catch(Exception $e)
         {
-            DB::rollback(); 
+            DB::rollback();
         }*/
 
         if($dayName == 'Monday' && $nowHour == 9)
@@ -94,7 +94,12 @@ class TaskPackageSendPreFactura extends Command
                 $files     = [];
                 $nowDate   = date('Y-m-d');
                 $startDate = date('2023-01-01');
+<<<<<<< Updated upstream
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
+=======
+                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+                $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
+>>>>>>> Stashed changes
 
                 $companyList = Company::all();
 
@@ -106,8 +111,8 @@ class TaskPackageSendPreFactura extends Command
                         $contents  = public_path($filename);
 
                         array_push($files, $contents);
-                    
-                        $this->GetReportCharge($startDate, $endDate, $company->id, $filename, $contents);
+
+                        $this->GetReportCharge($startDate, $initDate,  $endDate, $company->id, $filename, $contents);
                     }
                 }
 
@@ -122,7 +127,7 @@ class TaskPackageSendPreFactura extends Command
         }
     }
 
-    public function GetReportCharge($startDate, $endDate, $idCompany, $filename, $contents)
+    public function GetReportCharge($startDate, $initDate, $endDate, $idCompany, $filename, $contents)
     {
         $idCharge = date('YmdHis') .'-'. $idCompany;
 
@@ -132,9 +137,12 @@ class TaskPackageSendPreFactura extends Command
         $chargeCompany->idCompany = $idCompany;
         $chargeCompany->startDate = $startDate;
         $chargeCompany->endDate   = $endDate;
+        $chargeCompany->initDate  = $initDate;
+
 
         $startDate = $startDate .' 00:00:00';
         $endDate   = $endDate .' 23:59:59';
+        $initDate   = $initDate .' 23:59:59';
         $delimiter = ",";
         $file      = fopen($contents, 'w');
         $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'STATUS', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
@@ -209,7 +217,7 @@ class TaskPackageSendPreFactura extends Command
 
                         fputcsv($file, $lineData, $delimiter);
                     }
-                    
+
                     $packageDelivery->invoiced = 1;
                     $packageDelivery->save();
                 }
@@ -218,7 +226,7 @@ class TaskPackageSendPreFactura extends Command
             foreach($packageReturnCompanyList as $packageReturnCompany)
             {
                 $packageReturnCompany = PackageReturnCompany::find($packageReturnCompany->Reference_Number_1);
-                
+
                 $packagePriceCompanyTeam = PackagePriceCompanyTeam::where('Reference_Number_1', $packageReturnCompany->Reference_Number_1)
                                                                     ->first();
 
@@ -286,7 +294,7 @@ class TaskPackageSendPreFactura extends Command
         Log::info('================');
     }
 
-    public function SendPreFactura($startDate, $endDate, $files)
+    public function SendPreFactura($startDate,$endDate, $files)
     {
         $files = $files;
         $data  = ['startDate' => $startDate, 'endDate' => $endDate];
