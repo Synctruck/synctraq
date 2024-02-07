@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch, PackageFailed, PackageHistory, PackageManifest, PackageWarehouse, User };
+use App\Models\{ Company, PackageDispatch, PackageFailed, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User };
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -153,6 +153,7 @@ class PackageDispatchController extends Controller
             if($company)
             {
                 $package = PackageManifest::find($request['package_id']);
+                $package = $package ? $package : PackageInbound::find($request['package_id']);
                 $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
                 $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
 
@@ -168,7 +169,7 @@ class PackageDispatchController extends Controller
                         {
                             $created_at = date('Y-m-d H:i:s');
 
-                            if($package->status == 'Manifest' || $package->status == 'Warehouse')
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse')
                             {
                                 $packageDispatch = new PackageDispatch();
                                 $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;

@@ -102,13 +102,7 @@ class PackageAgeController extends Controller
             $idsPackageDispatch  = PackageDispatch::where('status', '!=', 'Delivery')->get('Reference_Number_1');
             $idsPackageFailed    = PackageFailed::get('Reference_Number_1');
             $idsPackageNMI       = PackageNeedMoreInformation::get('Reference_Number_1');
-            $idsPackageLmCarrier = PackageLmCarrier::where('status', '=', 'LM Carrier')
-                             ->whereNotIn('Reference_Number_1', function($query) {
-                                 $query->select('Reference_Number_1')
-                                       ->from('packagehistory')
-                                       ->where('status', '=', 'Delivery');
-                             })
-                             ->get('Reference_Number_1');
+            $idsPackageLmCarrier = PackageLmCarrier::where('status', '!=', 'Delivery')->get('Reference_Number_1');
 
             $idsAll = $idsPackageInbound->merge($idsPackageWarehouse)->merge($idsPackageDispatch)->merge($idsPackageFailed)->merge($idsPackageNMI)->merge($idsPackageLmCarrier);
         }
@@ -146,13 +140,7 @@ class PackageAgeController extends Controller
         }
         else if($status == 'LM Carrier')
         {
-            $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')
-                             ->whereNotIn('Reference_Number_1', function($query) {
-                                 $query->select('Reference_Number_1')
-                                       ->from('packagehistory')
-                                       ->where('status', '=', 'Delivery');
-                             })
-                             ->get('Reference_Number_1');
+            $idsAll = PackageLmCarrier::where('status', '=', 'LM Carrier')->get('Reference_Number_1');
         }
 
         $states = $states == 'all' ? [] : explode(',', $states);

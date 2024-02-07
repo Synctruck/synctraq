@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Auth;
 use DateTime;
 use DB;
+use Log;
 use Session;
 
 class PaymentTeamController extends Controller
@@ -84,7 +85,7 @@ class PaymentTeamController extends Controller
 
                 $packageHistory = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
 
-                $priceByCompany      = $this->GetPriceTeamByCompany($paymentDetail->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
+                $priceByCompany      = $this->GetPriceTeamByCompany($payment->idTeam, $packageHistory->idCompany, $packageHistory->Route, $range->id);
                 $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
                 $paymentDetail = PaymentTeamDetail::where('Reference_Number_1', $paymentDetail->Reference_Number_1)->first();
@@ -713,8 +714,8 @@ class PaymentTeamController extends Controller
         {
             DB::beginTransaction();
 
-            $startDate = date('Y-m-08 00:00:00');
-            $endDate   = date('Y-m-09 23:59:59');
+            $startDate = date('Y-m-01 00:00:00');
+            $endDate   = date('Y-m-01 23:59:59');
 
             $paymentDetailList = PaymentTeamDetail::whereBetween('created_at', [$startDate, $endDate])->get();
 

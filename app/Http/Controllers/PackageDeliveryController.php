@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 use Log;
 use Session;
 
@@ -1206,5 +1209,108 @@ class PackageDeliveryController extends Controller
         {
             return false;
         }
+    }
+
+    public function DashboardIndex()
+    {
+        return view('delivery.dashboard');
+    }
+
+    public function GetDeliveriesDashboard($dateRange)
+    {
+        return $this->GetRangeTwentyFour($dateRange);
+    }
+
+    public function GetRangeTwentyFour($dateRange)
+    {
+        $hour = date('H:i:s');
+
+        $startDate = date('2024-02-05', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
+        $endDate   = date('2024-02-07');
+        $dateNow   = date('2024-02-07');
+
+        $startDate = new DateTime($startDate);
+        $endDate   = new DateTime($endDate);
+        $endDate   = $endDate->modify('+1 day');
+
+        $interval  = DateInterval::createFromDateString('1 day');
+        $datesList = new DatePeriod($startDate , $interval, $endDate);
+
+        $dataDateList = [];
+        $dataDeliveriesList = [];
+        $dataFailedsList = [];
+
+        $querySQL = '';
+
+        foreach($datesList as $key => $date)
+        {
+            if($key == 0)
+            {
+                $startDate = $date->format("Y-m-d") .' '. $hour;
+                $endDate   = $date->format("Y-m-d") .' 23:59:59';
+            }
+            else
+            {
+                if($dateNow == $date->format("Y-m-d"))
+                {
+                    $startDate = $date->format("Y-m-d") .' 00:00:00';
+                    $endDate   = $date->format("Y-m-d") .' '. $hour;
+                }
+                else
+                {
+                    $startDate = $date->format("Y-m-d") .' 00:00:00';
+                    $endDate   = $date->format("Y-m-d") .' 23:59:59';
+                }
+            }
+
+
+            $sql = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+            $querySQL = $querySQL == '' ? $sql : $querySQL .','. $sql;
+
+
+            
+            Log::info($startDate .' => '. $endDate);
+            
+            /*$quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->count();
+
+            $quantityFailed = PackageFailed::whereBetween('created_at', [$startDate, $endDate])
+                                                ->get()
+                                                ->count();
+
+            array_push($dataDateList, $date->format("Y-m-d"));
+            array_push($dataDeliveriesList, $quantityDelivery);
+            array_push($dataFailedsList, $quantityFailed);*/
+        }
+        
+        $dataSQL = DB::select(
+                    "SELECT pd.status,". $querySQL ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
+
+        dd($dataSQL);
+        /*$dataPerTeams = DB::select("SELECT
+                                p.idTeam, u.name,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagedispatch p2
+                                where (p2.created_at  BETWEEN '$startDate' AND '$endDate') AND p2.status = 'Dispatch' AND p2.idTeam  = p.idTeam
+                                ) as total_dispatch,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagehistory p4
+                                where (p4.created_at  BETWEEN '$startDate' AND '$endDate') AND p4.status ='Failed' AND p4.idTeam  = p.idTeam
+                                ) as total_failed,
+                                (SELECT count(DISTINCT Reference_Number_1)
+                                FROM packagedispatch p5
+                                where (p5.Date_Delivery BETWEEN '$startDate' AND '$endDate') AND p5.status ='Delivery' AND p5.idTeam  = p.idTeam
+                                ) as total_delivery
+                                FROM packagehistory p
+                                JOIN `user` u ON u.id = p.idTeam
+                                WHERE (p.created_at BETWEEN '$startDate' AND '$endDate' )
+                                GROUP  BY p.idTeam
+                                ORDER BY total_dispatch DESC"
+                                );*/
+
+        return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
     }
 }

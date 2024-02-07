@@ -105,7 +105,7 @@ class RangePaymentTeamByCompanyController extends Controller
         $range = new RangePriceTeamByCompany();
         $range->idTeam      = $request->get('idTeam');
         $range->idCompany   = $request['idCompany'];
-        $range->idRangeRate = $request['idRangeRate'];
+        $range->idRangeRate = $request['idRangeRate'] ? $request['idRangeRate'] : 0;
         $range->company     = $company ? $company->name : '';
         $range->route       = $request['routeByCompany'];
         $range->price       = $request->get('price');

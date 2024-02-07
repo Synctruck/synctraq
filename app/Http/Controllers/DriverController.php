@@ -88,11 +88,10 @@ class DriverController extends Controller
 
     public function ListUserByTeam($idTeam)
     {
-        $listDriver = Driver::where('idTeam', $idTeam);
-
-        $listDriver = $listDriver->where('status', 'Active')
-                                    ->orderBy('name', 'asc')
-                                    ->get();
+        $listDriver = Driver::where('idTeam', $idTeam)
+                            ->where('status', 'Active')
+                            ->orderBy('name', 'asc')
+                            ->get();
 
         return ['listDriver' => $listDriver];
     }
