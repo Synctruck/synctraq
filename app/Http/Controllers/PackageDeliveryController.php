@@ -1227,6 +1227,7 @@ class PackageDeliveryController extends Controller
 
         $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
         $endDate   = date('Y-m-d');
+        $dateNow   = date('Y-m-d');
 
         $startDate = new DateTime($startDate);
         $endDate   = new DateTime($endDate);
@@ -1248,8 +1249,16 @@ class PackageDeliveryController extends Controller
             }
             else
             {
-                $startDate = $date->format("Y-m-d") .' 00:00:00';
-                $endDate   = $date->format("Y-m-d") .' '. $hour;;
+                if($dateNow == $date->format("Y-m-d"))
+                {
+                    $startDate = $date->format("Y-m-d") .' 00:00:00';
+                    $endDate   = $date->format("Y-m-d") .' '. $hour;
+                }
+                else
+                {
+                    $startDate = $date->format("Y-m-d") .' 00:00:00';
+                    $endDate   = $date->format("Y-m-d") .' 23:59:59';
+                }
             }
 
             $quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
