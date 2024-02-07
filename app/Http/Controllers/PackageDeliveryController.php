@@ -1260,8 +1260,7 @@ class PackageDeliveryController extends Controller
                                                 ->get()
                                                 ->count();
 
-            $quantityFailed = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
-                                                ->where('status', 'Failed')
+            $quantityFailed = PackageFailed::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->get()
                                                 ->count();
 
