@@ -1225,9 +1225,9 @@ class PackageDeliveryController extends Controller
     {
         $hour = date('H:i:s');
 
-        $startDate = date('2024-02-05', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
-        $endDate   = date('2024-02-07');
-        $dateNow   = date('2024-02-07');
+        $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
+        $endDate   = date('Y-m-d');
+        $dateNow   = date('Y-m-d');
 
         $startDate = new DateTime($startDate);
         $endDate   = new DateTime($endDate);
@@ -1268,7 +1268,7 @@ class PackageDeliveryController extends Controller
 
             $querySQL = $querySQL == '' ? $sql : $querySQL .','. $sql;
 
-
+            array_push($dataDateList, $date->format("Y-m-d"));
             
             Log::info($startDate .' => '. $endDate);
             
@@ -1286,10 +1286,9 @@ class PackageDeliveryController extends Controller
             array_push($dataFailedsList, $quantityFailed);*/
         }
         
-        $dataSQL = DB::select(
+        $dataSQLDeliveries = DB::select(
                     "SELECT pd.status,". $querySQL ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
 
-        dd($dataSQL);
         /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
                                 (SELECT count(DISTINCT Reference_Number_1)
@@ -1310,6 +1309,8 @@ class PackageDeliveryController extends Controller
                                 GROUP  BY p.idTeam
                                 ORDER BY total_dispatch DESC"
                                 );*/
+
+        return ['dataSQLDeliveries' => $dataSQLDeliveries, 'dataDateList' => $dataDateList];
 
         return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
     }

@@ -35,11 +35,35 @@ function DashboardDeliveries() {
         await fetch(`${url_general}package-deliveries-dashboard/${rangeType}`)
         .then(res => res.json())
         .then((response) => {
-            graphOne(response);
+
+            let dataDeliveriesList = [];
+            let dataFailedsList    = [];
+
+            response.dataDateList.forEach((date, index) => {
+                if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                {
+                    dataDeliveriesList.push(0);
+                }
+                else
+                {
+                    dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                }
+
+                if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                {
+                    dataFailedsList.push(0);
+                }
+                else
+                {
+                    dataFailedsList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                }
+            });
+
+            graphOne(response, dataDeliveriesList, dataFailedsList);
         });
     }
 
-    const graphOne = (response) => {
+    const graphOne = (response, dataDeliveriesList, dataFailedsList) => {
 
         Highcharts.chart('container', {
             chart: {
