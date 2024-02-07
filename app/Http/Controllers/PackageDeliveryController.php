@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use DB;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 use Log;
 use Session;
 
@@ -1206,5 +1209,64 @@ class PackageDeliveryController extends Controller
         {
             return false;
         }
+    }
+
+    public function DashboardIndex()
+    {
+        return view('delivery.dashboard');
+    }
+
+    public function GetDeliveriesDashboard($dateRange)
+    {
+        return $this->GetRangeTwentyFour($dateRange);
+    }
+
+    public function GetRangeTwentyFour($dateRange)
+    {
+        $hour = date('H:i:s');
+
+        $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
+        $endDate   = date('Y-m-d');
+
+        $startDate = new DateTime($startDate);
+        $endDate   = new DateTime($endDate);
+        $endDate   = $endDate->modify('+1 day');
+
+        $interval  = DateInterval::createFromDateString('1 day');
+        $datesList = new DatePeriod($startDate , $interval, $endDate);
+
+        $dataDateList = [];
+        $dataDeliveriesList = [];
+        $dataFailedsList = [];
+
+        foreach($datesList as $key => $date)
+        {
+            if($key == 0)
+            {
+                $startDate = $date->format("Y-m-d") .' '. $hour;
+                $endDate   = $date->format("Y-m-d") .' 23:59:59';
+            }
+            else
+            {
+                $startDate = $date->format("Y-m-d") .' 00:00:00';
+                $endDate   = $date->format("Y-m-d") .' '. $hour;;
+            }
+
+            $quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->count();
+
+            $quantityFailed = PackageFailed::whereBetween('created_at', [$startDate, $endDate])
+                                                ->get()
+                                                ->count();
+
+            array_push($dataDateList, $date->format("Y-m-d"));
+            array_push($dataDeliveriesList, $quantityDelivery);
+            array_push($dataFailedsList, $quantityFailed);
+        }
+        
+
+        return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
     }
 }

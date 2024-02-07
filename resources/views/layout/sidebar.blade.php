@@ -3,6 +3,13 @@
         <li >
             <div id="google_translate_element" class="google"></div>
         </li>
+        <li class="nav-heading"></li>
+        <li >
+            <a class="nav-link {{Request::is('package-deliveries-dashboard') ? 'active' : 'collapsed'}}" href="{{url('package-deliveries-dashboard')}}">
+                <i class="bx bx-check"></i>
+                <span>DELIVERIES</span>
+            </a>
+        </li>
         @if(hasPermission('packageBlocked.index'))
             <li class="nav-heading"></li>
             <li >
