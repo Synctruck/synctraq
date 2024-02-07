@@ -16,7 +16,7 @@ function DashboardDeliveries() {
     const [loading, setLoading]     = useState('block');
     const [dateStart, setDateStart] = useState(auxDateStart);
     const [dateEnd, setDateEnd]     = useState(auxDateStart);
-    const [typeRange, setTypeRange] = useState('24h');
+    const [typeRange, setTypeRange] = useState('1');
 
     /*useEffect(() => {
         getDataPerDate();
@@ -118,9 +118,9 @@ function DashboardDeliveries() {
                                            <td>Date Range</td>
                                            <td>
                                                <select className="form-control" onChange={ (e) => handlerChangeRangeType(e.target.value)}>
-                                                   <option value="24h">Last 24 hrs</option>
-                                                   <option value="7d">Last Week</option>
-                                                   <option value="1month">Last Month</option>
+                                                   <option value="1">Last 24 hrs</option>
+                                                   <option value="7">Last Week</option>
+                                                   <option value="30">Last Month</option>
                                                </select>
                                            </td>
                                         </tr>

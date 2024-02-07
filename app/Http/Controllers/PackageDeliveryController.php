@@ -1218,17 +1218,14 @@ class PackageDeliveryController extends Controller
 
     public function GetDeliveriesDashboard($dateRange)
     {
-        if($dateRange == '24h')
-        {
-            return $this->GetRangeTwentyFour();
-        }
+        return $this->GetRangeTwentyFour($dateRange);
     }
 
-    public function GetRangeTwentyFour()
+    public function GetRangeTwentyFour($dateRange)
     {
         $hour = date('H:i:s');
 
-        $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -1 day'));
+        $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
         $endDate   = date('Y-m-d');
 
         $startDate = new DateTime($startDate);
