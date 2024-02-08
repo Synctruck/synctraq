@@ -1240,7 +1240,8 @@ class PackageDeliveryController extends Controller
         $dataDeliveriesList = [];
         $dataFailedsList = [];
 
-        $querySQL = '';
+        $querySQLDeliveries = '';
+        $querySQLFaileds    = '';
 
         foreach($datesList as $key => $date)
         {
@@ -1263,15 +1264,17 @@ class PackageDeliveryController extends Controller
                 }
             }
 
+            $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
-            $sql = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+            $querySQLDeliveries = $querySQLDeliveries == '' ? $sqlDeliveries : $querySQLDeliveries .','. $sqlDeliveries;
 
-            $querySQL = $querySQL == '' ? $sql : $querySQL .','. $sql;
+            $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+            $querySQLFaileds = $querySQLFaileds == '' ? $sqlFaileds : $querySQLFaileds .','. $sqlFaileds;
 
             array_push($dataDateList, $date->format("Y-m-d"));
             
-            Log::info($startDate .' => '. $endDate);
-            
+            //Log::info($startDate .' => '. $endDate);
             /*$quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('status', 'Delivery')
                                                 ->get()
@@ -1287,7 +1290,10 @@ class PackageDeliveryController extends Controller
         }
         
         $dataSQLDeliveries = DB::select(
-                    "SELECT pd.status,". $querySQL ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
+                    "SELECT pd.status,". $querySQLDeliveries ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
+
+        $dataSQLFaileds = DB::select(
+                    "SELECT pf.status,". $querySQLFaileds ." FROM packagefailed pf GROUP  BY pf.status");
 
         /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
@@ -1310,7 +1316,7 @@ class PackageDeliveryController extends Controller
                                 ORDER BY total_dispatch DESC"
                                 );*/
 
-        return ['dataSQLDeliveries' => $dataSQLDeliveries, 'dataDateList' => $dataDateList];
+        return ['dataSQLDeliveries' => $dataSQLDeliveries, 'dataSQLFaileds' => $dataSQLFaileds, 'dataDateList' => $dataDateList];
 
         return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
     }

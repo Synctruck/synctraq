@@ -18,15 +18,25 @@ function DashboardDeliveries() {
     const [dateEnd, setDateEnd]     = useState(auxDateStart);
     const [typeRange, setTypeRange] = useState('1');
 
-    /*useEffect(() => {
-        getDataPerDate();
-    },[]);*/
+    const [listTeam, setListTeam] = useState([]);
+    const [idTeam, setIdTeam] = useState(0);
+    const [idDriver, setIdDriver] = useState(0);
+    const [listDriver, setListDriver] = useState([]);
+
+    const [quantityDeliveriesView, setQuantityDeliveriesView] = useState(0);
+    const [quantityFailedsView, setQuantityFailedsView] = useState(0);
+
+    useEffect(() => {
+        listAllTeam();
+    }, []);
 
     useEffect(() => {
         
         getDeliveries(typeRange);
+        graphPie();
+
         return () => {}
-    }, [dateStart, dateEnd]);
+    }, [dateStart, dateEnd, idTeam, idDriver]);
 
 
     const getDeliveries = async (rangeType) => {
@@ -49,18 +59,22 @@ function DashboardDeliveries() {
                     dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
                 }
 
-                if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                if(response.dataSQLFaileds[0]['total'+ index] == null)
                 {
                     dataFailedsList.push(0);
                 }
                 else
                 {
-                    dataFailedsList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                    dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                 }
             });
 
-            console.log(dataDeliveriesList, dataFailedsList);
+
+            let quantityDeliveries = dataDeliveriesList.reduce((a, b) => a + b, 0);
+            let quantityFaileds    = dataFailedsList.reduce((a, b) => a + b, 0);
+
             graphOne(response, dataDeliveriesList, dataFailedsList);
+            graphPie(quantityDeliveries, quantityFaileds);
         });
     }
 
@@ -110,6 +124,7 @@ function DashboardDeliveries() {
                     }
                 }
             },
+            colors: ['#28a745', '#dc3545'],
             series: [{
                 name: 'Deliveries',
                 data: dataDeliveriesList
@@ -120,9 +135,103 @@ function DashboardDeliveries() {
         });
     }
 
+    const graphPie = (quantityDeliveries, quantityFaileds) => {
+
+        setQuantityDeliveriesView(quantityDeliveries);
+        setQuantityFailedsView(quantityFaileds);
+        
+        Highcharts.chart('divPie', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 0,
+                plotShadow: false
+            },
+            title: {
+                text: '',
+                align: 'left',
+                verticalAlign: 'middle',
+                y: 60
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            accessibility: {
+                point: {
+                    valueSuffix: '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        enabled: true,
+                        distance: -100,
+                        style: {
+                            fontWeight: 'bold',
+                            color: 'white'
+                        }
+                    },
+                    startAngle: -90,
+                    endAngle: 90,
+                    center: ['50%', '30%'],
+                    size: '100%'
+                }
+            },
+            colors: ['#28a745', '#dc3545'],
+            series: [{
+                type: 'pie',
+                name: 'Completed Tasks',
+                innerSize: '80%',
+                data: [
+                    ['', quantityDeliveries],
+                    ['', quantityFaileds],
+                ]
+            }]
+        });
+    }
+
     const handlerChangeRangeType = (rangeType) => {
         getDeliveries(rangeType);
     }
+
+    const listAllTeam = () => {
+
+        fetch(url_general +'team/listall')
+        .then(res => res.json())
+        .then((response) => {
+
+            setListTeam(response.listTeam);
+        });
+    }
+
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
+
+    const listAllDriverByTeam = (idTeam) => {
+
+        setIdTeam(idTeam);
+        setIdDriver(0);
+        setListDriver([]);
+
+        fetch(url_general +'driver/team/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            setListDriver(response.listDriver);
+        });
+    }
+
+    const listDriverSelect = listDriver.map( (driver, i) => {
+
+        return (
+
+            <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
+        );
+    });
 
     return (
         <section className="section">
@@ -131,45 +240,72 @@ function DashboardDeliveries() {
                     <div className="card">
                         <div className="card-body" >
                             <div className="row mb-4">
-                                <div className="col-lg-8 text-center">
+                                <div className="col-lg-7 text-center">
                                     <h4>Completed Tasks</h4>
                                     <figure class="highcharts-figure">
                                         <div id="container"></div>
                                     </figure>
                                 </div>
-                                <div className="col-lg-4">
-                                    <table className="table table-condensed">
-                                        <tr>
-                                           <td>Date Range</td>
-                                           <td>
-                                               <select className="form-control" onChange={ (e) => handlerChangeRangeType(e.target.value)}>
-                                                   <option value="1">Last 24 hrs</option>
-                                                   <option value="7">Last Week</option>
-                                                   <option value="30">Last Month</option>
-                                               </select>
-                                           </td>
-                                        </tr>
-                                        <tr>
-                                           <td>Team</td>
-                                           <td>
-                                               <select name="" id="" className="form-control">
-                                                   <option value="24h">Last 24 hrs</option>
-                                                   <option value="7d">Last Week</option>
-                                                   <option value="1month">Last Month</option>
-                                               </select>
-                                           </td>
-                                        </tr>
-                                        <tr>
-                                           <td>Driver</td>
-                                           <td>
-                                               <select className="form-control" onChange={ (range) => handlerChangeRangeType(range)}>
-                                                   <option value="24h">Last 24 hrs</option>
-                                                   <option value="7d">Last Week</option>
-                                                   <option value="1month">Last Month</option>
-                                               </select>
-                                           </td>
-                                        </tr>
-                                    </table>
+                                <div className="col-lg-5">
+                                    <div className="row">
+                                        <div className="col-lg-12">
+                                            <table className="table table-condensed">
+                                                <tr>
+                                                   <td>Date Range</td>
+                                                   <td>
+                                                       <select className="form-control" onChange={ (e) => handlerChangeRangeType(e.target.value)}>
+                                                           <option value="1">Last 24 hrs</option>
+                                                           <option value="7">Last Week</option>
+                                                       </select>
+                                                   </td>
+                                                </tr>
+                                                <tr>
+                                                   <td>Team</td>
+                                                   <td>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                            <option value="">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                   </td>
+                                                </tr>
+                                                <tr>
+                                                   <td>Driver</td>
+                                                   <td>
+                                                       <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                            <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                   </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div className="col-lg-6">
+                                            <div id="divPie"></div>
+                                        </div>
+                                        <div className="col-lg-6">
+                                            <table className="table table-condensed table-bordered">
+                                                <tr>
+                                                    <td colspan="2"><b>Completed Tasks</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <button className="btn btn-success form-control">Succeeded</button>
+                                                    </td>
+                                                    <td>{ quantityDeliveriesView } (99%)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <button className="btn btn-danger form-control" style={ {backgroundColor: '#dc3545'} }>Failed</button>
+                                                    </td>
+                                                    <td>{ quantityFailedsView } (0%)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td>11995 Tasks</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
