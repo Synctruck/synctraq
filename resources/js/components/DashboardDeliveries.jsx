@@ -23,6 +23,9 @@ function DashboardDeliveries() {
     const [idDriver, setIdDriver] = useState(0);
     const [listDriver, setListDriver] = useState([]);
 
+    const [quantityDeliveriesView, setQuantityDeliveriesView] = useState(0);
+    const [quantityFailedsView, setQuantityFailedsView] = useState(0);
+
     useEffect(() => {
         listAllTeam();
     }, []);
@@ -66,8 +69,12 @@ function DashboardDeliveries() {
                 }
             });
 
-            console.log(dataDeliveriesList, dataFailedsList);
+
+            let quantityDeliveries = dataDeliveriesList.reduce((a, b) => a + b, 0);
+            let quantityFaileds    = dataFailedsList.reduce((a, b) => a + b, 0);
+
             graphOne(response, dataDeliveriesList, dataFailedsList);
+            graphPie(quantityDeliveries, quantityFaileds);
         });
     }
 
@@ -128,7 +135,11 @@ function DashboardDeliveries() {
         });
     }
 
-    const graphPie = () => {
+    const graphPie = (quantityDeliveries, quantityFaileds) => {
+
+        setQuantityDeliveriesView(quantityDeliveries);
+        setQuantityFailedsView(quantityFaileds);
+        
         Highcharts.chart('divPie', {
             chart: {
                 plotBackgroundColor: null,
@@ -171,8 +182,8 @@ function DashboardDeliveries() {
                 name: 'Completed Tasks',
                 innerSize: '80%',
                 data: [
-                    ['', 73.86],
-                    ['', 11.97],
+                    ['', quantityDeliveries],
+                    ['', quantityFaileds],
                 ]
             }]
         });
@@ -280,13 +291,13 @@ function DashboardDeliveries() {
                                                     <td>
                                                         <button className="btn btn-success form-control">Succeeded</button>
                                                     </td>
-                                                    <td>1187(99%)</td>
+                                                    <td>{ quantityDeliveriesView } (99%)</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <button className="btn btn-danger form-control" style={ {backgroundColor: '#dc3545'} }>Failed</button>
                                                     </td>
-                                                    <td>8(0%)</td>
+                                                    <td>{ quantityFailedsView } (0%)</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Total</td>
