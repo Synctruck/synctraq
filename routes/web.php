@@ -39,6 +39,7 @@ Route::get('/package/all-change-to-delivery', [PackageController::class, 'Change
 
 Route::get('package-deliveries-dashboard', [PackageDeliveryController::class, 'DashboardIndex']);
 Route::get('package-deliveries-dashboard/{dateRange}', [PackageDeliveryController::class, 'GetDeliveriesDashboard']);
+Route::get('package-deliveries-dashboard/{startDate}/{endDate}', [PackageDeliveryController::class, 'GetDeliveriesDashboardByDates']);
 
 Route::group(['middleware' => 'auth'], function() {
 

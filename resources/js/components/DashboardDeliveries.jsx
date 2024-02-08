@@ -14,8 +14,8 @@ import { DownloadTableExcel } from 'react-export-table-to-excel';
 function DashboardDeliveries() {
  
     const [loading, setLoading]     = useState('block');
-    const [dateStart, setDateStart] = useState(auxDateStart);
-    const [dateEnd, setDateEnd]     = useState(auxDateStart);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
 
     const [listTeam, setListTeam] = useState([]);
@@ -39,46 +39,100 @@ function DashboardDeliveries() {
         
         getDeliveries(typeRange);
         return () => {}
-    }, [dateStart, dateEnd, idTeam, idDriver]);
-
+    }, [startDate, endDate, idTeam, idDriver]);
 
     const getDeliveries = async (rangeType) => {
-        setLoading('block');
 
-        await fetch(`${url_general}package-deliveries-dashboard/${rangeType}`)
-        .then(res => res.json())
-        .then((response) => {
+        if(rangeType != 'custom')
+        {
+            await fetch(`${url_general}package-deliveries-dashboard/${rangeType}`)
+            .then(res => res.json())
+            .then((response) => {
 
-            let dataDeliveriesList = [];
-            let dataFailedsList    = [];
+                let dataDeliveriesList = [];
+                let dataFailedsList    = [];
 
-            response.dataDateList.forEach((date, index) => {
-                if(response.dataSQLDeliveries[0]['total'+ index] == null)
-                {
-                    dataDeliveriesList.push(0);
-                }
-                else
-                {
-                    dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
-                }
+                response.dataDateList.forEach((date, index) => {
+                    if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                    {
+                        dataDeliveriesList.push(0);
+                    }
+                    else
+                    {
+                        dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                    }
 
-                if(response.dataSQLFaileds[0]['total'+ index] == null)
-                {
-                    dataFailedsList.push(0);
-                }
-                else
-                {
-                    dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
-                }
+                    if(response.dataSQLFaileds[0]['total'+ index] == null)
+                    {
+                        dataFailedsList.push(0);
+                    }
+                    else
+                    {
+                        dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
+                    }
+                });
+
+
+                let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
+                let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+
+                graphOne(response, dataDeliveriesList, dataFailedsList);
+                graphPie(quantityDeliveries, quantityFaileds);
             });
+        }
+        else
+        {
+            if(startDate != '' && endDate != '')
+            {
+                let date1      = moment(startDate);
+                let date2      = moment(endDate);
+                let difference = date2.diff(date1,'days');
+
+                if(difference <= 7)
+                {
+                    await fetch(`${url_general}package-deliveries-dashboard/${startDate}/${endDate}`)
+                    .then(res => res.json())
+                    .then((response) => {
+
+                        let dataDeliveriesList = [];
+                        let dataFailedsList    = [];
+
+                        response.dataDateList.forEach((date, index) => {
+                            if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                            {
+                                dataDeliveriesList.push(0);
+                            }
+                            else
+                            {
+                                dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                            }
+
+                            if(response.dataSQLFaileds[0]['total'+ index] == null)
+                            {
+                                dataFailedsList.push(0);
+                            }
+                            else
+                            {
+                                dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
+                            }
+                        });
 
 
-            let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
-            let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+                        let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
+                        let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
 
-            graphOne(response, dataDeliveriesList, dataFailedsList);
-            graphPie(quantityDeliveries, quantityFaileds);
-        });
+                        graphOne(response, dataDeliveriesList, dataFailedsList);
+                        graphPie(quantityDeliveries, quantityFaileds);
+                    });
+                }
+                else
+                {
+                    swal(`Maximum limit to export is 7 days`, {
+                        icon: "warning",
+                    });
+                }
+            }
+        }
     }
 
     const graphOne = (response, dataDeliveriesList, dataFailedsList) => {
@@ -129,10 +183,10 @@ function DashboardDeliveries() {
             },
             colors: ['#28a745', '#dc3545'],
             series: [{
-                name: 'Deliveries',
+                name: 'Delivered',
                 data: dataDeliveriesList
             }, {
-                name: 'Faileds',
+                name: 'Failed',
                 data: dataFailedsList
             }]
         });
@@ -201,7 +255,18 @@ function DashboardDeliveries() {
     }
 
     const handlerChangeRangeType = (rangeType) => {
-        getDeliveries(rangeType);
+        setViewRangeDates(false);
+        setTypeRange(rangeType);
+
+        if(rangeType != 'custom')
+        {
+            getDeliveries(rangeType);
+        }
+        else
+        {
+            getDeliveries(rangeType);
+            setViewRangeDates(true);
+        }
     }
 
     const listAllTeam = () => {
@@ -244,6 +309,8 @@ function DashboardDeliveries() {
         );
     });
 
+    const [viewRangeDates, setViewRangeDates] = useState(false);
+
     return (
         <section className="section">
             <div className="row">
@@ -262,16 +329,32 @@ function DashboardDeliveries() {
                                         <div className="col-lg-12">
                                             <table className="table table-condensed">
                                                 <tr>
-                                                   <td>Date Range</td>
+                                                   <td><b>Date Range</b></td>
                                                    <td>
                                                        <select className="form-control" onChange={ (e) => handlerChangeRangeType(e.target.value)}>
                                                            <option value="1">Last 24 hrs</option>
                                                            <option value="7">Last Week</option>
+                                                           <option value="custom">Custom</option>
                                                        </select>
                                                    </td>
                                                 </tr>
+                                                {
+                                                    viewRangeDates
+                                                    ?
+                                                        <>
+                                                            <tr>
+                                                               <td></td>
+                                                               <td>
+                                                                    <input type="date" value={ startDate } onChange={ (e) => setStartDate(e.target.value) }/>
+                                                                    <input type="date" value={ endDate } onChange={ (e) => setEndDate(e.target.value) }/>
+                                                               </td>
+                                                            </tr>
+                                                        </>
+                                                    :
+                                                        ''
+                                                }
                                                 <tr>
-                                                   <td>Team</td>
+                                                   <td><b>Team</b></td>
                                                    <td>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
@@ -280,7 +363,7 @@ function DashboardDeliveries() {
                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                   <td>Driver</td>
+                                                   <td><b>Driver</b></td>
                                                    <td>
                                                        <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                             <option value="0">All</option>
@@ -300,7 +383,7 @@ function DashboardDeliveries() {
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <button className="btn btn-success form-control">Succeeded</button>
+                                                        <button className="btn btn-success form-control">Delivered</button>
                                                     </td>
                                                     <td>{ quantityDeliveriesView } ({ quantityDeliveriesViewPercentage }%)</td>
                                                 </tr>

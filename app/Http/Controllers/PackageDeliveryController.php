@@ -1218,16 +1218,21 @@ class PackageDeliveryController extends Controller
 
     public function GetDeliveriesDashboard($dateRange)
     {
-        return $this->GetRangeTwentyFour($dateRange);
-    }
-
-    public function GetRangeTwentyFour($dateRange)
-    {
-        $hour = date('H:i:s');
-
         $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
         $endDate   = date('Y-m-d');
-        $dateNow   = date('Y-m-d');
+
+        return $this->GetDataForDashboard($startDate, $endDate);
+    }
+
+    public function GetDeliveriesDashboardByDates($startDate, $endDate)
+    {
+        return $this->GetDataForDashboard($startDate, $endDate);
+    }
+
+    public function GetDataForDashboard($startDate, $endDate)
+    {
+        $dateNow = date('Y-m-d');
+        $hour    = date('H:i:s');
 
         $startDate = new DateTime($startDate);
         $endDate   = new DateTime($endDate);
