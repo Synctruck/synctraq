@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\{ 
-            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail, 
-            PackageDispatch, PackageReturnCompany, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,  
+use App\Models\{
+            Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail,
+            PackageDispatch, PackageReturnCompany, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,
             RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User, ToDeductLostPackages };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
@@ -55,12 +55,13 @@ class TaskPaymentTeam extends Command
 
         if($dayName == 'Monday' && $nowHour == 10)
         {
-            $files     = []; 
+            $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('2023-11-01');
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
-            try 
+            try
             {
                 DB::beginTransaction();
 
@@ -76,6 +77,7 @@ class TaskPaymentTeam extends Command
                     $paymentTeam->id          = date('YmdHis') .'-'. $team->id;
                     $paymentTeam->idTeam      = $team->id;
                     $paymentTeam->startDate   = $startDate;
+                    $paymentTeam->initDate    = $initDate;
                     $paymentTeam->endDate     = $endDate;
 
                     $startDate = $startDate .' 00:00:00';
@@ -129,7 +131,7 @@ class TaskPaymentTeam extends Command
                             $dieselPrice = $this->GetDieselPrice($packageDelivery->Date_Delivery);
 
                             if($dieselPrice)
-                            {                                
+                            {
                                 $range = RangePriceBaseTeam::where('idTeam', $packageDelivery->idTeam)
                                                             ->where('minWeight', '<=', $weightRound)
                                                             ->where('maxWeight', '>=', $weightRound)
@@ -151,7 +153,7 @@ class TaskPaymentTeam extends Command
                                         $surchargePercentage = 0;
                                         $surchargePrice      = 0;
                                     }
-                                    
+
                                     $priceByCompany      = $this->GetPriceTeamByCompany($packageDelivery->idTeam, $packageDelivery->idCompany, $packageDelivery->Route, $range->id);
                                     $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
@@ -198,7 +200,7 @@ class TaskPaymentTeam extends Command
                             $dieselPrice = $this->GetDieselPrice($packageReturnCompany->created_at);
 
                             if($dieselPrice)
-                            {                                
+                            {
                                 $range = RangePriceBaseTeam::where('idTeam', $packageReturnCompany->idTeam)
                                                             ->where('minWeight', '<=', $weightRound)
                                                             ->where('maxWeight', '>=', $weightRound)
@@ -220,7 +222,7 @@ class TaskPaymentTeam extends Command
                                         $surchargePercentage = 0;
                                         $surchargePrice      = 0;
                                     }
-                                    
+
                                     $priceByCompany      = $this->GetPriceTeamByCompany($packageReturnCompany->idTeam, $packageReturnCompany->idCompany, $packageReturnCompany->Route, $range->id);
                                     $totalPrice          = number_format($priceBase + $surchargePrice + $priceByCompany, 4);
 
@@ -259,7 +261,7 @@ class TaskPaymentTeam extends Command
                         }
 
                         if($totalTeam > 0)
-                        { 
+                        {
                             if($totalAdjustment != 0)
                             {
                                 $paymentTeamAdjustment = new PaymentTeamAdjustment();
@@ -319,7 +321,7 @@ class TaskPaymentTeam extends Command
             $timeDeliveryDate    = strtotime(date('Y-m-d', strtotime($Date_Delivery)));
 
             if($timeChangeDateStart <= $timeDeliveryDate && $timeDeliveryDate <= $timeChangeDateEnd)
-            {                
+            {
                 $dieselPriceCompany = $historyDiesel->roundPrice;
             }
         }
@@ -330,7 +332,7 @@ class TaskPaymentTeam extends Command
     public function GetPeakeSeasonTeam($packageDelivery)
     {
         $peakeSeasonTeam = PeakeSeasonTeam::where('idTeam', $packageDelivery->idTeam)->first();
-        
+
         $peakeSeasonPriceTeam = 0;
 
         if($peakeSeasonTeam)
@@ -349,7 +351,7 @@ class TaskPaymentTeam extends Command
                 }
             }
         }
-        
+
         return $peakeSeasonPriceTeam;
     }
 

@@ -20,6 +20,7 @@ function Payments() {
     const [listState , setListState] = useState([]);
 
     const [dateInit, setDateInit] = useState(auxDateInit);
+    const [initDate, setInitDate] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [team, setTeam]         = useState('');
     const [idTeam, setIdTeam]     = useState(0);
@@ -70,7 +71,7 @@ function Payments() {
 
         setListReport([]);
 
-        fetch(url_general +'payment-team/list/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch +'?page='+ pageNumber)
+        fetch(url_general +'payment-team/list/'+ dateInit + '/'+ initDate+ '/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch +'?page='+ pageNumber)
         .then(res => res.json())
         .then((response) => {
 
@@ -276,7 +277,7 @@ function Payments() {
                     <b className="text-warning">{ (payment.user_payable ? payment.user_payable.name : '' )}</b> <br/>
                     <b className="text-success">{ (payment.user_paid ? payment.user_paid.name : '' )}</b> <br/>
                 </td>
-                <td>{ payment.startDate.substring(5, 7) }-{ payment.startDate.substring(8, 10) }-{ payment.startDate.substring(0, 4) }</td>
+                <td>{ payment.initDate.substring(5, 7) }-{ payment.initDate.substring(8, 10) }-{ payment.initDate.substring(0, 4) }</td>
                 <td>{ payment.endDate.substring(5, 7) }-{ payment.endDate.substring(8, 10) }-{ payment.endDate.substring(0, 4) }</td>
                 <td className="text-center">
                     <b>{ payment.totalPieces }</b>
@@ -286,10 +287,10 @@ function Payments() {
                 <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
                 <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
                 <td>
-                    { 
+                    {
                         (
                             payment.status == 'TO APPROVE'
-                            ? 
+                            ?
                                 <button className="btn btn-info font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAYABLE') }>
                                     { payment.status }
                                 </button>
@@ -299,17 +300,17 @@ function Payments() {
                     {
                         (
                             payment.status == 'PAYABLE'
-                            ? 
+                            ?
                                 <button className="btn btn-warning font-weight-bold text-center btn-sm" onClick={ () => handlerChangeStatus(payment.id, 'PAID') }>
                                     { payment.status }
                                 </button>
                             : ''
                         )
                     }
-                    { 
+                    {
                         (
                             payment.status == 'PAID'
-                            ? 
+                            ?
                                 <span className="alert-success font-weight-bold text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
                                     { payment.status }
                                 </span>
@@ -318,10 +319,10 @@ function Payments() {
                     }
                 </td>
                 <td>
-                    { 
+                    {
                         (
                             payment.status == 'TO APPROVE'
-                            ? 
+                            ?
                                 <button className="btn btn-primary btn-sm m-1" onClick={ () => handlerOpenModalEditPayment(payment.id, payment.totalDelivery) } title="Edit Payment">
                                     <i className="bx bx-edit-alt"></i>
                                 </button>
@@ -331,15 +332,15 @@ function Payments() {
                                 </button>
                         )
                     }
-                    
+
                     <button className="btn btn-success btn-sm m-1" onClick={ () => handlerExportPayment(payment.id) } title="Download Detail">
                         <i className="ri-file-excel-fill"></i>
                     </button>
 
-                    { 
+                    {
                         (
                             payment.status == 'PAID'
-                            ? 
+                            ?
                                 <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, "download") } title="Download Receipt">
                                     <i className="ri-file-excel-fill"></i>
                                 </button>
@@ -348,10 +349,10 @@ function Payments() {
                         )
                     }
 
-                    { 
+                    {
                         (
                             payment.status == 'PAID'
-                            ? 
+                            ?
                                 <button className="btn btn-info btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(payment.id, "send") } title="Send Email">
                                     <i className="ri-mail-fill"></i>
                                 </button>
@@ -385,7 +386,7 @@ function Payments() {
 
         let myModal = new bootstrap.Modal(document.getElementById('modalEditPayment'), {
 
-            keyboard: true 
+            keyboard: true
         });
 
         myModal.show();*/
@@ -500,7 +501,7 @@ function Payments() {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            
+
                                                             <div className="col-lg-3 mb-3">
                                                                 <label htmlFor="" className="form">AMOUNT</label>
                                                                 <input type="number" value={ amount } onChange={ (e) => setAmount(e.target.value) } className="form-control" required/>
@@ -562,7 +563,7 @@ function Payments() {
 
     const handlerExport = () => {
 
-        location.href = 'payment-team/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch;
+        location.href = 'payment-team/export-all/'+ dateInit +'/'+ initDate +'/'+ dateEnd +'/'+ idTeam +'/'+ StatusSearch;
     }
 
     const handlerExportListAll = () => {

@@ -26,9 +26,9 @@ class PaymentTeamController extends Controller
         return view('payment.payment');
     }
 
-    public function List($dateStart, $dateEnd, $idTeam, $status)
+    public function List($dateStart, $initDate, $dateEnd, $idTeam, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idTeam, $status, 'list');
+        $data = $this->GetDataListExport($dateStart, $initDate, $dateEnd, $idTeam, $status, 'list');
 
         $paymentList   = $data['paymentList'];
         $totalPayments = $data['totalPayments'];
@@ -312,7 +312,7 @@ class PaymentTeamController extends Controller
         return ['paymentTeamDetailRevertShipmentsList' => $paymentTeamDetailRevertShipmentsList];
     }
 
-    public function GetDataListExport($dateStart, $dateEnd, $idTeam, $status, $typeAction)
+    public function GetDataListExport($dateStart, $initDate, $dateEnd, $idTeam, $status, $typeAction)
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -659,9 +659,9 @@ class PaymentTeamController extends Controller
         return ['stateAction' => true];
     }
 
-    public function ExportAll($dateStart, $dateEnd, $idCompany, $status)
+    public function ExportAll($dateStart, $initDate, $dateEnd, $idCompany, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'export');
+        $data = $this->GetDataListExport($dateStart,$initDate, $dateEnd, $idCompany, $status, 'export');
 
         $paymentList   = $data['paymentList'];
         $totalPayments = $data['totalPayments'];
@@ -687,7 +687,7 @@ class PaymentTeamController extends Controller
                 date('m-d-Y', strtotime($payment->created_at)) .' '. date('H:i:s', strtotime($payment->created_at)),
                 $payment->id,
                 $payment->team->name,
-                date('m-d-Y', strtotime($payment->startDate)),
+                date('m-d-Y', strtotime($payment->initDate)),
                 date('m-d-Y', strtotime($payment->endDate)),
                 $payment->totalPieces,
                 $payment->totalDelivery,

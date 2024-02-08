@@ -112,7 +112,7 @@ class TaskPackageSendPreFactura extends Command
                     }
                 }
 
-                $this->SendPreFactura($startDate, $endDate, $files);
+                $this->SendPreFactura($startDate, $initDate,$endDate, $files);
 
                 DB::commit();
             }
@@ -138,7 +138,7 @@ class TaskPackageSendPreFactura extends Command
 
         $startDate = $startDate .' 00:00:00';
         $endDate   = $endDate .' 23:59:59';
-        $initDate   = $initDate .' 23:59:59';
+
         $delimiter = ",";
         $file      = fopen($contents, 'w');
         $fields    = array('DELIVERY DATE', 'COMPANY', 'PACKAGE ID', 'STATUS', 'PRICE FUEL', 'WEIGHT COMPANY', 'DIM WEIGHT ROUND COMPANY', 'PRICE WEIGHT COMPANY', 'PEAKE SEASON PRICE COMPANY', 'PRICE BASE COMPANY', 'SURCHARGE PERCENTAGE COMPANY', 'SURCHAGE PRICE COMPANY', 'TOTAL PRICE COMPANY');
@@ -290,17 +290,17 @@ class TaskPackageSendPreFactura extends Command
         Log::info('================');
     }
 
-    public function SendPreFactura($startDate,$endDate, $files)
+    public function SendPreFactura($startDate, $initDate, $endDate, $files)
     {
         $files = $files;
-        $data  = ['startDate' => $startDate, 'endDate' => $endDate];
+        $data  = ['startDate' => $initDate, 'endDate' => $endDate];
 
         if(ENV('APP_ENV') == 'production')
         {
             Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
 
                 $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
-                ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+                ->subject('DRAFT INVOICE ('. $initDate .' - '. $endDate .')');
 
                 foreach ($files as $file)
                 {
@@ -309,10 +309,10 @@ class TaskPackageSendPreFactura extends Command
             });
         }
 
-        Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
+        Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $initDate, $endDate, $files) {
 
             $message->to('wilcm123@gmail.com', 'WILBER CM')
-            ->subject('DRAFT INVOICE ('. $startDate .' - '. $endDate .')');
+            ->subject('DRAFT INVOICE ('. $initDate .' - '. $endDate .')');
 
             foreach ($files as $file)
             {
