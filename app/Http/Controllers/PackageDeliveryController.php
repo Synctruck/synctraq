@@ -1240,7 +1240,8 @@ class PackageDeliveryController extends Controller
         $dataDeliveriesList = [];
         $dataFailedsList = [];
 
-        $querySQL = '';
+        $querySQLDeliveries = '';
+        $querySQLFaileds    = '';
 
         foreach($datesList as $key => $date)
         {
@@ -1292,7 +1293,7 @@ class PackageDeliveryController extends Controller
                     "SELECT pd.status,". $querySQLDeliveries ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
 
         $dataSQLFaileds = DB::select(
-                    "SELECT pd.status,". $querySQLFaileds ." FROM packagefailed pd GROUP  BY pd.status");
+                    "SELECT pf.status,". $querySQLFaileds ." FROM packagefailed pf GROUP  BY pf.status");
 
         /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
