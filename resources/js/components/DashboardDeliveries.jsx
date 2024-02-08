@@ -23,8 +23,13 @@ function DashboardDeliveries() {
     const [idDriver, setIdDriver] = useState(0);
     const [listDriver, setListDriver] = useState([]);
 
+    const [totalTasks, setTotalTasks] = useState(0);
+
     const [quantityDeliveriesView, setQuantityDeliveriesView] = useState(0);
     const [quantityFailedsView, setQuantityFailedsView] = useState(0);
+
+    const [quantityDeliveriesViewPercentage, setQuantityDeliveriesViewPercentage] = useState(0);
+    const [quantityFailedsViewPercentage, setQuantityFailedsViewPercentage] = useState(0);
 
     useEffect(() => {
         listAllTeam();
@@ -33,8 +38,6 @@ function DashboardDeliveries() {
     useEffect(() => {
         
         getDeliveries(typeRange);
-        graphPie();
-
         return () => {}
     }, [dateStart, dateEnd, idTeam, idDriver]);
 
@@ -70,8 +73,8 @@ function DashboardDeliveries() {
             });
 
 
-            let quantityDeliveries = dataDeliveriesList.reduce((a, b) => a + b, 0);
-            let quantityFaileds    = dataFailedsList.reduce((a, b) => a + b, 0);
+            let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
+            let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
 
             graphOne(response, dataDeliveriesList, dataFailedsList);
             graphPie(quantityDeliveries, quantityFaileds);
@@ -137,9 +140,19 @@ function DashboardDeliveries() {
 
     const graphPie = (quantityDeliveries, quantityFaileds) => {
 
+        alert(quantityDeliveries);
+        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds);
+        let percentageDeliveries = (quantityDeliveries / totalQuantity) * 100;
+        let percentageFaileds = (quantityFaileds / totalQuantity) * 100;
+
         setQuantityDeliveriesView(quantityDeliveries);
         setQuantityFailedsView(quantityFaileds);
-        
+
+        setTotalTasks(totalQuantity);
+
+        setQuantityDeliveriesViewPercentage(percentageDeliveries.toFixed(2));
+        setQuantityFailedsViewPercentage(percentageFaileds.toFixed(2));
+
         Highcharts.chart('divPie', {
             chart: {
                 plotBackgroundColor: null,
@@ -291,17 +304,17 @@ function DashboardDeliveries() {
                                                     <td>
                                                         <button className="btn btn-success form-control">Succeeded</button>
                                                     </td>
-                                                    <td>{ quantityDeliveriesView } (99%)</td>
+                                                    <td>{ quantityDeliveriesView } ({ quantityDeliveriesViewPercentage }%)</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
                                                         <button className="btn btn-danger form-control" style={ {backgroundColor: '#dc3545'} }>Failed</button>
                                                     </td>
-                                                    <td>{ quantityFailedsView } (0%)</td>
+                                                    <td>{ quantityFailedsView } ({ quantityFailedsViewPercentage }%)</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Total</td>
-                                                    <td>11995 Tasks</td>
+                                                    <td>{ totalTasks } Tasks</td>
                                                 </tr>
                                             </table>
                                         </div>
