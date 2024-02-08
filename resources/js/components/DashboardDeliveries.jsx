@@ -49,13 +49,13 @@ function DashboardDeliveries() {
                     dataDeliveriesList.push(response.dataSQLDeliveries[0]['total'+ index]);
                 }
 
-                if(response.dataSQLDeliveries[0]['total'+ index] == null)
+                if(response.dataSQLFaileds[0]['total'+ index] == null)
                 {
                     dataFailedsList.push(0);
                 }
                 else
                 {
-                    dataFailedsList.push(response.dataSQLDeliveries[0]['total'+ index]);
+                    dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                 }
             });
 
