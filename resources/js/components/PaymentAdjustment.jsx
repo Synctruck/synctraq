@@ -13,6 +13,7 @@ function PaymentAdjustment() {
     const [numberTransaction, setNumberTransaction] = useState(numberTransactionGeneral);
     const [paymentStatus, setPaymentStatus] = useState(paymentStatusGeneral);
     const [startDate, setStartDate] = useState(startDateGeneral);
+    const [initDate, setInittDate] = useState(initDateGeneral);
     const [endDate, setEndDate]     = useState(endDateGeneral);
 
     const [paymentTeamDetailRouteList, setPaymentTeamDetailRouteList] = useState([]);
