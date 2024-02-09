@@ -85,14 +85,14 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        if($nowHour > 9)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
                 DB::beginTransaction();
 
                 $files     = [];
-                $nowDate   = date('Y-m-11');
+                $nowDate   = date('Y-m-d');
                 $startDate = date('2023-01-01');
                 $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
                 $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
@@ -297,7 +297,7 @@ class TaskPackageSendPreFactura extends Command
 
         if(ENV('APP_ENV') == 'production')
         {
-            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $initDate, $endDate, $files) {
+            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate,z $endDate, $files) {
 
                 $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
                 ->subject('DRAFT INVOICE ('. $initDate .' - '. $endDate .')');
