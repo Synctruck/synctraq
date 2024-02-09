@@ -1216,20 +1216,20 @@ class PackageDeliveryController extends Controller
         return view('delivery.dashboard');
     }
 
-    public function GetDeliveriesDashboard($dateRange)
+    public function GetDeliveriesDashboard($dateRange, $idTeam, $idDriver)
     {
         $startDate = date('Y-m-d', strtotime(date('Y-m-d') .' -'. $dateRange .' day'));
         $endDate   = date('Y-m-d');
 
-        return $this->GetDataForDashboard($startDate, $endDate);
+        return $this->GetDataForDashboard($startDate, $endDate, $idTeam, $idDriver);
     }
 
-    public function GetDeliveriesDashboardByDates($startDate, $endDate)
+    public function GetDeliveriesDashboardByDates($startDate, $endDate, $idTeam, $idDriver)
     {
-        return $this->GetDataForDashboard($startDate, $endDate);
+        return $this->GetDataForDashboard($startDate, $endDate, $idTeam, $idDriver);
     }
 
-    public function GetDataForDashboard($startDate, $endDate)
+    public function GetDataForDashboard($startDate, $endDate, $idTeam, $idDriver)
     {
         $dateNow = date('Y-m-d');
         $hour    = date('H:i:s');
@@ -1269,13 +1269,27 @@ class PackageDeliveryController extends Controller
                 }
             }
 
-            $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+            if($idTeam == 0 && $idDriver == 0)
+            {
+                $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
+                $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+            }
+            else if($idTeam != 0 && $idDriver == 0)
+            {
+                $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and idTeam=". $idTeam ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+                $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+            }
+            else if($idTeam != 0 && $idDriver != 0)
+            {
+                $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+                $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+            }
+            
             $querySQLDeliveries = $querySQLDeliveries == '' ? $sqlDeliveries : $querySQLDeliveries .','. $sqlDeliveries;
-
-            $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
-
-            $querySQLFaileds = $querySQLFaileds == '' ? $sqlFaileds : $querySQLFaileds .','. $sqlFaileds;
+            $querySQLFaileds    = $querySQLFaileds == '' ? $sqlFaileds : $querySQLFaileds .','. $sqlFaileds;
 
             array_push($dataDateList, $date->format("Y-m-d"));
             

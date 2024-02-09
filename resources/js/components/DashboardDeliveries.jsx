@@ -45,7 +45,7 @@ function DashboardDeliveries() {
 
         if(rangeType != 'custom')
         {
-            await fetch(`${url_general}package-deliveries-dashboard/${rangeType}`)
+            await fetch(`${url_general}package-deliveries-dashboard/${rangeType}/${idTeam}/${idDriver}`)
             .then(res => res.json())
             .then((response) => {
 
@@ -90,7 +90,7 @@ function DashboardDeliveries() {
 
                 if(difference <= 7)
                 {
-                    await fetch(`${url_general}package-deliveries-dashboard/${startDate}/${endDate}`)
+                    await fetch(`${url_general}package-deliveries-dashboard/${startDate}/${endDate}/${idTeam}/${idDriver}`)
                     .then(res => res.json())
                     .then((response) => {
 
