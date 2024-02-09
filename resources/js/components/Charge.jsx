@@ -558,7 +558,7 @@ function Charge() {
 
     const handlerExport = () => {
 
-        location.href= 'charge-company/export-all/'+ dateInit +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch;
+        location.href= 'charge-company/export-all/'+ dateInit +'/'+ initDate +'/'+ dateEnd +'/'+ idCompany +'/'+ StatusSearch;
     }
 
     const handlerExportListAll = () => {

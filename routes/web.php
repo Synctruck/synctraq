@@ -213,7 +213,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/charge-company/confirm/{idCharge}/{status}', [ChargeCompanyController::class, 'Confirm']);
 	Route::get('/charge-company/import', [ChargeCompanyController::class, 'Import']);
 	Route::get('/charge-company/export/{id}/{download}', [ChargeCompanyController::class, 'Export']);
-	Route::get('/charge-company/export-all/{dateInit}/{endDate}/{idCompany}/{status}', [ChargeCompanyController::class, 'ExportAll']);
+	Route::get('/charge-company/export-all/{dateInit}/{initDate}/{endDate}/{idCompany}/{status}', [ChargeCompanyController::class, 'ExportAll']);
 
 	Route::get('/charge-company/delete-detail', [ChargeCompanyController::class, 'DeletePackagesDetail']);
 

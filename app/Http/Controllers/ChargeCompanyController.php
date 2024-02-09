@@ -26,7 +26,7 @@ class ChargeCompanyController extends Controller
 
     public function List($dateStart, $initDate, $dateEnd, $idCompany, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'list');
+        $data = $this->GetDataListExport($dateStart, $initDate, $dateEnd, $idCompany, $status, 'list');
 
         $chargeList  = $data['chargeList'];
         $totalCharge = $data['totalCharge'];
@@ -34,7 +34,7 @@ class ChargeCompanyController extends Controller
         return ['chargeList' => $chargeList, 'totalCharge' => number_format($totalCharge, 4)];
     }
 
-    public function GetDataListExport($dateStart, $dateEnd, $idCompany, $status, $typeAction)
+    public function GetDataListExport($dateStart, $initDate, $dateEnd, $idCompany, $status, $typeAction)
     {
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
@@ -290,9 +290,9 @@ class ChargeCompanyController extends Controller
         }
     }
 
-    public function ExportAll($dateStart, $dateEnd, $idCompany, $status)
+    public function ExportAll($dateStart,$initDate, $dateEnd, $idCompany, $status)
     {
-        $data = $this->GetDataListExport($dateStart, $dateEnd, $idCompany, $status, 'export');
+        $data = $this->GetDataListExport($dateStart, $initDate,$dateEnd, $idCompany, $status, 'export');
 
         $chargeList  = $data['chargeList'];
         $totalCharge = $data['totalCharge'];
@@ -318,7 +318,7 @@ class ChargeCompanyController extends Controller
                 date('m-d-Y', strtotime($charge->created_at)) .' '. date('H:i:s', strtotime($charge->created_at)),
                 $charge->id,
                 $charge->company->name,
-                date('m-d-Y', strtotime($charge->startDate)),
+                date('m-d-Y', strtotime($charge->initDate)),
                 date('m-d-Y', strtotime($charge->endDate)),
                 $charge->totalDelivery,
                 $charge->totalRevert,

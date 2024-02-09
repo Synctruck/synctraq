@@ -241,7 +241,7 @@ function ReportDelivery() {
         }
         else
         {
-            let url = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ initDate +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
+            let url = url_general +'report/export/delivery/'+ idCompany +'/'+ dateInit +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ RouteSearch +'/'+ StateSearch +'/'+ type;
 
             if(type == 'download')
             {
