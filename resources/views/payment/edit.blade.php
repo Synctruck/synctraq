@@ -13,6 +13,6 @@
 	let startDateGeneral     = '{{ date('m/d/Y', strtotime($payment->startDate)) }}';
 	let endDateGeneral 	     = '{{ date('m/d/Y', strtotime($payment->endDate)) }}';
 </script>
-<div id="paymentAdjustment"> 
+<div id="paymentAdjustment">
 </div>
 @endsection

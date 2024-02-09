@@ -11,7 +11,7 @@ function PaymentAdjustment() {
     const [teamName, setTeamName]   = useState(teamNameGeneral);
     const [paymentId, setPaymentId] = useState(paymentIdGeneral);
     const [numberTransaction, setNumberTransaction] = useState(numberTransactionGeneral);
-    const [paymentStatus, setPaymentStatus] = useState(paymentStatusGeneral); 
+    const [paymentStatus, setPaymentStatus] = useState(paymentStatusGeneral);
     const [startDate, setStartDate] = useState(startDateGeneral);
     const [endDate, setEndDate]     = useState(endDateGeneral);
 
@@ -42,7 +42,7 @@ function PaymentAdjustment() {
         fetch(url_general +'payment-team/list-by-route/'+ idPayment)
         .then(res => res.json())
         .then((response) => {
-            
+
             setPaymentTeamDetailRouteList(response.paymentTeamDetailRouteList);
 
             calculateTotalsDeliveries(response.paymentTeamDetailRouteList)
@@ -111,7 +111,7 @@ function PaymentAdjustment() {
             },
         );
     }
-    
+
     const clearFormAdjustment = () => {
 
         setAmount('');
@@ -122,7 +122,7 @@ function PaymentAdjustment() {
 
         location.href = url_general +'payment-team/export/'+ id;
     }
-    
+
     const handlerExportPaymentReceipt = (id) => {
 
         location.href = url_general +'payment-team/export-receipt/'+ id;
@@ -146,7 +146,7 @@ function PaymentAdjustment() {
         fetch(url_general +'payment-team/list-by-pod-failed/'+ idPayment)
         .then(res => res.json())
         .then((response) => {
-            
+
             setPaymentTeamDetailPODFailedList(response.paymentTeamDetailPODFailedList);
         });
     }
@@ -212,7 +212,7 @@ function PaymentAdjustment() {
         fetch(url_general +'payment-team/list-revert-shipments/'+ idPayment)
         .then(res => res.json())
         .then((response) => {
-            
+
             setPaymentTeamDetailRevertShipmentsList(response.paymentTeamDetailRevertShipmentsList);
             handlerCalculateTotalRevertShipments(response.paymentTeamDetailRevertShipmentsList);
         });
@@ -419,7 +419,7 @@ function PaymentAdjustment() {
                        swal("There was an error, try again!", {
 
                             icon: "success",
-                        }); 
+                        });
                     }
                 });
             }
@@ -436,7 +436,7 @@ function PaymentAdjustment() {
                                 <div className="row">
                                     <div className="col-lg-10 form-group text-primary">
                                         <h3>PAYMENT TEAM - { teamName }</h3>
-                                        <h5>WEEK: { startDate +' - '+ endDate}</h5>
+                                        <h5>WEEK: { initDate +' - '+ endDate}</h5>
                                         <h5>PAYMENT: { paymentId }</h5>
                                         <h5 className="text-info">CONFIRMATION CODE: { numberTransaction }</h5>
                                     </div>
@@ -446,10 +446,10 @@ function PaymentAdjustment() {
                                                 <h5>ACTIONS</h5>
                                             </div>
                                             <div className="col-lg-12  form-group">
-                                                { 
+                                                {
                                                     (
                                                         paymentStatus == 'TO APPROVE'
-                                                        ? 
+                                                        ?
                                                             <>
                                                                 <button className="btn btn-primary font-weight-bold form-control text-center btn-sm mb-1" onClick={ () => handlerRecalculate(paymentId) }>
                                                                     RECALCULATE
@@ -464,17 +464,17 @@ function PaymentAdjustment() {
                                                 {
                                                     (
                                                         paymentStatus == 'PAYABLE'
-                                                        ? 
+                                                        ?
                                                             <button className="btn btn-warning font-weight-bold form-control text-center btn-sm" onClick={ () => handlerChangeStatus(paymentId, 'PAID') }>
                                                                 { paymentStatus }
                                                             </button>
                                                         : ''
                                                     )
                                                 }
-                                                { 
+                                                {
                                                     (
                                                         paymentStatus == 'PAID'
-                                                        ? 
+                                                        ?
                                                             <span className="alert-success font-weight-bold form-control text-center" style={ {padding: '5px', fontWeight: 'bold', borderRadius: '.2rem'} }>
                                                                 { paymentStatus }
                                                             </span>
@@ -488,10 +488,10 @@ function PaymentAdjustment() {
                                                 </button>
                                             </div>
 
-                                            { 
+                                            {
                                                 (
                                                     paymentStatus == 'PAID'
-                                                    ? 
+                                                    ?
                                                         <div className="col-lg-6 form-group">
                                                             <button className="btn btn-warning btn-sm m-1 text-white" onClick={ () => handlerExportPaymentReceipt(paymentId) } title="Download Receipt">
                                                                 <i className="ri-file-excel-fill"></i> Receipt
@@ -506,10 +506,10 @@ function PaymentAdjustment() {
                                     <hr/>
                                 </div>
 
-                                { 
+                                {
                                     (
                                         paymentStatus == 'TO APPROVE'
-                                        ? 
+                                        ?
                                             <div className="row">
                                                 <div className="col-lg-12 form-group text-info">
                                                     ADD ADJUSTMENT
@@ -534,7 +534,7 @@ function PaymentAdjustment() {
                                         : ''
                                     )
                                 }
-                                
+
                                 <div className="row">
                                     <div className="col-lg-12 form-group text-info">
                                         RESUMEN
@@ -576,9 +576,9 @@ function PaymentAdjustment() {
                                             id="myTooltipReverted1"
                                             place="top"
                                             variant="dark"
-                                            content="Reverted shipments are packages 
-                                                    that were paid in error to the carrier and that 
-                                                    were marked for a discount on the next invoice. 
+                                            content="Reverted shipments are packages
+                                                    that were paid in error to the carrier and that
+                                                    were marked for a discount on the next invoice.
                                                     The packages shown here are not discounts on the invoice,
                                                      it is only to control which packages within this invoice are not valid."
                                             style={ {width: '40%'} }
@@ -614,10 +614,10 @@ function PaymentAdjustment() {
                                             <i className="bi bi-plus-circle"></i>
                                         </button>
 
-                                        { 
+                                        {
                                             (
                                                 paymentStatus == 'TO APPROVE'
-                                                ? 
+                                                ?
                                                     <>
                                                         <br/>
                                                             <form onSubmit={ handlerInserPDOFailed } autoComplete="off">
@@ -630,7 +630,7 @@ function PaymentAdjustment() {
                                                 : ''
                                             )
                                         }
-                                        
+
                                     </div>
                                     <div className="col-lg-12">
                                         <table className="table table-hover table-condensed table-bordered">
