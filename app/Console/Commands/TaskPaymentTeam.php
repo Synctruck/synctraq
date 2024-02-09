@@ -56,7 +56,7 @@ class TaskPaymentTeam extends Command
         if($nowHour > 10)
         {
             $files     = [];
-            $nowDate   = date('Y-m-d');
+            $nowDate   = date('Y-m-11');
             $startDate = date('2023-11-01');
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
