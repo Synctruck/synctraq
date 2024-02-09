@@ -61,6 +61,7 @@ class TaskPaymentTeam extends Command
             $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
+            Log::info($nowHour);
             try
             {
                 DB::beginTransaction();
