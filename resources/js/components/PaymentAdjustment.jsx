@@ -13,7 +13,7 @@ function PaymentAdjustment() {
     const [numberTransaction, setNumberTransaction] = useState(numberTransactionGeneral);
     const [paymentStatus, setPaymentStatus] = useState(paymentStatusGeneral);
     const [startDate, setStartDate] = useState(startDateGeneral);
-    const [initDate, setInittDate] = useState(initDateGeneral);
+    const [initDate, setInitDate] = useState(initDateGeneral);
     const [endDate, setEndDate]     = useState(endDateGeneral);
 
     const [paymentTeamDetailRouteList, setPaymentTeamDetailRouteList] = useState([]);
@@ -437,7 +437,7 @@ function PaymentAdjustment() {
                                 <div className="row">
                                     <div className="col-lg-10 form-group text-primary">
                                         <h3>PAYMENT TEAM - { teamName }</h3>
-                                        <h5>WEEK: { initDate +' - '+ endDate}</h5>
+                                        <h5>WEEK: { startDate +' - '+ endDate}</h5>
                                         <h5>PAYMENT: { paymentId }</h5>
                                         <h5 className="text-info">CONFIRMATION CODE: { numberTransaction }</h5>
                                     </div>

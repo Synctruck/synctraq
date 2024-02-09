@@ -11,6 +11,7 @@
 	let paymentIdGeneral 	 = '{{ $payment->id }}';
 	let paymentStatusGeneral = '{{ $payment->status }}';
 	let startDateGeneral     = '{{ date('m/d/Y', strtotime($payment->startDate)) }}';
+    let initDateGeneral     = '{{ date('m/d/Y', strtotime($payment->initDate)) }}';
 	let endDateGeneral 	     = '{{ date('m/d/Y', strtotime($payment->endDate)) }}';
 </script>
 <div id="paymentAdjustment">
