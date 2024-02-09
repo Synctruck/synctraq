@@ -94,8 +94,8 @@ class TaskPackageSendPreFactura extends Command
                 $files     = [];
                 $nowDate   = date('Y-m-d');
                 $startDate = date('2023-01-01');
-                $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
-                $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
+                $endDate   = date('Y-m-11', strtotime($nowDate .' -2 day'));
+                $initDate  = date('Y-m-11', strtotime($nowDate .' -8 day'));
 
                 $companyList = Company::all();
 
