@@ -297,7 +297,7 @@ class TaskPackageSendPreFactura extends Command
 
         if(ENV('APP_ENV') == 'production')
         {
-            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate,z $endDate, $files) {
+            Mail::send('mail.prefactura', ['data' => $data ], function($message) use($startDate, $endDate, $files) {
 
                 $message->to('jm.busto@synctruck.com', 'SYNCTRUCK')
                 ->subject('DRAFT INVOICE ('. $initDate .' - '. $endDate .')');
