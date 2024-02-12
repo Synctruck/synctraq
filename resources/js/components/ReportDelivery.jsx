@@ -178,6 +178,8 @@ function ReportDelivery() {
     }
 
     const listAllDriverByTeam = (idTeam) => {
+        setIdTeam(idTeam);
+
         console.log('Listando drivers para el equipo:', idTeam);
         fetch(url_general + 'driver/team/list/' + idTeam)
         .then(response => {
