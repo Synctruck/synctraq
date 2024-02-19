@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        if($dayName == 'Monday' && $nowHour > 10)
+        if($dayName == 'Monday' && $nowHour == 9)
         {
             try
             {
