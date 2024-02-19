@@ -31,6 +31,8 @@ function DashboardDeliveries() {
     const [quantityDeliveriesViewPercentage, setQuantityDeliveriesViewPercentage] = useState(0);
     const [quantityFailedsViewPercentage, setQuantityFailedsViewPercentage] = useState(0);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         listAllTeam();
     }, []);
@@ -42,12 +44,15 @@ function DashboardDeliveries() {
     }, [startDate, endDate, idTeam, idDriver]);
 
     const getDeliveries = async (rangeType) => {
+        setIsLoading(true);
 
         if(rangeType != 'custom')
         {
             await fetch(`${url_general}package-deliveries-dashboard/${rangeType}/${idTeam}/${idDriver}`)
             .then(res => res.json())
             .then((response) => {
+
+                setIsLoading(false);
 
                 let dataDeliveriesList = [];
                 let dataFailedsList    = [];
@@ -93,6 +98,8 @@ function DashboardDeliveries() {
                     await fetch(`${url_general}package-deliveries-dashboard/${startDate}/${endDate}/${idTeam}/${idDriver}`)
                     .then(res => res.json())
                     .then((response) => {
+
+                        setIsLoading(false);
 
                         let dataDeliveriesList = [];
                         let dataFailedsList    = [];
@@ -320,9 +327,17 @@ function DashboardDeliveries() {
                             <div className="row mb-4">
                                 <div className="col-lg-7 text-center">
                                     <h4>Completed Tasks</h4>
-                                    <figure class="highcharts-figure">
-                                        <div id="container"></div>
-                                    </figure>
+                                    {
+                                        (
+                                            isLoading
+                                            ? 
+                                                <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                            :
+                                                <figure class="highcharts-figure">
+                                                    <div id="container"></div>
+                                                </figure>
+                                        )
+                                    }
                                 </div>
                                 <div className="col-lg-5">
                                     <div className="row">
@@ -373,32 +388,42 @@ function DashboardDeliveries() {
                                                 </tr>
                                             </table>
                                         </div>
-                                        <div className="col-lg-6">
-                                            <div id="divPie"></div>
-                                        </div>
-                                        <div className="col-lg-6">
-                                            <table className="table table-condensed table-bordered">
-                                                <tr>
-                                                    <td colspan="2"><b>Completed Tasks</b></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <button className="btn btn-success form-control">Delivered</button>
-                                                    </td>
-                                                    <td>{ quantityDeliveriesView } ({ quantityDeliveriesViewPercentage }%)</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <button className="btn btn-danger form-control" style={ {backgroundColor: '#dc3545'} }>Failed</button>
-                                                    </td>
-                                                    <td>{ quantityFailedsView } ({ quantityFailedsViewPercentage }%)</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Total</td>
-                                                    <td>{ totalTasks } Tasks</td>
-                                                </tr>
-                                            </table>
-                                        </div>
+                                        {
+                                            (
+                                                isLoading
+                                                ? 
+                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                                :
+                                                    <>
+                                                        <div className="col-lg-6">
+                                                            <div id="divPie"></div>
+                                                        </div>
+                                                        <div className="col-lg-6">
+                                                            <table className="table table-condensed table-bordered">
+                                                                <tr>
+                                                                    <td colspan="2"><b>Completed Tasks</b></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <button className="btn btn-success form-control">Delivered</button>
+                                                                    </td>
+                                                                    <td>{ quantityDeliveriesView } ({ quantityDeliveriesViewPercentage }%)</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <button className="btn btn-danger form-control" style={ {backgroundColor: '#dc3545'} }>Failed</button>
+                                                                    </td>
+                                                                    <td>{ quantityFailedsView } ({ quantityFailedsViewPercentage }%)</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Total</td>
+                                                                    <td>{ totalTasks } Tasks</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </>
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>
