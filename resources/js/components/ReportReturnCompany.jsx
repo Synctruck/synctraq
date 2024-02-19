@@ -380,12 +380,7 @@ function ReportReturnCompany() {
         const formData = new FormData();
 
         formData.append('Reference_Number_1', Reference_Number_1);
-        formData.append('client', client);
         formData.append('Description_Return', Description_Return);
-        formData.append('Weight', Weight);
-        formData.append('Width', Width);
-        formData.append('Length', Length);
-        formData.append('Height', Height);
         formData.append('latitude', latitude);
         formData.append('longitude', longitude);
 
@@ -586,47 +581,7 @@ function ReportReturnCompany() {
                                                                 <div className="form-group">
                                                                     <label className="form">COMMENT</label>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
-                                                                        <option value="">Selection comment</option>
-                                                                        { optionsComment }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label className="form">CLIENT</label>
-                                                                    <div id="client" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ client } className="form-control" onChange={ (e) => setClient(e.target.value) }/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label className="form">WEIGHT</label>
-                                                                    <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" value={ Weight } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWeight(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label className="form">WIDTH</label>
-                                                                    <div id="Width" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" value={ Width } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setWidth(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label className="form">LENGTH</label>
-                                                                    <div id="Length" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" value={ Length } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setLength(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label className="form">HEIGHT</label>
-                                                                    <div id="Height" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" value={ Height } className="form-control" step="0.01" min="0" max="999" onChange={ (e) => setHeight(e.target.value) } required/>
+                                                                    <input type="text" value={ 'scan_in_for_return' } className="form-control"/>
                                                                 </div>
                                                             </div>
                                                         </div>

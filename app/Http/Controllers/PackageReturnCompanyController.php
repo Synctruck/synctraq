@@ -127,12 +127,12 @@ class PackageReturnCompanyController extends Controller
     {
         $servicePackageTerminal = new ServicePackageTerminal();
 
-        $comment = Comment::where('description', $request->get('Description_Return'))->first();
+        /*$comment = Comment::where('description', $request->get('Description_Return'))->first();
 
         if(!$comment)
         {
             return ['stateAction' => 'commentNotExists'];
-        }
+        }*/
 
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
@@ -197,15 +197,16 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Dropoff_Province             = $packageInbound->Dropoff_Province;
                 $packageReturnCompany->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageReturnCompany->Notes                        = $packageInbound->Notes;
-                $packageReturnCompany->Weight                       = $request->get('Weight');
-                $packageReturnCompany->Width                        = $request->get('Width');
-                $packageReturnCompany->Length                       = $request->get('Length');
-                $packageReturnCompany->Height                       = $request->get('Height');
+                $packageReturnCompany->Weight                       = $packageHistory->Weight;
+                $packageReturnCompany->Width                        = $packageHistory->width;
+                $packageReturnCompany->Length                       = $packageHistory->length;
+                $packageReturnCompany->Height                       = $packageHistory->height;
                 $packageReturnCompany->Route                        = $packageInbound->Route;
                 $packageReturnCompany->idUser                       = Auth::user()->id;
                 $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
-                $packageReturnCompany->Description_Return           = $request->get('Description_Return');
-                $packageReturnCompany->client                       = $request->get('client');
+                $packageReturnCompany->Description_Return           = 'SCAN IN FOR RETURN';
+                $packageReturnCompany->client                       = $packageInbound->Dropoff_Contact_Name;
+                $packageReturnCompany->statusSending                = 'scan_in_for_return';
 
                 if($company->twoAttempts)
                 {
@@ -289,7 +290,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
-                $packageHistory->Description_Return           = $request->get('Description_Return');
+                $packageHistory->Description_Return           = 'SCAN IN FOR RETURN';
                 $packageHistory->status                       = 'ReturnCompany';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
@@ -297,14 +298,14 @@ class PackageReturnCompanyController extends Controller
 
                 $packageHistory->save();
 
-                Log::info('ReturnCompany: send status: '. $comment->statusCode);
+                Log::info('ReturnCompany: send status: scan_in_for_return');
 
                 $packageInbound['latitude']            = $request->get('latitude');
                 $packageInbound['longitude']           = $request->get('longitude');
-                $packageInbound['Description_Return']  = $request->get('Description_Return');
+                $packageInbound['Description_Return']  = 'SCAN IN FOR RETURN';
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', 'scan_in_for_return', date('Y-m-d H:i:s'));
 
                 $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
                                                 ->where('sendToInland', 1)
@@ -313,7 +314,7 @@ class PackageReturnCompanyController extends Controller
 
                 if($packageHistory)
                 {
-                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', $comment->statusCode, date('Y-m-d H:i:s'));
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', 'scan_in_for_return', date('Y-m-d H:i:s'));
                 }
 
                 $packageInbound->delete();
