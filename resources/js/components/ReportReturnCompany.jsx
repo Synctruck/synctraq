@@ -445,7 +445,7 @@ function ReportReturnCompany() {
                 }
                 else if(response.stateAction == 'notExists')
                 {
-                    swal('Packet does not exist in Inbound or Dispatch!', {
+                    swal('Packet does not exist in Inbound or Dispatch or Wareouse or NMI or Terminal!', {
 
                         icon: "warning",
                     });
