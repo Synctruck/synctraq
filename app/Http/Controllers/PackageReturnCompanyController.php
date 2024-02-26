@@ -731,7 +731,7 @@ class PackageReturnCompanyController extends Controller
             {
                 $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
                 $packagePreRts->status = 'ReturnCompany';
-                $packagePreRts->Description_Return
+                $packagePreRts->Description_Return = 'SCAN OUT FOR RETURN';
                 $packagePreRts->save();
 
                 $packageHistory = new PackageHistory();
