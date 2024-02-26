@@ -673,7 +673,7 @@ class PackageReturnCompanyController extends Controller
                 {
                     DB::beginTransaction();
 
-                    $palletRts->quantityPackage = $palletRts->quantityPackage + 1;
+                    $palletRts->quantityPackage = $packageReturnCompany->numberPallet == '' ? $palletRts->quantityPackage + 1 : $palletRts->quantityPackage;
                     $palletRts->save();
 
                     $packageReturnCompany->numberPallet = $request->get('numberPallet');
@@ -730,9 +730,8 @@ class PackageReturnCompanyController extends Controller
             foreach($packagePreRtsList as $packagePreRts)
             {
                 $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
-
                 $packagePreRts->status = 'ReturnCompany';
-
+                $packagePreRts->Description_Return
                 $packagePreRts->save();
 
                 $packageHistory = new PackageHistory();
@@ -757,7 +756,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
                 $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
-                $packageHistory->Description_Return           = $packagePreRts->Description_Return;
+                $packageHistory->Description_Return           = 'SCAN OUT FOR RETURN';
                 $packageHistory->status                       = 'ReturnCompany';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
