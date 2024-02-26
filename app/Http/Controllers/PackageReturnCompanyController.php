@@ -766,7 +766,7 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
 
                 $packageHistory = PackageHistory::where('Reference_Number_1', $packagePreRts->Reference_Number_1)
                                                 ->where('sendToInland', 1)
@@ -775,7 +775,7 @@ class PackageReturnCompanyController extends Controller
 
                 if($packageHistory)
                 {
-                    $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', null, date('Y-m-d H:i:s'));
+                    $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
                 }
             }
 
