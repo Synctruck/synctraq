@@ -227,6 +227,8 @@ function ReportDispatch() {
                     { packageDispatch.inboundDate.substring(11, 19) }
                 </td>
                 <td><b>{ packageDispatch.lateDays }</b></td>
+                <td><b>{ packageDispatch.deliveryDate }</b></td>
+                <td><b>{ packageDispatch.timeDelivery }</b></td>
                 <td><b>{ packageDispatch.company }</b></td>
                 <td><b>{ team }</b></td>
                 <td><b>{ driver }</b></td>
@@ -406,7 +408,7 @@ function ReportDispatch() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Dispatch: { quantityDispatch }</b>
@@ -475,7 +477,7 @@ function ReportDispatch() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </h5>
                             <div className="row form-group table-responsive">
                                 <div className="col-lg-12">
@@ -485,6 +487,8 @@ function ReportDispatch() {
                                                 <th>DATE</th>
                                                 <th>INBOUND DATE</th>
                                                 <th>DAYS TO DISPATCH</th>
+                                                <th>DELIVERY DATE</th>
+                                                <th>TIME DELIVERY</th>
                                                 <th>COMPANY</th>
                                                 <th><b>TEAM</b></th>
                                                 <th><b>DRIVER</b></th>

@@ -66,7 +66,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
- 
+
         if($type == 'list')
         {
             $listAll = $listAll->select(
@@ -202,7 +202,7 @@ class ReportController extends Controller
                                             ->where('status', 'Delivery')
                                             ->get()
                                             ->last();
-            
+
             $validator = $packageHistory->validator ? $packageHistory->validator->name .' '. $packageHistory->validator->nameOfOwner : '';
 
             $timeDispatchDate = 0;
@@ -247,7 +247,7 @@ class ReportController extends Controller
 
             array_push($packageHistoryListNew, $package);
             array_push($idsExists, $packageHistory->Reference_Number_1);
-            
+
         }
 
         return [
@@ -257,7 +257,7 @@ class ReportController extends Controller
         ];
     }
 
-    
+
     public function ListLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state)
     {
         $data                  = $this->getDataLost($idCompany, $idTeam, $dateInit, $dateEnd, $route, $state);
@@ -307,7 +307,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
-        
+
         if($idTeam != 0)
         {
             $listAll = $listAll->where('idTeam', $idTeam);
@@ -357,7 +357,7 @@ class ReportController extends Controller
                                             ->where('status', 'Delivery')
                                             ->get()
                                             ->last();
-            
+
             $validator = $packageHistory->user ? $packageHistory->user->name .' '. $packageHistory->user->nameOfOwner : '';
 
             $timeDispatchDate = 0;
@@ -400,7 +400,7 @@ class ReportController extends Controller
 
             array_push($packageHistoryListNew, $package);
             array_push($idsExists, $packageHistory->Reference_Number_1);
-            
+
         }
 
         return [
@@ -451,7 +451,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
- 
+
         if($type == 'list')
         {
             $listAll = $listAll->select(
@@ -527,7 +527,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->whereIn('Dropoff_Province', $states);
         }
- 
+
         if($type == 'list')
         {
             $listAll = $listAll->select(
@@ -618,7 +618,7 @@ class ReportController extends Controller
         $dateEnd  = $dateEnd .' 23:59:59';
 
         $routes = explode(',', $route);
-        $states = explode(',', $state); 
+        $states = explode(',', $state);
 
         $listPackageDispatch = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])
                                             ->where('status', 'Dispatch');
@@ -691,14 +691,42 @@ class ReportController extends Controller
                                                 ->where('status', 'Inbound')
                                                 ->first();
 
+            $dispatch = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('status', 'Dispatch')
+                                                ->first();
+
+            $packageDelivery = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                ->where('status', 'Delivery')
+                                                ->get()
+                                                ->last();
+
             $initDate = date('Y-m-d', strtotime(($packageInbound ? $packageInbound->created_at : '')));
             $endDate  = date('Y-m-d', strtotime($packageDispatch->created_at));
             $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
+
+
+            $timeDispatchDate = 0;
+            $timeDeliveryDate = 0;
+
+            if($dispatch)
+            {
+                $timeDispatchDate = (strtotime($dispatch->created_at) - strtotime($packageDispatch->created_at)) / 86400;
+                $timeDispatchDate = number_format($timeDispatchDate, 2);
+            }
+
+            if($packageDelivery)
+            {
+                $timeDeliveryDate = (strtotime($packageDelivery->created_at) - strtotime($packageDispatch->created_at)) / 86400;
+                $timeDeliveryDate = number_format($timeDeliveryDate, 2);
+            }
+
 
             $package = [
                 "created_at" => $packageDispatch->created_at,
                 "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
                 "lateDays" => $lateDays,
+                "deliveryDate" => ($packageDelivery ? $packageDelivery->Date_Delivery : ''),
+                "timeDelivery" => ($timeDeliveryDate >= 0 ? $timeDeliveryDate : ''),
                 "company" => $packageDispatch->company,
                 "team" => $packageDispatch->team,
                 "driver" => $packageDispatch->driver,
@@ -777,7 +805,7 @@ class ReportController extends Controller
         {
             $listAll = $listAll->where('idCompany', $idCompany);
         }
-        
+
         if($idTeam && $idDriver)
         {
             $listAll = $listAll->where('idTeam', $idTeam)->where('idUserDispatch', $idDriver);
@@ -841,7 +869,7 @@ class ReportController extends Controller
             $packageInbound = PackageHistory::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
                                                 ->where('status', 'Inbound')
                                                 ->first();
-                
+
             $validator = $packageDelivery->validator ? $packageDelivery->validator->name .' '. $packageDelivery->validator->nameOfOwner : '';
 
             $package = [
@@ -978,14 +1006,14 @@ class ReportController extends Controller
                                                         ->orderBy('created_at', 'desc')
                                                         ->get();
         }
-        
-        $packageHistoryListNew = []; 
+
+        $packageHistoryListNew = [];
 
         foreach($listPackageFailed as $packageFailed)
         {
             $status = $this->GetStatus($packageFailed->Reference_Number_1);
-                
-            $package = [ 
+
+            $package = [
                 "created_at" => $packageFailed->created_at,
                 "description" => $status['description'],
                 "status" => $status['status'],
@@ -1115,14 +1143,14 @@ class ReportController extends Controller
                                                         ->orderBy('created_at', 'desc')
                                                         ->get();
         }
-        
-        $packageHistoryListNew = []; 
+
+        $packageHistoryListNew = [];
 
         foreach($listPackageFailed as $packageFailed)
         {
             $status = $this->GetStatus($packageFailed->Reference_Number_1);
-                
-            $package = [ 
+
+            $package = [
                 "created_at" => $packageFailed->created_at,
                 "description" => $status['description'],
                 "status" => $status['status'],
@@ -1409,13 +1437,13 @@ class ReportController extends Controller
             $packageInbound = PackageHistory::where('Reference_Number_1', $packageDispatch['Reference_Number_1'])
                                                 ->where('status', 'Inbound')
                                                 ->first();
-                                                
+
             $initDate = date('Y-m-d', strtotime(($packageInbound ? $packageInbound->created_at : '')));
             $endDate  = date('Y-m-d', strtotime($packageDispatch['created_at']));
             $lateDays = $packageAgeController->CalculateDaysLate($initDate, $endDate);
 
             $lineData = array(
-                                date('m-d-Y', strtotime($packageDispatch['created_at'])), 
+                                date('m-d-Y', strtotime($packageDispatch['created_at'])),
                                 date('H:i:s', strtotime($packageDispatch['created_at'])),
                                 date('m-d-Y H:i:s', strtotime($packageInbound->created_at)),
                                 $lateDays,
@@ -1485,7 +1513,7 @@ class ReportController extends Controller
                 $urlImage1 = count($imagesIds) > 0 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[0] .'/800x.png' : '';
                 $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
             }
-            
+
             $lineData = array(
                                 date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
                                 date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])),
@@ -1540,7 +1568,7 @@ class ReportController extends Controller
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION ONFLEET', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
- 
+
         fputcsv($file, $fields, $delimiter);
 
         $listPackageFailed = $this->getDataDelete($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'export');
@@ -1603,7 +1631,7 @@ class ReportController extends Controller
 
         //set column headers
         $fields = array('DATE', 'HOUR', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'DESCRIPTION ONFLEET', 'ACTUAL STATUS', 'STATUS DATE', 'STATUS DESCRIPTION', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE');
- 
+
         fputcsv($file, $fields, $delimiter);
 
         $listPackageFailed = $this->getDataFailed($idCompany,$dateInit, $dateEnd, $idTeam, $idDriver, $route, $state, $statusDescription, $type = 'export');
