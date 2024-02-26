@@ -425,54 +425,18 @@ function PackageRts() {
                                                         <div className="col-lg-12 mb-2">
                                                             <form onSubmit={ (e) => handlerValidation(e) } autoComplete="off">
                                                                 <div className="row">
-                                                                    <div className="col-lg-3">
+                                                                    <div className="col-lg-12">
                                                                         <div className="form-group">
                                                                             <label htmlFor="" className="form">PACKAGE ID</label>
                                                                             <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="col-lg-9">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">COMMENT</label>
-                                                                            <input id="Description_Return" type="text" className="form-control" value={ Description_Return } onChange={ (e) => setDescription_Return(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-12">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">CLIENT</label>
-                                                                            <input id="client" type="text" className="form-control" value={ client } onChange={ (e) => setClient(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-3 mb-3">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">WEIGHT</label>
-                                                                            <input id="Weight" type="number" className="form-control" value={ Weight } step="0.01" min="0" max="150" onChange={ (e) => setWeight(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-3 mb-3">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">WIDTH</label>
-                                                                            <input id="Width" type="number" className="form-control" value={ Width } step="0.01" min="0" max="150" onChange={ (e) => setWidth(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-3 mb-3">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">LENGTH</label>
-                                                                            <input id="Length" type="number" className="form-control" value={ Length } step="0.01" min="0" max="150" onChange={ (e) => setLength(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-3 mb-3">
-                                                                        <div className="form-group">
-                                                                            <label htmlFor="" className="form">HEIGHT</label>
-                                                                            <input id="Height" type="number" className="form-control" value={ Height } step="0.01" min="0" max="150" onChange={ (e) => setHeight(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-lg-9"></div>
                                                                     <div className="col-lg-3">
                                                                         <div className="form-group">
                                                                             <button className="btn btn-primary form-control">Save</button>
                                                                         </div>
                                                                     </div>
+                                                                    <div className="col-lg-9"></div>
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -611,12 +575,6 @@ function PackageRts() {
 
         formData.append('Reference_Number_1', Reference_Number_1);
         formData.append('numberPallet', PalletNumberForm);
-        formData.append('Description_Return', Description_Return);
-        formData.append('client', client);
-        formData.append('Weight', Weight);
-        formData.append('Width', Width);
-        formData.append('Length', Length);
-        formData.append('Height', Height);
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -676,7 +634,7 @@ function PackageRts() {
 
                     document.getElementById('soundPitidoBlocked').play();
                 }
-                else if(response.stateAction == 'notCompnay')
+                else if(response.stateAction == 'notCompany')
                 {
                     setTextMessage("THE PACKAGE BELONGS TO ANOTHER COMPANY #"+ Reference_Number_1);
                     setTypeMessageDispatch('warning');
@@ -686,7 +644,8 @@ function PackageRts() {
                 }
                 else if(response.stateAction == 'notExists')
                 {
-                    setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH, TERMINAL] #"+ Reference_Number_1);
+                    //setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH, TERMINAL] #"+ Reference_Number_1);
+                    setTextMessage("NO EXISTS IN 'SCAN IN FOR RETURN' #"+ Reference_Number_1);
                     setTypeMessageDispatch('error');
                     setNumberPackage('');
 
