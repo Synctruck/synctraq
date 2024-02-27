@@ -46,6 +46,9 @@ function Login() {
                             {
                                 location.href = '/profile';
                             }
+                            else if(response.user.idRole == 10){
+                                location.href = '/package-deliveries-dashboard';
+                            }
                             else
                             {
                                 location.href = './home';
