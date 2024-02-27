@@ -37,7 +37,7 @@ Route::post('/package-history/search-by-filters', [PackageController::class, 'Se
 Route::get('/package/all-delete/clear-package', [PackageController::class, 'DeleteClearPackage']);
 Route::get('/package/all-change-to-delivery', [PackageController::class, 'ChangePackageToDispatch']);
 
-Route::get('package-deliveries-dashboard', [PackageDeliveryController::class, 'DashboardIndex']);
+Route::get('package-deliveries-dashboard', [PackageDeliveryController::class, 'DashboardIndex'])->middleware('permission:deliveries.index');
 Route::get('package-deliveries-dashboard/{dateRange}/{idTeam}/{idDriver}', [PackageDeliveryController::class, 'GetDeliveriesDashboard']);
 Route::get('package-deliveries-dashboard/{startDate}/{endDate}/{idTeam}/{idDriver}', [PackageDeliveryController::class, 'GetDeliveriesDashboardByDates']);
 

@@ -3,6 +3,7 @@
         <li >
             <div id="google_translate_element" class="google"></div>
         </li>
+        @if(hasPermission('deliveries.index'))
         <li class="nav-heading"></li>
         <li >
             <a class="nav-link {{Request::is('package-deliveries-dashboard') ? 'active' : 'collapsed'}}" href="{{url('package-deliveries-dashboard')}}">
@@ -10,6 +11,8 @@
                 <span>DELIVERIES</span>
             </a>
         </li>
+        @endif
+
         @if(hasPermission('packageBlocked.index'))
             <li class="nav-heading"></li>
             <li >
@@ -28,7 +31,7 @@
                 </a>
             </li>
         @endif
-            
+
             @if(hasPermission('dashboard.index'))
                 <li class="nav-heading"></li>
                 <li >
@@ -92,7 +95,7 @@
                     </a>
                 </li>
             @endif --}}
-            
+
             <li >
                 <a class="nav-link {{Request::is('package-check') ? 'show' : 'collapsed'}}" href="{{url('/package-check')}}">
                     <i class="bx bx-barcode-reader"></i>
@@ -127,7 +130,7 @@
                         <i class="bx bx-car"></i>
                         <span>RE-INBOUND</span>
                     </a>
-                </li> 
+                </li>
             @endif
 
             @if(hasPermission('warehouse.index'))
@@ -156,7 +159,7 @@
                     </a>
                 </li>
             @endif
-            
+
             @if(hasPermission('packageDispatchToMiddleMile.index'))
                 <li >
                     <a class="nav-link {{Request::is('package-dispatch-to-middlemile') ? 'show' : 'collapsed'}}" href="{{url('/package-dispatch-to-middlemile')}}">
