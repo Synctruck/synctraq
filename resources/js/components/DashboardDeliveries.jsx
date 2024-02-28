@@ -17,7 +17,6 @@ function DashboardDeliveries() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
-    const [roleUser, setRoleUser]   = useState('');
 
     const [listTeam, setListTeam] = useState([]);
     const [idTeam, setIdTeam] = useState(0);
@@ -39,18 +38,12 @@ function DashboardDeliveries() {
     }, []);
 
     useEffect(() => {
+
         getDeliveries(typeRange);
         return () => {}
     }, [startDate, endDate, idTeam, idDriver]);
 
-    useEffect(() => {
-        if (roleUser === 'Team') {
-            listAllDriverByTeam(idTeam);
-        }
-    }, [roleUser, idTeam]);
-
     const getDeliveries = async (rangeType) => {
-
         setIsLoading(true);
 
         if(rangeType != 'custom')
@@ -293,13 +286,13 @@ function DashboardDeliveries() {
         });
     }
 
-     const listTeamSelect = listTeam
-      .filter(team => roleUser !== 'Team' || team.id === idTeam)
-      .map(team => (
-        <option key={team.id} value={team.id} className={team.useXcelerator ? 'text-warning' : ''}>
-          {team.name}
-        </option>
-      ));
+    const listTeamSelect = listTeam.map( (team, i) => {
+
+        return (
+
+            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
+        );
+    });
 
     const listAllDriverByTeam = (idTeam) => {
 
@@ -375,28 +368,24 @@ function DashboardDeliveries() {
                                                     :
                                                         ''
                                                 }
-
-                                                {
-                                                    <tr>
-                                                        <td><b>Team</b></td>
-                                                        <td>
-                                                            <select className="form-control" onChange={(e) => listAllDriverByTeam(e.target.value)} required>
-                                                                {roleUser === 'Team' ? listTeamSelect : <><option value="">All</option>{listTeamSelect}</>}
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                }
-
-
-                                            <tr>
-                                                <td><b>Driver</b></td>
-                                                <td>
-                                                    <select className="form-control" onChange={(e) => setIdDriver(e.target.value)} required>
-                                                        <option value="0">All</option>
-                                                        {listDriverSelect}
-                                                    </select>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                   <td><b>Team</b></td>
+                                                   <td>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                            <option value="">All</option>
+                                                            { listTeamSelect }
+                                                        </select>
+                                                   </td>
+                                                </tr>
+                                                <tr>
+                                                   <td><b>Driver</b></td>
+                                                   <td>
+                                                       <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                            <option value="0">All</option>
+                                                            { listDriverSelect }
+                                                        </select>
+                                                   </td>
+                                                </tr>
                                             </table>
                                         </div>
                                         {
