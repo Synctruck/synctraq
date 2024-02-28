@@ -293,13 +293,13 @@ function DashboardDeliveries() {
         });
     }
 
-    const listTeamSelect = listTeam.map( (team, i) => {
-
-        return (
-
-            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
-        );
-    });
+     const listTeamSelect = listTeam
+      .filter(team => roleUser !== 'Team' || team.id === idTeam)
+      .map(team => (
+        <option key={team.id} value={team.id} className={team.useXcelerator ? 'text-warning' : ''}>
+          {team.name}
+        </option>
+      ));
 
     const listAllDriverByTeam = (idTeam) => {
 
@@ -375,18 +375,18 @@ function DashboardDeliveries() {
                                                     :
                                                         ''
                                                 }
-                                               {
-                                                roleUser !== 'Team' &&
-                                                <tr>
-                                                    <td><b>Team</b></td>
-                                                    <td>
-                                                        <select className="form-control" onChange={(e) => listAllDriverByTeam(e.target.value)} required>
-                                                            <option value="">All</option>
-                                                            {listTeamSelect}
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                            }
+
+                                                {
+                                                    <tr>
+                                                        <td><b>Team</b></td>
+                                                        <td>
+                                                            <select className="form-control" onChange={(e) => listAllDriverByTeam(e.target.value)} required>
+                                                                {roleUser === 'Team' ? listTeamSelect : <><option value="">All</option>{listTeamSelect}</>}
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                }
+
 
                                             <tr>
                                                 <td><b>Driver</b></td>
