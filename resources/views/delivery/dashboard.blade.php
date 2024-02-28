@@ -13,21 +13,20 @@
 <script>
 	let auxDateStart = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
-	let idTeamGeneral = 0;
-	let idDriverGeneral = 0;
-	let idRoleTeamGeneral = 0;
-	let idRoleDriverGeneral = 0;
-
-	if(auth()->role == 'Team')
-	{
-		idRoleTeamGeneral = 3;
-	}
-
-	if(auth()->role == 'Driver')
-	{
-		idRoleTeamGeneral = 3
-		idRoleDriverGeneral = 4;
-	}
+	let idUserGeneral = '{{Auth::user()->id}}';
+	let auxDateInit   = '{{date('Y-m-d')}}';
+	let auxDateEnd    = '{{date('Y-m-t')}}';
+    let auth = @json(Auth::user());
+    var id_team = 0;
+    var id_driver = 0;
+        if(auth.idRole == 4){
+            id_team = auth.idTeam
+            id_driver = auth.id;
+        }
+        if(auth.idRole == 3){
+            id_team = auth.id
+        }
+        console.log(id_team,id_driver)
 </script>
 <div id="dashboardDeliveries">
 </div>

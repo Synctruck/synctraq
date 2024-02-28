@@ -12,11 +12,12 @@ import { DownloadTableExcel } from 'react-export-table-to-excel';
 // moment().format();
 
 function DashboardDeliveries() {
- 
+
     const [loading, setLoading]     = useState('block');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
+    const [roleUser, setRoleUser]   = useState('');
 
     const [listTeam, setListTeam] = useState([]);
     const [idTeam, setIdTeam] = useState(0);
@@ -58,7 +59,14 @@ function DashboardDeliveries() {
         return () => {}
     }, [startDate, endDate, idTeam, idDriver]);
 
+    useEffect(() => {
+        if (roleUser === 'Team') {
+            listAllDriverByTeam(idTeam);
+        }
+    }, [roleUser, idTeam]);
+
     const getDeliveries = async (rangeType) => {
+
         setIsLoading(true);
 
         if(rangeType != 'custom')
@@ -301,13 +309,13 @@ function DashboardDeliveries() {
         });
     }
 
-    const listTeamSelect = listTeam.map( (team, i) => {
-
-        return (
-
-            <option value={ team.id } className={ (team.useXcelerator == 1 ? 'text-warning' : '') }>{ team.name }</option>
-        );
-    });
+     const listTeamSelect = listTeam
+      .filter(team => roleUser !== 'Team' || team.id === idTeam)
+      .map(team => (
+        <option key={team.id} value={team.id} className={team.useXcelerator ? 'text-warning' : ''}>
+          {team.name}
+        </option>
+      ));
 
     const listAllDriverByTeam = (idTeam) => {
 
@@ -345,7 +353,7 @@ function DashboardDeliveries() {
                                     {
                                         (
                                             isLoading
-                                            ? 
+                                            ?
                                                 <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                             :
                                                 <figure class="highcharts-figure">
@@ -423,7 +431,7 @@ function DashboardDeliveries() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <>
