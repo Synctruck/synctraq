@@ -156,6 +156,7 @@ class PackageDispatchController extends Controller
                 $package = $package ? $package : PackageInbound::find($request['package_id']);
                 $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
                 $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
+                $package = $package ? $package : PackageFailed::where('status', 'Failed')find($request['package_id']);
 
                 if($package)
                 {
@@ -234,7 +235,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
 
-                            if($package->status == 'Manifest' || $package->status == 'Warehouse')
+                            if($package->status == 'Manifest' || $package->status == 'Warehouse' || $package->status == 'Failed')
                             {
                                 $package->delete();
                             }

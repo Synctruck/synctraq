@@ -149,6 +149,7 @@ class TeamController extends Controller
                 //$user->idOnfleet          = $request->get('idOnfleet');
                 $user->surcharge          = $request->get('surcharge');
                 $user->twoAttempts        = $request->get('twoAttempts');
+                $user->sla                = $request->get('sla');
                 $user->status             = $request->get('status');
                 
                 if($request->get('emailCC')!="null"){
@@ -276,11 +277,13 @@ class TeamController extends Controller
                 $user->surcharge          = $request->get('surcharge');
                 $user->roundWeight        = $request->get('roundWeight');
                 $user->twoAttempts        = $request->get('twoAttempts');
+                $user->sla                = $request->get('sla');
                 $user->status             = $request->get('status');
                 
-                if($request->get('emailCC')!="null"){
-                $user->emailCC            = $request->get('emailCC');
+                if($request->get('emailCC') != "null"){
+                    $user->emailCC = $request->get('emailCC');
                 }
+
                 $user->save();
 
                 DB::commit();

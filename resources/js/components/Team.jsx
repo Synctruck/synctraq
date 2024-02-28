@@ -18,6 +18,7 @@ function Team() {
     const [surcharge, setSurcharge]                   = useState(1);
     const [roundWeight, setRoundWeight]               = useState(1);
     const [twoAttempts, setTwoAttempts]               = useState(1);
+    const [sla, setSla]                               = useState(0);
     const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
@@ -174,6 +175,7 @@ function Team() {
         formData.append('surcharge', surcharge);
         formData.append('roundWeight', roundWeight);
         formData.append('twoAttempts', twoAttempts);
+        formData.append('sla', sla);
 
         clearValidation();
 
@@ -308,7 +310,8 @@ function Team() {
             setIdOnfleet(team.idOnfleet);
             setSurcharge(team.surcharge);
             setRoundWeight(team.roundWeight);
-            setTwoAttempts(team.twoAttempts)
+            setTwoAttempts(team.twoAttempts);
+            setSla(team.sla);
             /*setTimeout( () => {
 
                 console.log(listPrices);
@@ -1274,6 +1277,17 @@ function Team() {
                 <td>
                     {
                         (
+                            user.sla
+                            ?
+                                <div className="alert alert-success font-weight-bold">YES</div>
+                            :
+                                <div className="alert alert-danger font-weight-bold">NO</div>
+                        )
+                    }
+                </td>
+                <td>
+                    {
+                        (
                             user.status == 'Active'
                             ?
                                 <button className="alert alert-success font-weight-bold" onClick={ () => changeStatus(user.id) }>{ user.status }</button>
@@ -1634,6 +1648,16 @@ function Team() {
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="form-group">
+                                                                    <label className="form">SLA</label>
+                                                                    <div id="status" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <select value={ sla } className="form-control" onChange={ (e) => setSla(e.target.value) } required>
+                                                                        <option value="1" >YES</option>
+                                                                        <option value="0" >NO</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <div className="form-group">
                                                                     <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <select value={ status } className="form-control" onChange={ (e) => setStatus(e.target.value) } required>
@@ -1915,6 +1939,7 @@ function Team() {
                                                 <th>ROUND WEIGHT</th>
                                                 <th>SURCHARGE</th>
                                                 <th>TWO ATTEMPTS</th>
+                                                <th>SLA</th>
                                                 <th>STATUS</th>
                                                 <th>ACTIONS</th>
                                             </tr>
