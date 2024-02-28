@@ -12,11 +12,12 @@ import { DownloadTableExcel } from 'react-export-table-to-excel';
 // moment().format();
 
 function DashboardDeliveries() {
- 
+
     const [loading, setLoading]     = useState('block');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
+    const [roleUser, setRoleUser]   = useState('');
 
     const [listTeam, setListTeam] = useState([]);
     const [idTeam, setIdTeam] = useState(0);
@@ -38,12 +39,18 @@ function DashboardDeliveries() {
     }, []);
 
     useEffect(() => {
-        
         getDeliveries(typeRange);
         return () => {}
     }, [startDate, endDate, idTeam, idDriver]);
 
+    useEffect(() => {
+        if (roleUser === 'Team') {
+            listAllDriverByTeam(idTeam);
+        }
+    }, [roleUser, idTeam]);
+
     const getDeliveries = async (rangeType) => {
+
         setIsLoading(true);
 
         if(rangeType != 'custom')
@@ -330,7 +337,7 @@ function DashboardDeliveries() {
                                     {
                                         (
                                             isLoading
-                                            ? 
+                                            ?
                                                 <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                             :
                                                 <figure class="highcharts-figure">
@@ -368,30 +375,34 @@ function DashboardDeliveries() {
                                                     :
                                                         ''
                                                 }
+                                               {
+                                                roleUser !== 'Team' &&
                                                 <tr>
-                                                   <td><b>Team</b></td>
-                                                   <td>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                    <td><b>Team</b></td>
+                                                    <td>
+                                                        <select className="form-control" onChange={(e) => listAllDriverByTeam(e.target.value)} required>
                                                             <option value="">All</option>
-                                                            { listTeamSelect }
+                                                            {listTeamSelect}
                                                         </select>
-                                                   </td>
+                                                    </td>
                                                 </tr>
-                                                <tr>
-                                                   <td><b>Driver</b></td>
-                                                   <td>
-                                                       <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                            <option value="0">All</option>
-                                                            { listDriverSelect }
-                                                        </select>
-                                                   </td>
-                                                </tr>
+                                            }
+
+                                            <tr>
+                                                <td><b>Driver</b></td>
+                                                <td>
+                                                    <select className="form-control" onChange={(e) => setIdDriver(e.target.value)} required>
+                                                        <option value="0">All</option>
+                                                        {listDriverSelect}
+                                                    </select>
+                                                </td>
+                                            </tr>
                                             </table>
                                         </div>
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <>
