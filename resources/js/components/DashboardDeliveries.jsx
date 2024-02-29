@@ -41,7 +41,8 @@ function DashboardDeliveries() {
         setidRoleDriverGeneral(idRoleDriverGeneral);
         setidUserGeneral(idUserGeneral);
       }, []);
-    useEffect(() => {
+
+      useEffect(() => {
         if(idRoleTeamGeneral != 3)
         {
             console.log("messi",idRoleTeamGeneral);
@@ -54,7 +55,7 @@ function DashboardDeliveries() {
     }, []);
 
     useEffect(() => {
-        if(idRoleTeamGeneral == 3 && idRoleDriverGeneral == 0){
+        if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
             setIdTeam(idUserGeneral);
         }
 
