@@ -17,9 +17,6 @@ function DashboardDeliveries() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
-    const [idRoleTeamGeneral, setidRoleTeamGeneral]   = useState(idRoleTeamGeneral);
-    const [idRoleDriverGeneral, setidRoleDriverGeneral] = useState(idRoleDriverGeneral);
-    const [idUserGeneral, setidUserGeneral] = useState(idUserGeneral);
     const [listTeam, setListTeam] = useState([]);
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
@@ -37,13 +34,13 @@ function DashboardDeliveries() {
 
 
     useEffect(() => {
-        setidRoleTeamGeneral(idRoleTeamGeneral);
-        setidRoleDriverGeneral(idRoleDriverGeneral);
-        setidUserGeneral(idUserGeneral);
+
+        
       }, []);
 
       useEffect(() => {
-        if(idRoleTeamGeneral != 3)
+
+        /*if(idRoleTeamGeneral != 3)
         {
             console.log("messi",idRoleTeamGeneral);
             listAllTeam();
@@ -51,18 +48,18 @@ function DashboardDeliveries() {
         else
         {
             listAllDriverByTeam(idUserGeneral);
-        }
+        }*/
     }, []);
 
-    useEffect(() => {
-        if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
+    useEffect(() => {        
+        /*if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
             setIdTeam(idUserGeneral);
         }
 
         if(idRoleTeamGeneral == 3 && idRolid_RoleTeamGeneraleDriverGeneral == 4){
             setIdTeam(idUserGeneral);
             setIdTeam(idDriverGeneral);
-        }
+        }*/
 
         getDeliveries(typeRange);
         return () => {}
@@ -394,7 +391,7 @@ function DashboardDeliveries() {
                                                         ''
                                                 }
                                                 {
-                                                    idRoleTeamGeneral !=3
+                                                    idTeam !=3
                                                     ?
                                                     <>
                                                         <tr>
