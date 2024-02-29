@@ -17,7 +17,7 @@ function DashboardDeliveries() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
-    const [idRoleTeamGeneral, setidRoleTeamGeneral]     = useState(idRoleTeamGeneral);
+    const [idRoleTeamGeneral, setidRoleTeamGeneral]   = useState(idRoleTeamGeneral);
     const [idRoleDriverGeneral, setidRoleDriverGeneral] = useState(idRoleDriverGeneral);
     const [idUserGeneral, setidUserGeneral] = useState(idUserGeneral);
     const [listTeam, setListTeam] = useState([]);
@@ -35,9 +35,16 @@ function DashboardDeliveries() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+
+    useEffect(() => {
+        setidRoleTeamGeneral(idRoleTeamGeneral);
+        setidRoleDriverGeneral(idRoleDriverGeneral);
+        setidUserGeneral(idUserGeneral);
+      }, []);
     useEffect(() => {
         if(idRoleTeamGeneral != 3)
         {
+            console.log("messi",idRoleTeamGeneral);
             listAllTeam();
         }
         else
@@ -47,11 +54,11 @@ function DashboardDeliveries() {
     }, []);
 
     useEffect(() => {
-        if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
+        if(idRoleTeamGeneral == 3 && idRoleDriverGeneral == 0){
             setIdTeam(idUserGeneral);
         }
 
-        if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 4){
+        if(idRoleTeamGeneral == 3 && idRolid_RoleTeamGeneraleDriverGeneral == 4){
             setIdTeam(idUserGeneral);
             setIdTeam(idDriverGeneral);
         }

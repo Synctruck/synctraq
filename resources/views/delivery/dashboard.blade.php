@@ -13,11 +13,11 @@
 <script>
 	let auxDateStart = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
-    let idRoleTeamGeneral = 0;
+    window.idRoleTeamGeneral = 3;
     let idRoleDriverGeneral = 0;
     let idUserGeneral = '{{Auth::user()->id}}';
     if(auth()->role == 'Team'){
-        idRoleTeamGeneral=3;
+       idRoleTeamGeneral=3;
     }
 
     if(auth()->role == 'Driver' ){
