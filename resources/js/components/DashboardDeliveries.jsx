@@ -46,7 +46,7 @@ function DashboardDeliveries() {
         if(idRoleTeamGeneral == 3 && idRoleDriverGeneral == 4)
         {
             listAllDriverByTeam(idTeamGeneral);
-            setIdTeam(idDriverGeneral);
+            setIdDriver(idDriverGeneral);
 
         }
     }, []);

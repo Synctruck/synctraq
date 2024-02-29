@@ -27,7 +27,7 @@
         idRoleTeamGeneral = 3;
         idRoleDriverGeneral = 4;
         idTeamGeneral = '{{Auth::user()->idTeam}}'
-        idDriverGeneral = idUserGeneral
+        idDriverGeneral = idUserGeneral;
     }
     console.log(idUserGeneral);
 </script>
