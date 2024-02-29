@@ -386,7 +386,7 @@ function DashboardDeliveries() {
                                                         ''
                                                 }
                                                 {
-                                                    idTeam !=3
+                                                    idRoleTeamGeneral !=3
                                                     ?
                                                     <>
                                                         <tr>
