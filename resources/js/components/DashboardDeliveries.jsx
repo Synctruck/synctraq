@@ -17,7 +17,9 @@ function DashboardDeliveries() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate]     = useState('');
     const [typeRange, setTypeRange] = useState('1');
-
+    const [idRoleTeamGeneral, setidRoleTeamGeneral]     = useState(idRoleTeamGeneral);
+    const [idRoleDriverGeneral, setidRoleDriverGeneral] = useState(idRoleDriverGeneral);
+    const [idUserGeneral, setidUserGeneral] = useState(idUserGeneral);
     const [listTeam, setListTeam] = useState([]);
     const [idTeam, setIdTeam] = useState(0);
     const [idDriver, setIdDriver] = useState(0);
@@ -34,23 +36,23 @@ function DashboardDeliveries() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if(idTeam != 3)
+        if(idRoleTeamGeneral != 3)
         {
             listAllTeam();
         }
         else
         {
-            listAllDriverByTeam(idTeam);
+            listAllDriverByTeam(idUserGeneral);
         }
     }, []);
 
     useEffect(() => {
         if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
-            setIdTeam(idTeamGeneral);
+            setIdTeam(idUserGeneral);
         }
 
         if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 4){
-            setIdTeam(idTeamGeneral);
+            setIdTeam(idUserGeneral);
             setIdTeam(idDriverGeneral);
         }
 
@@ -383,15 +385,23 @@ function DashboardDeliveries() {
                                                     :
                                                         ''
                                                 }
-                                                <tr>
-                                                   <td><b>Team</b></td>
-                                                   <td>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
-                                                            <option value="">All</option>
-                                                            { listTeamSelect }
-                                                        </select>
-                                                   </td>
-                                                </tr>
+                                                {
+                                                    idTeam !=3
+                                                    ?
+                                                    <>
+                                                        <tr>
+                                                            <td><b>Team</b></td>
+                                                            <td>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
+                                                                        <option value="">All</option>
+                                                                        { listTeamSelect }
+                                                                    </select>
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                    :
+                                                    ''
+                                                }
                                                 <tr>
                                                    <td><b>Driver</b></td>
                                                    <td>

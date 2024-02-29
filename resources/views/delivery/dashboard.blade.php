@@ -13,6 +13,18 @@
 <script>
 	let auxDateStart = '{{date('Y-m-d')}}';
 	let auxDateEnd  = '{{date('Y-m-t')}}';
+    let idRoleTeamGeneral = 0;
+    let idRoleDriverGeneral = 0;
+    let idUserGeneral = '{{Auth::user()->id}}';
+    if(auth()->role == 'Team'){
+        idRoleTeamGeneral=3;
+    }
+
+    if(auth()->role == 'Driver' ){
+        idRoleTeamGeneral = 3;
+        idRoleDriverGeneral = 4;
+    }
+    console.log(idUserGeneral);
 </script>
 <div id="dashboardDeliveries">
 </div>
