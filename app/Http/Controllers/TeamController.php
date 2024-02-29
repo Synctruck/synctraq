@@ -60,7 +60,6 @@ class TeamController extends Controller
     public function ListAll(Request $request)
     {
         $listTeam = User::where('idRole', 3)
-                        ->where('idOnfleet', '!=', '')
                         ->where('status', 'Active')
                         ->orderBy('name', 'asc')
                         ->get();
