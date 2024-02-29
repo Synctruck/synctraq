@@ -105,7 +105,7 @@ class PackageController extends Controller
             $data['weight_unit']           = $request->get('shipment')['shipment_details']['weight_unit'];
             $data['width']                 = $request->get('shipment')['shipment_details']['width'];
             $data['height']                = $request->get('shipment')['shipment_details']['height'];
-            $data['length']                = isset($request->get('shipment')['shipment_details']['length']) ?? 0;
+            $data['length']                = $request->get('shipment')['shipment_details']['length'];
             $data['dimensions_unit']       = $request->get('shipment')['shipment_details']['dimensions_unit'];
             $data['signature_on_delivery'] = $request->get('shipment')['shipment_details']['signature_on_delivery'];
             $data['hazardous_goods']       = $request->get('shipment')['shipment_details']['hazardous_goods'];
