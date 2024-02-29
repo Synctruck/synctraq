@@ -33,34 +33,25 @@ function DashboardDeliveries() {
     const [isLoading, setIsLoading] = useState(false);
 
 
-    useEffect(() => {
-
-        
-      }, []);
 
       useEffect(() => {
-
-        /*if(idRoleTeamGeneral != 3)
+        if(idRoleTeamGeneral != 3)
         {
-            console.log("messi",idRoleTeamGeneral);
             listAllTeam();
         }
         else
         {
-            listAllDriverByTeam(idUserGeneral);
-        }*/
+            listAllDriverByTeam(idTeamGeneral);
+        }
+        if(idRoleTeamGeneral == 3 && idRoleDriverGeneral == 4)
+        {
+            listAllDriverByTeam(idTeamGeneral);
+            setIdTeam(idDriverGeneral);
+
+        }
     }, []);
 
-    useEffect(() => {        
-        /*if(idRoleTeamGeneral != 3 && idRoleDriverGeneral == 0){
-            setIdTeam(idUserGeneral);
-        }
-
-        if(idRoleTeamGeneral == 3 && idRolid_RoleTeamGeneraleDriverGeneral == 4){
-            setIdTeam(idUserGeneral);
-            setIdTeam(idDriverGeneral);
-        }*/
-
+    useEffect(() => {
         getDeliveries(typeRange);
         return () => {}
     }, [startDate, endDate, idTeam, idDriver]);
@@ -391,7 +382,7 @@ function DashboardDeliveries() {
                                                         ''
                                                 }
                                                 {
-                                                    idTeam !=3
+                                                    idRoleTeamGeneral !=3
                                                     ?
                                                     <>
                                                         <tr>
@@ -407,15 +398,22 @@ function DashboardDeliveries() {
                                                     :
                                                     ''
                                                 }
-                                                <tr>
-                                                   <td><b>Driver</b></td>
-                                                   <td>
-                                                       <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
-                                                            <option value="0">All</option>
-                                                            { listDriverSelect }
-                                                        </select>
-                                                   </td>
-                                                </tr>
+                                                {
+                                                    idRoleDriverGeneral !=4
+                                                    ?
+                                                    <tr>
+                                                        <td><b>Driver</b></td>
+                                                            <td>
+                                                                <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
+                                                                        <option value="0">All</option>
+                                                                        { listDriverSelect }
+                                                                    </select>
+                                                            </td>
+                                                        </tr>
+                                                    :
+                                                    ''
+                                                }
+
                                             </table>
                                         </div>
                                         {
