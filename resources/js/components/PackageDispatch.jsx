@@ -2054,7 +2054,7 @@ function PackageDispatch() {
                                                 </div>
                                                 <div className="col-lg-3">
                                                     <div className="form-group">
-                                                        <label htmlFor="">TEAM <input type="checkbox" title="List drivers for PODapp" checked={ usageApp } onChange={ handleChangeUsageApp } checked={ true }/></label>
+                                                        <label htmlFor="">TEAM </label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
                                                             { listTeamSelect }
