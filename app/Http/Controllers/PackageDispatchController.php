@@ -285,6 +285,7 @@ class PackageDispatchController extends Controller
 
     public function Insert(Request $request)
     {
+        //dd($request->all());
         /*if($request->get('autorizationDispatch') == false)
         {
             return ['stateAction' => 'notAutorization'];
@@ -379,7 +380,9 @@ class PackageDispatchController extends Controller
         if($package)
         {
             $company = Company::find($package->idCompany);
-        
+            
+            $descriptionReturn = '';
+
             if($company->twoAttempts)
             {
                 $packageHistoryDispatchListCompany = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
@@ -388,14 +391,19 @@ class PackageDispatchController extends Controller
                                                                     ->orderBy('created_at', 'asc')
                                                                     ->get();
 
-                if(count($packageHistoryDispatchListCompany) > 1 && $request->forcedDispatch == 'NO')
+                if(count($packageHistoryDispatchListCompany) > 2 && $request->forcedDispatch == 'NO')
                 {
                     $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListCompany);
 
-                    if($hourDifference >= 6)
+                    if($hourDifference >= 12)
                     {
                         return ['stateAction' => 'dispatchedMoreThanTwice'];
                     }
+                }
+                else
+                {
+                    if($request->forcedDispatch == 'YES')
+                        $descriptionReturn = 'FORCED: '. $request->get('Description_Forced_Dispatch');
                 }
             }
 
@@ -425,11 +433,11 @@ class PackageDispatchController extends Controller
                                                                     ->orderBy('created_at', 'asc')
                                                                     ->get();
 
-                    if(count($packageHistoryDispatchListTeam) > 1 && $request->forcedDispatch == 'NO')
+                    if(count($packageHistoryDispatchListTeam) > 2 && $request->forcedDispatch == 'NO')
                     {
                         $hourDifference = $this->CalculateHourDifferenceDispatch($packageHistoryDispatchListTeam);
 
-                        if($hourDifference >= 6)
+                        if($hourDifference >= 12)
                         {
                             return ['stateAction' => 'dispatchedMoreThanTwice'];
                         }
@@ -560,6 +568,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->autorizationDispatch         = 1;
                         $packageHistory->Description                  = $description;
+                        $packageHistory->Description_Return           = $descriptionReturn; 
                         $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';
                         $packageHistory->actualDate                   = $nowDate;
@@ -884,12 +893,12 @@ class PackageDispatchController extends Controller
         $oneDispatch = $packageHistoryDispatchList[0];
         $twoDispatch = $packageHistoryDispatchList[count($packageHistoryDispatchList) - 1];
 
-        $dateInit = new DateTime($oneDispatch->created_at);
-        $dateEnd  = new DateTime($twoDispatch->created_at);
+        $dateInit = strtotime($oneDispatch->created_at);
+        $dateEnd = strtotime($twoDispatch->created_at);
 
-        $interval = $dateInit->diff($dateEnd);
+        $diff = abs($dateEnd - $dateInit) / 3600;
 
-        return (int)$interval->format('%H');
+        return (int)$diff;
     }
 
     public function Get($Reference_Number_1)

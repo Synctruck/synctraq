@@ -50,6 +50,8 @@ function PackageDispatch() {
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [Description_Forced_Dispatch, setDescriptionForcedDispatch] = useState('');
+    const [Reference_Number_1_RTS, setReferenceRTS] = useState('');
     const [idTeam, setIdTeam] = useState(0);
     const [idTeamNow, setIdTeamNow] = useState(0);
     const [idTeamNew, setIdTeamNew] = useState(0);
@@ -532,6 +534,42 @@ function PackageDispatch() {
                                     </div>
                                 </React.Fragment>;
 
+    const modalPackageForcedDispatch =  <React.Fragment>
+                                            <div className="modal fade" id="modalPackageForcedDispatch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div className="modal-dialog">
+                                                    <form onSubmit={ (e) => handlerFormForcedDispatch() }>
+                                                        <div className="modal-content">
+                                                            <div className="modal-header">
+                                                                <h5 className="modal-title text-primary" id="exampleModalLabel">Forced Dispatch</h5>
+                                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div className="modal-body">
+                                                                <div className="row">
+                                                                    <div className="col-lg-12">
+                                                                        <div className="form-group">
+                                                                            <label className="form">PACKAGE ID</label>
+                                                                            <input type="text" value={ Reference_Number_1_RTS } className="form-control" readOnly/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-lg-12">
+                                                                        <div className="form-group">
+                                                                            <label className="form">DESCRIPTION</label>
+                                                                            <div id="Dropoff_Contact_Name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                            <input type="text" value={ Description_Forced_Dispatch } className="form-control" onChange={ (e) => setDescriptionForcedDispatch(e.target.value) } required/>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="modal-footer">
+                                                                <button type="button" id="btnClodeModalForced" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button className="btn btn-primary" disabled={ disabledButton } onClick={ (e) => handlerFormForcedDispatch(e) }>Save Dispatch</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </React.Fragment>;
+
     const listAllTeam = () => {
 
         fetch(url_general +'team/listall')
@@ -595,7 +633,7 @@ function PackageDispatch() {
 
             const formData = new FormData();
 
-            formData.append('Reference_Number_1', Reference_Number_1);
+            formData.append('Reference_Number_1', (Reference_Number_1 != '' ? Reference_Number_1 : Reference_Number_1_RTS));
             formData.append('idTeam', idTeam);
             formData.append('idDriver', idDriver);
             formData.append('RouteSearch', RouteSearch);
@@ -603,6 +641,7 @@ function PackageDispatch() {
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
             formData.append('forcedDispatch', forcedDispatch);
+            formData.append('Description_Forced_Dispatch', Description_Forced_Dispatch);
 
             if(latitude == 0 || longitude == 0)
             {
@@ -625,7 +664,8 @@ function PackageDispatch() {
 
                     if(response.stateAction == 'dispatchedMoreThanTwice')
                     {
-                        setTextMessage('The package was dispatched more than twice, therefore it should be invoiced and registered as RTS #'+ Reference_Number_1);
+                        setReferenceRTS(Reference_Number_1);
+                        setTextMessage('The package was sent more than three times, therefore it must be invoiced and registered as RTS #'+ Reference_Number_1);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
                     }
@@ -844,10 +884,12 @@ function PackageDispatch() {
                     else if(response.stateAction)
                     {
                         setForcedDispatch('NO');
-                        setTextMessage("SUCCESSFULLY DISPATCHED #"+ Reference_Number_1);
+                        setTextMessage("SUCCESSFULLY DISPATCHED #"+ (Reference_Number_1 != '' ? Reference_Number_1 : Reference_Number_1_RTS));
                         setTextMessageDate('');
                         setTypeMessageDispatch('success');
                         setNumberPackage('');
+                        setReferenceRTS('');
+                        setDescriptionForcedDispatch('');
 
                         listAllPackageDispatch(1, StateSearch, RouteSearchList);
 
@@ -1880,23 +1922,56 @@ function PackageDispatch() {
         setAutorizationDispatch(!autorizationDispatch);
     }
 
+    const handlerFormForcedDispatch = (e) => {
+        e.preventDefault();
+
+        if(Description_Forced_Dispatch != ''){
+            setNumberPackage(Reference_Number_1_RTS);
+
+            setTimeout(() => {
+                handlerValidation(e);
+                document.getElementById('btnClodeModalForced').click();
+            }, 200);
+        }
+        else{
+            swal("Enter description!", {
+
+                icon: "warning",
+            });
+        }
+    }
+
     const handlerForcedDispatch = (forcedDispatch) => {
 
-        if(forcedDispatch == 'NO')
+        let myModal = new bootstrap.Modal(document.getElementById('modalPackageForcedDispatch'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
+
+        setForcedDispatch('YES');
+        /*if(forcedDispatch == 'NO')
         {
-            setForcedDispatch('YES');
+            
         }
         else
         {
             setForcedDispatch('NO');
-        }
+        }*/
     }
 
-    const [usageApp, setUsageApp] = React.useState(false);
+    const [usageApp, setUsageApp] = React.useState(true);
 
     const handleChangeUsageApp = () => {
 
         setUsageApp(!usageApp);
+    }
+
+    const handlerGotoRTS = () => {
+        setReferenceRTS('');
+        setTextMessage('');
+        window.open('./report/return-company?Reference_Number='+ Reference_Number_1_RTS);
     }
 
     return (
@@ -1904,6 +1979,7 @@ function PackageDispatch() {
         <section className="section">
             { modalOtherTeam }
             { modalPackageEdit }
+            { modalPackageForcedDispatch }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -1978,7 +2054,7 @@ function PackageDispatch() {
                                                 </div>
                                                 <div className="col-lg-3">
                                                     <div className="form-group">
-                                                        <label htmlFor="">TEAM <input type="checkbox" title="List drivers for PODapp" checked={ usageApp } onChange={ handleChangeUsageApp }/></label>
+                                                        <label htmlFor="">TEAM <input type="checkbox" title="List drivers for PODapp" checked={ usageApp } onChange={ handleChangeUsageApp } checked={ true }/></label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
                                                             { listTeamSelect }
@@ -2040,11 +2116,28 @@ function PackageDispatch() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-3">
-                                        <button className="alert alert-warning" style={ {borderRadius: '10px', padding: '10px'} } onClick={ () => handlerForcedDispatch(forcedDispatch) }>
-                                            FORCED EV: { forcedDispatch }
-                                        </button>
-                                    </div>
+                                    {
+                                        (
+                                            Reference_Number_1_RTS != ''
+                                            ?
+                                                <>
+                                                    <div className="col-lg-3">
+                                                        <div className="form-group">
+                                                            <button className="btn btn-danger form-control" style={ {borderRadius: '10px', padding: '10px'} } onClick={ () => handlerGotoRTS() }>
+                                                                MOVE PACKAGE #{ Reference_Number_1_RTS } TO RTS
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-3">
+                                                        <button className="alert alert-warning form-control" style={ {borderRadius: '10px', padding: '10px'} } onClick={ () => handlerForcedDispatch(forcedDispatch) }>
+                                                            FORCE DISPATCH: { forcedDispatch }
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            :
+                                                ''
+                                        )
+                                    }
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-12 form-group" style={ {display: (quantityDispatchAll > 0 || quantityFailed > 0 ? 'block' : 'none')} }>

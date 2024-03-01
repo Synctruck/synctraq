@@ -943,6 +943,7 @@
                             Description_Return = `<br><b class="text-warning">Warehouse (${nameCellar}):  ${cityCellar}, ${stateCellar}</b>`;
                         }
 
+                        Description_Return = (package.Description_Return ? '<br><b class="text-danger">'+ package.Description_Return +'</b>' : '');
                         Description = package.Description;
                     }
                     else if(package.Description_Return != '' && package.Description_Return != null)
