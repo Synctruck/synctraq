@@ -302,6 +302,15 @@ class PackageDispatchController extends Controller
 
             if($company)
             {
+                $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
+
+                if($packageDelivery){
+                    return response()->json([
+                        'package_id' => $Reference_Number_1,
+                        'message' => "Ok."
+                    ], 200);
+                }
+
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
@@ -400,6 +409,15 @@ class PackageDispatchController extends Controller
 
             if($company)
             {
+                $packageFailed = PackageFailed::where('status', 'Failed')->find($Reference_Number_1);
+
+                if($packageFailed){
+                    return response()->json([
+                        'package_id' => $Reference_Number_1,
+                        'message' => "Ok."
+                    ], 200);
+                }
+
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
