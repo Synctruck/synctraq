@@ -156,7 +156,7 @@ class PackageDispatchController extends Controller
                 $package = $package ? $package : PackageInbound::find($request['package_id']);
                 $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
                 $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
-                $package = $package ? $package : PackageFailed::where('status', 'Failed')find($request['package_id']);
+                $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['package_id']);
 
                 if($package)
                 {
@@ -246,7 +246,7 @@ class PackageDispatchController extends Controller
                                 'package_id' => $request['package_id'],
                                 'message' => "Shipment has been received."
                             ], 200);
-                        } 
+                        }
                         else
                         {
                             return response()->json([
@@ -339,7 +339,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Date_Delivery                = $created_at;
                     $packageHistory->status                       = 'Delivery';
                     $packageHistory->actualDate                   = $created_at;
-                    $packageHistory->created_at                   = $created_at; 
+                    $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
 
@@ -357,7 +357,7 @@ class PackageDispatchController extends Controller
                         $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
 
                     DB::commit();
-                    
+
                     return response()->json([
                         'package_id' => $Reference_Number_1,
                         'message' => "Shipment has been received."
@@ -476,9 +476,9 @@ class PackageDispatchController extends Controller
                         $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, $created_at);
 
                     $packageDispatch->delete();
-                    
+
                     DB::commit();
-                    
+
                     return response()->json([
                         'package_id' => $request['package_id'],
                         'message' => "Shipment has been received."
@@ -524,7 +524,7 @@ class PackageDispatchController extends Controller
                 $packageDispatch->save();
 
                 DB::commit();
-                
+
                 return response()->json([
                     'package_id' => $Reference_Number_1,
                     'message' => "Package photos were updated."
@@ -578,7 +578,7 @@ class PackageDispatchController extends Controller
             $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
             if($packageDispatch)
-            {                
+            {
                 try
                 {
                     DB::beginTransaction();
@@ -634,7 +634,7 @@ class PackageDispatchController extends Controller
     public function TaskCompleted($request, $Date_Delivery)
     {
         $Reference_Number_1 = $request['package_id'];
-        $created_at         = date('Y-m-d H:i:s'); 
+        $created_at         = date('Y-m-d H:i:s');
         $status             = $request['status'];
         $Date_Delivery      = $Date_Delivery;
         $photoUrl           = $request['pod_url'];
@@ -684,7 +684,7 @@ class PackageDispatchController extends Controller
     public function TaskFailed(Request $request, $Date_Failed)
     {
         $Reference_Number_1  = $request['package_id'];
-        $created_at          = date('Y-m-d H:i:s'); 
+        $created_at          = date('Y-m-d H:i:s');
         $status              = $request['status'];
         $photoUrl            = $request['pod_url'];
         $Description_Onfleet = $request['failure_notes'];
@@ -751,7 +751,7 @@ class PackageDispatchController extends Controller
         $packageHistory->created_at                   = $created_at;
         $packageHistory->updated_at                   = $created_at;
         $packageHistory->save();
-        
+
         $packageDispatch->delete();
     }
 }
