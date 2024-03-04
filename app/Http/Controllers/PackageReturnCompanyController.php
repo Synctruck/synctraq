@@ -203,7 +203,7 @@ class PackageReturnCompanyController extends Controller
                 $packageReturnCompany->Route                        = $packageInbound->Route;
                 $packageReturnCompany->idUser                       = Auth::user()->id;
                 $packageReturnCompany->Date_Return                  = date('Y-m-d H:i:s');
-                $packageReturnCompany->Description_Return           = 'SCAN IN FOR RETURN';
+                $packageReturnCompany->Description_Return           = $request->get('Description_Return');
                 $packageReturnCompany->client                       = $packageInbound->Dropoff_Contact_Name;
                 $packageReturnCompany->statusSending                = 'scan_in_for_return';
 
@@ -267,7 +267,7 @@ class PackageReturnCompanyController extends Controller
 
                 //regsister history
 
-                $packageHistory = new PackageHistory();
+                $packageHistory = new PackageHistory(); 
 
                 $packageHistory->id                           = uniqid();
                 $packageHistory->Reference_Number_1           = $packageInbound->Reference_Number_1;
@@ -288,8 +288,8 @@ class PackageReturnCompanyController extends Controller
                 $packageHistory->idUser                       = Auth::user()->id;
                 $packageHistory->idUserInbound                = Auth::user()->id;
                 $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
-                $packageHistory->Description_Return           = 'SCAN IN FOR RETURN';
+                $packageHistory->Description                  = 'SCAN IN FOR RETURN - for: user ('. Auth::user()->email .')';
+                $packageHistory->Description_Return           = $request->get('Description_Return');
                 $packageHistory->status                       = 'PreRts';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
@@ -301,7 +301,7 @@ class PackageReturnCompanyController extends Controller
 
                 $packageInbound['latitude']            = $request->get('latitude');
                 $packageInbound['longitude']           = $request->get('longitude');
-                $packageInbound['Description_Return']  = 'SCAN IN FOR RETURN';
+                $packageInbound['Description_Return']  = $request->get('Description_Return');
 
                 $packageController = new PackageController();
                 $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', 'scan_in_for_return', date('Y-m-d H:i:s'));
@@ -731,7 +731,7 @@ class PackageReturnCompanyController extends Controller
             {
                 $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
                 $packagePreRts->status = 'ReturnCompany';
-                $packagePreRts->Description_Return = 'SCAN OUT FOR RETURN';
+                //$packagePreRts->Description_Return = 'SCAN OUT FOR RETURN';
                 $packagePreRts->statusSending = 'scan_out_for_return';
                 $packagePreRts->save();
 

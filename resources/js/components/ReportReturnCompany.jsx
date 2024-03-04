@@ -580,8 +580,11 @@ function ReportReturnCompany() {
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label className="form">COMMENT</label>
+                                                                    <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
+                                                                        <option value="" style={ {display: 'none'} }>Select comment</option> 
+                                                                        { optionsComment }
+                                                                    </select>
                                                                     <div id="Description_Return" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ 'scan_in_for_return' } className="form-control"/>
                                                                 </div>
                                                             </div>
                                                         </div>
