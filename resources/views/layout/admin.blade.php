@@ -417,11 +417,11 @@
                                     <input type="text" id="contactPhone" name="contactPhone" class="form-control" required>
                                 </div>
                                 <div class="col-lg-3 form-group">
-                                    <label for="contactAddress">ADDREESS</label>
+                                    <label for="contactAddress">ADDRESS</label>
                                     <input type="text" id="contactAddress" name="contactAddress" class="form-control" required>
                                 </div>
                                 <div class="col-lg-3 form-group">
-                                    <label for="contactAddress2">ADDREESS 2</label>
+                                    <label for="contactAddress2">ADDRESS 2</label>
                                     <input type="text" id="contactAddress2" name="contactAddress2" class="form-control">
                                 </div>
                                 <div class="col-lg-3 form-group">
@@ -655,7 +655,7 @@
                                     <input type="text" id="contactPhoneFilters" name="contactPhoneFilters" class="form-control">
                                 </div>
                                 <div class="col-lg-3 form-group">
-                                    <label for="contactAddressFilters">ADDREESS</label>
+                                    <label for="contactAddressFilters">ADDRESS</label>
                                     <input type="text" id="contactAddressFilters" name="contactAddressFilters" class="form-control">
                                 </div>
                                 <div class="col-lg-3 form-group">
@@ -953,7 +953,7 @@
 
                     if(package.status == 'Inbound')
                     {
-                    
+
                         if(package.Notes)
                         {
                             let dimensions = package.Notes.split('|');
@@ -1372,6 +1372,9 @@
 
             $('#exampleModal').modal('hide');
             $('#searchByFiltersModal').modal('toggle');
+            $('#searchByFiltersModal').modal('show').on('shown.bs.modal', function () {
+            $(this).css('overflow-y', 'auto');
+            });
         }
 
         function CloseModal(idModal)
