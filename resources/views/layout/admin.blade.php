@@ -952,7 +952,7 @@
 
                     if(package.status == 'Inbound')
                     {
-                    
+
                         if(package.Notes)
                         {
                             let dimensions = package.Notes.split('|');
@@ -1369,8 +1369,11 @@
         {
             searchGlobal = 1;
 
-            $('#exampleModal').modal('hide');
-            $('#searchByFiltersModal').modal('toggle');
+                $('#exampleModal').modal('hide');
+                $('#searchByFiltersModal').modal('toggle');
+                $('#searchByFiltersModal').modal('show').on('shown.bs.modal', function () {
+                $(this).css('overflow-y', 'auto');
+                });
         }
 
         function CloseModal(idModal)
