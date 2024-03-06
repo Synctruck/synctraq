@@ -167,9 +167,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-pre-rts/list/{numberPallet}', [PackageReturnCompanyController::class, 'ListPreRts']);
 	Route::post('/package-pre-rts/insert', [PackageReturnCompanyController::class, 'InsertPreRts']);
 	Route::get('/package-pre-rts/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
+	Route::post('/package-pre-rts/close', [PackageReturnCompanyController::class, 'ClosePallet']);
 	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
 	Route::get('/package-rts/move-to-warehouse/{PACKAGE_ID}', [PackageReturnCompanyController::class, 'MoveToWarehouse']);
-
+ 
 	//============ PALET DISPACTH
 	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);

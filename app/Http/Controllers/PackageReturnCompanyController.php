@@ -711,6 +711,15 @@ class PackageReturnCompanyController extends Controller
         return ['stateAction' => 'notExists'];
     }
 
+    public function ClosePallet(Request $request)
+    {
+        $palletRts = PalletRts::find($request->get('numberPallet'));
+        $palletRts->status = 'Closed';
+        $palletRts->save();
+
+        return ['stateAction' => true];
+    }
+
     public function ChangeToReturnCompany(Request $request)
     {
         try
@@ -718,9 +727,12 @@ class PackageReturnCompanyController extends Controller
             DB::beginTransaction();
 
             $palletRts = PalletRts::find($request->get('numberPallet'));
-
-            $palletRts->status = 'Closed';
-
+            $palletRts->dispatchDate = date('Y-m-d H:i:s');
+            $palletRts->companyNameOrigin = $request->companyNameOrigin;
+            $palletRts->companyAddressOrigin = $request->companyAddressOrigin;
+            $palletRts->companyAddressDestination = $request->companyAddressDestination;
+            $palletRts->driverFullName = $request->companyNameOrigin;
+            $palletRts->statusDispatch = 'Dispatched';
             $palletRts->save();
 
             $packagePreRtsList = PackageReturnCompany::where('numberPallet', $request->get('numberPallet'))
@@ -731,7 +743,6 @@ class PackageReturnCompanyController extends Controller
             {
                 $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
                 $packagePreRts->status = 'ReturnCompany';
-                //$packagePreRts->Description_Return = 'SCAN OUT FOR RETURN';
                 $packagePreRts->statusSending = 'scan_out_for_return';
                 $packagePreRts->save();
 

@@ -336,7 +336,7 @@ function PackageRts() {
 
                 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                let url = 'package-pre-rts/chage-to-return-company';
+                let url = 'package-pre-rts/close';
 
                 fetch(url_general + url, {
                     headers: { "X-CSRF-TOKEN": token },
@@ -348,7 +348,7 @@ function PackageRts() {
 
                     if(response.stateAction == true)
                     {
-                        swal("The palette was return company correctly!", {
+                        swal("The palette was closed correctly!", {
 
                             icon: "success",
                         });
@@ -407,6 +407,103 @@ function PackageRts() {
             <option value={ driver.id }>{ driver.name +' '+ driver.nameOfOwner }</option>
         );
     });
+
+    const [companyNameOrigin, setCompanyNameOrigin] = useState('');
+    const [companyAddressOrigin, setCompanyAddressOrigin] = useState('');
+    const [companyAddressDestination, setCompanyAddressDestination] = useState('');
+    const [driverFullName, setDriverFullName] = useState('');
+
+    const handlerDispatchPallet = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('numberPallet', PalletNumberForm);
+        formData.append('companyNameOrigin', companyNameOrigin);
+        formData.append('companyAddressOrigin', companyAddressOrigin);
+        formData.append('companyAddressDestination', companyAddressDestination);
+        formData.append('driverFullName', driverFullName);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        LoadingShowMap();
+
+        fetch(url_general + 'package-pre-rts/chage-to-return-company', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json())
+        .then((response) => {
+
+            if(response.stateAction == true)
+            {
+                swal("The palette was dispatched correctly!", {
+
+                    icon: "success",
+                });
+
+                listAllPalet(page);
+                listPackagePreDispatch(PalletNumberForm);
+                
+                document.getElementById('closeModalDispach').click();
+            }
+            else
+            {
+                swal("There was a problem trying to dispatched the palette, please try again!", {
+
+                    icon: "warning",
+                });
+            }
+
+            LoadingHideMap();
+        });
+    }
+
+    const modalDispatch = <React.Fragment>
+                                    <div className="modal fade" id="modalDispatch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div className="modal-dialog modal-lg">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">
+                                                        DISPATCH PALLET: <span className="text-success">{ PalletNumberForm }</span>
+                                                    </h5>
+                                                    <button type="button" id="closeModalDispach" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
+                                                </div>
+                                                <form onSubmit={ handlerDispatchPallet }>
+                                                    <div className="modal-body">
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">BOL N°</label>
+                                                                    <input type="text" value={ companyNameOrigin} onChange={ (e) => setCompanyNameOrigin(e.target.value) } className="form-control" minLength="5" maxLength="100" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">Carrier</label>
+                                                                    <input type="text" value={ companyAddressOrigin} onChange={ (e) => setCompanyAddressOrigin(e.target.value) } className="form-control" minLength="5" maxLength="300" required/>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12">
+                                                                <div className="form-group">
+                                                                    <label className="form">Driver: Full Name</label>
+                                                                    <input type="text" value={ driverFullName } onChange={ (e) => setDriverFullName(e.target.value) } className="form-control" minLength="5" maxLength="100" required/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <div className="form-group">
+                                                            <button className="btn btn-success">
+                                                                Dispatch Pallet
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </React.Fragment>;
 
     const modalPackageList = <React.Fragment>
                                     <div className="modal fade" id="modalPackageList" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -517,7 +614,7 @@ function PackageRts() {
                                                             <div className="form-group">
                                                                 <label className="text-white">---</label>
                                                                 <button type="button" className="btn btn-success form-control" onClick={ () => handlerClosePallete () }>
-                                                                    RETURN COMPANY PALLET
+                                                                    Complete Pallet
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -774,9 +871,24 @@ function PackageRts() {
         handlerOpenModalPackage();
     }
 
+    const handlerModalDispatchPallet = (palletNumber, company, status) => {
+        setPalletNumberForm(palletNumber);
+        handlerOpenModalDispatchPallet();
+    }
+
     const handlerPrintPallet = (palletNumber) => {
 
         window.open(url_general +'pallet-rts/print/'+ palletNumber);
+    }
+
+    const handlerOpenModalDispatchPallet = () => {
+
+        let myModal = new bootstrap.Modal(document.getElementById('modalDispatch'), {
+
+            keyboard: true
+        });
+
+        myModal.show();
     }
 
     const handlerOpenModalPackage = () => {
@@ -825,10 +937,37 @@ function PackageRts() {
                     }
                 </td>
                 <td>
-                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.company, pallet.status) }>View package</button><br/>
+                    {
+                        (
+                            pallet.statusDispatch != 'Pending'
+                            ?
+                                <button className="alert alert-success font-weight-bold">{ pallet.statusDispatch }</button>
+                            :
+                                <button className="alert alert-danger font-weight-bold">{ pallet.statusDispatch }</button>
+                        )
+                    }
+                </td>
+                <td>
+                    <button className="btn btn-success btn-sm mt-2" onClick={ () => handlerViewPackage(pallet.number, pallet.company, pallet.status) }>
+                        View package
+                    </button><br/>
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
-                        <i className="bx bxs-printer"></i> View package
+                        <i className="bx bxs-printer"></i>
                     </button>
+                    {
+                        (
+                            pallet.status == 'Closed' && pallet.statusDispatch == 'Pending'
+                            ?
+                                <>
+                                    <br/>
+                                    <button className="btn btn-primary btn-sm mt-2" onClick={ () => handlerModalDispatchPallet(pallet.number) }>
+                                        <i className="bx bxs-car"></i>
+                                    </button>
+                                </>
+                            :
+                                ''
+                        )
+                    }
                 </td>
             </tr>
         );
@@ -1223,6 +1362,7 @@ function PackageRts() {
 
         <section className="section">
             { modalPackageList }
+            { modalDispatch }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -1343,6 +1483,7 @@ function PackageRts() {
                                                 <th>COMPANY</th>
                                                 <th>QUANTITY</th>
                                                 <th>STATUS</th>
+                                                <th>STATUS DISPATCH</th>
                                                 <th>ACTION</th>
                                             </tr>
                                         </thead>
