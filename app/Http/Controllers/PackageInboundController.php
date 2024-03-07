@@ -768,23 +768,21 @@ class PackageInboundController extends Controller
     {
         $packagesListInDelivery = PackageDispatch::whereBetween('created_at', ['2024-03-01 00:00:00', '2024-03-06 23:59:59'])->get();
 
-        dd($packagesListInDelivery);
+        $packageIds = [];
+
         try
         {
             DB::beginTransaction();
 
-            foreach($packagesListInDelivery as $Reference_Number_1)
+            foreach($packagesListInDelivery as $packageDelivery)
             {
-                $packageLmCarrier = packageInbound::where('status', 'LM Carrier')
-                                                    ->where('Reference_Number_1', $Reference_Number_1)
-                                                    ->first();
+                $packageInbound = PackageInbound::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
-                if($packageLmCarrier)
-                {
-                    $packageLmCarrier->delete();
-                }
+                if($packageInbound)
+                    array_push($packageIds, $packageDelivery->Reference_Number_1);
             }
 
+            dd($packageIds);
             DB::commit();
 
             return ['message' => "packages deleted"];
