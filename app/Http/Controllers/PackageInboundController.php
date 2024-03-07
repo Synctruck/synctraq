@@ -766,7 +766,7 @@ class PackageInboundController extends Controller
 
     public function DeleteInDelivery()
     {
-        $packagesListInDelivery = PackageDispatch::whereBetween('created_at', ['2024-03-01 00:00:00', '2024-03-06 23:59:59'])->get();
+        $packagesListInDelivery = PackageDispatch::whereBetween('created_at', ['2023-10-01 00:00:00', '2024-03-07 23:59:59'])->get();
 
         $packageIds = [];
 
