@@ -121,6 +121,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
 	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
+	Route::get('/package-inbound/delete-in-delivery', [PackageInboundController::class, 'DeleteInDelivery']);
 
 	//============ Validation INVENTORY TOOL
 	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:inventory-tool.index');
