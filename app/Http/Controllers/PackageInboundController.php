@@ -779,10 +779,10 @@ class PackageInboundController extends Controller
                 $packageInbound = PackageInbound::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
 
                 if($packageInbound)
-                    array_push($packageIds, $packageDelivery->Reference_Number_1);
+                    $packageInbound->delete();
+                    //array_push($packageIds, $packageDelivery->Reference_Number_1);
             }
 
-            dd($packageIds);
             DB::commit();
 
             return ['message' => "packages deleted"];
