@@ -234,7 +234,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
 
-                            if($package->status == 'Manifest' || $package->status == 'Warehouse')
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse')
                             {
                                 $package->delete();
                             }
