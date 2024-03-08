@@ -170,7 +170,14 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-pre-rts/close', [PackageReturnCompanyController::class, 'ClosePallet']);
 	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
 	Route::get('/package-rts/move-to-warehouse/{PACKAGE_ID}', [PackageReturnCompanyController::class, 'MoveToWarehouse']);
- 
+
+ 	Route::get('/package-pre-rts/dispatch', [PackageReturnCompanyController::class, 'IndexDispatch']);
+ 	Route::get('/package-pre-rts/dispatch/list-truck/{dateStart}/{dateEnd}', [PackageReturnCompanyController::class, 'ListTruck']);
+ 	Route::post('/package-pre-rts/dispatch/create-truck', [PackageReturnCompanyController::class, 'CreateTruck']);
+ 	Route::get('/package-pre-rts/dispatch/get-truck/{bolNumber}', [PackageReturnCompanyController::class, 'GetTruck']);
+ 	Route::post('/package-pre-rts/dispatch/insert-pallet-to-truck', [PackageReturnCompanyController::class, 'InrsertPalletToTruck']);
+
+
 	//============ PALET DISPACTH
 	Route::get('/pallet-dispatch/list/{dateStart}/{dateEnd}/{routes}', [PalletDispatchController::class, 'List']);
 	Route::post('/pallet-dispatch/insert', [PalletDispatchController::class, 'Insert']);

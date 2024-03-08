@@ -13,7 +13,7 @@ use App\Service\ServicePackageTerminal;
 use App\Models\{
                     Comment, Company, Configuration, PackageBlocked, PackageDelivery, PackageNeedMoreInformation,
                     PackageDispatch, PackageHistory, PackageInbound, PalletRts, PackageLost,
-                    PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn,
+                    PackageManifest, PackageNotExists, PackageFailed, PackagePreDispatch, PackageReturn, PalletPreRtsDispatch, 
                     PackageReturnCompany, PackageWarehouse, TeamRoute, User };
 
 use Illuminate\Support\Facades\Validator;
@@ -910,5 +910,67 @@ class PackageReturnCompanyController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'Error']);
         }
+    }
+
+    public function IndexDispatch()
+    {
+        $Reference_Number = '';
+
+        return view('package.prerts-dispatch', compact('Reference_Number'));
+    }
+
+    public function ListTruck($startDate, $endDate)
+    {
+        $truckList = PalletPreRtsDispatch::whereBetween('created_at', [$startDate, $endDate])->paginate(10);
+
+        return ['truckList' => $truckList];
+    }
+
+    public function CreateTruck(Request $request)
+    {
+        $palletPreRtsDispatch = PalletPreRtsDispatch::find($request->bolNumber);
+
+        if(!$palletPreRtsDispatch)
+        {
+            $palletPreRtsDispatch = new PalletPreRtsDispatch();
+            $palletPreRtsDispatch->bolNumber = $request->bolNumber;
+            $palletPreRtsDispatch->carrier = $request->carrier;
+            $palletPreRtsDispatch->driver = $request->driver;
+            $palletPreRtsDispatch->status = 'Peding';
+            $palletPreRtsDispatch->idUser = Auth::user()->id;
+            $palletPreRtsDispatch->save();
+
+            return ['stateAction' => true, 'palletPreRtsDispatch' => $palletPreRtsDispatch];
+        }
+        
+        return ['stateAction' => 'bolExists']; 
+    }
+
+    public function GetTruck($bolNumber)
+    {
+        $truck = PalletPreRtsDispatch::find($bolNumber);
+
+        return ['truck' => $truck];
+    }
+
+    public function InrsertPalletToTruck(Request $request)
+    {
+        $palletRts = PalletRts::find($request->numberPallet);
+
+        if($palletRts)
+        {
+            if($palletRts->bolNumber == '')
+            {
+                $palletRts->bolNumber = $request->bolNumber;
+                $palletRts->idUserDispatch = Auth::user()->id;
+                $palletRts->save();
+
+                return ['stateAction' => true];
+            }
+
+            return ['stateAction' => 'palletIdExistsOtherTruck', 'bolNumber' => $palletRts->bolNumber]; 
+        }
+
+        return ['stateAction' => 'notExists'];
     }
 }

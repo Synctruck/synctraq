@@ -1358,6 +1358,10 @@ function PackageRts() {
         }
     }
 
+    const handlerGotoDispatchRTS = () => {
+        location.href = url_general +'package-pre-rts/dispatch';
+    }
+
     return (
 
         <section className="section">
@@ -1371,6 +1375,13 @@ function PackageRts() {
                                 <div className="row form-group">
                                     <div className="col-lg-12">
                                         <div className="row form-group">
+                                            <div className="col-lg-2">
+                                                <div className="form-group">
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={  () => handlerGotoDispatchRTS() }>
+                                                        <i className="bx bx-car"></i> DISPATCH RTS
+                                                    </button>
+                                                </div>
+                                            </div>
                                             <div className="col-lg-2">
                                                 <div className="form-group">
                                                     <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>

@@ -64,6 +64,7 @@ require('./components/PackageCheckDelivery');
 require('./components/PackageHighPriority');
 require('./components/PackageFinance');
 require('./components/PackageRts');
+require('./components/PackageRtsDispatch');
 require('./components/Roles');
 require('./components/PackageBlocked');
 require('./components/Track');
