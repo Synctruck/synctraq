@@ -17,7 +17,7 @@ function PackageRtsDispatch() {
     const [isLoading, setIsLoading]             = useState(false);
 
     const [viewButtonSave, setViewButtonSave] = useState('none');
-    const [listPackage, setListPackage] = useState([]);
+    const [listPallet, setListPallet] = useState([]);
     const [truckList, setTruckList] = useState([]);
     const [dateStart, setDateStart] = useState(auxDateInit);
     const [dateEnd, setDateEnd] = useState(auxDateEnd);
@@ -139,26 +139,19 @@ function PackageRtsDispatch() {
         });
     }
 
-    const listPackageDispatchTable = listPackage.map( (packagePreDispatch, i) => {
+    const listPalletDispatchTable = listPallet.map( (pallet, i) => {
 
         return (
 
             <tr key={i}>
                 <td style={ { width: '100px'} }>
-                    { packagePreDispatch.created_at.substring(5, 7) }-{ packagePreDispatch.created_at.substring(8, 10) }-{ packagePreDispatch.created_at.substring(0, 4) }
+                    { pallet.created_at.substring(5, 7) }-{ pallet.created_at.substring(8, 10) }-{ pallet.created_at.substring(0, 4) }
                 </td>
                 <td>
-                    { packagePreDispatch.created_at.substring(11, 19) }
+                    { pallet.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ packagePreDispatch.company }</b></td>
-                <td><b>{ packagePreDispatch.Reference_Number_1 }</b></td>
-                <td>{ packagePreDispatch.Description_Return }</td>
-                <td>{ packagePreDispatch.client }</td>
-                <td>{ packagePreDispatch.Weight }</td>
-                <td>{ packagePreDispatch.Width }</td>
-                <td>{ packagePreDispatch.Length }</td>
-                <td>{ packagePreDispatch.Height }</td>
-                <td>{ packagePreDispatch.Route }</td>
+                <td><b>{ pallet.number }</b></td>
+                <td>{ pallet.company }</td>
             </tr>
         );
     });
@@ -379,19 +372,12 @@ function PackageRtsDispatch() {
                                                                     <tr>
                                                                         <th>DATE</th>
                                                                         <th>HOUR</th>
+                                                                        <th>PALLET ID</th>
                                                                         <th>COMPANY</th>
-                                                                        <th>PACKAGE ID</th>
-                                                                        <th>DESCRIPTION</th>
-                                                                        <th>CLIENT</th>
-                                                                        <th>WEIGHT</th>
-                                                                        <th>WIDTH</th>
-                                                                        <th>LENGTH</th>
-                                                                        <th>HEIGHT</th>
-                                                                        <th>ROUTE</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    { listPackageDispatchTable }
+                                                                    { listPalletDispatchTable }
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -451,7 +437,7 @@ function PackageRtsDispatch() {
 
                     document.getElementById('soundPitidoWarning').play();
                 }
-                if(response.stateAction == 'notExists')
+                else if(response.stateAction == 'notExists')
                 {
                     setTextMessage('The Pallet ID does not exists #'+ PalletNumberForm);
                     setTypeMessageDispatch('warning');
@@ -465,7 +451,7 @@ function PackageRtsDispatch() {
                     setTypeMessageDispatch('success');
                     setPalletNumberForm('');
 
-                    //listPackagePreDispatch(PalletNumberForm);
+                    handlerListPallets(bolNumber);
 
                     document.getElementById('PalletNumberForm').focus();
                     document.getElementById('soundPitidoSuccess').play();
@@ -504,16 +490,20 @@ function PackageRtsDispatch() {
         handlerOpenModalPackage();
     }
 
-    const handlerViewTruck = (bolNumber) => {
+    const handlerListPallets = (bolNumber) => {
         fetch(url_general +'package-pre-rts/dispatch/get-truck/'+ bolNumber)
         .then(res => res.json())
         .then((response) => {
             setBolNumber(response.truck.bolNumber);
             setCarrier(response.truck.carrier);
             setDriver(response.truck.driver);
-
-            handlerOpenModalCreateTruck('Old');
+            setListPallet(response.palletList);
         });
+    }
+
+    const handlerViewTruck = (bolNumber) => {
+        handlerListPallets(bolNumber);
+        handlerOpenModalCreateTruck('Old');
     }
 
     const truckListTable = truckList.map( (truck, i) => {

@@ -949,8 +949,9 @@ class PackageReturnCompanyController extends Controller
     public function GetTruck($bolNumber)
     {
         $truck = PalletPreRtsDispatch::find($bolNumber);
+        $palletList = PalletRts::where('bolNumber', $bolNumber)->get();
 
-        return ['truck' => $truck];
+        return ['truck' => $truck, 'palletList' => $palletList];
     }
 
     public function InrsertPalletToTruck(Request $request)
@@ -963,6 +964,7 @@ class PackageReturnCompanyController extends Controller
             {
                 $palletRts->bolNumber = $request->bolNumber;
                 $palletRts->idUserDispatch = Auth::user()->id;
+                $palletRts->dispatchDate = date('Y-m-d H:i:s');
                 $palletRts->save();
 
                 return ['stateAction' => true];
