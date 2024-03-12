@@ -450,6 +450,7 @@ class PackageController extends Controller
         $pod_url           = "";
         $package_id        = "";
         $header_curl       = "";
+        $typeServices      = "";
         $sendStatusCompany = true;
 
         if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' ||  $status == 'Warehouse' || $status == 'Failed' || $status == 'NMI')
@@ -470,10 +471,18 @@ class PackageController extends Controller
 
             Log::info('companyStatus');
             Log::info('===========');
-            $statusCodeCompany = $companyStatus->statusCodeCompany;
-            $key_webhook       = $companyStatus->company->key_webhook;
-            $url_webhook       = $companyStatus->company->url_webhook;
-            $typeServices      = $companyStatus->company->typeServices;
+            Log::info($package->idCompany);
+            Log::info($status);
+            Log::info($package->Reference_Number_1);
+            Log::info($companyStatus);
+
+            if($companyStatus)
+            {
+                $statusCodeCompany = $companyStatus->statusCodeCompany;
+                $key_webhook       = $companyStatus->company->key_webhook;
+                $url_webhook       = $companyStatus->company->url_webhook;
+                $typeServices      = $companyStatus->company->typeServices;
+            }
         }
 
         if($typeServices == 'API')

@@ -602,7 +602,8 @@ class PackageReturnCompanyController extends Controller
                                                     'Width',
                                                     'Length',
                                                     'Height',
-                                                    'Route'
+                                                    'Route',
+                                                    'Reference_Number_1_Duplicate',
                                                 )
                                                 ->orderBy('updated_at', 'desc')
                                                 ->get();
@@ -696,6 +697,14 @@ class PackageReturnCompanyController extends Controller
                 return ['stateAction' => 'notExists'];
             }
         }
+
+        $packageHistory = PackageHistory::where('Reference_Number_1', $request->get('Reference_Number_1'))
+                                        ->where('status', 'Manifest')
+                                        ->first();
+
+        if(!$packageHistory){
+            return ['stateAction' => 'notExistsManifest'];
+        }
         /*else
         {
             $packageReturnCompany = $packageInbound = PackageReturnCompany::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -711,6 +720,35 @@ class PackageReturnCompanyController extends Controller
         return ['stateAction' => 'notExists'];
     }
 
+    public function InsertPreRtsExtra(Request $request)
+    {
+        $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1_Duplicate', $request->Reference_Number_1)->get();
+
+        $Reference_Number_1 = '';
+
+        if(count($packageReturnCompany) == 0)
+            $Reference_Number_1 = $request->Reference_Number_1 .'-1';
+        else
+        {
+            $nextReference = count($packageReturnCompany) + 1;
+            $Reference_Number_1 = $request->Reference_Number_1 .'-'. $nextReference; 
+        }
+
+        $packageReturnCompany = new PackageReturnCompany();
+        $packageReturnCompany->Reference_Number_1 = $Reference_Number_1;
+        $packageReturnCompany->numberPallet = $request->get('numberPallet');
+        $packageReturnCompany->created_at = date('Y-m-d H:i:s');
+        $packageReturnCompany->updated_at = date('Y-m-d H:i:s');
+        $packageReturnCompany->Description_Return = 'Out of range';
+        $packageReturnCompany->idUser = Auth::user()->id;
+        $packageReturnCompany->Reference_Number_1_Duplicate = $request->Reference_Number_1;
+        $packageReturnCompany->statusSending = 'scan_in_for_return';
+        $packageReturnCompany->status = 'PreRts';
+        $packageReturnCompany->save();
+
+        return ['stateAction' => true];
+    }
+
     public function ClosePallet(Request $request)
     {
         $palletRts = PalletRts::find($request->get('numberPallet'));
@@ -718,88 +756,6 @@ class PackageReturnCompanyController extends Controller
         $palletRts->save();
 
         return ['stateAction' => true];
-    }
-
-    public function ChangeToReturnCompany(Request $request)
-    {
-        try
-        {
-            DB::beginTransaction();
-
-            $palletRts = PalletRts::find($request->get('numberPallet'));
-            $palletRts->dispatchDate = date('Y-m-d H:i:s');
-            $palletRts->companyNameOrigin = $request->companyNameOrigin;
-            $palletRts->companyAddressOrigin = $request->companyAddressOrigin;
-            $palletRts->companyAddressDestination = $request->companyAddressDestination;
-            $palletRts->driverFullName = $request->companyNameOrigin;
-            $palletRts->statusDispatch = 'Dispatched';
-            $palletRts->save();
-
-            $packagePreRtsList = PackageReturnCompany::where('numberPallet', $request->get('numberPallet'))
-                                                ->where('status', 'PreRts')
-                                                ->get();
-
-            foreach($packagePreRtsList as $packagePreRts)
-            {
-                $packagePreRts = PackageReturnCompany::find($packagePreRts->Reference_Number_1);
-                $packagePreRts->status = 'ReturnCompany';
-                $packagePreRts->statusSending = 'scan_out_for_return';
-                $packagePreRts->save();
-
-                $packageHistory = new PackageHistory();
-
-                $packageHistory->id                           = uniqid();
-                $packageHistory->Reference_Number_1           = $packagePreRts->Reference_Number_1;
-                $packageHistory->idCompany                    = $packagePreRts->idCompany;
-                $packageHistory->company                      = $packagePreRts->company;
-                $packageHistory->Dropoff_Contact_Name         = $packagePreRts->Dropoff_Contact_Name;
-                $packageHistory->Dropoff_Company              = $packagePreRts->Dropoff_Company;
-                $packageHistory->Dropoff_Contact_Phone_Number = $packagePreRts->Dropoff_Contact_Phone_Number;
-                $packageHistory->Dropoff_Contact_Email        = $packagePreRts->Dropoff_Contact_Email;
-                $packageHistory->Dropoff_Address_Line_1       = $packagePreRts->Dropoff_Address_Line_1;
-                $packageHistory->Dropoff_Address_Line_2       = $packagePreRts->Dropoff_Address_Line_2;
-                $packageHistory->Dropoff_City                 = $packagePreRts->Dropoff_City;
-                $packageHistory->Dropoff_Province             = $packagePreRts->Dropoff_Province;
-                $packageHistory->Dropoff_Postal_Code          = $packagePreRts->Dropoff_Postal_Code;
-                $packageHistory->Notes                        = $packagePreRts->Notes;
-                $packageHistory->Weight                       = $packagePreRts->Weight;
-                $packageHistory->Route                        = $packagePreRts->Route;
-                $packageHistory->idUser                       = Auth::user()->id;
-                $packageHistory->idUserInbound                = Auth::user()->id;
-                $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
-                $packageHistory->Description                  = 'Return Company - for: user ('. Auth::user()->email .')';
-                $packageHistory->Description_Return           = 'SCAN OUT FOR RETURN';
-                $packageHistory->status                       = 'ReturnCompany';
-                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-                $packageHistory->created_at                   = date('Y-m-d H:i:s');
-                $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-
-                $packageHistory->save();
-
-                $packageController = new PackageController();
-                $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
-
-                $packageHistory = PackageHistory::where('Reference_Number_1', $packagePreRts->Reference_Number_1)
-                                                ->where('sendToInland', 1)
-                                                ->where('status', 'Manifest')
-                                                ->first();
-
-                if($packageHistory)
-                {
-                    $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
-                }
-            }
-
-            DB::commit();
-
-            return ['stateAction' => true];
-        }
-        catch (Exception $e)
-        {
-            DB::rollback();
-
-            return ['stateAction' => false];
-        }
     }
 
     public function UpdateCreatedAt()
@@ -921,7 +877,16 @@ class PackageReturnCompanyController extends Controller
 
     public function ListTruck($startDate, $endDate)
     {
-        $truckList = PalletPreRtsDispatch::whereBetween('created_at', [$startDate, $endDate])->paginate(10);
+        $truckList = PalletPreRtsDispatch::whereBetween('created_at', [$startDate, $endDate])
+                                        ->orderBy('created_at', 'desc')
+                                        ->paginate(20);
+
+        return ['truckList' => $truckList];
+    }
+
+    public function SearchTruck(Request $request)
+    {
+        $truckList = PalletPreRtsDispatch::where('bolNumber', 'like', '%'. $request->bolNumber .'%')->paginate(20);
 
         return ['truckList' => $truckList];
     }
@@ -936,7 +901,7 @@ class PackageReturnCompanyController extends Controller
             $palletPreRtsDispatch->bolNumber = $request->bolNumber;
             $palletPreRtsDispatch->carrier = $request->carrier;
             $palletPreRtsDispatch->driver = $request->driver;
-            $palletPreRtsDispatch->status = 'Peding';
+            $palletPreRtsDispatch->status = 'Pending';
             $palletPreRtsDispatch->idUser = Auth::user()->id;
             $palletPreRtsDispatch->save();
 
@@ -954,7 +919,7 @@ class PackageReturnCompanyController extends Controller
         return ['truck' => $truck, 'palletList' => $palletList];
     }
 
-    public function InrsertPalletToTruck(Request $request)
+    public function InsertPalletToTruck(Request $request)
     {
         $palletRts = PalletRts::find($request->numberPallet);
 
@@ -974,5 +939,90 @@ class PackageReturnCompanyController extends Controller
         }
 
         return ['stateAction' => 'notExists'];
+    }
+
+    public function CloseTruck(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $truck = PalletPreRtsDispatch::find($request->bolNumber);
+            $truck->DispatchDate = date('Y-m-d H:i:s');
+            $truck->idUserDispatch = Auth::user()->id;
+            $truck->status = 'Dispatched';
+            $truck->save();
+
+            $palletList = PalletRts::where('bolNumber', $request->bolNumber)->get();
+
+            foreach($palletList as $pallet)
+            {
+                $pallet->dispatchDate = date('Y-m-d H:i:s');
+                $pallet->idUserDispatch = Auth::user()->id;
+                $pallet->status = 'Closed';
+                $pallet->statusDispatch = 'Dispatched';
+                $pallet->save();
+
+                $packageRtsCompanyList = PackageReturnCompany::where('numberPallet', $pallet->number)->get();
+
+                foreach($packageRtsCompanyList as $packagePreRts)
+                {
+                    $packagePreRts->statusSending = 'scan_out_for_return';
+                    $packagePreRts->status = 'ReturnCompany';
+                    $packagePreRts->save();
+
+                    $packageHistory = new PackageHistory(); 
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packagePreRts->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packagePreRts->idCompany;
+                    $packageHistory->company                      = $packagePreRts->company;
+                    $packageHistory->Dropoff_Contact_Name         = $packagePreRts->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packagePreRts->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packagePreRts->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packagePreRts->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packagePreRts->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packagePreRts->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packagePreRts->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packagePreRts->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packagePreRts->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packagePreRts->Notes;
+                    $packageHistory->Weight                       = $packagePreRts->Weight;
+                    $packageHistory->Route                        = $packagePreRts->Route;
+                    $packageHistory->idUser                       = Auth::user()->id;
+                    $packageHistory->idUserInbound                = Auth::user()->id;
+                    $packageHistory->Date_Inbound                 = date('Y-m-d H:s:i');
+                    $packageHistory->Description                  = 'SCAN OUT FOR RETURN - for: user ('. Auth::user()->email .')';
+                    $packageHistory->Description_Return           = $pallet->number .'( '. $request->bolNumber .' )';
+                    $packageHistory->status                       = 'ReturnCompany';
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->save();
+
+                    $packageController = new PackageController();
+                    $packageController->SendStatusToInland($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
+
+                    $packageHistory = PackageHistory::where('Reference_Number_1', $packagePreRts->Reference_Number_1)
+                                                    ->where('sendToInland', 1)
+                                                    ->where('status', 'Manifest')
+                                                    ->first();
+
+                    if($packageHistory)
+                    {
+                        $packageController->SendStatusToOtherCompany($packagePreRts, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return ['stateAction' => true];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
     }
 }

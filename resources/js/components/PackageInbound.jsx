@@ -845,7 +845,6 @@ function PackageInbound() {
         document.getElementById('Reference_Number_1').focus();
     }
 
-
     const handlerPrintSecondary = (printText) => {
 
         JsBarcode("#imgBarcode", printText, {

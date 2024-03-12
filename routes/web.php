@@ -166,16 +166,18 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-pre-rts', [PackageReturnCompanyController::class, 'IndexPreRts'])->middleware('permission:prerts.index');
 	Route::get('/package-pre-rts/list/{numberPallet}', [PackageReturnCompanyController::class, 'ListPreRts']);
 	Route::post('/package-pre-rts/insert', [PackageReturnCompanyController::class, 'InsertPreRts']);
+	Route::post('/package-pre-rts/insert-extra', [PackageReturnCompanyController::class, 'InsertPreRtsExtra']);
 	Route::get('/package-pre-rts/export/{dateInit}/{dateEnd}/{routes}/{states}', [PackageReturnCompanyController::class, 'Export']);
 	Route::post('/package-pre-rts/close', [PackageReturnCompanyController::class, 'ClosePallet']);
-	Route::post('/package-pre-rts/chage-to-return-company', [PackageReturnCompanyController::class, 'ChangeToReturnCompany']);
 	Route::get('/package-rts/move-to-warehouse/{PACKAGE_ID}', [PackageReturnCompanyController::class, 'MoveToWarehouse']);
 
  	Route::get('/package-pre-rts/dispatch', [PackageReturnCompanyController::class, 'IndexDispatch']);
  	Route::get('/package-pre-rts/dispatch/list-truck/{dateStart}/{dateEnd}', [PackageReturnCompanyController::class, 'ListTruck']);
+ 	Route::get('/package-pre-rts/dispatch/search-truck', [PackageReturnCompanyController::class, 'SearchTruck']);
  	Route::post('/package-pre-rts/dispatch/create-truck', [PackageReturnCompanyController::class, 'CreateTruck']);
  	Route::get('/package-pre-rts/dispatch/get-truck/{bolNumber}', [PackageReturnCompanyController::class, 'GetTruck']);
- 	Route::post('/package-pre-rts/dispatch/insert-pallet-to-truck', [PackageReturnCompanyController::class, 'InrsertPalletToTruck']);
+ 	Route::post('/package-pre-rts/dispatch/insert-pallet-to-truck', [PackageReturnCompanyController::class, 'InsertPalletToTruck']);
+ 	Route::post('/package-pre-rts/dispatch/close-truck', [PackageReturnCompanyController::class, 'CloseTruck']);
 
 
 	//============ PALET DISPACTH

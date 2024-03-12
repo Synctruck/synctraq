@@ -50,6 +50,7 @@ function PackageRts() {
     const [dateEnd, setDateEnd]   = useState(auxDateInit);
 
     const [Reference_Number_1, setNumberPackage] = useState('');
+    const [Description, setDescription] = useState('');
     const [Description_Return, setDescription_Return] = useState('');
     const [client, setClient] = useState('');
     const [Weight, setWeight] = useState('');
@@ -379,10 +380,30 @@ function PackageRts() {
                 <td>
                     { packagePreDispatch.created_at.substring(11, 19) }
                 </td>
-                <td><b>{ packagePreDispatch.company }</b></td>
+                <td>
+                    {
+                        (
+                           packagePreDispatch.company == ''
+                            ?
+                                <button className="btn btn-secondary btn-sm form-control" onClick={ () => handlerPrint(packagePreDispatch.Reference_Number_1) }>Label</button>
+                            :
+                                <b>{ packagePreDispatch.company }</b>  
+                        )
+                    }
+                </td>
                 <td><b>{ packagePreDispatch.Reference_Number_1 }</b></td>
                 <td>{ packagePreDispatch.Description_Return }</td>
-                <td>{ packagePreDispatch.client }</td>
+                <td>
+                    {
+                        (
+                           packagePreDispatch.client == ''
+                            ?
+                                <b>REF: #{ packagePreDispatch.Reference_Number_1_Duplicate }</b>
+                            :
+                                <b>{ packagePreDispatch.client }</b>
+                        )
+                    }
+                </td>
                 <td>{ packagePreDispatch.Weight }</td>
                 <td>{ packagePreDispatch.Width }</td>
                 <td>{ packagePreDispatch.Length }</td>
@@ -408,26 +429,18 @@ function PackageRts() {
         );
     });
 
-    const [companyNameOrigin, setCompanyNameOrigin] = useState('');
-    const [companyAddressOrigin, setCompanyAddressOrigin] = useState('');
-    const [companyAddressDestination, setCompanyAddressDestination] = useState('');
-    const [driverFullName, setDriverFullName] = useState('');
-
-    const handlerDispatchPallet = (e) => {
-        e.preventDefault();
+    const handlerAddToPalletPackage = () => {
+        LoadingShowMap();
 
         const formData = new FormData();
         formData.append('numberPallet', PalletNumberForm);
-        formData.append('companyNameOrigin', companyNameOrigin);
-        formData.append('companyAddressOrigin', companyAddressOrigin);
-        formData.append('companyAddressDestination', companyAddressDestination);
-        formData.append('driverFullName', driverFullName);
+        formData.append('Reference_Number_1', Reference_Number_1_New);
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         LoadingShowMap();
 
-        fetch(url_general + 'package-pre-rts/chage-to-return-company', {
+        fetch(url_general + 'package-pre-rts/insert-extra', {
             headers: { "X-CSRF-TOKEN": token },
             method: 'post',
             body: formData
@@ -437,19 +450,20 @@ function PackageRts() {
 
             if(response.stateAction == true)
             {
-                swal("The palette was dispatched correctly!", {
+                swal("The package was added!", {
 
                     icon: "success",
                 });
 
+                setNumberPackageNew('');
+                setTextMessage('');
+
                 listAllPalet(page);
                 listPackagePreDispatch(PalletNumberForm);
-                
-                document.getElementById('closeModalDispach').click();
             }
             else
             {
-                swal("There was a problem trying to dispatched the palette, please try again!", {
+                swal("There was a problem trying to added the package, please try again!", {
 
                     icon: "warning",
                 });
@@ -459,51 +473,30 @@ function PackageRts() {
         });
     }
 
-    const modalDispatch = <React.Fragment>
-                                    <div className="modal fade" id="modalDispatch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">
-                                                        DISPATCH PALLET: <span className="text-success">{ PalletNumberForm }</span>
-                                                    </h5>
-                                                    <button type="button" id="closeModalDispach" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={ () => handlerCloseModalPackage() }></button>
-                                                </div>
-                                                <form onSubmit={ handlerDispatchPallet }>
-                                                    <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label className="form">BOL N°</label>
-                                                                    <input type="text" value={ companyNameOrigin} onChange={ (e) => setCompanyNameOrigin(e.target.value) } className="form-control" minLength="5" maxLength="100" required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label className="form">Carrier</label>
-                                                                    <input type="text" value={ companyAddressOrigin} onChange={ (e) => setCompanyAddressOrigin(e.target.value) } className="form-control" minLength="5" maxLength="300" required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label className="form">Driver: Full Name</label>
-                                                                    <input type="text" value={ driverFullName } onChange={ (e) => setDriverFullName(e.target.value) } className="form-control" minLength="5" maxLength="100" required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <div className="form-group">
-                                                            <button className="btn btn-success">
-                                                                Dispatch Pallet
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </React.Fragment>;
+    const [sendDispatch, setSendDispatch] = useState(1);
+    const [Reference_Number_1_New, setNumberPackageNew] = useState('');
+    const [packageID, setPackageID] = useState('');
+
+    const handlerPrint = (packageReference) => {
+        setPackageID(packageReference);
+
+        JsBarcode("#imgBarcode", packageReference, {
+
+            textMargin: 0,
+            fontSize: 27,
+        });
+
+        var content = document.getElementById('labelPrint');
+        var pri     = document.getElementById('ifmcontentstoprint').contentWindow;
+
+        pri.document.open();
+        pri.document.write(content.innerHTML);
+        pri.document.close();
+        pri.focus();
+        pri.print();
+
+        document.getElementById('Reference_Number_1').focus();
+    }
 
     const modalPackageList = <React.Fragment>
                                     <div className="modal fade" id="modalPackageList" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -572,11 +565,69 @@ function PackageRts() {
                                                                     ''
                                                             }
                                                         </div>
+                                                        {
+                                                            Reference_Number_1_New != ''
+                                                            ?
+                                                                <>
+                                                                    <div className="col-lg-6">
+                                                                        <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerAddToPalletPackage() }>Add to pallet #{ Reference_Number_1_New}</button>
+                                                                    </div>
+                                                                </>
+                                                            :
+                                                                ''
+                                                        }
                                                         <div className="col-lg-12 form-group">
                                                             <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
                                                             <audio id="soundPitidoError" src="./sound/pitido-error.mp3" preload="auto"></audio>
                                                             <audio id="soundPitidoWarning" src="./sound/pitido-warning.mp3" preload="auto"></audio>
                                                             <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
+                                                        </div>
+                                                        <div className="col-lg-12">
+                                                            <iframe id="ifmcontentstoprint" style={{
+                                                                height: '0px',
+                                                                width: '100%',
+                                                                position: 'absolute',
+                                                                fontFamily: 'Arial, Helvetica, sans-serif',
+                                                            }}>
+                                                                <div id="labelPrint">
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td className="verticalTextRight" style={ {transform: 'rotate(90deg)'} }>
+                                                                                <h1 style={ {fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px'} }><b></b></h1>
+                                                                            </td>
+                                                                            <td>
+                                                                                <table>
+                                                                                    <tr>
+                                                                                        <td className="text-center">
+                                                                                            <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                                                <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ packageID }</b></h1>
+                                                                                            </div>
+                                                                                            <div style={ {float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center'} }>
+                                                                                                <img src={ 'https://synctrucknj.com/img/logo.PNG' } style={ {width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px'} }/>
+                                                                                            </div>
+                                                                                            <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                                                <h1 style={ {textAlign: 'right', paddingRight: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ packageID }</b></h1>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td style={ {textAlign: 'center'} }>
+                                                                                            <svg id="imgBarcode" style={ {width: '400', height: '250', margin: '0px'} }></svg>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td className="text-center" style={ {textAlign: 'center', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                            <td className="verticalTextRight" style={ {transform: 'rotate(90deg)', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                                <h1 style={ {fontSize: '3.2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '-40px'} }><b></b></h1>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </iframe>
                                                         </div>
                                                     </div>
                                                     <div className="row table-responsive">
@@ -657,14 +708,12 @@ function PackageRts() {
         }
     }
 
-    const [sendDispatch, setSendDispatch] = useState(1);
-
     const handlerValidation = (e) => {
 
         e.preventDefault();
 
         setTextMessage('');
-
+        setNumberPackageNew('');
         setReadOnly(true);
         setSendDispatch(0);
 
@@ -738,6 +787,16 @@ function PackageRts() {
                     setNumberPackage('');
 
                     document.getElementById('soundPitidoWarning').play();
+                }
+                else if(response.stateAction == 'notExistsManifest')
+                {
+                    setNumberPackageNew(Reference_Number_1);
+                    //setTextMessage("NO EXISTS IN [INBOUND, WAREHOUSE, DISPATCH, TERMINAL] #"+ Reference_Number_1);
+                    setTextMessage("THE PACKAGE DOES NOT EXIST IN THE MANIFEST ' #"+ Reference_Number_1);
+                    setTypeMessageDispatch('warning');
+                    setNumberPackage('');
+
+                    document.getElementById('soundPitidoError').play();
                 }
                 else if(response.stateAction == 'notExists')
                 {
@@ -954,20 +1013,6 @@ function PackageRts() {
                     <button className="btn btn-secondary btn-sm mt-2" onClick={ () => handlerPrintPallet(pallet.number) }>
                         <i className="bx bxs-printer"></i>
                     </button>
-                    {
-                        (
-                            pallet.status == 'Closed' && pallet.statusDispatch == 'Pending'
-                            ?
-                                <>
-                                    <br/>
-                                    <button className="btn btn-primary btn-sm mt-2" onClick={ () => handlerModalDispatchPallet(pallet.number) }>
-                                        <i className="bx bxs-car"></i>
-                                    </button>
-                                </>
-                            :
-                                ''
-                        )
-                    }
                 </td>
             </tr>
         );
@@ -1366,7 +1411,6 @@ function PackageRts() {
 
         <section className="section">
             { modalPackageList }
-            { modalDispatch }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

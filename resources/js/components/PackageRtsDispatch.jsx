@@ -26,6 +26,7 @@ function PackageRtsDispatch() {
     const [typeMessageDispatch, setTypeMessageDispatch] = useState('');
     const [textMessage, setTextMessage]                 = useState('');
     const [textMessageDate, setTextMessageDate] = useState('');
+    const [searchTruck, setSearchTruck] = useState('');
 
     const [page, setPage]                             = useState(1);
     const [totalPagePallet, setTotalPagePallet]       = useState(0);
@@ -88,10 +89,10 @@ function PackageRtsDispatch() {
     const [readOnlyInput, setReadOnlyInput]   = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
 
-    const handlerClosePallete = () => {
+    const handlerCloseTruck = () => {
 
         swal({
-            title: "Want to close the palette?",
+            title: "Want to close the truck?",
             text: "",
             icon: "warning",
             buttons: true,
@@ -101,13 +102,15 @@ function PackageRtsDispatch() {
 
             if(willDelete)
             {
+                LoadingShowMap();
+
                 const formData = new FormData();
 
-                formData.append('numberPallet', PalletNumberForm);
+                formData.append('bolNumber', bolNumber);
 
                 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                let url = 'package-pre-rts/close';
+                let url = 'package-pre-rts/dispatch/close-truck';
 
                 fetch(url_general + url, {
                     headers: { "X-CSRF-TOKEN": token },
@@ -124,8 +127,10 @@ function PackageRtsDispatch() {
                             icon: "success",
                         });
 
-                        listAllPalet(page);
-                        listPackagePreDispatch(PalletNumberForm);
+                        setDisplayScanPallet('Old');
+                        setStatusTruck('Dispatched');
+
+                        listAllTruck(page);
                     }
                     else
                     {
@@ -134,6 +139,8 @@ function PackageRtsDispatch() {
                             icon: "warning",
                         });
                     }
+
+                    LoadingHideMap();
                 });
             }
         });
@@ -160,56 +167,17 @@ function PackageRtsDispatch() {
     const [bolNumber, setBolNumber] = useState('');
     const [carrier, setCarrier] = useState('');
     const [driver, setDriver] = useState('');
+    const [statusTruck, setStatusTruck] = useState('Pending');
     const [displayScanPallet, setDisplayScanPallet] = useState('Old');
 
-    const handlerDispatchPallet = (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('numberPallet', PalletNumberForm);
-        formData.append('companyNameOrigin', companyNameOrigin);
-        formData.append('companyAddressOrigin', companyAddressOrigin);
-        formData.append('companyAddressDestination', companyAddressDestination);
-        formData.append('driverFullName', driverFullName);
-
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        LoadingShowMap();
-
-        fetch(url_general + 'package-pre-rts/chage-to-return-company', {
-            headers: { "X-CSRF-TOKEN": token },
-            method: 'post',
-            body: formData
-        })
-        .then(res => res.json())
-        .then((response) => {
-
-            if(response.stateAction == true)
-            {
-                swal("The palette was dispatched correctly!", {
-
-                    icon: "success",
-                });
-
-                listAllPalet(page);
-                listPackagePreDispatch(PalletNumberForm);
-                
-                document.getElementById('closeModalDispach').click();
-            }
-            else
-            {
-                swal("There was a problem trying to dispatched the palette, please try again!", {
-
-                    icon: "warning",
-                });
-            }
-
-            LoadingHideMap();
-        });
-    }
-
     const handlerOpenModalCreateTruck = (display) => {
-        setDisplayScanPallet(display)
+        setStatusTruck('');
+        setDisplayScanPallet(display);
+        setBolNumber('');
+        setCarrier('');
+        setDriver('');
+        setPalletNumberForm('');
+        setReadOnly(false);
 
         let myModal = new bootstrap.Modal(document.getElementById('modalCreateDispatch'), {
 
@@ -248,7 +216,9 @@ function PackageRtsDispatch() {
                     icon: "success",
                 });
 
+                setReadOnly(true);
                 setDisplayScanPallet('Old');
+                setStatusTruck('Pending');
 
                 listAllTruck(1);
             }
@@ -287,19 +257,19 @@ function PackageRtsDispatch() {
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label className="form">BOL N°</label>
-                                                                    <input type="text" value={ bolNumber } onChange={ (e) => setBolNumber(e.target.value) } className="form-control" minLength="5" maxLength="50" required/>
+                                                                    <input type="text" value={ bolNumber } onChange={ (e) => setBolNumber(e.target.value) } className="form-control" minLength="5" maxLength="50" readOnly={ readOnly } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label className="form">Carrier</label>
-                                                                    <input type="text" value={ carrier } onChange={ (e) => setCarrier(e.target.value) } className="form-control" minLength="5" maxLength="150" required/>
+                                                                    <input type="text" value={ carrier } onChange={ (e) => setCarrier(e.target.value) } className="form-control" minLength="5" maxLength="150" readOnly={ readOnly } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="form-group">
                                                                     <label className="form">Driver: Full Name</label>
-                                                                    <input type="text" value={ driver } onChange={ (e) => setDriver(e.target.value) } className="form-control" minLength="5" maxLength="200" required/>
+                                                                    <input type="text" value={ driver } onChange={ (e) => setDriver(e.target.value) } className="form-control" minLength="5" maxLength="200" readOnly={ readOnly } required/>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-3" style={ {display: (displayScanPallet == 'Old' ? 'none' : 'block')} }>
@@ -310,21 +280,21 @@ function PackageRtsDispatch() {
                                                         </div>
                                                     </form>
 
-                                                    <div className="row" style={ {display: (displayScanPallet == 'New' ? 'none' : 'block')} }>
+                                                    <div className="row" style={ {display: (statusTruck == 'Pending' ? 'block' : 'none')} }>
                                                         <div className="col-lg-12 mb-2">
                                                             <form onSubmit={ (e) => handlerValidation(e) } autoComplete="off">
                                                                 <div className="row">
                                                                     <div className="col-lg-12">
                                                                         <div className="form-group">
                                                                             <label htmlFor="" className="form">PALLET ID</label>
-                                                                            <input id="PalletNumberForm" type="text" className="form-control" value={ PalletNumberForm } onChange={ (e) => setPalletNumberForm(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                                            <input id="PalletNumberForm" type="text" className="form-control" value={ PalletNumberForm } onChange={ (e) => setPalletNumberForm(e.target.value) } maxLength="24" required readOnly={ readOnlyInput }/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </form>
                                                         </div>
                                                     </div>
-                                                    <div className="row" style={ {display: (displayScanPallet == 'New' ? 'none' : 'block')} }>
+                                                    <div className="row" style={ {display: (statusTruck == 'Pending' || statusTruck == 'Dispatched' ? 'none' : 'block')} }>
                                                         <div className="col-lg-12 text-center mb-2">
                                                             {
                                                                 typeMessageDispatch == 'success'
@@ -365,7 +335,7 @@ function PackageRtsDispatch() {
                                                             <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
                                                         </div>
                                                     </div>
-                                                    <div className="row table-responsive" style={ {display: (displayScanPallet == 'New' ? 'none' : 'block')} }>
+                                                    <div className="row table-responsive" style={ {display: (statusTruck == 'Pending' || statusTruck == 'Dispatched' ? 'block' : 'none')} }>
                                                         <div className="col-lg-12">
                                                             <table className="table table-hover table-condensed">
                                                                 <thead>
@@ -383,20 +353,29 @@ function PackageRtsDispatch() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="modal-footer" style={ {display: (displayScanPallet == 'New' ? 'none' : 'block')} }>
+                                                <div className="modal-footer" style={ {display: (statusTruck == 'Dispatched' ? 'none' : 'block')} }>
                                                     <div className="row" style={ {width: '100%'} }>
                                                         <div className="col-lg-4">
                                                         </div>
                                                         <div className="col-lg-4">
                                                         </div>
-                                                        <div className="col-lg-4">
-                                                            <div className="form-group">
-                                                                <label className="text-white">---</label>
-                                                                <button type="button" className="btn btn-success form-control" onClick={ () => handlerClosePallete () }>
-                                                                    Complete Pallet
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                        {
+                                                            (
+                                                                statusTruck == 'Dispatched'
+                                                                ?
+                                                                    ''
+                                                                :
+                                                                    <div className="col-lg-4" style={ {display: (statusTruck == 'Pending' ? 'block' : 'none')} }>
+                                                                        <div className="form-group">
+                                                                            <label className="text-white">---</label>
+                                                                            <button type="button" className="btn btn-success form-control" onClick={ () => handlerCloseTruck () }>
+                                                                                Dispatch Truck
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                            )
+                                                        }
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -412,7 +391,7 @@ function PackageRtsDispatch() {
 
         setTextMessage('');
 
-        setReadOnly(true);
+        setReadOnlyInput(true);
         setSendDispatch(0);
 
         const formData = new FormData();
@@ -465,39 +444,40 @@ function PackageRtsDispatch() {
                     document.getElementById('soundPitidoError').play();
                 }
 
-                setReadOnly(false);
+                setReadOnlyInput(false);
                 setSendDispatch(1);
             },
         );
     }
 
-    const listPackagePreDispatch = (palletNumber) => {
-
-        fetch(url_general +'package-pre-rts/list/'+ palletNumber)
+    const handlerSearchTruck = (e) => {
+        e.preventDefault();
+        
+        fetch(url_general +'package-pre-rts/dispatch/search-truck?bolNumber='+ searchTruck)
         .then(res => res.json())
         .then((response) => {
-
-            setListPackage(response.packagePreRtsList);
-            setFilterDispatch(response.palletRts.status);
+            setIsLoading(false);
+            setTruckList(response.truckList.data);
+            setTotalPackagePallet(response.truckList.total);
+            setTotalPagePallet(response.truckList.per_page);
+            setPage(response.truckList.current_page);
         });
     }
 
-    const handlerValidationPallet = (e) => {
-
-        e.preventDefault();
-    
-        listPackagePreDispatch(PalletNumberForm);
-        handlerOpenModalPackage();
-    }
-
     const handlerListPallets = (bolNumber) => {
+        LoadingShowMap();
+
         fetch(url_general +'package-pre-rts/dispatch/get-truck/'+ bolNumber)
         .then(res => res.json())
         .then((response) => {
             setBolNumber(response.truck.bolNumber);
             setCarrier(response.truck.carrier);
             setDriver(response.truck.driver);
+            setStatusTruck(response.truck.status);
             setListPallet(response.palletList);
+            setReadOnly(true);
+
+            LoadingHideMap();
         });
     }
 
@@ -521,7 +501,7 @@ function PackageRtsDispatch() {
                 <td>
                     {
                         (
-                            truck.status == 'Peding'
+                            truck.status == 'Pending'
                             ?
                                 <button className="alert alert-success font-weight-bold">{ truck.status }</button>
                             :
@@ -570,10 +550,10 @@ function PackageRtsDispatch() {
 
                                 <div className="row">
                                     <div className="col-lg-12 mb-3">
-                                        <form onSubmit={ (e) => handlerValidationPallet(e) } autoComplete="off">
+                                        <form onSubmit={ (e) => handlerSearchTruck(e) } autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">BOL N°</label>
-                                                <input id="PalletNumberForm" type="text" className="form-control" placeholder="Search BOL..." value={ PalletNumberForm } onChange={ (e) => setPalletNumberForm(e.target.value) } maxLength="30" required readOnly={ readOnlyPalet }/>
+                                                <input id="PalletNumberForm" type="text" className="form-control" placeholder="Search BOL..." value={ searchTruck } onChange={ (e) => setSearchTruck(e.target.value) } maxLength="30" required readOnly={ readOnlyPalet }/>
                                             </div>
                                         </form>
                                     </div>
