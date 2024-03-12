@@ -600,7 +600,7 @@ function PackageRts() {
                                                                                     <tr>
                                                                                         <td className="text-center">
                                                                                             <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                                                <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ packageID }</b></h1>
+                                                                                                <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b></b></h1>
                                                                                             </div>
                                                                                             <div style={ {float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center'} }>
                                                                                                 <img src={ 'https://synctrucknj.com/img/logo.PNG' } style={ {width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px'} }/>
