@@ -554,7 +554,6 @@ class PackageManifestController extends Controller
                                         ->select('Reference_Number_1', 'length')
                                         ->get()
                                         ->take(25);
-        dd($packageHistoryList);
         foreach($packageHistoryList as $packageHistory)
         {
             $curl = curl_init();
