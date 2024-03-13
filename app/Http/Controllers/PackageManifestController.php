@@ -554,7 +554,7 @@ class PackageManifestController extends Controller
                                         ->select('Reference_Number_1', 'height')
                                         ->get()
                                         ->take(25);
-
+        dd($packageHistoryList);
         foreach($packageHistoryList as $packageHistory)
         {
             $curl = curl_init();
@@ -580,7 +580,7 @@ class PackageManifestController extends Controller
                                             ->where('status', 'Manifest')
                                             ->first();
             $packageHistory->heightOld = $packageHistory->length;
-            
+
             if($http_status == 200){
                 $packageHistory->length = $response->data->package_details->length;
             }
