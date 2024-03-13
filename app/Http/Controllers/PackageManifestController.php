@@ -547,6 +547,7 @@ class PackageManifestController extends Controller
     public function UpdateHeight()
     {
         $packageHistoryList = PackageHistory::where('status', 'Manifest')
+                                        ->whereBetween('created_at', ['2023-07-01 00:00:00', '2024-03-31 00:00:00'])
                                         ->where('updateHeight', 0)
                                         ->where('idCompany', 1)
                                         ->where('height', 0.00)
@@ -575,10 +576,10 @@ class PackageManifestController extends Controller
             $response = json_decode(curl_exec($curl));
             $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-            $packageHistory->heightOld = $packageHistory->height;
+            $packageHistory->heightOld = $packageHistory->length;
 
             if($http_status == 200){
-                $packageHistory->height = $response->data->package_details->height;
+                $packageHistory->length = $response->data->package_details->length;
             }
 
             curl_close($curl);
@@ -587,7 +588,6 @@ class PackageManifestController extends Controller
                                             ->where('status', 'Manifest')
                                             ->first();
             $packageHistory->updateHeight = 1;
-
             $packageHistory->updated_at = date('Y-m-d H:i:s');
             $packageHistory->save();
         }
