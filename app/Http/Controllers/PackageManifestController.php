@@ -552,7 +552,7 @@ class PackageManifestController extends Controller
                                         ->where('height', 0.00)
                                         ->select('Reference_Number_1', 'height')
                                         ->get()
-                                        ->take(50);
+                                        ->take(5);
 
         foreach($packageHistoryList as $packageHistory)
         {
@@ -575,8 +575,10 @@ class PackageManifestController extends Controller
             $response = json_decode(curl_exec($curl));
             $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-            if($http_status == 200)
+            if($http_status == 200){
+                dd($response);
                 $packageHistory->height = $response->data->package->package_details->height;
+            }
 
             curl_close($curl);
 
