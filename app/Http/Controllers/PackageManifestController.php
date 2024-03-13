@@ -553,7 +553,8 @@ class PackageManifestController extends Controller
                                         ->where('length', 0.00)
                                         ->select('Reference_Number_1', 'length')
                                         ->get()
-                                        ->take(25);
+                                        ->take(20);
+                                        
         foreach($packageHistoryList as $packageHistory)
         {
             $curl = curl_init();
