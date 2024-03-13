@@ -576,8 +576,7 @@ class PackageManifestController extends Controller
             $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             if($http_status == 200){
-                dd($response);
-                $packageHistory->height = $response->data->package->package_details->height;
+                $packageHistory->height = $response->data->package_details->height;
             }
 
             curl_close($curl);
