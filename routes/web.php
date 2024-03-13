@@ -102,7 +102,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-manifest/update/filter', [PackageManifestController::class, 'UpdateFilter']);
 	Route::post('/package-manifest/import', [PackageManifestController::class, 'Import']);
 	Route::get('/package-manifest/delete-duplicate', [PackageManifestController::class, 'DeleteDuplicate']);
-
+	Route::get('/package-manifest/update-height', [PackageManifestController::class, 'UpdateHeight']);
+	
 	//============ Validation lost
 	Route::get('/package-lost', [PackageLostController::class, 'Index'])->middleware('permission:lost.index');
 	Route::get('/package-lost/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'List']);
