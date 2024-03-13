@@ -547,11 +547,11 @@ class PackageManifestController extends Controller
     public function UpdateHeight()
     {
         $packageHistoryList = PackageHistory::where('status', 'Manifest')
-                                        ->whereBetween('created_at', ['2023-07-01 00:00:00', '2024-03-31 00:00:00'])
+                                        ->whereBetween('created_at', ['2023-01-01 00:00:00', '2024-03-31 00:00:00'])
                                         ->where('updateHeight', 0)
                                         ->where('idCompany', 1)
-                                        ->where('height', 0.00)
-                                        ->select('Reference_Number_1', 'height')
+                                        ->where('length', 0.00)
+                                        ->select('Reference_Number_1', 'length')
                                         ->get()
                                         ->take(25);
         dd($packageHistoryList);
