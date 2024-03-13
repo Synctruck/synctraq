@@ -543,5 +543,44 @@ class PackageManifestController extends Controller
             return ['stateAction' => true];
         }
     }
-}
 
+    public function UpdateHeight()
+    {
+        $packageHistoryList = PackageHistory::where('status', 'Manifest')
+                                        ->where('height', 0)
+                                        ->select('Reference_Number_1', 'height')
+                                        ->get()
+                                        ->take(5);
+
+        foreach($packageHistoryList as $packageHistory)
+        {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.platform.inlandlogistics.co/api/v6/shipments/shipment-status/'. $packageHistory->Reference_Number_1,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET',
+                CURLOPT_HTTPHEADER => array(
+                'Authorization: F869E42-Q4XMS0C-MDZ9XJ9-VHXQSKV'
+                ),
+            ));
+
+            $response = json_decode(curl_exec($curl));
+
+            curl_close($curl);
+
+            if($response->data->package_details->height > 0)
+            {
+                echo $packageHistory->Reference_Number_1;
+                dd($response->data->package_details);
+            }
+        }
+
+        dd($packageHistoryList);
+    }
+}
