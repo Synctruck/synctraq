@@ -584,4 +584,3 @@ class PackageManifestController extends Controller
         dd($packageHistoryList);
     }
 }
-
