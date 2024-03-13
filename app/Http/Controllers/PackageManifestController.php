@@ -547,10 +547,10 @@ class PackageManifestController extends Controller
     public function UpdateHeight()
     {
         $packageHistoryList = PackageHistory::where('status', 'Manifest')
-                                        ->where('height', 0)
+                                        ->where('updateHeight', 0)
                                         ->select('Reference_Number_1', 'height')
                                         ->get()
-                                        ->take(5);
+                                        ->take(50);
 
         foreach($packageHistoryList as $packageHistory)
         {
@@ -571,16 +571,20 @@ class PackageManifestController extends Controller
             ));
 
             $response = json_decode(curl_exec($curl));
+            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            if($http_status == 200)
+                $packageHistory->height = $response->data->package->package_details->height;
 
             curl_close($curl);
 
-            if($response->data->package_details->height > 0)
-            {
-                echo $packageHistory->Reference_Number_1;
-                dd($response->data->package_details);
-            }
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Manifest')
+                                            ->first();
+            $packageHistory->updateHeight = 1;
+            $packageHistory->save();
         }
 
-        dd($packageHistoryList);
+        dd('terminado');
     }
 }
