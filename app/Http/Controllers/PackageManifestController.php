@@ -548,6 +548,8 @@ class PackageManifestController extends Controller
     {
         $packageHistoryList = PackageHistory::where('status', 'Manifest')
                                         ->where('updateHeight', 0)
+                                        ->where('idCompany', 1)
+                                        ->where('height', 0.00)
                                         ->select('Reference_Number_1', 'height')
                                         ->get()
                                         ->take(50);
