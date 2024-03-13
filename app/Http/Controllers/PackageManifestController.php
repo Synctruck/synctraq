@@ -552,7 +552,7 @@ class PackageManifestController extends Controller
                                         ->where('height', 0.00)
                                         ->select('Reference_Number_1', 'height')
                                         ->get()
-                                        ->take(5);
+                                        ->take(50);
 
         foreach($packageHistoryList as $packageHistory)
         {
