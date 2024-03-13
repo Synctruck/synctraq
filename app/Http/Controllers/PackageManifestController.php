@@ -576,17 +576,18 @@ class PackageManifestController extends Controller
             $response = json_decode(curl_exec($curl));
             $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
+                                            ->where('status', 'Manifest')
+                                            ->first();
             $packageHistory->heightOld = $packageHistory->length;
-
+            
             if($http_status == 200){
                 $packageHistory->length = $response->data->package_details->length;
             }
 
             curl_close($curl);
 
-            $packageHistory = PackageHistory::where('Reference_Number_1', $packageHistory->Reference_Number_1)
-                                            ->where('status', 'Manifest')
-                                            ->first();
+            
             $packageHistory->updateHeight = 1;
             $packageHistory->updated_at = date('Y-m-d H:i:s');
             $packageHistory->save();
