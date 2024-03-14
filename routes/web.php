@@ -241,10 +241,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/export-all/{dateInit}/{initDate}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 	Route::get('/payment-team/delete-detail', [PaymentTeamController::class, 'DeletePackagesDetail']);
 	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
-
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
-
+	Route::get('/payment-team/deductions', [PaymentTeamController::class, 'CalculateDeduction']);
+	
 	//=========== Payment Team Revert
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
 	Route::get('/payment-revert/{dateInit}/{dateEnd}/{idTeam}/{status}', [ToReversePackagesController::class, 'List']);
