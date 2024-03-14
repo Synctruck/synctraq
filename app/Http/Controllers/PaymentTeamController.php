@@ -755,8 +755,21 @@ class PaymentTeamController extends Controller
         foreach($packageDeliveryList as $packageDelivery)
         {
             echo $packageDelivery->Date_Dispatch .' => '. $packageDelivery->Date_Delivery .'<br>';
+            
+            dd($this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery));
+            
         }
 
         dd(2);
+    }
+
+    public function CalculateHours($Date_Dispatch, $Date_Delivery)
+    {
+        $dateInit = strtotime($Date_Dispatch);
+        $dateEnd = strtotime($Date_Delivery);
+
+        $diff = abs($dateEnd - $dateInit) / 3600;
+
+        return (int)$diff;
     }
 }
