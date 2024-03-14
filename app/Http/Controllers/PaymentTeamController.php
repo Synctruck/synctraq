@@ -760,7 +760,7 @@ class PaymentTeamController extends Controller
             
         }
 
-        dd(2);
+        return true;
     }
 
     public function CalculateHours($Date_Dispatch, $Date_Delivery)
