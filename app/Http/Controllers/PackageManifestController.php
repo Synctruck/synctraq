@@ -593,6 +593,6 @@ class PackageManifestController extends Controller
             $packageHistory->save();
         }
 
-        dd('terminado');
+        return true;
     }
 }
