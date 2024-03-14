@@ -26,9 +26,11 @@ function DashboardDeliveries() {
 
     const [quantityDeliveriesView, setQuantityDeliveriesView] = useState(0);
     const [quantityFailedsView, setQuantityFailedsView] = useState(0);
+    const [quantityDispatchView, setQuantityDispacthView] = useState(0);
 
     const [quantityDeliveriesViewPercentage, setQuantityDeliveriesViewPercentage] = useState(0);
     const [quantityFailedsViewPercentage, setQuantityFailedsViewPercentage] = useState(0);
+    const [quantityDispatchViewPercentage, setQuantityDispatchViewPercentage] = useState(0);
 
     const [isLoading, setIsLoading] = useState(false);
 
