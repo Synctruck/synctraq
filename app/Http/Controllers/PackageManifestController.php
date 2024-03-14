@@ -552,6 +552,7 @@ class PackageManifestController extends Controller
                                         ->where('idCompany', 1)
                                         ->where('length', 0.00)
                                         ->select('Reference_Number_1', 'length')
+                                        ->orderBy('created_at', 'desc')
                                         ->get()
                                         ->take(20);
                                         
