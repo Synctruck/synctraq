@@ -750,7 +750,7 @@ class PaymentTeamController extends Controller
         $packageDeliveryList = PackageDispatch::where('status', 'Delivery')
                                             ->whereBetween('Date_Delivery', ['2024-03-13 00:00:00', '2024-03-13 23:59:59'])
                                             ->get()
-                                            ->take(25);
+                                            ->take(100);
 
         foreach($packageDeliveryList as $packageDelivery)
         {
