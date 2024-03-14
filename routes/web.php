@@ -236,7 +236,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team', [PaymentTeamController::class, 'Index']);
 	Route::get('/payment-team/list/{dateInit}/{initDate}/{endDate}/{idteam}/{status}', [PaymentTeamController::class, 'List']);
 	Route::get('/payment-team/edit/{idPayment}', [PaymentTeamController::class, 'Edit']);
-
 	Route::get('/payment-team/list-by-route/{idPayment}', [PaymentTeamController::class, 'ListByRoute']);
 	Route::post('/payment-team/insert-pod-failed', [PaymentTeamController::class, 'InserPODFailed']);
 	Route::get('/payment-team/list-by-pod-failed/{idPayment}', [PaymentTeamController::class, 'ListByPODFailed']);
@@ -248,9 +247,9 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/export-all/{dateInit}/{initDate}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 	Route::get('/payment-team/delete-detail', [PaymentTeamController::class, 'DeletePackagesDetail']);
 	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
-
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
+	Route::get('/payment-team/deductions', [PaymentTeamController::class, 'CalculateDeduction']);
 
 	//=========== Payment Team Revert
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
