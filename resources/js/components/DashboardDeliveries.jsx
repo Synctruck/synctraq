@@ -88,7 +88,7 @@ function DashboardDeliveries() {
                     {
                         dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                     }
-                    console.log(response);
+                    console.log("messi", response);
                 });
 
 
