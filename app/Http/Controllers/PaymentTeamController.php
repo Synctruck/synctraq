@@ -754,6 +754,7 @@ class PaymentTeamController extends Controller
 
         foreach($packageDeliveryList as $packageDelivery)
         {
+            echo $packageDelivery->Reference_Number_1 .'<br>';
             echo $packageDelivery->Date_Dispatch .' => '. $packageDelivery->Date_Delivery .'<br>';
             
             $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
