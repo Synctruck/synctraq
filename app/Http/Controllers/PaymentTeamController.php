@@ -751,10 +751,9 @@ class PaymentTeamController extends Controller
                                             ->whereBetween('Date_Delivery', ['2024-03-13 00:00:00', '2024-03-13 23:59:59'])
                                             ->get();
 
-        dd($packageDeliveryList);
         foreach($packageDeliveryList as $packageDelivery)
         {
-
+            echo $packageDelivery->Date_Dispatch .' => '. $packageDelivery->Date_Delivery .'<br>';
         }
 
         dd(2);
