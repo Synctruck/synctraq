@@ -550,7 +550,7 @@
                         </div>
                     </form>
                     <div class="modal-footer">
-                        <button type="button" id="btnBackGoTo" class="btn btn-primary close" style="display: none;" onclick="ViewModalSearchFilters()">Go to back</button>
+                        <button type="button" id="btnBackGoTo" class="btn btn-primary close" style="display: none;" onclick="ViewModalSearchFilters()">Go back</button>
                         <button type="button" id="btnCloseHistorialPackage" class="btn btn-secondary close" data-dismiss="modal" aria-label="Close" onclick="CloseModal('exampleModal');">Close</button>
                     </div>
                 </div>
@@ -1370,11 +1370,11 @@
         {
             searchGlobal = 1;
 
-            $('#exampleModal').modal('hide');
-            $('#searchByFiltersModal').modal('toggle');
-            $('#searchByFiltersModal').modal('show').on('shown.bs.modal', function () {
-            $(this).css('overflow-y', 'auto');
-            });
+                $('#exampleModal').modal('hide');
+                $('#searchByFiltersModal').modal('toggle');
+                $('#searchByFiltersModal').modal('show').on('shown.bs.modal', function () {
+                $(this).css('overflow-y', 'auto');
+                });
         }
 
         function CloseModal(idModal)

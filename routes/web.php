@@ -41,6 +41,8 @@ Route::get('package-deliveries-dashboard', [PackageDeliveryController::class, 'D
 Route::get('package-deliveries-dashboard/{dateRange}/{idTeam}/{idDriver}', [PackageDeliveryController::class, 'GetDeliveriesDashboard']);
 Route::get('package-deliveries-dashboard/{startDate}/{endDate}/{idTeam}/{idDriver}', [PackageDeliveryController::class, 'GetDeliveriesDashboardByDates']);
 
+Route::get('/package-manifest/update-height', [PackageManifestController::class, 'UpdateHeight']);
+
 Route::group(['middleware' => 'auth'], function() {
 
 	Route::get('errors/maintenance', function(){
@@ -102,8 +104,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-manifest/update/filter', [PackageManifestController::class, 'UpdateFilter']);
 	Route::post('/package-manifest/import', [PackageManifestController::class, 'Import']);
 	Route::get('/package-manifest/delete-duplicate', [PackageManifestController::class, 'DeleteDuplicate']);
-	Route::get('/package-manifest/update-height', [PackageManifestController::class, 'UpdateHeight']);
-
+	
 	//============ Validation lost
 	Route::get('/package-lost', [PackageLostController::class, 'Index'])->middleware('permission:lost.index');
 	Route::get('/package-lost/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'List']);
@@ -122,6 +123,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-inbound/import', [PackageInboundController::class, 'Import']);
 	Route::get('/package-inbound/pdf-label/{Reference}', [PackageInboundController::class, 'PdfLabel']);
 	Route::get('/package-inbound/download/roadwarrior/{idCompany}/{StateSearch}/{RouteSearch}/{initDate}/{endDate}', [PackageInboundController::class, 'DownloadRoadWarrior']);
+	Route::get('/package-inbound/delete-in-delivery', [PackageInboundController::class, 'DeleteInDelivery']);
 
 	//============ Validation INVENTORY TOOL
 	Route::get('/inventory-tool', [InventoryToolController::class, 'Index'])->middleware('permission:inventory-tool.index');
@@ -248,10 +250,10 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/export-all/{dateInit}/{initDate}/{endDate}/{idCompany}/{status}', [PaymentTeamController::class, 'ExportAll']);
 	Route::get('/payment-team/delete-detail', [PaymentTeamController::class, 'DeletePackagesDetail']);
 	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
-
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
-
+	Route::get('/payment-team/deductions', [PaymentTeamController::class, 'CalculateDeduction']);
+	
 	//=========== Payment Team Revert
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
 	Route::get('/payment-revert/{dateInit}/{dateEnd}/{idTeam}/{status}', [ToReversePackagesController::class, 'List']);

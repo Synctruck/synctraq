@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute, Cellar };
+use App\Models\{ Company, CompanyStatus, Configuration, DimFactorCompany, PackageBlocked, PackageHistory, PackageInbound, PackageLost, PackageDispatch, PackageManifest, PackageNotExists, PackagePreDispatch, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, States, LiveRoute, Cellar };
 
 
 use Illuminate\Support\Facades\Validator;
@@ -762,5 +762,34 @@ class PackageInboundController extends Controller
         header('Content-Disposition: attachment; filename="' . $filename . '";');
 
         fpassthru($file);
+    }
+
+    public function DeleteInDelivery()
+    {
+        $packagesListInDelivery = PackageDispatch::whereBetween('created_at', ['2023-10-01 00:00:00', '2024-03-07 23:59:59'])->get();
+
+        $packageIds = [];
+
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($packagesListInDelivery as $packageDelivery)
+            {
+                $packageInbound = PackageInbound::where('Reference_Number_1', $packageDelivery->Reference_Number_1)->first();
+
+                if($packageInbound)
+                    $packageInbound->delete();
+                    //array_push($packageIds, $packageDelivery->Reference_Number_1);
+            }
+
+            DB::commit();
+
+            return ['message' => "packages deleted"];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 }

@@ -150,7 +150,7 @@ class DriverController extends Controller
                 $request['password']  = Hash::make($request->get('email'));
                 $request['idTeam']    = $team->id;
                 $request['nameTeam']  = $team->name;
-                $request['usageApp']  = 'Onfleet';
+                $request['usageApp']  = 'PODApp';
 
                 Driver::create($request->all());
 
@@ -202,7 +202,7 @@ class DriverController extends Controller
             $driver->phone       = $request->phone;
             $driver->email       = $request->email;
             $driver->password    = Hash::make($request->email);
-            $driver->usageApp    = $request->usageApp;
+            $driver->usageApp    = 'PODApp';
             $driver->status      = $request->status;
             $driver->idTeam      = $team->id;
             $driver->nameTeam    = $team->name;

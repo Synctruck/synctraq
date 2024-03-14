@@ -744,4 +744,32 @@ class PaymentTeamController extends Controller
             return "error";
         }
     }
+
+    public function CalculateDeduction()
+    {
+        $packageDeliveryList = PackageDispatch::where('status', 'Delivery')
+                                            ->whereBetween('Date_Delivery', ['2024-03-13 00:00:00', '2024-03-13 23:59:59'])
+                                            ->get()
+                                            ->take(5);
+
+        foreach($packageDeliveryList as $packageDelivery)
+        {
+            echo $packageDelivery->Date_Dispatch .' => '. $packageDelivery->Date_Delivery .'<br>';
+            
+            dd($this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery));
+            
+        }
+
+        dd(2);
+    }
+
+    public function CalculateHours($Date_Dispatch, $Date_Delivery)
+    {
+        $dateInit = strtotime($Date_Dispatch);
+        $dateEnd = strtotime($Date_Delivery);
+
+        $diff = abs($dateEnd - $dateInit) / 3600;
+
+        return (int)$diff;
+    }
 }

@@ -235,7 +235,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->updated_at                   = $created_at;
                             $packageHistory->save();
 
-                            if($package->status == 'Manifest' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                             {
                                 $package->delete();
                             }
@@ -417,7 +417,7 @@ class PackageDispatchController extends Controller
                         'message' => "Ok."
                     ], 200);
                 }
-
+                
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
