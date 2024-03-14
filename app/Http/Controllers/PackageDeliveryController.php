@@ -1323,7 +1323,7 @@ class PackageDeliveryController extends Controller
                     "SELECT pf.status,". $querySQLFaileds ." FROM packagefailed pf GROUP  BY pf.status");
 
         $dataSQLDispatch = DB::select(
-                     "SELECT pf.status,". $querySQLDispatch ." FROM packagedispatch pd WHERE pd.status='Dispatch' GROUP  BY pd.status");
+                     "SELECT pd.status,". $querySQLDispatch ." FROM packagedispatch pd WHERE pd.status='Dispatch' GROUP  BY pd.status");
 
         /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
