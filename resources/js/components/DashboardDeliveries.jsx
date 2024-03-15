@@ -71,6 +71,7 @@ function DashboardDeliveries() {
 
                 let dataDeliveriesList = [];
                 let dataFailedsList    = [];
+                let dataDispatchList   = [];
 
                 response.dataDateList.forEach((date, index) => {
                     if(response.dataSQLDeliveries[0]['total'+ index] == null)
@@ -90,15 +91,26 @@ function DashboardDeliveries() {
                     {
                         dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                     }
+
+                    if(response.dataSQLDispatch[0]['total'+index]== null)
+                    {
+                        dataDispatchList.push(0);
+                    }
+                    else
+                    {
+                        dataDispatchList.push(response.dataSQLDispatch[0]['total' + index]);
+                    }
+
                     console.log("messi", response);
                 });
 
 
                 let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
                 let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+                let quantityDispatch   = (dataDispatchList.length > 0 ? dataDispatchList.reduce((a,b)=> a + b, 0) : 0);
 
-                graphOne(response, dataDeliveriesList, dataFailedsList);
-                graphPie(quantityDeliveries, quantityFaileds);
+                graphOne(response, dataDeliveriesList, dataFailedsList, dataDispatchList);
+                graphPie(quantityDeliveries, quantityFaileds, quantityDispatch);
             });
         }
         else
@@ -138,6 +150,7 @@ function DashboardDeliveries() {
                             {
                                 dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                             }
+                            console.log("Lionel", response);
                         });
 
 
