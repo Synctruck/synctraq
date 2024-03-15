@@ -296,7 +296,7 @@ function DashboardDeliveries() {
                 innerSize: '80%',
                 data: [
                     ['', quantityDeliveries],
-                    ['', quantityFaileds],
+                    ['', quantityFaileds]
                 ]
             }]
         });
@@ -461,7 +461,7 @@ function DashboardDeliveries() {
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <button className="btn btn-success form-control">Open</button>
+                                                                        <button className="btn btn-warning">Open</button>
                                                                     </td>
                                                                     <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
