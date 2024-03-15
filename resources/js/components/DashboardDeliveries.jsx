@@ -461,7 +461,7 @@ function DashboardDeliveries() {
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <button className="btn  btn-warning form-control">Open</button>
+                                                                        <button className="btn btn-warning form-control" style={ {backgroundColor: '#F1C232'} }>Open </button>
                                                                     </td>
                                                                     <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
