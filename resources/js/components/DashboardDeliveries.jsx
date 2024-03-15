@@ -297,7 +297,6 @@ function DashboardDeliveries() {
                 data: [
                     ['', quantityDeliveries],
                     ['', quantityFaileds],
-                    ['', quantityDispatch],
                 ]
             }]
         });
