@@ -461,7 +461,7 @@ function DashboardDeliveries() {
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <button className="btn btn-warning">Open</button>
+                                                                        <button className="btn btn btn-warning">Open</button>
                                                                     </td>
                                                                     <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
