@@ -95,6 +95,7 @@ class TaskPaymentTeam extends Command
 
                     $totalPieces = 0;
                     $totalTeam   = 0;
+                    $totalDeduction = 0;
 
                     if(count($listPackageDelivery) > 0 || count($listPackageReturnCompany) > 0)
                     {
@@ -165,6 +166,20 @@ class TaskPaymentTeam extends Command
                                         $packageDelivery->paid = 1;
                                         $packageDelivery->save();
 
+                                        if($packageDelivery->Date_Dispatch)
+                                            $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                                        else
+                                            $hours = 0;
+
+                                        if($hours <= 24)
+                                            $deduction = 0.00;
+                                        elseif($hours > 24 && $hours <= 48)
+                                            $deduction = 1.00;
+                                        elseif($hours > 48 && $hours <= 72)
+                                            $deduction = 2.00;
+                                        elseif($hours > 72)
+                                            $deduction = 2.50;
+
                                         $paymentTeamDetail = new PaymentTeamDetail();
                                         $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
                                         $paymentTeamDetail->Route               = $packageDelivery->Route;
@@ -180,12 +195,15 @@ class TaskPaymentTeam extends Command
                                         $paymentTeamDetail->surchargePrice      = $surchargePrice;
                                         $paymentTeamDetail->priceByRoute        = 0;
                                         $paymentTeamDetail->priceByCompany      = $priceByCompany;
-                                        $paymentTeamDetail->totalPrice          = $totalPrice;
+                                        $paymentTeamDetail->priceDeduction      = -$deduction;
+                                        $paymentTeamDetail->totalPrice          = $totalPrice + $paymentTeamDetail->priceDeduction;
                                         $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery;
+                                        $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
                                         $paymentTeamDetail->save();
 
                                         $totalPieces = $totalPieces + 1;
                                         $totalTeam   = $totalTeam + $totalPrice;
+                                        $totalDeduction = $totalDeduction - $deduction;
                                     }
                                 }
                             }
@@ -284,8 +302,9 @@ class TaskPaymentTeam extends Command
 
                             $paymentTeam->totalPieces    = $totalPieces;
                             $paymentTeam->totalDelivery  = $totalTeam;
+                            $paymentTeam->totalDeduction = $totalDeduction;
                             $paymentTeam->totalAdjustment = $totalAdjustment - $totalAdjustmentToDeduct;
-                            $paymentTeam->total          = $totalTeam + $totalAdjustment - $totalAdjustmentToDeduct;
+                            $paymentTeam->total          = $totalTeam + $totalAdjustment - $totalAdjustmentToDeduct + $totalDeduction;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->status         = 'TO APPROVE';
@@ -305,6 +324,16 @@ class TaskPaymentTeam extends Command
                 Log::info('error payment team');
             }
         }
+    }
+
+    public function CalculateHours($Date_Dispatch, $Date_Delivery)
+    {
+        $dateInit = strtotime($Date_Dispatch);
+        $dateEnd = strtotime($Date_Delivery);
+
+        $diff = abs($dateEnd - $dateInit) / 3600;
+
+        return (int)$diff;
     }
 
     public function GetDieselPrice($Date_Delivery)
