@@ -101,7 +101,6 @@ function DashboardDeliveries() {
                         dataDispatchList.push(response.dataSQLDispatch[0]['total' + index]);
                     }
 
-                    console.log("messi", response);
                 });
 
 
@@ -131,6 +130,7 @@ function DashboardDeliveries() {
 
                         let dataDeliveriesList = [];
                         let dataFailedsList    = [];
+                        let dataDispatchList   = [];
 
                         response.dataDateList.forEach((date, index) => {
                             if(response.dataSQLDeliveries[0]['total'+ index] == null)
@@ -150,15 +150,24 @@ function DashboardDeliveries() {
                             {
                                 dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                             }
-                            console.log("Lionel", response);
+
+                            if(response.dataSQLDispatch[0]['total'+index]== null)
+                            {
+                                dataDispatchList.push(0);
+                            }
+                            else
+                            {
+                                dataDispatchList.push(response.dataSQLDispatch[0]['total' + index]);
+                            }
                         });
 
 
                         let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
                         let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+                        let quantityDispatch   = (dataDispatchList.length > 0 ? dataDispatchList.reduce((a,b)=> a + b, 0) : 0);
 
-                        graphOne(response, dataDeliveriesList, dataFailedsList);
-                        graphPie(quantityDeliveries, quantityFaileds);
+                        graphOne(response, dataDeliveriesList, dataFailedsList,  dataDispatchList);
+                        graphPie(quantityDeliveries, quantityFaileds, quantityDispatch);
                     });
                 }
                 else
@@ -228,18 +237,21 @@ function DashboardDeliveries() {
         });
     }
 
-    const graphPie = (quantityDeliveries, quantityFaileds) => {
+    const graphPie = (quantityDeliveries, quantityFaileds, quantityDispatch) => {
         let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds);
         let percentageDeliveries = (quantityDeliveries / totalQuantity) * 100;
         let percentageFaileds = (quantityFaileds / totalQuantity) * 100;
+        let percentageDispatch =  (quantityDispatch / totalQuantity) * 100;
 
         setQuantityDeliveriesView(quantityDeliveries);
         setQuantityFailedsView(quantityFaileds);
+        setQuantityDispacthView(quantityDispatch);
 
         setTotalTasks(totalQuantity);
 
         setQuantityDeliveriesViewPercentage(percentageDeliveries.toFixed(2));
         setQuantityFailedsViewPercentage(percentageFaileds.toFixed(2));
+        setQuantityDispatchViewPercentage(percentageDispatch.toFixed(2));
 
         Highcharts.chart('divPie', {
             chart: {
@@ -285,6 +297,7 @@ function DashboardDeliveries() {
                 data: [
                     ['', quantityDeliveries],
                     ['', quantityFaileds],
+                    ['', quantityDispatch],
                 ]
             }]
         });
@@ -446,6 +459,12 @@ function DashboardDeliveries() {
                                                             <table className="table table-condensed table-bordered">
                                                                 <tr>
                                                                     <td colspan="2"><b>Completed Tasks</b></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <button className="btn btn-success form-control">Open</button>
+                                                                    </td>
+                                                                    <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
