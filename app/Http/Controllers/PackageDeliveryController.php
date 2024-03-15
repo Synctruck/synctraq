@@ -1277,7 +1277,7 @@ class PackageDeliveryController extends Controller
 
                 $sqlFaileds =   "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
-                $sqlDispatch = "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+                $sqlDispatch =  "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
             else if($idTeam != 0 && $idDriver == 0)
             {
@@ -1285,7 +1285,7 @@ class PackageDeliveryController extends Controller
 
                 $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
-                $sqlDispatch = "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+                $sqlDispatch = "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
             else if($idTeam != 0 && $idDriver != 0)
             {
@@ -1293,7 +1293,7 @@ class PackageDeliveryController extends Controller
 
                 $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
-                $sqlDispatch =  "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+                $sqlDispatch =  "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
 
             $querySQLDeliveries = $querySQLDeliveries == '' ? $sqlDeliveries : $querySQLDeliveries .','. $sqlDeliveries;
