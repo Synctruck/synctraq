@@ -238,7 +238,7 @@ function DashboardDeliveries() {
     }
 
     const graphPie = (quantityDeliveries, quantityFaileds, quantityDispatch) => {
-        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds);
+        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds) + parseInt(quantityDispatch);
         let percentageDeliveries = (quantityDeliveries / totalQuantity) * 100;
         let percentageFaileds = (quantityFaileds / totalQuantity) * 100;
         let percentageDispatch =  (quantityDispatch / totalQuantity) * 100;
