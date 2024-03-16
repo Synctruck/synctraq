@@ -45,8 +45,7 @@ function PaymentAdjustment() {
         .then((response) => {
 
             setPaymentTeamDetailRouteList(response.paymentTeamDetailRouteList);
-            setTotalDeduction(response.totalDeduction);
-            console.log(response.totalDeduction.totalDeduction);
+            setTotalDeduction(response.totalDeduction.totalDeduction);
             calculateTotalsDeliveries(response.paymentTeamDetailRouteList)
         });
     }
