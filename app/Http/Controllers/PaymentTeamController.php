@@ -53,7 +53,8 @@ class PaymentTeamController extends Controller
             $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
             $totalPieces = 0;
             $totalTeam   = 0;
-
+            $totalDeduction = 0;
+            
             foreach($paymentDetailList as $paymentDetail)
             {
                 $dimFactor   = 200;
