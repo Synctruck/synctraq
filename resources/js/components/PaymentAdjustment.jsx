@@ -681,7 +681,7 @@ function PaymentAdjustment() {
                                     <hr/>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-12 form-group text-primary">
+                                    <div className="col-lg-12 form-group text-danger">
                                         DEDUCTIONS
                                     </div>
                                     <div className="col-lg-12">
