@@ -296,7 +296,7 @@ function PaymentAdjustment() {
 
         calculateTotalInvoice();
 
-    }, [totalRoute, totalRevertShipment, totalAdjustment]);
+    }, [totalRoute, totalRevertShipment, totalAdjustment, totalDeduction]);
 
     const handlerChangeStatus = (id, status) => {
 
