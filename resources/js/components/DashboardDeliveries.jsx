@@ -238,7 +238,7 @@ function DashboardDeliveries() {
     }
 
     const graphPie = (quantityDeliveries, quantityFaileds, quantityDispatch) => {
-        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds);
+        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds) + parseInt(quantityDispatch);
         let percentageDeliveries = (quantityDeliveries / totalQuantity) * 100;
         let percentageFaileds = (quantityFaileds / totalQuantity) * 100;
         let percentageDispatch =  (quantityDispatch / totalQuantity) * 100;
@@ -296,8 +296,7 @@ function DashboardDeliveries() {
                 innerSize: '80%',
                 data: [
                     ['', quantityDeliveries],
-                    ['', quantityFaileds],
-                    ['', quantityDispatch],
+                    ['', quantityFaileds]
                 ]
             }]
         });
@@ -462,7 +461,7 @@ function DashboardDeliveries() {
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
-                                                                        <button className="btn btn-success form-control">Open</button>
+                                                                        <button className="btn btn-warning form-control" style={ {backgroundColor: '#F1C232'} }>Open </button>
                                                                     </td>
                                                                     <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
