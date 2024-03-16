@@ -54,7 +54,7 @@ class PaymentTeamController extends Controller
             $totalPieces = 0;
             $totalTeam   = 0;
             $totalDeduction = 0;
-            
+
             foreach($paymentDetailList as $paymentDetail)
             {
                 $dimFactor   = 200;
@@ -279,8 +279,8 @@ class PaymentTeamController extends Controller
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                 ->where('podFailed', 0)
-                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'))
-                                                ->groupBy('Route', 'totalPrice')
+                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'), DB::raw('SUM(priceDeduction) as totalDeduction'))
+                                                ->groupBy('Route', 'totalPrice', 'priceDeduction')
                                                 ->get();
 
         return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList];
