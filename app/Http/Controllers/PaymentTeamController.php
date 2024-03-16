@@ -279,11 +279,16 @@ class PaymentTeamController extends Controller
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                 ->where('podFailed', 0)
-                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'), DB::raw('SUM(priceDeduction) as totalDeduction'))
-                                                ->groupBy('Route', 'totalPrice', 'priceDeduction')
+                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'))
+                                                ->groupBy('Route', 'totalPrice')
                                                 ->get();
 
-        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList];
+        $totalDeduction = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                        ->select(DB::raw('SUM(priceDeduction) as totalDeduction'))
+                                        ->groupBy('priceDeduction')
+                                        ->get();
+
+        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList, 'totalDeduction' => $totalDeduction];
     }
 
     public function InserPODFailed(Request $request)
