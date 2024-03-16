@@ -45,7 +45,7 @@ function PaymentAdjustment() {
         .then((response) => {
 
             setPaymentTeamDetailRouteList(response.paymentTeamDetailRouteList);
-
+            setTotalDeduction(response.totalDeduction);
             calculateTotalsDeliveries(response.paymentTeamDetailRouteList)
         });
     }
@@ -245,6 +245,7 @@ function PaymentAdjustment() {
 
     const [listAdjustment, setListAdjustment] = useState([]);
     const [totalAdjustment, setTotalAdjustment] = useState(0);
+    const [totalDeduction, setTotalDeduction] = useState(0);
 
     const ListAdjustmentPayment = (idPayment) => {
 
@@ -286,7 +287,7 @@ function PaymentAdjustment() {
 
     const calculateTotalInvoice = () => {
 
-        let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment);
+        let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment) + parseFloat(totalDeduction);
 
         setTotalInvoice(auxTotalInvoice.toFixed(3));
     }
