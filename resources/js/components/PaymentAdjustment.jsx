@@ -681,6 +681,28 @@ function PaymentAdjustment() {
                                     <hr/>
                                 </div>
                                 <div className="row">
+                                    <div className="col-lg-12 form-group text-primary">
+                                        DEDUCTIONS
+                                    </div>
+                                    <div className="col-lg-12">
+                                        <table className="table table-hover table-condensed table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>DESCRIPTION</th>
+                                                    <th>AMOUNT</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>TOTAL</th>
+                                                    <th className="text-right">$ { totalDeduction }</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <hr/>
+                                </div>
+                                <div className="row">
                                     <div className="col-lg-12">
                                         <table className="table table-hover table-condensed table-bordered">
                                             <tfoot>
