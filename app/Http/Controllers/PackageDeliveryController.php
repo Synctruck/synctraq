@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\{
-        ChargeCompanyDetail, Configuration, PackageHistory, PackageDelivery, PackageDispatch, 
+        ChargeCompanyDetail, Configuration, PackageHistory, PackageDelivery, PackageDispatch,
         PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageLost, PackageLmCarrier,
         PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, TeamRoute, User};
 
@@ -174,7 +174,7 @@ class PackageDeliveryController extends Controller
             if($request->hasFile('filePhoto2'))
             {
                 $filePhoto2 = $Reference_Number_1 .'-photo2.'. $request->file('filePhoto2')->getClientOriginalExtension();
-                
+
                 $request->file('filePhoto2')->move(public_path('img/deliveries'), $filePhoto2);
 
                 $photoUrl2 = env('APP_URL') .'/img/deliveries/'. $filePhoto2;
@@ -562,7 +562,7 @@ class PackageDeliveryController extends Controller
 
                         $contador++;
                     }
-                    
+
                     $packageReturnCompany = PackageReturnCompany::find($row[0]);
 
                     if($packageReturnCompany)
@@ -638,7 +638,7 @@ class PackageDeliveryController extends Controller
                                 $packageHistory = new PackageHistory();
                                 $packageHistory->id = uniqid();
                             }
-                            
+
                             $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
                             $packageHistory->idCompany                    = $packageDispatch->idCompany;
                             $packageHistory->company                      = $packageDispatch->company;
@@ -1244,9 +1244,11 @@ class PackageDeliveryController extends Controller
         $dataDateList = [];
         $dataDeliveriesList = [];
         $dataFailedsList = [];
+        $dataDispatchList = [];
 
         $querySQLDeliveries = '';
         $querySQLFaileds    = '';
+        $querySQLDispatch   = '';
 
         foreach($datesList as $key => $date)
         {
@@ -1273,26 +1275,32 @@ class PackageDeliveryController extends Controller
             {
                 $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
-                $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+                $sqlFaileds =   "(SELECT COUNT(status) from packagefailed WHERE created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+                $sqlDispatch =  "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
             else if($idTeam != 0 && $idDriver == 0)
             {
                 $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and idTeam=". $idTeam ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
                 $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+                $sqlDispatch = "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
             else if($idTeam != 0 && $idDriver != 0)
             {
                 $sqlDeliveries = "(SELECT COUNT(status) from packagedispatch WHERE status='Delivery' and idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and Date_Delivery BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
 
                 $sqlFaileds = "(SELECT COUNT(status) from packagefailed WHERE idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
+
+                $sqlDispatch =  "(SELECT COUNT(status) from packagedispatch WHERE status='Dispatch' and idTeam=". $idTeam ." and idUserDispatch=". $idDriver ." and created_at BETWEEN '". $startDate ."' and '". $endDate ."' GROUP BY `status`) as total". $key;
             }
-            
+
             $querySQLDeliveries = $querySQLDeliveries == '' ? $sqlDeliveries : $querySQLDeliveries .','. $sqlDeliveries;
             $querySQLFaileds    = $querySQLFaileds == '' ? $sqlFaileds : $querySQLFaileds .','. $sqlFaileds;
-
+            $querySQLDispatch   = $querySQLDispatch == '' ? $sqlDispatch : $querySQLDispatch .','. $sqlDispatch;
             array_push($dataDateList, $date->format("Y-m-d"));
-            
+
             //Log::info($startDate .' => '. $endDate);
             /*$quantityDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                 ->where('status', 'Delivery')
@@ -1307,12 +1315,15 @@ class PackageDeliveryController extends Controller
             array_push($dataDeliveriesList, $quantityDelivery);
             array_push($dataFailedsList, $quantityFailed);*/
         }
-        
+
         $dataSQLDeliveries = DB::select(
                     "SELECT pd.status,". $querySQLDeliveries ." FROM packagedispatch pd WHERE pd.status='Delivery' GROUP  BY pd.status");
 
         $dataSQLFaileds = DB::select(
                     "SELECT pf.status,". $querySQLFaileds ." FROM packagefailed pf GROUP  BY pf.status");
+
+        $dataSQLDispatch = DB::select(
+                     "SELECT pd.status,". $querySQLDispatch ." FROM packagedispatch pd WHERE pd.status='Dispatch' GROUP  BY pd.status");
 
         /*$dataPerTeams = DB::select("SELECT
                                 p.idTeam, u.name,
@@ -1335,8 +1346,9 @@ class PackageDeliveryController extends Controller
                                 ORDER BY total_dispatch DESC"
                                 );*/
 
-        return ['dataSQLDeliveries' => $dataSQLDeliveries, 'dataSQLFaileds' => $dataSQLFaileds, 'dataDateList' => $dataDateList];
+        return ['dataSQLDeliveries' => $dataSQLDeliveries, 'dataSQLFaileds' => $dataSQLFaileds, 'dataDateList' => $dataDateList, 'dataSQLDispatch'=> $dataSQLDispatch];
 
-        return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList];
+        return ['dataDateList' => $dataDateList, 'dataDeliveriesList' => $dataDeliveriesList, 'dataFailedsList' => $dataFailedsList, 'dataDispatchList' => $dataDispatchList];
+
     }
 }

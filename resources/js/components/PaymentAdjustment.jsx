@@ -45,7 +45,7 @@ function PaymentAdjustment() {
         .then((response) => {
 
             setPaymentTeamDetailRouteList(response.paymentTeamDetailRouteList);
-
+            setTotalDeduction(response.totalDeduction.totalDeduction);
             calculateTotalsDeliveries(response.paymentTeamDetailRouteList)
         });
     }
@@ -245,6 +245,7 @@ function PaymentAdjustment() {
 
     const [listAdjustment, setListAdjustment] = useState([]);
     const [totalAdjustment, setTotalAdjustment] = useState(0);
+    const [totalDeduction, setTotalDeduction] = useState(0);
 
     const ListAdjustmentPayment = (idPayment) => {
 
@@ -286,7 +287,7 @@ function PaymentAdjustment() {
 
     const calculateTotalInvoice = () => {
 
-        let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment);
+        let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment) + parseFloat(totalDeduction);
 
         setTotalInvoice(auxTotalInvoice.toFixed(3));
     }
@@ -295,7 +296,7 @@ function PaymentAdjustment() {
 
         calculateTotalInvoice();
 
-    }, [totalRoute, totalRevertShipment, totalAdjustment]);
+    }, [totalRoute, totalRevertShipment, totalAdjustment, totalDeduction]);
 
     const handlerChangeStatus = (id, status) => {
 
@@ -673,6 +674,28 @@ function PaymentAdjustment() {
                                                 <tr>
                                                     <th>TOTAL</th>
                                                     <th className="text-right">$ { totalAdjustment }</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <hr/>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-12 form-group text-danger">
+                                        DEDUCTIONS
+                                    </div>
+                                    <div className="col-lg-12">
+                                        <table className="table table-hover table-condensed table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>DESCRIPTION</th>
+                                                    <th>AMOUNT</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>TOTAL</th>
+                                                    <th className="text-right">$ { totalDeduction }</th>
                                                 </tr>
                                             </tfoot>
                                         </table>

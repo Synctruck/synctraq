@@ -53,6 +53,7 @@ class PaymentTeamController extends Controller
             $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
             $totalPieces = 0;
             $totalTeam   = 0;
+            $totalDeduction = 0;
 
             foreach($paymentDetailList as $paymentDetail)
             {
@@ -102,11 +103,30 @@ class PaymentTeamController extends Controller
                 $paymentDetail->priceByRoute        = 0;
                 $paymentDetail->priceByCompany      = $priceByCompany;
                 $paymentDetail->totalPrice          = $totalPrice;
-                $paymentDetail->Date_Delivery       = $paymentDetail->Date_Delivery;
+
+                $Date_Dispatch = '';
+
+                $packageDelivery = PackageDispatch::where('Reference_Number_1', $paymentDetail->Reference_Number_1)
+                                                    ->where('status', 'Delivery')
+                                                    ->first();
+
+                $deduction = 0;
+
+                if($packageDelivery)
+                {
+                    if($packageDelivery->Date_Dispatch)
+                        $Date_Dispatch = $packageDelivery->Date_Dispatch;
+                        $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                }
+
+                $paymentDetail->Date_Dispatch = $Date_Dispatch ? $Date_Dispatch : $paymentDetail->Date_Delivery;
+                $paymentDetail->Date_Delivery = $paymentDetail->Date_Delivery;
+                $paymentDetail->priceDeduction = -$deduction;
                 $paymentDetail->save();
 
                 $totalPieces = $totalPieces + 1;
                 $totalTeam   = $totalTeam + $totalPrice;
+                $totalDeduction = $totalDeduction - $deduction;
             }
 
             $totalAdjustment = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
@@ -116,7 +136,8 @@ class PaymentTeamController extends Controller
             $payment->totalPieces     = $totalPieces;
             $payment->totalDelivery   = $totalTeam;
             $payment->totalAdjustment = $totalAdjustment;
-            $payment->total           = $totalTeam + $totalAdjustment;
+            $payment->totalDeduction  = $totalDeduction;
+            $payment->total           = $totalTeam + $totalAdjustment + $totalDeduction;
             $payment->averagePrice    = $totalTeam / $totalPieces;
             $payment->surcharge       = $team->surcharge;
             $payment->save();
@@ -262,7 +283,11 @@ class PaymentTeamController extends Controller
                                                 ->groupBy('Route', 'totalPrice')
                                                 ->get();
 
-        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList];
+        $totalDeduction = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                        ->select(DB::raw('SUM(priceDeduction) as totalDeduction'))
+                                        ->first();
+
+        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList, 'totalDeduction' => $totalDeduction];
     }
 
     public function InserPODFailed(Request $request)
@@ -745,50 +770,23 @@ class PaymentTeamController extends Controller
         }
     }
 
-    public function CalculateDeduction()
-    {
-        $packageDeliveryList = PackageDispatch::where('status', 'Delivery')
-                                            ->whereBetween('Date_Delivery', ['2024-03-13 00:00:00', '2024-03-13 23:59:59'])
-                                            ->get()
-                                            ->take(100);
-
-        foreach($packageDeliveryList as $packageDelivery)
-        {
-            echo $packageDelivery->Reference_Number_1 .'<br>';
-
-            if($packageDelivery->Date_Dispatch)
-            {
-                echo $packageDelivery->Date_Dispatch .' => '. $packageDelivery->Date_Delivery .'<br>';
-                $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
-            }
-            else
-            {
-                echo 'NO Date_Dispatch => '. $packageDelivery->Date_Delivery .'<br>';
-                $hours = 0;
-            }
-            
-            if($hours <= 24)
-                $deduction = 0.00;
-            elseif($hours > 24 && $hours <= 48)
-                $deduction = 1.00;
-            elseif($hours > 48 && $hours <= 72)
-                $deduction = 2.00;
-            elseif($hours > 72)
-                $deduction = 2.50;
-
-            echo $deduction.'<br><br>';
-        }
-
-        return true;
-    }
-
-    public function CalculateHours($Date_Dispatch, $Date_Delivery)
+    public function CalculateDeduction($Date_Dispatch, $Date_Delivery)
     {
         $dateInit = strtotime($Date_Dispatch);
         $dateEnd = strtotime($Date_Delivery);
 
         $diff = abs($dateEnd - $dateInit) / 3600;
+        $hours = (int)$diff;
 
-        return (int)$diff;
+        if($hours <= 24)
+            $deduction = 0.00;
+        elseif($hours > 24 && $hours <= 48)
+            $deduction = 1.00;
+        elseif($hours > 48 && $hours <= 72)
+            $deduction = 2.00;
+        elseif($hours > 72)
+            $deduction = 2.50;
+        
+        return $deduction;
     }
 }

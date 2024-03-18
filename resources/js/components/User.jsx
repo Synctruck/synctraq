@@ -584,7 +584,7 @@ function User() {
                                                 <th>ROLE</th>
                                                 <th>FIRST NAME</th>
                                                 <th>LAST NAME</th>
-                                                <th>ADDREESS</th>
+                                                <th>ADDRESS</th>
                                                 <th>PHONE</th>
                                                 <th>EMAIL</th>
                                                 <th>WAREHOUSE</th>

@@ -26,9 +26,11 @@ function DashboardDeliveries() {
 
     const [quantityDeliveriesView, setQuantityDeliveriesView] = useState(0);
     const [quantityFailedsView, setQuantityFailedsView] = useState(0);
+    const [quantityDispatchView, setQuantityDispacthView] = useState(0);
 
     const [quantityDeliveriesViewPercentage, setQuantityDeliveriesViewPercentage] = useState(0);
     const [quantityFailedsViewPercentage, setQuantityFailedsViewPercentage] = useState(0);
+    const [quantityDispatchViewPercentage, setQuantityDispatchViewPercentage] = useState(0);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -69,6 +71,7 @@ function DashboardDeliveries() {
 
                 let dataDeliveriesList = [];
                 let dataFailedsList    = [];
+                let dataDispatchList   = [];
 
                 response.dataDateList.forEach((date, index) => {
                     if(response.dataSQLDeliveries[0]['total'+ index] == null)
@@ -88,14 +91,25 @@ function DashboardDeliveries() {
                     {
                         dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                     }
+
+                    if(response.dataSQLDispatch[0]['total'+index]== null)
+                    {
+                        dataDispatchList.push(0);
+                    }
+                    else
+                    {
+                        dataDispatchList.push(response.dataSQLDispatch[0]['total' + index]);
+                    }
+
                 });
 
 
                 let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
                 let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+                let quantityDispatch   = (dataDispatchList.length > 0 ? dataDispatchList.reduce((a,b)=> a + b, 0) : 0);
 
-                graphOne(response, dataDeliveriesList, dataFailedsList);
-                graphPie(quantityDeliveries, quantityFaileds);
+                graphOne(response, dataDeliveriesList, dataFailedsList, dataDispatchList);
+                graphPie(quantityDeliveries, quantityFaileds, quantityDispatch);
             });
         }
         else
@@ -116,6 +130,7 @@ function DashboardDeliveries() {
 
                         let dataDeliveriesList = [];
                         let dataFailedsList    = [];
+                        let dataDispatchList   = [];
 
                         response.dataDateList.forEach((date, index) => {
                             if(response.dataSQLDeliveries[0]['total'+ index] == null)
@@ -135,14 +150,24 @@ function DashboardDeliveries() {
                             {
                                 dataFailedsList.push(response.dataSQLFaileds[0]['total'+ index]);
                             }
+
+                            if(response.dataSQLDispatch[0]['total'+index]== null)
+                            {
+                                dataDispatchList.push(0);
+                            }
+                            else
+                            {
+                                dataDispatchList.push(response.dataSQLDispatch[0]['total' + index]);
+                            }
                         });
 
 
                         let quantityDeliveries = (dataDeliveriesList.length > 0 ?  dataDeliveriesList.reduce((a, b) => a + b, 0) : 0);
                         let quantityFaileds    = (dataFailedsList.length > 0 ? dataFailedsList.reduce((a, b) => a + b, 0) : 0);
+                        let quantityDispatch   = (dataDispatchList.length > 0 ? dataDispatchList.reduce((a,b)=> a + b, 0) : 0);
 
-                        graphOne(response, dataDeliveriesList, dataFailedsList);
-                        graphPie(quantityDeliveries, quantityFaileds);
+                        graphOne(response, dataDeliveriesList, dataFailedsList,  dataDispatchList);
+                        graphPie(quantityDeliveries, quantityFaileds, quantityDispatch);
                     });
                 }
                 else
@@ -212,18 +237,21 @@ function DashboardDeliveries() {
         });
     }
 
-    const graphPie = (quantityDeliveries, quantityFaileds) => {
-        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds);
+    const graphPie = (quantityDeliveries, quantityFaileds, quantityDispatch) => {
+        let totalQuantity = parseInt(quantityDeliveries) + parseInt(quantityFaileds) + parseInt(quantityDispatch);
         let percentageDeliveries = (quantityDeliveries / totalQuantity) * 100;
         let percentageFaileds = (quantityFaileds / totalQuantity) * 100;
+        let percentageDispatch =  (quantityDispatch / totalQuantity) * 100;
 
         setQuantityDeliveriesView(quantityDeliveries);
         setQuantityFailedsView(quantityFaileds);
+        setQuantityDispacthView(quantityDispatch);
 
         setTotalTasks(totalQuantity);
 
         setQuantityDeliveriesViewPercentage(percentageDeliveries.toFixed(2));
         setQuantityFailedsViewPercentage(percentageFaileds.toFixed(2));
+        setQuantityDispatchViewPercentage(percentageDispatch.toFixed(2));
 
         Highcharts.chart('divPie', {
             chart: {
@@ -268,7 +296,7 @@ function DashboardDeliveries() {
                 innerSize: '80%',
                 data: [
                     ['', quantityDeliveries],
-                    ['', quantityFaileds],
+                    ['', quantityFaileds]
                 ]
             }]
         });
@@ -430,6 +458,12 @@ function DashboardDeliveries() {
                                                             <table className="table table-condensed table-bordered">
                                                                 <tr>
                                                                     <td colspan="2"><b>Completed Tasks</b></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <button className="btn btn-warning form-control" style={ {backgroundColor: '#F1C232'} }>Open </button>
+                                                                    </td>
+                                                                    <td>{ quantityDispatchView } ({ quantityDispatchViewPercentage }%)</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>
