@@ -15,7 +15,7 @@
 
 
         @if(hasPermission('reportManifest.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a href="{{url('/report/manifest')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -36,7 +36,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('reportInbound.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a  href="{{url('/report/inbound')}}"  style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -57,7 +57,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('reportDispatch.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a href="{{url('/report/dispatch')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -78,7 +78,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('reportDelivery.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a href="{{url('/report/delivery')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -99,7 +99,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('reportLost.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a href="{{url('/report/lost')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -125,7 +125,7 @@
 
         <!-- Sales Card -->
         @if(hasPermission('reportFailed.index'))
-        <div class="col-xxl-3 col-md-6">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <a href="{{url('/report/failed')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -147,7 +147,7 @@
         @endif
 
         @if(hasPermission('reportDelete.index'))
-            <div class="col-xxl-3 col-md-6">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/delete')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
@@ -170,7 +170,7 @@
 
         <!-- Revenue Card -->
         @if(hasPermission('reportNotexists.index'))
-        <div class="col-xxl-3 col-md-6" style=" display: none;">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12" style=" display: none;">
             <a href="{{url('/report/notExists')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -193,7 +193,7 @@
 
         <!-- Revenue Card -->
         @if(hasPermission('reportMiddleMileScan.index'))
-            <div class="col-xxl-3 col-md-6">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/mms')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
@@ -216,7 +216,7 @@
 
         <!-- Revenue Card -->
         @if(hasPermission('reportLmCarrier.index'))
-            <div class="col-xxl-3 col-md-6">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/lm-carrier')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
@@ -240,7 +240,7 @@
         <!-- Revenue Card -->
         @if(hasPermission('reportReturncompany.index'))
             <!-- Customers Card -->
-            <div class="col-xxl-3 col-xl-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/return-company')}}" style="text-decoration: none">
                     <div class="card info-card customers-card">
                         <div class="card-body">
@@ -263,7 +263,7 @@
 
         @if(hasPermission('reportMassQuery.index'))
             <!-- Customers Card -->
-            <div class="col-xxl-3 col-xl-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/mass-query')}}" style="text-decoration: none">
                     <div class="card info-card customers-card">
                         <div class="card-body">
@@ -286,7 +286,7 @@
 
         @if(hasPermission('reportAllPending.index'))
             <!-- Customers Card -->
-            <div class="col-xxl-3 col-xl-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                 <a href="{{url('/report/all-pending')}}">
                     <div class="card info-card customers-card">
                         <div class="card-body">
