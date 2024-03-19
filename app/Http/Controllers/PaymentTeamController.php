@@ -141,7 +141,7 @@ class PaymentTeamController extends Controller
             $payment->totalAdjustment = $totalAdjustment;
             $payment->totalDeduction  = $totalDeduction;
             $payment->total           = $totalTeam + $totalAdjustment + $totalDeduction;
-            $payment->averagePrice    = $totalTeam / $totalPieces;
+            $payment->averagePrice    = $totalPieces > 0 ? $totalTeam / $totalPieces : 0;
             $payment->surcharge       = $team->surcharge;
             $payment->save();
 
