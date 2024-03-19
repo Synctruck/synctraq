@@ -16,7 +16,7 @@
             <hr> <h3 class="text-primary">USERS GENERAL</h3><hr>
         </div>
         @if(hasPermission('admin.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('user')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
@@ -37,7 +37,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('team.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('team')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -58,7 +58,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('driver.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('driver')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -79,7 +79,7 @@
         </div><!-- End Customers Card -->
         @endif
         @if(hasPermission('role.index'))
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('roles')}}" style="text-decoration: none">
             <div class="card info-card ">
                 <div class="card-body">
@@ -153,7 +153,7 @@
         <!-- Revenue Card -->
         @if(hasPermission('company.index'))
         <!-- Customers Card -->
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('company')}}" style="text-decoration: none">
                 <div class="card info-card customers-card">
                     <div class="card-body">
@@ -177,7 +177,7 @@
         <!-- Revenue Card -->
         @if(hasPermission('antiscan.index'))
 
-        <div class="col-xxl-3 col-xl-12">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-6">
             <a href="{{url('anti-scan')}}" style="text-decoration: none">
                 <div class="card info-card ">
                     <div class="card-body">
