@@ -54,6 +54,7 @@ class PaymentTeamController extends Controller
             $totalPieces = 0;
             $totalTeam   = 0;
             $totalDeduction = 0;
+            $team = User::find($payment->idTeam);
 
             foreach($paymentDetailList as $paymentDetail)
             {
@@ -68,7 +69,7 @@ class PaymentTeamController extends Controller
                                                 ->where('maxWeight', '>=', $weightRound)
                                                 ->first();
 
-                $team                = User::find($payment->idTeam);
+                
                 $priceWeight         = $range->price;
                 $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($payment);
                 $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
@@ -112,7 +113,7 @@ class PaymentTeamController extends Controller
 
                 $deduction = 0;
 
-                if($payment->team->sla)
+                if($team->sla)
                 {
                     if($packageDelivery)
                     {
