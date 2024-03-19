@@ -289,7 +289,7 @@ class PaymentTeamController extends Controller
 
         $totalDeduction = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                         ->select(DB::raw('SUM(priceDeduction) as totalDeduction'))
-                                        ->get();
+                                        ->first();
 
         return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList, 'totalDeduction' => $totalDeduction];
     }
