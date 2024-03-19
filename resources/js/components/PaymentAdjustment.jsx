@@ -287,7 +287,7 @@ function PaymentAdjustment() {
     });
 
     const calculateTotalInvoice = () => {
-        console.log(parseFloat(totalDeduction));
+        console.log(totalDeduction);
         let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment) + parseFloat(totalDeduction);
 
         setTotalInvoice(auxTotalInvoice.toFixed(3));
