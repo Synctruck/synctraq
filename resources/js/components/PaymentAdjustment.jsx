@@ -38,6 +38,8 @@ function PaymentAdjustment() {
         ListAdjustmentPayment(idPaymentGeneral);
     }, []);
 
+    const [totalDeduction, setTotalDeduction] = useState(0);
+    
     const listByRoute = (idPayment) => {
 
         fetch(url_general +'payment-team/list-by-route/'+ idPayment)
@@ -245,7 +247,6 @@ function PaymentAdjustment() {
 
     const [listAdjustment, setListAdjustment] = useState([]);
     const [totalAdjustment, setTotalAdjustment] = useState(0);
-    const [totalDeduction, setTotalDeduction] = useState(0);
 
     const ListAdjustmentPayment = (idPayment) => {
 
