@@ -392,10 +392,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
-        fputcsv($file, $fielBlank, $delimiter);
-
-        fputcsv($file, array('TOTAL DEDUCTIONS', $payment->totalDeduction), $delimiter);
-
+        
         if($payment->surcharge)
         {
             fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
@@ -403,7 +400,9 @@ class PaymentTeamController extends Controller
 
         fputcsv($file, $fieldTeamTotal, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-
+        fputcsv($file, array('TOTAL DEDUCTIONS', $payment->totalDeduction), $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+        
         $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
                                                                 ->orderBy('created_at', 'asc')
                                                                 ->get();
