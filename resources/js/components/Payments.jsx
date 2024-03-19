@@ -259,6 +259,7 @@ function Payments() {
 
         let totalDelivery   = handlerChangeFormatPrice(payment.totalDelivery);
         let totalAdjustment = handlerChangeFormatPrice(payment.totalAdjustment);
+        let totalDeduction  = handlerChangeFormatPrice(payment.totalDeduction);
         let total           = handlerChangeFormatPrice(payment.total);
         let averagePrice    = handlerChangeFormatPrice(payment.averagePrice);
 
@@ -284,7 +285,7 @@ function Payments() {
                 </td>
                 <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
                 <td className="text-warning text-right"><h5><b>{ totalAdjustment }</b></h5></td>
-                <td className="text-warning text-right"><h5><b>{ totalDeduction }</b></h5></td>
+                <td className="text-danger text-right"><h5><b>{ totalDeduction }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
                 <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
                 <td>
