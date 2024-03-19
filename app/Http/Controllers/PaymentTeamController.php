@@ -291,7 +291,7 @@ class PaymentTeamController extends Controller
                                         ->select(DB::raw('SUM(priceDeduction) as totalDeduction'))
                                         ->first();
 
-        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList, 'totalDeduction' => $totalDeduction];
+        return ['paymentTeamDetailRouteList' => $paymentTeamDetailRouteList, 'totalDeduction' => ($totalDeduction ? $totalDeduction : 0)];
     }
 
     public function InserPODFailed(Request $request)
