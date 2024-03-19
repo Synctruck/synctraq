@@ -39,7 +39,7 @@ function PaymentAdjustment() {
     }, []);
 
     const [totalDeduction, setTotalDeduction] = useState(0);
-    
+
     const listByRoute = (idPayment) => {
 
         fetch(url_general +'payment-team/list-by-route/'+ idPayment)
@@ -287,7 +287,7 @@ function PaymentAdjustment() {
     });
 
     const calculateTotalInvoice = () => {
-
+        console.log(parseFloat(totalDeduction));
         let auxTotalInvoice = parseFloat(totalRoute) + parseFloat(totalRevertShipment) + parseFloat(totalAdjustment) + parseFloat(totalDeduction);
 
         setTotalInvoice(auxTotalInvoice.toFixed(3));
