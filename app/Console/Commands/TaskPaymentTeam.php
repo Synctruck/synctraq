@@ -166,19 +166,24 @@ class TaskPaymentTeam extends Command
                                         $packageDelivery->paid = 1;
                                         $packageDelivery->save();
 
-                                        if($packageDelivery->Date_Dispatch)
+                                        if($team->sla)
+                                        {
+                                            if($packageDelivery->Date_Dispatch)
                                             $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
-                                        else
-                                            $hours = 0;
+                                            else
+                                                $hours = 0;
 
-                                        if($hours <= 24)
-                                            $deduction = 0.00;
-                                        elseif($hours > 24 && $hours <= 48)
-                                            $deduction = 1.00;
-                                        elseif($hours > 48 && $hours <= 72)
-                                            $deduction = 2.00;
-                                        elseif($hours > 72)
-                                            $deduction = 2.50;
+                                            if($hours <= 24)
+                                                $deduction = 0.00;
+                                            elseif($hours > 24 && $hours <= 48)
+                                                $deduction = 1.00;
+                                            elseif($hours > 48 && $hours <= 72)
+                                                $deduction = 2.00;
+                                            elseif($hours > 72)
+                                                $deduction = 2.50;
+                                        }
+                                        else
+                                            $deduction = 0;
 
                                         $paymentTeamDetail = new PaymentTeamDetail();
                                         $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;

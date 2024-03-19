@@ -112,11 +112,14 @@ class PaymentTeamController extends Controller
 
                 $deduction = 0;
 
-                if($packageDelivery)
+                if($payment->team->sla)
                 {
-                    if($packageDelivery->Date_Dispatch)
-                        $Date_Dispatch = $packageDelivery->Date_Dispatch;
-                        $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                    if($packageDelivery)
+                    {
+                        if($packageDelivery->Date_Dispatch)
+                            $Date_Dispatch = $packageDelivery->Date_Dispatch;
+                            $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                    }
                 }
 
                 $paymentDetail->Date_Dispatch = $Date_Dispatch ? $Date_Dispatch : $paymentDetail->Date_Delivery;
