@@ -284,6 +284,7 @@ function Payments() {
                 </td>
                 <td className="text-primary text-right"><h5><b>{ totalDelivery }</b></h5></td>
                 <td className="text-warning text-right"><h5><b>{ totalAdjustment }</b></h5></td>
+                <td className="text-warning text-right"><h5><b>{ totalDeduction }</b></h5></td>
                 <td className="text-success text-right"><h5><b>{ total }</b></h5></td>
                 <td className="text-info text-right"><h5><b>{ averagePrice }</b></h5></td>
                 <td>
@@ -657,8 +658,9 @@ function Payments() {
                                                 <th><b>START DATE</b></th>
                                                 <th><b>END DATE</b></th>
                                                 <th><b>PIECES</b></th>
-                                                <th><b>TOTAL DELIVERY</b></th>
-                                                <th><b>TOTAL ADJUSTMENT</b></th>
+                                                <th><b>$ DELIVERY</b></th>
+                                                <th><b>$ ADJUSTMENT</b></th>
+                                                <th><b>$ DEDUCTIONS</b></th>
                                                 <th><b>TOTAL</b></th>
                                                 <th><b>AVERAGE PIECE COST</b></th>
                                                 <th><b>STATUS</b></th>
