@@ -392,6 +392,9 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+
+        fputcsv($file, array('TOTAL DEDUCTIONS', $payment->totalDeduction), $delimiter);
 
         if($payment->surcharge)
         {
@@ -426,7 +429,7 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
 
@@ -456,6 +459,7 @@ class PaymentTeamController extends Controller
                 $paymentDetail->surchargePrice,
                 $paymentDetail->priceByRoute,
                 $paymentDetail->priceByCompany,
+                $paymentDetail->priceDeduction,
                 ($paymentDetail->podFailed ? 0.00 : $paymentDetail->totalPrice),
             );
 
@@ -505,7 +509,7 @@ class PaymentTeamController extends Controller
 
         $totalDeliveryRevert = $totalDelivery + $totalRevert;
 
-        fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
+        fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
 
         fseek($file, 0);
 
