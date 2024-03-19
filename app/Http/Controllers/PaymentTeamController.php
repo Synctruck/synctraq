@@ -400,9 +400,10 @@ class PaymentTeamController extends Controller
 
         fputcsv($file, $fieldTeamTotal, $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
+        fputcsv($file, array('DEDUCTIONS'), $delimiter);
         fputcsv($file, array('TOTAL DEDUCTIONS', $payment->totalDeduction), $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-        
+
         $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPayment)
                                                                 ->orderBy('created_at', 'asc')
                                                                 ->get();
