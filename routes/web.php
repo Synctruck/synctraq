@@ -461,6 +461,8 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('team/get/{id}', [TeamController::class, 'Get']);
 	Route::post('team/update/{id}', [TeamController::class, 'Update']);
 	Route::get('team/changeStatus/{id}', [TeamController::class, 'ChangeStatus']);
+	Route::get('team/change-configuration-pay/{id}', [TeamController::class, 'ChangeConfigurationPay']);
+	Route::post('team/save-configuration-pay', [TeamController::class, 'SaveConfigurationPay']);
 	Route::get('team/delete/{id}', [TeamController::class, 'Delete']);
 
 	//============ Maintenance of users

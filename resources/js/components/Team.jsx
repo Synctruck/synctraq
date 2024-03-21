@@ -44,6 +44,13 @@ function Team() {
     const [viewButtonSave, setViewButtonSave] = useState('none');
     const [file, setFile]             = useState('');
 
+    const [gapBetweenTiers, setGapBetweenTiers] = useState('');
+    const [splitForAddPc, setSplitForAddPc] = useState('');
+    const [priceByPackage, setPriceByPackage] = useState('');
+    const [baseRate, setBaseRate] = useState('');
+    const [basePay, setBasePay] = useState('');
+    const [signature, setSignature] = useState('');
+
     const inputFileRef  = React.useRef();
 
     useEffect(() => { 
@@ -284,7 +291,7 @@ function Team() {
     const getTeam = (id) => {
 
         setRouteSearch(null);
-        LoadingShow();
+        LoadingShowMap();
         clearForm();
         listAllRole();
         listAllRoute();
@@ -351,7 +358,7 @@ function Team() {
 
             handlerOpenModal(team.id);
 
-            LoadingHide();
+            LoadingHideMap();
         });
     }
 
@@ -368,7 +375,7 @@ function Team() {
 
             if(willDelete)
             {
-                LoadingShow();
+                LoadingShowMap();
 
                 fetch(url_general +'team/changeStatus/'+ id)
                 .then(response => response.json())
@@ -384,7 +391,7 @@ function Team() {
                         listAllTeam(page);
                     }
 
-                    LoadingHide();
+                    LoadingHideMap();
                 });
             }
         });
@@ -403,7 +410,7 @@ function Team() {
 
             if(willDelete)
             {
-                LoadingShow();
+                LoadingShowMap();
 
                 fetch(url_general +'team/delete/'+ id)
                 .then(response => response.json())
@@ -419,7 +426,7 @@ function Team() {
                         listAllTeam(page);
                     }
 
-                    LoadingHide();
+                    LoadingHideMap();
                 });
             }
         });
@@ -438,7 +445,7 @@ function Team() {
     const [Route, setRoute]                             = useState('');
     const [viewAddRange, setViewAddRange]               = useState('none');
     const [titleModalRange, setTitleModalRange]         = useState('');
-    const [textButtonSaveRange, setTextButtonSaveRange] = useState('')
+    const [textButtonSaveRange, setTextButtonSaveRange] = useState('Save')
     const [idRange, setIdRange]                         = useState(0);
     const [minWeightRange, setMinWeightRange]           = useState('');
     const [maxWeightRange, setMaxWeightRange]           = useState('');
@@ -464,12 +471,22 @@ function Team() {
         }
     }
 
+    const handlerAddRangeByCompany = () => {
+        setBaseRateRange(0);
+        setCompanyPrice(0);
+        setRouteByCompany('');
+        setPriceByCompany('');
+        setTextButtonSaveRange('Save');
+    }
+
+    const [configurationPay, setConfigurationPay] = useState('');
+
     const handlerOpenModalRange = (idTeam, team) => {
         
         setListRange([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
-        setTitleModalRange('Team Prices Ranges: '+ team);
+        setTitleModalRange('Team Prices: '+ team);
 
         fetch(url_general +'range-price-base-team/list/'+ idTeam)
         .then(res => res.json())
@@ -484,6 +501,25 @@ function Team() {
             });
      
             myModal.show();
+        });
+
+        setListPriceByCompany([]);
+        setIdTeam(idTeam);
+        setViewAddRange('none');
+
+        fetch(url_general +'range-price-team-by-company/list/'+ idTeam)
+        .then(res => res.json())
+        .then((response) => {
+
+            LoadingHideMap();
+            setListPriceByCompany(response.rangeList);
+            setConfigurationPay(response.team.configurationPay);
+            setGapBetweenTiers(response.team.gapBetweenTiers);
+            setSplitForAddPc(response.team.splitForAddPc);
+            setPriceByPackage(response.team.priceByPackage);
+            setBaseRate(response.team.baseRate);
+            setBasePay(response.team.basePay);
+            setSignature(response.team.signature);
         });
     }
 
@@ -512,38 +548,6 @@ function Team() {
      
             myModal.show();
         });
-    }
-
-    const handlerOpenModalRangeByCompany = (idTeam, team) => {
-        
-        LoadingShowMap();
-
-        clearValidationPriceByCompany();
-        clearFormPriceByCompany();
-
-        setListPriceByCompany([]);
-        setIdTeam(idTeam);
-        setViewAddRange('none');
-        setTitleModalRange('Team - Prices - By Company - Route: '+ team);
-
-        fetch(url_general +'range-price-team-by-company/list/'+ idTeam)
-        .then(res => res.json())
-        .then((response) => {
-
-            LoadingHideMap();
-            
-            setListPriceByCompany(response.rangeList);
-
-            let myModal = new bootstrap.Modal(document.getElementById('modalRangePriceByCompanyTeam'), {
-
-                keyboard: false,
-                backdrop: 'static',
-            });
-     
-            myModal.show();
-        });
-
-        listAllRangePriceBaseTeam(idTeam)
     }
 
     const listAllRange = (idTeam, idCompany, route) => {
@@ -587,7 +591,6 @@ function Team() {
     }
 
     const handlerSaveRange = (e) => {
-
         e.preventDefault();
 
         const formData = new FormData();
@@ -603,7 +606,7 @@ function Team() {
         {
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            LoadingShow();
+            LoadingShowMap();
 
             fetch(url_general +'range-price-base-team/insert', {
                 headers: { "X-CSRF-TOKEN": token },
@@ -632,13 +635,13 @@ function Team() {
                         }
                     }
 
-                    LoadingHide();
+                    LoadingHideMap();
                 },
             );
         }
         else
         {
-            LoadingShow();
+            LoadingShowMap();
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -670,7 +673,7 @@ function Team() {
                     }
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             });
         }
     }
@@ -719,6 +722,11 @@ function Team() {
 
                             icon: "success",
                         }); 
+
+                        clearFormRange();
+                        clearValidationRange();
+                        setViewAddRange('block');
+                        setTextButtonSaveRange('Save');
 
                         listAllRangePriceBaseTeam(idTeam);
                     }
@@ -776,7 +784,7 @@ function Team() {
         {
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            LoadingShow();
+            LoadingShowMap();
 
             fetch(url_general +'range-price-team-by-route/insert', {
                 headers: { "X-CSRF-TOKEN": token },
@@ -805,13 +813,13 @@ function Team() {
                         }
                     }
 
-                    LoadingHide();
+                    LoadingHideMap();
                 },
             );
         }
         else
         {
-            LoadingShow();
+            LoadingShowMap();
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -843,60 +851,9 @@ function Team() {
                     }
                 }
 
-                LoadingHide();
+                LoadingHideMap();
             });
         }
-    }
-
-    const getPriceByRoute = (id) => {
-
-        clearValidationRange(); 
-
-        fetch(url_general +'range-price-team-by-route/get/'+ id)
-        .then(response => response.json())
-        .then(response => {
-
-            let range = response.range;
-
-            console.log(range);
-
-            setIdRange(range.id);
-            setRoutePrice(range.route);
-            setPriceByRoute(range.price);
-            setViewAddRange('block');
-            setTextButtonSaveRange('Updated');
-        });
-    }
-    
-    const deletePriceByRoute = (id) => {
-
-        swal({
-            title: "You want to delete?",
-            text: "Range will be removed!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-
-            if(willDelete)
-            {
-                fetch(url_general +'range-price-team-by-route/delete/'+ id)
-                .then(response => response.json())
-                .then(response => {
-
-                    if(response.stateAction)
-                    {
-                        swal("Range deleted successfully!", {
-
-                            icon: "success",
-                        }); 
-
-                        listAllPriceByRoute(idTeam);
-                    }
-                });
-            } 
-        });
     }
 
     const handlerSavePriceByCompany = (e) => {
@@ -1062,8 +1019,9 @@ function Team() {
                         swal("Range deleted successfully!", {
 
                             icon: "success",
-                        }); 
+                        });
 
+                        handlerAddRangeByCompany();
                         listAllPriceByCompany(idTeam);
                     }
                 });
@@ -1080,29 +1038,10 @@ function Team() {
                 <td><b>{ range.maxWeight }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
                 <td className="text-center">
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getRange(range.id) }>
+                    <button type="button" className="btn btn-primary btn-sm" title="Edit" onClick={ () => getRange(range.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button>&nbsp;
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deleteRange(range.id) }>
-                        <i className="bx bxs-trash-alt"></i>
-                    </button>
-                </td>
-            </tr>
-        );
-    });
-
-    const listPriceByRouteTable = listPriceByRoute.map( (range, i) => {
-
-        return (
-
-            <tr key={i}>
-                <td><b>{ range.route }</b></td>
-                <td><b>{ range.price +' $' }</b></td>
-                <td className="text-center">
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getPriceByRoute(range.id) }>
-                        <i className="bx bx-edit-alt"></i>
-                    </button>&nbsp;
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deletePriceByRoute(range.id) }>
+                    <button type="button" className="btn btn-danger btn-sm" title="Delete" onClick={ () => deleteRange(range.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
@@ -1128,10 +1067,10 @@ function Team() {
                 <td><b>{ range.route }</b></td>
                 <td><b>{ range.price +' $' }</b></td>
                 <td className="text-center">
-                    <button className="btn btn-primary btn-sm" title="Editar" onClick={ () => getPriceByCompany(range.id) }>
+                    <button type="button" className="btn btn-primary btn-sm" title="Edit" onClick={ () => getPriceByCompany(range.id) }>
                         <i className="bx bx-edit-alt"></i>
                     </button>&nbsp;
-                    <button className="btn btn-danger btn-sm" title="Eliminar" onClick={ () => deletePriceByCompany(range.id) }>
+                    <button type="button" className="btn btn-danger btn-sm" title="Delete" onClick={ () => deletePriceByCompany(range.id) }>
                         <i className="bx bxs-trash-alt"></i>
                     </button>
                 </td>
@@ -1315,13 +1254,6 @@ function Team() {
                     <button className="btn btn-success btn-sm mb-2" title="List Ranges Prices" onClick={ () => handlerOpenModalRange(user.id, user.name) }>
                         <i className="bx bxs-badge-dollar"></i>
                     </button>
-                    &nbsp;
-                    <button className="btn btn-warning btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByRoute(user.id, user.name) } style={ {display: 'none'}}>
-                        <i className="bx bxs-badge-dollar"></i>
-                    </button>
-                    <button className="btn btn-danger btn-sm mb-2" title="List Ranges By Routes" onClick={ () => handlerOpenModalRangeByCompany(user.id, user.name) }>
-                        <i className="bx bxs-badge-dollar"></i>
-                    </button>
                 </td>
             </tr>
         );
@@ -1391,7 +1323,7 @@ function Team() {
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        LoadingShow();
+        LoadingShowMap();
 
         fetch(url_general +'range-price-team-route-company/import', {
             headers: { "X-CSRF-TOKEN": token },
@@ -1419,7 +1351,7 @@ function Team() {
                 document.getElementById('fileImport').value = '';
                 setViewButtonSave('none');
 
-                LoadingHide();
+                LoadingHideMap();
             },
         );
     }
@@ -1685,215 +1617,335 @@ function Team() {
                                     </div>
                                 </React.Fragment>;
 
+    const handlerChangeConfigurationPay = () => {
+        swal({
+            title: "Want to change payment settings?",
+            text: "Change state!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if(willDelete)
+            {
+                LoadingShowMap();
+
+                fetch(url_general +'team/change-configuration-pay/'+ idTeam)
+                .then(response => response.json())
+                .then(response => {
+
+                    if(response.stateAction)
+                    {
+                        swal("successful update!", {
+
+                            icon: "success",
+                        });
+
+                        setConfigurationPay(response.configurationPay);
+                    }
+
+                    LoadingHideMap();
+                });
+            }
+        });
+    }
+
+    const handlerSaveConfigurationPay = (e) => {
+        e.preventDefault();
+
+        LoadingShowMap();
+
+        const formData = new FormData();
+        formData.append('idTeam', idTeam);
+        formData.append('gapBetweenTiers', gapBetweenTiers);
+        formData.append('splitForAddPc', splitForAddPc);
+        formData.append('priceByPackage', priceByPackage);
+        formData.append('baseRate', baseRate);
+        formData.append('basePay', basePay);
+        formData.append('signature', signature);
+
+        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url_general +'team/save-configuration-pay', {
+            headers: { "X-CSRF-TOKEN": token },
+            method: 'post',
+            body: formData
+        })
+        .then(res => res.json()).
+        then((response) => {
+
+                swal("Configuration was registered!", {
+
+                    icon: "success",
+                });
+
+                LoadingHideMap();
+            },
+        );
+    }
+
     const modalRangePriceBaseTeam = <React.Fragment>
                                         <div className="modal fade" id="modalRangePriceBaseTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div className="modal-dialog modal-lg">
                                                 <div className="modal-content">
-                                                    <form onSubmit={ handlerSaveRange }>
                                                         <div className="modal-header">
                                                             <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
                                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
-                                                        <div className="modal-body" style={ {display: viewAddRange } }>
+                                                        <div className="modal-body">
                                                             <div className="row">
-                                                                <div className="col-lg-12 form-group">
-                                                                    <h4 className="text-primary">Price Range Data</h4>
+                                                                <div className="col-lg-3">
+                                                                </div>
+                                                                {
+                                                                    (
+                                                                        configurationPay == 'Package'
+                                                                        ?
+                                                                            <>
+                                                                                <div className="col-lg-3 mb-3">
+                                                                                    <button className="btn btn-primary form-control">PACKAGE</button>
+                                                                                </div>
+                                                                                <div className="col-lg-3 mb-3">
+                                                                                    <button className="btn btn-secondary form-control" onClick={ handlerChangeConfigurationPay }>ROUTE</button>
+                                                                                </div>
+                                                                            </>
+                                                                        :
+                                                                            <>
+                                                                                <div className="col-lg-3 mb-3">
+                                                                                    <button className="btn btn-secondary form-control" onClick={ handlerChangeConfigurationPay }>PACKAGE</button>
+                                                                                </div>
+                                                                                <div className="col-lg-3 mb-3">
+                                                                                    <button className="btn btn-primary form-control">ROUTE</button>
+                                                                                </div>
+                                                                            </>
+                                                                    )
+                                                                }
+                                                                <div className="col-lg-3">
                                                                 </div>
                                                             </div>
-                                                            <div className="row">
-                                                                <div className="col-lg-3 form-group">
-                                                                    <label className="form">MIN. WEIGHT</label>
-                                                                    <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
-                                                                </div>
-                                                                <div className="col-lg-3 form-group">
-                                                                    <label className="form">MAX WEIGHT</label>
-                                                                    <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
-                                                                </div>
-                                                                <div className="col-lg-3 form-group">
-                                                                    <label className="form">Price $</label>
-                                                                    <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
-                                                                </div>
-                                                                <div className="col-lg-3 form-group">
-                                                                    <label className="text-white">--</label>
-                                                                    <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
-                                                                </div>
-                                                            </div>
+                                                            {
+                                                                (
+                                                                    configurationPay == 'Package'
+                                                                    ?
+                                                                        <div id="divRangeByPackage" className="row">
+                                                                            <div className="col-lg-12">
+                                                                                <div class="accordion" id="accordionExample">
+                                                                                    <div class="accordion-item">
+                                                                                        <h2 class="accordion-header" id="headingOne">
+                                                                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                                                                <b>BASE PRICES</b>
+                                                                                            </button>
+                                                                                        </h2>
+                                                                                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                                                            <div class="accordion-body">
+                                                                                                <form onSubmit={ handlerSaveRange }>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
+                                                                                                            <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
+                                                                                                                <i className="bx bxs-plus-square"></i> Add
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">MIN. WEIGHT</label>
+                                                                                                            <div id="minWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <input type="number" className="form-control" value={ minWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMinWeightRange(e.target.value) } required/>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">MAX WEIGHT</label>
+                                                                                                            <div id="maxWeightRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <input type="number" className="form-control" value={ maxWeightRange } min="0" max="999" step="0.01" onChange={ (e) => setMaxWeightRange(e.target.value) } required/>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">Price $</label>
+                                                                                                            <div id="priceRange" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <input type="number" className="form-control" value={ priceWeightRange } min="1" max="999" step="0.0001" onChange={ (e) => setPriceWeightRange(e.target.value) } required/>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="text-white">--</label>
+                                                                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                                                                        </div>
+                                                                                                        
+                                                                                                        <table className="table table-condensed table-hover">
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th>MIN. WEIGHT</th>
+                                                                                                                    <th>MAX. WEIGHT</th>
+                                                                                                                    <th>BASE PRICE</th>
+                                                                                                                    <th>ACTIONS</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody>
+                                                                                                                { listRangeTable }
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="accordion-item">
+                                                                                        <h2 class="accordion-header" id="headingTwo">
+                                                                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                                                                <b>PRICE BY COMPANY</b>
+                                                                                            </button>
+                                                                                        </h2>
+                                                                                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                                                                            <div class="accordion-body">
+                                                                                                <div className="row">
+                                                                                                    <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
+                                                                                                        <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRangeByCompany() }>
+                                                                                                            <i className="bx bxs-plus-square"></i> Add
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <form onSubmit={ handlerSavePriceByCompany }>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">COMPANY</label>
+                                                                                                            <div id="idCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) }>
+                                                                                                                <option value="0">Select...</option>
+                                                                                                                { optionCompany }
+                                                                                                            </select>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">BASE RATE RANGE</label>
+                                                                                                            <div id="idRangeRate" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <select id="selectIdRangeRate" className="form-control" onChange={ (e) => setBaseRateRange(e.target.value) }>
+                                                                                                                <option value="0">Select...</option>
+                                                                                                                { optionBaseRateRange }
+                                                                                                            </select>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">ROUTE</label>
+                                                                                                            <div id="routeByCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <input type="text" className="form-control" value={ routeByCompany } maxLength="20" step="0.0001" onChange={ (e) => setRouteByCompany(e.target.value) }/>
+                                                                                                        </div>
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <label className="form">PRICE $</label>
+                                                                                                            <div id="priceByCompany" className="text-danger" style={ {display: 'none'} }></div>
+                                                                                                            <input type="number" className="form-control" value={ priceByCompany } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByCompany(e.target.value) } required/>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-3 form-group">
+                                                                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </form>
+                                                                                                <table className="table table-condensed table-hover">
+                                                                                                    <thead>
+                                                                                                        <tr>
+                                                                                                            <th>COMPANY</th>
+                                                                                                            <th>BASE RATE RANGE</th>
+                                                                                                            <th>ROUTE</th>
+                                                                                                            <th>PRICE</th>
+                                                                                                            <th>ACTIONS</th>
+                                                                                                        </tr>
+                                                                                                    </thead>
+                                                                                                    <tbody>
+                                                                                                        { listPriceByCompanyTable }
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    :
+                                                                        <div id="divRangeByRoute" className="row">
+                                                                            <div className="col-lg-12">
+                                                                                <form onSubmit={ handlerSaveConfigurationPay }>
+                                                                                    <div className="row">
+                                                                                        <div className="col-lg-12">
+                                                                                            <table className="table table-condensed table-hover">
+                                                                                                <tbody>
+                                                                                                    <tr>
+                                                                                                        <td><b>Gap between tiers</b></td>
+                                                                                                        <td><input type="number" value={ gapBetweenTiers } onChange={ (e) => setGapBetweenTiers(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td><b>Split for add pc</b></td>
+                                                                                                        <td><input type="number"value={ splitForAddPc } onChange={ (e) => setSplitForAddPc(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td><b>Price By Package</b></td>
+                                                                                                        <td><input type="number" value={ priceByPackage } onChange={ (e) => setPriceByPackage(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td><b>Base Rate</b></td>
+                                                                                                        <td><input type="number" value={ baseRate } onChange={ (e) => setBaseRate(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td><b>Base Pay</b></td>
+                                                                                                        <td><input type="number" value={ basePay } onChange={ (e) => setBasePay(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td><b>Signature</b></td>
+                                                                                                        <td><input type="number" value={ signature } onChange={ (e) => setSignature(e.target.value) } className="form-control" required/></td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            <button className="btn btn-primary">Save</button>
+                                                                                                        </td>
+                                                                                                        <td></td>
+                                                                                                    </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                            <br/>
+                                                                                            <h3 className="text-primary">Tiers</h3>
+                                                                                            <table className="table table-condensed table-hover">
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <td></td>
+                                                                                                        <td>MIN</td>
+                                                                                                        <td>MAX</td>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    <tr>
+                                                                                                        <td>4</td>
+                                                                                                        <td>0</td>
+                                                                                                        <td>79</td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td>3</td>
+                                                                                                        <td>80</td>
+                                                                                                        <td>99</td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td>2</td>
+                                                                                                        <td>100</td>
+                                                                                                        <td>119</td>
+                                                                                                    </tr>
+                                                                                                    <tr>
+                                                                                                        <td>1</td>
+                                                                                                        <td>120</td>
+                                                                                                        <td>130</td>
+                                                                                                    </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                )
+                                                            }
                                                         </div>
-                                                    </form>
                                                     <div className="modal-footer">
-                                                        <div className="row">
-                                                            <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
-                                                                <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
-                                                                    <i className="bx bxs-plus-square"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <table className="table table-condensed table-hover">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>MIN. WEIGHT</th>
-                                                                    <th>MAX. WEIGHT</th>
-                                                                    <th>BASE PRICE</th>
-                                                                    <th>ACTIONS</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                { listRangeTable }
-                                                            </tbody>
-                                                        </table>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </React.Fragment>;
 
-    const modalRangePriceByRouteTeam =  <React.Fragment>
-                                            <div className="modal fade" id="modalRangePriceByRouteTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div className="modal-dialog modal-lg">
-                                                    <div className="modal-content">
-                                                        <form onSubmit={ handlerSavePriceByRoute }>
-                                                            <div className="modal-header">
-                                                                <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
-                                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div className="modal-body" style={ {display: viewAddRange } }>
-                                                                <div className="row">
-                                                                    <div className="col-lg-12 form-group">
-                                                                        <h4 className="text-primary">Price By Route</h4>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-lg-4 form-group">
-                                                                        <label className="form">ROUTE</label>
-                                                                        <div id="routeByRoute" className="text-danger" style={ {display: 'none'} }></div>
-                                                                        <input type="text" className="form-control" value={ routePrice } onChange={ (e) => setRoutePrice(e.target.value) } required/>
-                                                                    </div>
-                                                                    <div className="col-lg-4 form-group">
-                                                                        <label className="form">PRICE $</label>
-                                                                        <div id="priceByRoute" className="text-danger" style={ {display: 'none'} }></div>
-                                                                        <input type="number" className="form-control" value={ priceByRoute } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByRoute(e.target.value) } required/>
-                                                                    </div>
-                                                                    <div className="col-lg-4 form-group">
-                                                                        <label className="text-white">--</label>
-                                                                        <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                        <div className="modal-footer">
-                                                            <div className="row">
-                                                                <div className="col-lg-12 form-group pull-right">
-                                                                    <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
-                                                                        <i className="bx bxs-plus-square"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <table className="table table-condensed table-hover">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>ROUTE</th>
-                                                                        <th>PRICE</th>
-                                                                        <th>ACTIONS</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    { listPriceByRouteTable }
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </React.Fragment>;
-
-    const modalRangePriceByCompanyTeam =    <React.Fragment>
-                                                <div className="modal fade" id="modalRangePriceByCompanyTeam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div className="modal-dialog modal-lg">
-                                                        <div className="modal-content">
-                                                            <form onSubmit={ handlerSavePriceByCompany }>
-                                                                <div className="modal-header">
-                                                                    <h5 className="modal-title text-primary" id="exampleModalLabel">{ titleModalRange }</h5>
-                                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div className="modal-body" style={ {display: viewAddRange } }>
-                                                                    <div className="row">
-                                                                        <div className="col-lg-12 form-group">
-                                                                            <h4 className="text-primary">Price By Company</h4>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="row">
-                                                                        <div className="col-lg-3 form-group">
-                                                                            <label className="form">COMPANY</label>
-                                                                            <div id="idCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <select name="" id="selectIdCompany" className="form-control" onChange={ (e) => setCompanyPrice(e.target.value) }>
-                                                                                <option value="0">Select...</option>
-                                                                                { optionCompany }
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="col-lg-3 form-group">
-                                                                            <label className="form">BASE RATE RANGE</label>
-                                                                            <div id="idRangeRate" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <select id="selectIdRangeRate" className="form-control" onChange={ (e) => setBaseRateRange(e.target.value) }>
-                                                                                <option value="0">Select...</option>
-                                                                                { optionBaseRateRange }
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="col-lg-3 form-group">
-                                                                            <label className="form">ROUTE</label>
-                                                                            <div id="routeByCompanyByCompany" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <input type="text" className="form-control" value={ routeByCompany } maxLength="20" step="0.0001" onChange={ (e) => setRouteByCompany(e.target.value) }/>
-                                                                        </div>
-                                                                        <div className="col-lg-3 form-group">
-                                                                            <label className="form">PRICE $</label>
-                                                                            <div id="priceByCompany" className="text-danger" style={ {display: 'none'} }></div>
-                                                                            <input type="number" className="form-control" value={ priceByCompany } min="-999" max="999" step="0.0001" onChange={ (e) => setPriceByCompany(e.target.value) } required/>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="row">
-                                                                        <div className="col-lg-3 form-group">
-                                                                            <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                            <div className="modal-footer">
-                                                                <div className="row">
-                                                                    <div className="col-lg-12 form-group pull-right" style={ {display: buttonAddPriceCompany } }>
-                                                                        <button type="button" className="btn btn-success btn-sm" onClick={ () => handlerAddRange() }>
-                                                                            <i className="bx bxs-plus-square"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <table className="table table-condensed table-hover">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>COMPANY</th>
-                                                                            <th>BASE RATE RANGE</th>
-                                                                            <th>ROUTE</th>
-                                                                            <th>PRICE</th>
-                                                                            <th>ACTIONS</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        { listPriceByCompanyTable }
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </React.Fragment>;
-
     return (
 
         <section className="section">
             { modalCategoryInsert }
             { modalRangePriceBaseTeam }
-            { modalRangePriceByRouteTeam }
-            { modalRangePriceByCompanyTeam }
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">

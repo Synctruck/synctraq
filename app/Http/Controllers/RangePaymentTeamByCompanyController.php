@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{ Company, RangePriceTeamByCompany  };
+use App\Models\{ Company, RangePriceTeamByCompany, User  };
 
 use Illuminate\Support\Facades\Validator;
 
@@ -19,7 +19,10 @@ class RangePaymentTeamByCompanyController extends Controller
                                         ->orderBy('price', 'asc')
                                         ->get();
 
-        return ['rangeList' => $rangeList];
+        $team = User::select('id', 'configurationPay', 'gapBetweenTiers', 'splitForAddPc', 'priceByPackage', 'baseRate', 'basePay', 'signature')
+                    ->find($idTeam);
+
+        return ['rangeList' => $rangeList, 'team' => $team];
     }
 
     public function Insert(Request $request)
@@ -55,7 +58,7 @@ class RangePaymentTeamByCompanyController extends Controller
             }
         }
 
-        if($request->get('idCompany') || $request->get('routeByCompany'))
+        if($request->get('idCompany') || $request->get('routeByCompany') || $request->get('idRangeRate') || $request->get('price'))
         {
             $validator = Validator::make($request->all(),
 
@@ -63,31 +66,6 @@ class RangePaymentTeamByCompanyController extends Controller
                     "idTeam" => ["required"],
                 ],
                 [
-
-                    "price.required" => "The field is required",
-                    "price.numeric"  => "Enter only numbers",
-                ]
-            );
-        }
-        else
-        {
-            $validator = Validator::make($request->all(),
-
-                [
-                    "idTeam" => ["required"],
-                    "idRangeRate" => ["idRangeRate"],
-                    "idCompany" => ["required"],
-                    "routeByCompany" => ["required"],
-                    "price" => ["required", "max:999", "numeric"],
-                ],
-                [
-                    "idTeam.required" => "Seleccione un team",
-
-                    "idCompany.required" => "Select an item",
-
-                    "idRangeRate.required" => "Select a BASE RATE RANGE",
-
-                    "routeByCompany.required" => "The field is required",
 
                     "price.required" => "The field is required",
                     "price.numeric"  => "Enter only numbers",

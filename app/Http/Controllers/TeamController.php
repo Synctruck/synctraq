@@ -305,12 +305,33 @@ class TeamController extends Controller
     public function ChangeStatus($id)
     {
         $user = User::find($id);
-
         $user->status = $user->status == 'Active' ? 'Inactive' : 'Active';
-
         $user->save();
 
         return ['stateAction' => true];
+    }
+
+    public function ChangeConfigurationPay($id)
+    {
+        $user = User::find($id);
+        $user->configurationPay = $user->configurationPay == 'Package' ? 'Route' : 'Package';
+        $user->save();
+
+        return ['stateAction' => true, 'configurationPay' => $user->configurationPay];
+    }
+
+    public function SaveConfigurationPay(Request $request)
+    {
+        $user = User::find($request->idTeam);
+        $user->gapBetweenTiers = $request->gapBetweenTiers;
+        $user->splitForAddPc = $request->splitForAddPc;
+        $user->priceByPackage = $request->priceByPackage;
+        $user->baseRate = $request->baseRate;
+        $user->basePay = $request->basePay;
+        $user->signature = $request->signature;
+        $user->save();
+
+        return true;
     }
 
     public function GetPeakeSeason($idTeam, $weight)
