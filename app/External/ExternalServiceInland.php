@@ -161,4 +161,28 @@ class ExternalServiceInland{
             return ['status' => $http_status, 'response' => $output];
         }
     }
+
+    public function SendToTakeOver($Reference_Number_1)
+    {
+        $curl = curl_init();
+        
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjVjNjJiYWJiYzgwMjQ1ZWFlNzI4YmFhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEgbW9yZWFubyIsImxhc3RPcmciOiI2NTZmNjZmZjQ2NmNkMTE0NTdlNDlmZjQiLCJwZXJtaXNzaW9ucyI6Imxpc3VzZSx2aWV1c2UsZWRpdXNlLHZpZXJvbCxsaXNyb2wsY3Jlcm9sLGxpZnJwZSxkZWxyb2wsZWRpcm9sLHZpZXNoaSxsaXNzaGlwLHZpZW9yZyxjcmVzaGksY3JldXNlLGNyZW9yZyxsaXNvcmciLCJvcmdzIjpbeyJpZCI6IjY1NmY2NmZmNDY2Y2QxMTQ1N2U0OWZmNCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDMtMjNUMDQ6MTg6MjIuNTMzWiJ9LCJpYXQiOjE3MTExMjQzMDIsImV4cCI6MTcxMTE2NzUwMiwiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.-qoxl9Sj2xmRlARTeDyWeBQTANzpy8Rg7RhEz8VyCEk'
+            ),
+        ));
+
+        $response    = json_decode(curl_exec($curl), 1);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        return $response;
+    }
 }

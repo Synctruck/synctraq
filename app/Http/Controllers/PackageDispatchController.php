@@ -13,6 +13,7 @@ use App\Models\{ AuxDispatchUser, Comment, Company, Configuration, DimFactorTeam
 
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\{ RangePriceTeamRouteCompanyController, TeamController };
+use App\External\ExternalServiceInland;
 
 use DateTime;
 use DB;
@@ -1630,7 +1631,10 @@ class PackageDispatchController extends Controller
 
                         DB::commit();
 
-                        return ['stateAction' => true];
+                        $externalServiceInland = new ExternalServiceInland();
+                        $takeOverResponse = $externalServiceInland->SendToTakeOver($packageDispatch->Reference_Number_1);
+
+                        return ['stateAction' => true, 'takeOverResponse' => $takeOverResponse];
                     }
                     else
                     {
@@ -1659,6 +1663,7 @@ class PackageDispatchController extends Controller
 
         return ['stateAction' => 'notDispatch'];
     }
+
 
     public function UpdatePriceTeams($dateStart, $dateEnd)
     {
