@@ -181,7 +181,7 @@ class ExternalServiceInland{
             ),
         ));
 
-        $response    = curl_exec($curl);
+        $response    = json_decode(curl_exec($curl), 1);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         return $response;
