@@ -5,6 +5,7 @@ use App\Models\{ Company, PackageBlocked };
 
 use Auth;
 use DateTime;
+use Log;
 
 class ExternalServiceInland{
 
@@ -165,7 +166,7 @@ class ExternalServiceInland{
     public function SendToTakeOver($Reference_Number_1)
     {
         $curl = curl_init();
-        
+        Log::info(ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1);
         curl_setopt_array($curl, array(
             CURLOPT_URL => ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1,
             CURLOPT_RETURNTRANSFER => true,
