@@ -695,7 +695,7 @@ function PaymentAdjustment() {
                                             <tfoot>
                                                 <tr>
                                                     <th>TOTAL</th>
-                                                    <th className="text-right">$ { totalDeduction.toFixed(2) }</th>
+                                                    <th className="text-right">$ { totalDeduction }</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
