@@ -5,6 +5,7 @@ use App\Models\{ Company, PackageBlocked };
 
 use Auth;
 use DateTime;
+use Log;
 
 class ExternalServiceInland{
 
@@ -160,5 +161,29 @@ class ExternalServiceInland{
         {
             return ['status' => $http_status, 'response' => $output];
         }
+    }
+
+    public function SendToTakeOver($Reference_Number_1)
+    {
+        $curl = curl_init();
+        Log::info(ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjU4MWI4MTM2OGU5NTk5YTdjODhkMzVhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEiLCJsYXN0T3JnIjoiNjU3MjA4NWEyOTE1MzMzNjFjNGEwYWI4IiwicGVybWlzc2lvbnMiOiJlZGl1c2UsbGlzdXNlLHZpZXVzZSx2aWVyb2wsbGlzcm9sLGNyZXJvbCxsaWZycGUsZGVscm9sLGVkaXJvbCx2aWVzaGksbGlzc2hpcCx2aWVvcmcsY3Jlc2hpLGVkaXNoaSxsaXNvcmcsY3Jlb3JnLGNyZXVzZSxsaWFub20sc29hbm9tLGNyZWpvYixsaXNqb2IsdmVuZGFzLGxpc3JvdSxsaXNkcmlsb2MiLCJvcmdzIjpbeyJpZCI6IjY1NzIwODVhMjkxNTMzMzYxYzRhMGFiOCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDMtMjRUMDU6MTg6MzguMjY4WiJ9LCJpYXQiOjE3MTEyMTQzMTgsImV4cCI6MTcxMTI1NzUxOCwiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.F2NcheTpI0sOD_BBKYSpPglge2gQ-SY24mBfWFwdPKs'
+            ),
+        ));
+
+        $response    = json_decode(curl_exec($curl), 1);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        return $response;
     }
 }

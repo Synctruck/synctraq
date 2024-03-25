@@ -503,7 +503,11 @@ function PackageReturn() {
                     }
                     else if(response.stateAction == true)
                     {
-                        setTextMessage("Package N° "+ returnReference_Number_1 +" fue retornado!");
+                        if(response.takeOverResponse.status != 200)
+                            setTextMessage("#"+ returnReference_Number_1 +" was returned!.\n\nSyncWeb: "+ response.takeOverResponse.message);
+                        else
+                            setTextMessage("#"+ returnReference_Number_1 +" was returned!");
+                        
                         setTypeMessage('success');
                         setNumberPackage('');
 
