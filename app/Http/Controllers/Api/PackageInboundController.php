@@ -42,9 +42,8 @@ class PackageInboundController extends Controller
             else
             {
                 $state = States::where('name', $packageManifest->Dropoff_Province)
-                            ->where('filter', 1)
-                            ->first();
-
+                                ->where('filter', 1)
+                                ->first();
 
                 $dimensions = $request['responses']['dimension']['info']['dimensions'];
                 $weight     = $dimensions['weight']['net'];
