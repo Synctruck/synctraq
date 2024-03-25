@@ -177,7 +177,7 @@ class ExternalServiceInland{
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjU4MWI4MTM2OGU5NTk5YTdjODhkMzVhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEiLCJsYXN0T3JnIjoiNjU3MjA4NWEyOTE1MzMzNjFjNGEwYWI4IiwicGVybWlzc2lvbnMiOiJlZGl1c2UsbGlzdXNlLHZpZXVzZSx2aWVyb2wsbGlzcm9sLGNyZXJvbCxsaWZycGUsZGVscm9sLGVkaXJvbCx2aWVzaGksbGlzc2hpcCx2aWVvcmcsY3Jlc2hpLGVkaXNoaSxsaXNvcmcsY3Jlb3JnLGNyZXVzZSxsaWFub20sc29hbm9tLGNyZWpvYixsaXNqb2IsdmVuZGFzLGxpc3JvdSxsaXNkcmlsb2MiLCJvcmdzIjpbeyJpZCI6IjY1NzIwODVhMjkxNTMzMzYxYzRhMGFiOCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDMtMjZUMTA6NDk6MDIuMDMyWiJ9LCJpYXQiOjE3MTE0MDY5NDIsImV4cCI6MTcxMTQ1MDE0MiwiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.7We9C0pEILBmR82YHKvYT78cX9j16KpXPshlyZhI_zo'
+                'Authorization: '. ENV('SYNC_WEB_API_KEY')
             ),
         ));
 
