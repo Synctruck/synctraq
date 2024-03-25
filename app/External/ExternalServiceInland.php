@@ -76,7 +76,7 @@ class ExternalServiceInland{
                             "postal_code": "'. $package->Dropoff_Postal_Code .'",
                             "address_residential_indicator": true
                         },
-                        "shipment_details": { 
+                        "shipment_details": {
                             "ship_date": "'. $created_at .'",
                             "weight": '. $package->Weight .',
                             "weight_unit": "lb",
@@ -97,12 +97,12 @@ class ExternalServiceInland{
                 }';
 
         $curl = curl_init();
-        
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -125,12 +125,12 @@ class ExternalServiceInland{
         $company = Company::find(1);
 
         $curl = curl_init();
-        
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => $company->url_webhook . $request->Reference_Number_1 .'/update-details',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -171,13 +171,14 @@ class ExternalServiceInland{
             CURLOPT_URL => ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: '. ENV('SYNC_WEB_API_KEY')
+                'Authorization: '. ENV('SYNC_WEB_API_KEY'),
+                'Content-Type: application/json'
             ),
         ));
 
