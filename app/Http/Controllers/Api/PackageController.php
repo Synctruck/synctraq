@@ -832,7 +832,7 @@ class PackageController extends Controller
         }
     }
 
-   /* public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
+    public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
     {
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
@@ -1061,7 +1061,7 @@ class PackageController extends Controller
         }
 
         return $dataStructure;
-    }*/
+    }
 
     public function UpdateManifestRouteByZipCode()
     {
