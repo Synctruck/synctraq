@@ -203,10 +203,10 @@ class PackageController extends Controller
 
                     Log::info('company->dimensions:');
                     Log::info($company->dimensions);
-                    
+
                     $packageWeight = new PackageWeight();
                     $packageWeight->Reference_Number_1 = $data['Reference_Number_1'];
-                    
+
                     if($dimFactorCompany && $company->dimensions)
                     {
                         $dim_weight = ($data['width'] * $data['height'] * $data['length']) / $dimFactorCompany->factor;
@@ -632,7 +632,7 @@ class PackageController extends Controller
                 {
                     $sendStatusCompany = false;
                 }
-                
+
             }
 
             if($sendStatusCompany)
@@ -832,7 +832,7 @@ class PackageController extends Controller
         }
     }
 
-    public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
+   /* public function GetDataSmartKargo($package, $status, $statusCodeCompany, $created_at, $idPhoto = null)
     {
         $created_at_now = $created_at;
         $created_at_rfc = $created_at;
@@ -1061,7 +1061,7 @@ class PackageController extends Controller
         }
 
         return $dataStructure;
-    }
+    }*/
 
     public function UpdateManifestRouteByZipCode()
     {
