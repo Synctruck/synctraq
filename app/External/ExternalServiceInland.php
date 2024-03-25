@@ -176,6 +176,7 @@ class ExternalServiceInland{
           CURLOPT_FOLLOWLOCATION => true,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
           CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>'{}',
           CURLOPT_HTTPHEADER => array(
             'Authorization: K3tv5NXzPMno6A-RGgQ8l'
           ),
