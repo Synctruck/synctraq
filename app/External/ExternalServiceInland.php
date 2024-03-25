@@ -166,9 +166,9 @@ class ExternalServiceInland{
     public function SendToTakeOver($Reference_Number_1)
     {
         $curl = curl_init();
-        Log::info(ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1);
+        Log::info(ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1);
         curl_setopt_array($curl, array(
-            CURLOPT_URL => ENV('URL_SYNC_WEB') .'api/v6/shipments/take-over/'. $Reference_Number_1,
+            CURLOPT_URL => ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10, 
@@ -177,7 +177,7 @@ class ExternalServiceInland{
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjU4MWI4MTM2OGU5NTk5YTdjODhkMzVhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEiLCJsYXN0T3JnIjoiNjU3MjA4NWEyOTE1MzMzNjFjNGEwYWI4IiwicGVybWlzc2lvbnMiOiJlZGl1c2UsbGlzdXNlLHZpZXVzZSx2aWVyb2wsbGlzcm9sLGNyZXJvbCxsaWZycGUsZGVscm9sLGVkaXJvbCx2aWVzaGksbGlzc2hpcCx2aWVvcmcsY3Jlc2hpLGVkaXNoaSxsaXNvcmcsY3Jlb3JnLGNyZXVzZSxsaWFub20sc29hbm9tLGNyZWpvYixsaXNqb2IsdmVuZGFzLGxpc3JvdSxsaXNkcmlsb2MiLCJvcmdzIjpbeyJpZCI6IjY1NzIwODVhMjkxNTMzMzYxYzRhMGFiOCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDMtMjRUMDU6MTg6MzguMjY4WiJ9LCJpYXQiOjE3MTEyMTQzMTgsImV4cCI6MTcxMTI1NzUxOCwiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.F2NcheTpI0sOD_BBKYSpPglge2gQ-SY24mBfWFwdPKs'
+                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjVjNjJiYWJiYzgwMjQ1ZWFlNzI4YmFhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEgbW9yZWFubyIsImxhc3RPcmciOiI2NTZmNjZmZjQ2NmNkMTE0NTdlNDlmZjQiLCJwZXJtaXNzaW9ucyI6Imxpc3VzZSx2aWV1c2UsZWRpdXNlLHZpZXJvbCxsaXNyb2wsY3Jlcm9sLGxpZnJwZSxkZWxyb2wsZWRpcm9sLHZpZXNoaSxsaXNzaGlwLHZpZW9yZyxjcmVzaGksZWRpc2hpLGNyZXVzZSxjcmVvcmcsbGlhbm9tLHNvYW5vbSxjcmVqb2IsbGlzam9iLHZlbmRhcyxsaXNyb3UsbGlzZHJpbG9jLGxpc29yZyIsIm9yZ3MiOlt7ImlkIjoiNjU2ZjY2ZmY0NjZjZDExNDU3ZTQ5ZmY0IiwibmFtZSI6IlN5bmN0cnVjayJ9XSwiZXhwIjoiMjAyNC0wMy0yNlQwOTozOTozMy42NjNaIn0sImlhdCI6MTcxMTQwMjc3MywiZXhwIjoxNzExNDQ1OTczLCJhdWQiOiJzeW5jLXN5c3RlbSIsInN1YiI6IndpbGNtMTIzQGdtYWlsLmNvbSJ9.zkG1-DBOiEAp65lOKZ2ou90E7NZ50FpLbyZnXP7zcSE'
             ),
         ));
 

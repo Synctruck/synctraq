@@ -636,10 +636,10 @@ class PackageDispatchController extends Controller
                                 DB::commit();
 
                                 $curl = curl_init();
-                                $apiBaseUrl = getenv('API_BASE_URL');
-                                $syncApiKey = getenv('SYNC_API_KEY');
+                                $apiBaseUrl = ENV('SYNC_WEB_URL');
+                                $syncApiKey = ENV('SYNC_WEB_API_KEY');
                                 curl_setopt_array($curl, array(
-                                CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/avoid-duplicates',
+                                CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/avoid-duplicates',
                                 CURLOPT_RETURNTRANSFER => true,
                                 CURLOPT_ENCODING => '',
                                 CURLOPT_MAXREDIRS => 10,
@@ -674,6 +674,8 @@ class PackageDispatchController extends Controller
 
                                 $response = curl_exec($curl);
                                 $response = json_decode($response, true);
+
+                                Log::info($apiBaseUrl . 'api/v6/shipments/avoid-duplicates');
                                 $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                                 $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
@@ -690,7 +692,7 @@ class PackageDispatchController extends Controller
                                     $curl = curl_init();
 
                                     curl_setopt_array($curl, array(
-                                    CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/'. $package->Reference_Number_1 .'/assign-vendor',
+                                    CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/'. $package->Reference_Number_1 .'/assign-vendor',
                                     CURLOPT_RETURNTRANSFER => true,
                                     CURLOPT_ENCODING => '',
                                     CURLOPT_MAXREDIRS => 10,
@@ -711,7 +713,9 @@ class PackageDispatchController extends Controller
 
 
                                     $response = curl_exec($curl);
+                                    $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
+                                    Log::info($httpcode);
                                     curl_close($curl);
                                 }else{
                                     Log::info('============ PACKAGE WAS NOT CREATED ALREADY EXISTS IN SYNCWEB ================');
