@@ -676,8 +676,6 @@ class PackageDispatchController extends Controller
                                 $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                                 $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-
-
                                 curl_close($curl);
 
                                 $statusCode = $response['status'];
