@@ -166,6 +166,26 @@ class ExternalServiceInland{
     public function SendToTakeOver($Reference_Number_1)
     {
         $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://sync-backend-dot-staging-inland.uc.r.appspot.com/api/v6/shipments/take-over/TEST1501',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_HTTPHEADER => array(
+            'Authorization: K3tv5NXzPMno6A-RGgQ8l'
+          ),
+        ));
+
+        $response = curl_exec($curl);
+
+        Log::info($response);
+
+        /*$curl = curl_init();
         $apiBaseUrl = ENV('SYNC_WEB_URL');
         $syncApiKey = ENV('SYNC_WEB_API_KEY');
         Log::info(ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1);
@@ -192,6 +212,6 @@ class ExternalServiceInland{
         Log::info('http_status: ' .$http_status);
         curl_close($curl);
 
-        return $response;
+        return $response;*/
     }
 }
