@@ -75,7 +75,7 @@ class PackageDispatchController extends Controller
             'quantityHighPriority' => $quantityHighPriority,
             'roleUser' => $roleUser,
             'listState' => $listState
-        ]; 
+        ];
     }
 
     private function getDataDispatch($idCompany, $dateStart,$dateEnd, $idTeam, $idDriver, $state, $routes,  $idCellar, $type='list')
@@ -312,14 +312,14 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
-        
+
         $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
         }
-        
+
         $servicePackageTerminal = new ServicePackageTerminal();
         $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
 
@@ -369,7 +369,7 @@ class PackageDispatchController extends Controller
         {
            $package = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
         }
-        
+
         if(!$package)
         {
             $package = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))
@@ -380,7 +380,7 @@ class PackageDispatchController extends Controller
         if($package)
         {
             $company = Company::find($package->idCompany);
-            
+
             $descriptionReturn = '';
 
             if($company->twoAttempts)
@@ -424,7 +424,7 @@ class PackageDispatchController extends Controller
                 $idUserDispatch = $request->get('idDriver');
 
                 $description = 'To: '. $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
-        
+
                 if($team && $team->twoAttempts)
                 {
                     $packageHistoryDispatchListTeam = PackageHistory::where('Reference_Number_1', $request->Reference_Number_1)
@@ -469,7 +469,7 @@ class PackageDispatchController extends Controller
                         if($package->status == 'Manifest')
                         {
                             $packageHistory = new PackageHistory();
- 
+
                             $packageHistory->id                           = uniqid();
                             $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
                             $packageHistory->idCompany                    = $package->idCompany;
@@ -498,7 +498,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->actualDate                   = $nowDate;
                             $packageHistory->created_at                   = $nowDate;
                             $packageHistory->updated_at                   = $nowDate;
- 
+
                             $packageHistory->save();
                         }
 
@@ -530,11 +530,11 @@ class PackageDispatchController extends Controller
                         $packageDispatch->status                       = 'Dispatch';
                         $packageDispatch->created_at                   = $created_at;
                         $packageDispatch->updated_at                   = $created_at;
-                        
+
                         $cellar = Cellar::find(Auth::user()->idCellar);
 
                         if($cellar)
-                        {    
+                        {
                             $packageDispatch->idCellar    = $cellar->id;
                             $packageDispatch->nameCellar  = $cellar->name;
                             $packageDispatch->stateCellar = $cellar->state;
@@ -568,7 +568,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->dispatch                     = 1;
                         $packageHistory->autorizationDispatch         = 1;
                         $packageHistory->Description                  = $description;
-                        $packageHistory->Description_Return           = $descriptionReturn; 
+                        $packageHistory->Description_Return           = $descriptionReturn;
                         $packageHistory->quantity                     = $package->quantity;
                         $packageHistory->status                       = 'Dispatch';
                         $packageHistory->actualDate                   = $nowDate;
@@ -603,10 +603,10 @@ class PackageDispatchController extends Controller
                                 return ['stateAction' => 'packageErrorOnfleet'];
                             }
                         }
-                        
+
                         if($registerTask['status'] == 200)
                         {
-                            
+
                             $packageDispatch->idOnfleet   = $idOnfleet;
                             $packageDispatch->taskOnfleet = $taskOnfleet;
 
@@ -634,9 +634,92 @@ class PackageDispatchController extends Controller
                             {
                                 DB::commit();
 
+                                $curl = curl_init();
+                                $apiBaseUrl = getenv('API_BASE_URL');
+                                curl_setopt_array($curl, array(
+                                CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/avoid-duplicates',
+                                CURLOPT_RETURNTRANSFER => true,
+                                CURLOPT_ENCODING => '',
+                                CURLOPT_MAXREDIRS => 10,
+                                CURLOPT_TIMEOUT => 0,
+                                CURLOPT_FOLLOWLOCATION => true,
+                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                CURLOPT_CUSTOMREQUEST => 'POST',
+                                CURLOPT_POSTFIELDS =>'{
+                                "entryPointCode": "SYPHP",
+                                "shipment": {
+                                    "trackingNumber": "'. $package->Reference_Number_1 .'",
+                                    "shipTo": {
+                                    "name": "'. $package->Dropoff_Contact_Name .'",
+                                    "phone": "'. $package->Dropoff_Contact_Phone_Number .'",
+                                    "addressLine1": "'. $package->Dropoff_Address_Line_1 .'",
+                                    "cityLocality": "'. $package->Dropoff_City .'",
+                                    "stateProvince": "'. $package->Dropoff_Province .'",
+                                    "postalCode": "'. $package->Dropoff_Postal_Code .'"
+                                    },
+                                    "shipmentDetails": {
+                                    "weight": '. $package->Weight .'
+                                    }
+                                }
+                                }
+                                ',
+                                CURLOPT_HTTPHEADER => array(
+                                    'Authorization: G4Y52G5-PG04X5E-QH12600-TY4R8X2',
+                                    'Content-Type: application/json'
+                                ),
+                                ));
+
+
+                                $response = curl_exec($curl);
+                                $response = json_decode($response, true);
+                                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+
+
+                                curl_close($curl);
+
+                                $statusCode = $response['status'];
+                                Log::info($response);
+                                Log::info('============ SENT TO SYNCWEB ================');
+                                if($statusCode==201){
+                                    $team = User::find($request->get('idTeam'));
+                                    $driver = User::find($request->get('idDriver'));
+
+                                    Log::info('============ ASSIGN VENDOR ================');
+                                    $curl = curl_init();
+
+                                    curl_setopt_array($curl, array(
+                                    CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/'. $package->Reference_Number_1 .'/assign-vendor',
+                                    CURLOPT_RETURNTRANSFER => true,
+                                    CURLOPT_ENCODING => '',
+                                    CURLOPT_MAXREDIRS => 10,
+                                    CURLOPT_TIMEOUT => 0,
+                                    CURLOPT_FOLLOWLOCATION => true,
+                                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                    CURLOPT_CUSTOMREQUEST => 'POST',
+                                    CURLOPT_POSTFIELDS =>'{
+                                    "vendorId": "'. $team->orgId .'",
+                                    "orgType": "internal",
+                                    "driverId": "'. $driver->driverId .'"
+                                    }',
+                                    CURLOPT_HTTPHEADER => array(
+                                        'Authorization: G4Y52G5-PG04X5E-QH12600-TY4R8X2',
+                                        'Content-Type: application/json'
+                                    ),
+                                    ));
+
+
+                                    $response = curl_exec($curl);
+
+                                    curl_close($curl);
+                                }else{
+                                    Log::info('============ PACKAGE WAS NOT CREATED ALREADY EXISTS IN SYNCWEB ================');
+                                }
+
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
-                                
+
                                 //data for INLAND
                                 $packageController = new PackageController();
                                 $packageController->SendStatusToInland($package, 'Dispatch', null, $created_at);
@@ -731,14 +814,14 @@ class PackageDispatchController extends Controller
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
 
-                   
+
                         if($cellar){
                             $packageHistory->idCellar    = $cellar->id;
                             $packageHistory->nameCellar  = $cellar->name;
                             $packageHistory->stateCellar = $cellar->state;
                             $packageHistory->cityCellar  = $cellar->city;
                         }
-                    
+
                     $registerTask = $this->RegisterOnfleet($package, $team, $driver);
 
                     if($registerTask['status'] == 200)
@@ -1164,7 +1247,7 @@ class PackageDispatchController extends Controller
                                 $cellar = Cellar::find(Auth::user()->idCellar);
 
                                 if($cellar)
-                                {    
+                                {
                                     $packageDispatch->idCellar    = $cellar->id;
                                     $packageDispatch->nameCellar  = $cellar->name;
                                     $packageDispatch->stateCellar = $cellar->state;
@@ -1203,7 +1286,7 @@ class PackageDispatchController extends Controller
                                 $packageHistory->actualDate                   = $created_at;
                                 $packageHistory->created_at                   = $created_at;
                                 $packageHistory->updated_at                   = $created_at;
-                                
+
                                 if($cellar)
                                 {
                                     $packageHistory->idCellar    = $cellar->id;
@@ -1263,7 +1346,7 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
-        
+
         $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($package)
@@ -1277,13 +1360,13 @@ class PackageDispatchController extends Controller
         {
             return ['stateAction' => 'validatedLost'];
         }
-        
+
         $packageDispatch = PackageFailed::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($packageDispatch == null)
         {
             $packageDispatch = PackageDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
-            
+
             if($packageDispatch == null)
             {
                 $packageDispatch = PackageLmCarrier::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
@@ -1299,12 +1382,12 @@ class PackageDispatchController extends Controller
                 try
                 {
                     DB::beginTransaction();
-                    
+
                     $team                = User::find($packageDispatch->idTeam);
                     $driver              = User::find($packageDispatch->idUserDispatch);
                     $idOnfleet           = $packageDispatch->idOnfleet;
                     $taskOnfleet         = $packageDispatch->taskOnfleet;
-                    $teamName            = $team ? $team->name : 'NOT FOUND'; 
+                    $teamName            = $team ? $team->name : 'NOT FOUND';
                     $workerName          = ($driver ? $driver->name .' '. $driver->nameOfOwner : '');
                     $photoUrl            = '';
                     $statusOnfleet       = '';
@@ -1377,7 +1460,7 @@ class PackageDispatchController extends Controller
                     {
                         $statusReturn = 'Terminal';
                     }
-                    
+
                     $packageHistory = new PackageHistory();
 
                     $packageHistory->id                           = uniqid();
@@ -1471,8 +1554,8 @@ class PackageDispatchController extends Controller
                     $packageReturn->quantity                     = $packageDispatch->quantity;
                     $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
                     $packageReturn->status                       = 'Return';
-                    
-                    $packageReturn->save(); 
+
+                    $packageReturn->save();
 
                     if($packageDispatch->idPaymentTeam != '')
                     {
@@ -1555,7 +1638,7 @@ class PackageDispatchController extends Controller
                         $cellar = Cellar::find(Auth::user()->idCellar);
 
                         if($cellar)
-                        {    
+                        {
                             $packageWarehouse->idCellar    = $cellar->id;
                             $packageWarehouse->nameCellar  = $cellar->name;
                             $packageWarehouse->stateCellar = $cellar->state;
@@ -1593,7 +1676,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->updated_at                   = $created_at_Warehouse;
 
                         if($cellar)
-                        {    
+                        {
                             $packageHistory->idCellar    = $cellar->id;
                             $packageHistory->nameCellar  = $cellar->name;
                             $packageHistory->stateCellar = $cellar->state;
@@ -1603,13 +1686,13 @@ class PackageDispatchController extends Controller
                         $packageHistory->save();
                     }
                     else if($comment && $comment->category == 'Terminal')
-                    {                        
+                    {
                         $servicePackageTerminal = new ServicePackageTerminal();
                         $servicePackageTerminal->Insert($packageDispatch);
                     }
 
                     $packageDispatch['Description_Return'] = $Description_Return;
-                    
+
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
@@ -1623,7 +1706,7 @@ class PackageDispatchController extends Controller
                     {
                         $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
                     }
-                            
+
                     if($deleteDispatch)
                     {
                         $packageDispatch->delete();
@@ -1695,14 +1778,14 @@ class PackageDispatchController extends Controller
         }
         catch(Exception $e)
         {
-            return 'erros'; 
+            return 'erros';
         }
     }
 
     public function UpdateChangeTeam(Request $request)
     {
         $References = explode(',', $request->get('References'));
-        
+
         $packageDispatchList = PackageDispatch::whereIn('Reference_Number_1', $References)
                                             ->where('status', 'Dispatch')
                                             ->get();
@@ -1719,7 +1802,7 @@ class PackageDispatchController extends Controller
                 foreach($packageDispatchList as $packageDispatch)
                 {
                     $moved = false;
-                    
+
                     if($packageDispatch->taskOnfleet)
                     {
                         $onfleet = $this->GetOnfleetShorId($packageDispatch->taskOnfleet);
@@ -1801,9 +1884,9 @@ class PackageDispatchController extends Controller
         else
         {
             return ['statusCode' => 'notExists'];
-        }     
+        }
     }
-    
+
     public function RegisterOnfleet($package, $team, $driver)
     {
         $company = Company::select('id', 'name', 'age21')->find($package->idCompany);
@@ -1824,7 +1907,7 @@ class PackageDispatchController extends Controller
 
         Log::info('$package->Dropoff_Contact_Name: '. $package->Dropoff_Contact_Name);
 
-        $data = [   
+        $data = [
                     "destination" =>  [
                         "address" =>  [
                             "number" => $number,
@@ -1858,7 +1941,7 @@ class PackageDispatchController extends Controller
                 ];
 
         Log::info($data);
-        
+
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/tasks');
@@ -1964,7 +2047,7 @@ class PackageDispatchController extends Controller
             return false;
         }
     }
- 
+
     public function GetOnfleetShorId($taskOnfleet)
     {
         $curl = curl_init("https://onfleet.com/api/v2/tasks/shortId/". $taskOnfleet);
