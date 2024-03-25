@@ -637,6 +637,8 @@ class PackageDispatchController extends Controller
 
                                 $curl = curl_init();
                                 $apiBaseUrl = getenv('API_BASE_URL');
+
+                                Log::info($apiBaseUrl . '/api/v6/shipments/avoid-duplicates');
                                 curl_setopt_array($curl, array(
                                 CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/avoid-duplicates',
                                 CURLOPT_RETURNTRANSFER => true,
@@ -675,8 +677,6 @@ class PackageDispatchController extends Controller
                                 $response = json_decode($response, true);
                                 $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                                 $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-
 
                                 curl_close($curl);
 
