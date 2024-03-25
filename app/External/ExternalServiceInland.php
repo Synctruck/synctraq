@@ -180,7 +180,8 @@ class ExternalServiceInland{
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'authorization:' . $syncApiKey
+                'authorization:' . $syncApiKey,
+                'Content-Length: 0'
 
             ),
         ));
