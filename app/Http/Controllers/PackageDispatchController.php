@@ -637,8 +637,7 @@ class PackageDispatchController extends Controller
 
                                 $curl = curl_init();
                                 $apiBaseUrl = getenv('API_BASE_URL');
-
-                                Log::info($apiBaseUrl . '/api/v6/shipments/avoid-duplicates');
+                                $syncApiKey = getenv('SYNC_API_KEY');
                                 curl_setopt_array($curl, array(
                                 CURLOPT_URL => $apiBaseUrl . '/api/v6/shipments/avoid-duplicates',
                                 CURLOPT_RETURNTRANSFER => true,
@@ -667,7 +666,7 @@ class PackageDispatchController extends Controller
                                 }
                                 ',
                                 CURLOPT_HTTPHEADER => array(
-                                    'Authorization: G4Y52G5-PG04X5E-QH12600-TY4R8X2',
+                                    'Authorization:' . $syncApiKey,
                                     'Content-Type: application/json'
                                 ),
                                 ));
@@ -705,7 +704,7 @@ class PackageDispatchController extends Controller
                                     "driverId": "'. $driver->driverId .'"
                                     }',
                                     CURLOPT_HTTPHEADER => array(
-                                        'Authorization: G4Y52G5-PG04X5E-QH12600-TY4R8X2',
+                                        'Authorization:' . $syncApiKey,
                                         'Content-Type: application/json'
                                     ),
                                     ));
