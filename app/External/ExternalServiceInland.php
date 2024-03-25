@@ -76,7 +76,7 @@ class ExternalServiceInland{
                             "postal_code": "'. $package->Dropoff_Postal_Code .'",
                             "address_residential_indicator": true
                         },
-                        "shipment_details": {
+                        "shipment_details": { 
                             "ship_date": "'. $created_at .'",
                             "weight": '. $package->Weight .',
                             "weight_unit": "lb",
@@ -97,12 +97,12 @@ class ExternalServiceInland{
                 }';
 
         $curl = curl_init();
-
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => ENV('URL_INLAND_CREATE') .'api/v6/add-to-manifest',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_MAXREDIRS => 10, 
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -125,12 +125,12 @@ class ExternalServiceInland{
         $company = Company::find(1);
 
         $curl = curl_init();
-
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => $company->url_webhook . $request->Reference_Number_1 .'/update-details',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_MAXREDIRS => 10, 
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -165,33 +165,26 @@ class ExternalServiceInland{
 
     public function SendToTakeOver($Reference_Number_1)
     {
-        $apiBaseUrl = getenv('API_BASE_URL');
-        $syncApiKey = getenv('SYNC_API_KEY');
         $curl = curl_init();
-        Log::info(ENV('API_BASE_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1);
+        Log::info(ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1);
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $apiBaseUrl .'api/v6/shipments/take-over/'. $Reference_Number_1,
+            CURLOPT_URL => ENV('SYNC_WEB_URL') .'api/v6/shipments/take-over/'. $Reference_Number_1,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_MAXREDIRS => 10, 
             CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'Authorization:' . $syncApiKey,
-                'Content-Type: application/json'
+                'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjVjNjJiYWJiYzgwMjQ1ZWFlNzI4YmFhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEgbW9yZWFubyIsImxhc3RPcmciOiI2NTZmNjZmZjQ2NmNkMTE0NTdlNDlmZjQiLCJwZXJtaXNzaW9ucyI6Imxpc3VzZSx2aWV1c2UsZWRpdXNlLHZpZXJvbCxsaXNyb2wsY3Jlcm9sLGxpZnJwZSxkZWxyb2wsZWRpcm9sLHZpZXNoaSxsaXNzaGlwLHZpZW9yZyxjcmVzaGksZWRpc2hpLGNyZXVzZSxjcmVvcmcsbGlhbm9tLHNvYW5vbSxjcmVqb2IsbGlzam9iLHZlbmRhcyxsaXNyb3UsbGlzZHJpbG9jLGxpc29yZyIsIm9yZ3MiOlt7ImlkIjoiNjU2ZjY2ZmY0NjZjZDExNDU3ZTQ5ZmY0IiwibmFtZSI6IlN5bmN0cnVjayJ9XSwiZXhwIjoiMjAyNC0wMy0yNlQwOTozOTozMy42NjNaIn0sImlhdCI6MTcxMTQwMjc3MywiZXhwIjoxNzExNDQ1OTczLCJhdWQiOiJzeW5jLXN5c3RlbSIsInN1YiI6IndpbGNtMTIzQGdtYWlsLmNvbSJ9.zkG1-DBOiEAp65lOKZ2ou90E7NZ50FpLbyZnXP7zcSE'
             ),
         ));
 
-        $response = curl_exec($curl);
-        Log::info($response);
-        $response = json_decode($response, true);
-
+        $response    = json_decode(curl_exec($curl), 1);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         Log::info('http_status: ' .$http_status);
-        
         curl_close($curl);
 
         return $response;
