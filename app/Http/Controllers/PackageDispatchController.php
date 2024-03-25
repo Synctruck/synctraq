@@ -683,7 +683,7 @@ class PackageDispatchController extends Controller
                                 $statusCode = $response['status'];
                                 Log::info($response);
                                 Log::info('============ SENT TO SYNCWEB ================');
-                                if($statusCode==200){
+                                if($statusCode==200||$statusCode==201){
                                     $team = User::find($request->get('idTeam'));
                                     $driver = User::find($request->get('idDriver'));
 
