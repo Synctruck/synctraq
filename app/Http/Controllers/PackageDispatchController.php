@@ -633,7 +633,6 @@ class PackageDispatchController extends Controller
 
                             if(count($warnings) >= 0)
                             {
-                                DB::commit();
 
                                 $curl = curl_init();
                                 $apiBaseUrl = ENV('SYNC_WEB_URL');
@@ -684,7 +683,7 @@ class PackageDispatchController extends Controller
                                 $statusCode = $response['status'];
                                 Log::info($response);
                                 Log::info('============ SENT TO SYNCWEB ================');
-                                if($statusCode==201){
+                                if($statusCode==200){
                                     $team = User::find($request->get('idTeam'));
                                     $driver = User::find($request->get('idDriver'));
 
@@ -720,6 +719,9 @@ class PackageDispatchController extends Controller
                                 }else{
                                     Log::info('============ PACKAGE WAS NOT CREATED ALREADY EXISTS IN SYNCWEB ================');
                                 }
+
+
+                                DB::commit();
 
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
