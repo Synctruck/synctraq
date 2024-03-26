@@ -290,7 +290,7 @@ class PackageDispatchController extends Controller
             [
                 "barcode" => ["required"],
                 "status" => ["required", Rule::in(['delivered', 'failed'])],
-                "created_at" => ["required"],
+                "createdAt" => ["required", "date"],
             ],
         );
 
