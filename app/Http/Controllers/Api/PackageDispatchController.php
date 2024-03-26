@@ -323,6 +323,11 @@ class PackageDispatchController extends Controller
 
                 if($packageDispatch)
                 {
+                    if(count($photoUrl) == 1)
+                        $photoUrl = $photoUrl[0];
+                    else
+                        $photoUrl = $photoUrl[0] .','. $photoUrl[1];
+
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
                     $packageDispatch->status        = 'Delivery';
