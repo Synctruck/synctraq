@@ -295,10 +295,8 @@ class PackageDispatchController extends Controller
         );
 
         if($validator->fails())
-        {
             return response()->json(["errors" => $validator->errors()], 422);
-        }
-
+        
         if($request['status'] == 'delivered')
             return $this->InsertDelivery($request, $apiKey);
         else
