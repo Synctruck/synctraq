@@ -299,10 +299,12 @@ class PackageDispatchController extends Controller
             return response()->json(["errors" => $validator->errors()], 422);
         }
 
-        if($request['status'] == 'delivered')
+        if($request['status'] == 'delivered'){
             return $this->InsertDelivery($request, $apiKey);
-        else
+        }
+        else if($request['status'] == 'failed'){
             return $this->InsertFailed($request, $apiKey);
+        }
     }
 
     public function InsertDelivery(Request $request, $apiKey)
@@ -443,7 +445,7 @@ class PackageDispatchController extends Controller
                         'message' => "Ok."
                     ], 200);
                 }
-                
+
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
