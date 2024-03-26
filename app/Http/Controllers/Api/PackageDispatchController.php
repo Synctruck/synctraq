@@ -313,6 +313,8 @@ class PackageDispatchController extends Controller
 
         if($request['pictures']){
         $photoUrl  = $request['pictures'];
+        }else{
+            $photoUrl  = [];
         }
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
