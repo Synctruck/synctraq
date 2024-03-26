@@ -286,7 +286,7 @@ class PackageDispatchController extends Controller
 
     public function UpdateStatusFromSyncweb(Request $request, $apiKey)
     {
-        if($request['status'] == 'Delivery')
+        if($request['status'] == 'delivered')
             return $this->InsertDelivery($request, $apiKey);
         else
             return $this->InsertFailed($request, $apiKey);
@@ -298,7 +298,7 @@ class PackageDispatchController extends Controller
         $photoUrl           = $request['pictures'];
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
 
         try
         {
@@ -404,8 +404,8 @@ class PackageDispatchController extends Controller
     public function InsertFailed(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
-        $Description_POD    = '['. $request['failure_reason'] .', '. $request['notes'] .']';
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
+        $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
 
         try
         {
