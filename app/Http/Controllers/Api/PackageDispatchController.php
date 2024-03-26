@@ -311,7 +311,7 @@ class PackageDispatchController extends Controller
     {
         $Reference_Number_1 = $request['barcode'];
 
-        if(!$request['pictures']){
+        if($request['pictures']){
         $photoUrl  = $request['pictures'];
         }
         $latitude           = $request['latitude'];
@@ -341,12 +341,14 @@ class PackageDispatchController extends Controller
 
                 if($packageDispatch)
                 {
+                    if($photoUrl){
                     if(count($photoUrl) == 1)
                         $photoUrl = $photoUrl[0];
                     else
                         $photoUrl = $photoUrl[0] .','. $photoUrl[1];
 
                     $packageDispatch->photoUrl      = $photoUrl;
+                    }
                     $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
                     $packageDispatch->status        = 'Delivery';
                     $packageDispatch->Date_Delivery = $created_at;
