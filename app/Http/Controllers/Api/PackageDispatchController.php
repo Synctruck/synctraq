@@ -343,7 +343,7 @@ class PackageDispatchController extends Controller
 
                 if($packageDispatch)
                 {
-                    if($photoUrl){
+                    if(count($photoUrl) > 0){
                     if(count($photoUrl) == 1)
                         $photoUrl = $photoUrl[0];
                     else
