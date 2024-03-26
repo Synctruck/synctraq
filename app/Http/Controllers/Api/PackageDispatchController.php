@@ -310,7 +310,10 @@ class PackageDispatchController extends Controller
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
-        $photoUrl           = $request['pictures'];
+
+        if(!$request['pictures']){
+        $photoUrl  = $request['pictures'];
+        }
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
         $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
