@@ -299,23 +299,16 @@ class PackageDispatchController extends Controller
             return response()->json(["errors" => $validator->errors()], 422);
         }
 
-        if($request['status'] == 'delivered'){
+        if($request['status'] == 'delivered')
             return $this->InsertDelivery($request, $apiKey);
-        }
-        else if($request['status'] == 'failed'){
+        else
             return $this->InsertFailed($request, $apiKey);
-        }
     }
 
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
-
-        if($request['pictures']){
-        $photoUrl  = $request['pictures'];
-        }else{
-            $photoUrl  = [];
-        }
+        $photoUrl           = $request['pictures'];
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
         $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
@@ -342,15 +335,15 @@ class PackageDispatchController extends Controller
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
-                {
-                    if(count($photoUrl) > 0){
-                    if(count($photoUrl) == 1)
+                {   
+                    if(count($photoUrl) == 0)
+                        $photoUrl = '';
+                    elseif(count($photoUrl) == 1)
                         $photoUrl = $photoUrl[0];
                     else
                         $photoUrl = $photoUrl[0] .','. $photoUrl[1];
 
                     $packageDispatch->photoUrl      = $photoUrl;
-                    }
                     $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
                     $packageDispatch->status        = 'Delivery';
                     $packageDispatch->Date_Delivery = $created_at;
@@ -452,7 +445,7 @@ class PackageDispatchController extends Controller
                         'message' => "Ok."
                     ], 200);
                 }
-
+                
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
