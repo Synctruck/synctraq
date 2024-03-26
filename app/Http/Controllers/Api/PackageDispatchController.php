@@ -284,6 +284,14 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function UpdateStatusFromSyncweb(Request $request, $apiKey)
+    {
+        if($request['status'] == 'Delivery')
+            return $this->InsertDelivery($request, $apiKey);
+        else
+            return $this->InsertFailed($request, $apiKey);
+    }
+
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
