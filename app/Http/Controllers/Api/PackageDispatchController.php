@@ -286,6 +286,19 @@ class PackageDispatchController extends Controller
 
     public function UpdateStatusFromSyncweb(Request $request, $apiKey)
     {
+        $validator = Validator::make($request->all(),
+            [
+                "barcode" => ["required"],
+                "status" => ["required", Rule::in(['delivered', 'failed'])],
+                "created_at" => ["required"],
+            ],
+        );
+
+        if($validator->fails())
+        {
+            return response()->json(["errors" => $validator->errors()], 422);
+        }
+
         if($request['status'] == 'delivered')
             return $this->InsertDelivery($request, $apiKey);
         else
@@ -357,7 +370,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->Description                  = 'From SyncPOD';
+                    $packageHistory->Description                  = 'From Syncweb';
                     $packageHistory->Date_Delivery                = $created_at;
                     $packageHistory->status                       = 'Delivery';
                     $packageHistory->actualDate                   = $created_at;
