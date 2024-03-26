@@ -284,13 +284,34 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function UpdateStatusFromSyncweb(Request $request, $apiKey)
+    {
+        $validator = Validator::make($request->all(),
+            [
+                "barcode" => ["required"],
+                "status" => ["required", Rule::in(['delivered', 'failed'])],
+                "createdAt" => ["required", "date"],
+            ],
+        );
+
+        if($validator->fails())
+        {
+            return response()->json(["errors" => $validator->errors()], 422);
+        }
+
+        if($request['status'] == 'delivered')
+            return $this->InsertDelivery($request, $apiKey);
+        else
+            return $this->InsertFailed($request, $apiKey);
+    }
+
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
         $photoUrl           = $request['pictures'];
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
 
         try
         {
@@ -315,6 +336,11 @@ class PackageDispatchController extends Controller
 
                 if($packageDispatch)
                 {
+                    if(count($photoUrl) == 1)
+                        $photoUrl = $photoUrl[0];
+                    else
+                        $photoUrl = $photoUrl[0] .','. $photoUrl[1];
+
                     $packageDispatch->photoUrl      = $photoUrl;
                     $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
                     $packageDispatch->status        = 'Delivery';
@@ -344,10 +370,10 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
                     $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
-                    $packageHistory->Description                  = 'From SyncPOD';
+                    $packageHistory->Description                  = 'From Syncweb';
                     $packageHistory->Date_Delivery                = $created_at;
                     $packageHistory->status                       = 'Delivery';
-                    $packageHistory->actualDate                   = $created_at;
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();
@@ -396,8 +422,8 @@ class PackageDispatchController extends Controller
     public function InsertFailed(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
-        $Description_POD    = '['. $request['failure_reason'] .', '. $request['notes'] .']';
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['statusDate']));
+        $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
 
         try
         {
@@ -475,7 +501,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->quantity                     = $packageDispatch->quantity;
                     $packageHistory->Description_Onfleet          = $Description_POD;
                     $packageHistory->status                       = 'Failed';
-                    $packageHistory->actualDate                   = $created_at;
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
                     $packageHistory->save();

@@ -49,6 +49,7 @@ Route::post('package/shipments/inland/{keyApi}', [PackageInboundController::clas
 Route::get('package-dispatch/packages-by-driver-inland/{apiKey}/{idDriver}', [PackageDispatchController::class, 'ListByDriverInland']);
 Route::post('package-dispatch/update-status/{apiKey}', [PackageDispatchController::class, 'UpdateStatus']);
 Route::get('package-dispatch/get-package/{apiKey}/{Reference_Number_1}', [PackageDispatchController::class, 'GetPackage']);
+Route::post('package-dispatch/update-status-from-syncweb/{apiKey}', [PackageDispatchController::class, 'UpdateStatusFromSyncweb']);
 Route::post('package-dispatch/move-dispatch/{apiKey}', [PackageDispatchController::class, 'InsertDispatch']);
 Route::post('package-dispatch/move-delivery/{apiKey}', [PackageDispatchController::class, 'InsertDelivery']);
 Route::post('package-dispatch/move-failed/{apiKey}', [PackageDispatchController::class, 'InsertFailed']);
