@@ -299,9 +299,7 @@ class PackageDispatchController extends Controller
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
-        $company = Company::where('id', 1)
-                            ->where('key_api', $apiKey)
-                            ->first();
+        $company = Company::where('id', 1)->where('key_api', $apiKey)->first();
 
         if($company)
         {
