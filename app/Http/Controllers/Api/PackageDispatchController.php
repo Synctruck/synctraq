@@ -547,7 +547,7 @@ class PackageDispatchController extends Controller
                 }
                 else
                 {
-                    this.InsertDispatchFromSyncWeb($request, $apiKey);
+                    $this.InsertDispatchFromSyncWeb($request, $apiKey);
                 }
             }
             else
