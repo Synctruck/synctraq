@@ -284,6 +284,150 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $company = Company::where('id', 1)
+                            ->where('key_api', $apiKey)
+                            ->first();
+
+            if($company)
+            {
+                $package = PackageManifest::find($request['package_id']);
+                $package = $package ? $package : PackageInbound::find($request['package_id']);
+                $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
+                $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
+                $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['package_id']);
+
+                if($package)
+                {
+                    $driver = User::where('idRole', 4)->find($request['driverId'])->first();
+
+                    if($driver)
+                    {
+                        $team = User::where('idRole', 3)->find($driver->idTeam);
+
+                        if($team)
+                        {
+                            $created_at = date('Y-m-d H:i:s');
+
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                            {
+                                $packageDispatch = new PackageDispatch();
+                                $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                                $packageDispatch->idCompany                    = $package->idCompany;
+                                $packageDispatch->company                      = $package->company;
+                                $packageDispatch->idStore                      = $package->idStore;
+                                $packageDispatch->store                        = $package->store;
+                                $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                                $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                                $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                                $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                                $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                                $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                                $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                                $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                                $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                                $packageDispatch->Notes                        = $package->Notes;
+                                $packageDispatch->Weight                       = $package->Weight;
+                                $packageDispatch->Route                        = $package->Route;
+                                $packageDispatch->idTeam                       = $team->id;
+                                $packageDispatch->idUserDispatch               = $driver->id;
+                                $packageDispatch->Date_Dispatch                = $created_at;
+                                $packageDispatch->quantity                     = $package->quantity;
+                                $packageDispatch->status                       = 'Dispatch';
+                                $packageDispatch->created_at                   = $created_at;
+                                $packageDispatch->updated_at                   = $created_at;
+                                $packageDispatch->save();
+                            }
+                            else
+                            {
+                                $package->idTeam         = $team->id;
+                                $package->idUserDispatch = $driver->id;
+                                $package->updated_at     = $created_at;
+                                $package->save();
+                            }
+
+                            $packageHistory = new PackageHistory();
+                            $packageHistory->id                           = uniqid();
+                            $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                            $packageHistory->idCompany                    = $package->idCompany;
+                            $packageHistory->company                      = $package->company;
+                            $packageHistory->idStore                      = $package->idStore;
+                            $packageHistory->store                        = $package->store;
+                            $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                            $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                            $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                            $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                            $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                            $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                            $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                            $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                            $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                            $packageHistory->Notes                        = $package->Notes;
+                            $packageHistory->Weight                       = $package->Weight;
+                            $packageHistory->Route                        = $package->Route;
+                            $packageHistory->idTeam                       = $team->id;
+                            $packageHistory->idUserDispatch               = $driver->id;
+                            $packageHistory->Description                  = 'Dispatch for APP POD to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                            $packageHistory->status                       = 'Dispatch';
+                            $packageHistory->actualDate                   = $created_at;
+                            $packageHistory->created_at                   = $created_at;
+                            $packageHistory->updated_at                   = $created_at;
+                            $packageHistory->save();
+
+                            if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                            {
+                                $package->delete();
+                            }
+
+                            DB::commit();
+
+                            return response()->json([
+                                'package_id' => $request['package_id'],
+                                'message' => "Shipment has been received."
+                            ], 200);
+                        }
+                        else
+                        {
+                            return response()->json([
+                                'id_driver' => $request['id_driver'],
+                                'message' => "The Team assigned to the driver does not exist"
+                            ], 400);
+                        }
+                    }
+                    else
+                    {
+                        return response()->json([
+                            'id_driver' => $request['id_driver'],
+                            'message' => "The driver does not exist"
+                        ], 400);
+                    }
+                }
+                else
+                {
+                    return response()->json([
+                        'package_id' => $request['package_id'],
+                        'message' => "The package is not in MANIFEST or DISPATCH or WAREHOUSE status."
+                    ], 400);
+                }
+            }
+            else
+            {
+                return response()->json(['message' => "Authentication Failed: incorrect api-key"], 401);
+            }
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return response()->json(['message' => "There was an error while carrying out the process"], 400);
+        }
+    }
+
     public function UpdateStatusFromSyncweb(Request $request, $apiKey)
     {
         $validator = Validator::make($request->all(),
@@ -291,16 +435,19 @@ class PackageDispatchController extends Controller
                 "barcode" => ["required"],
                 "status" => ["required", Rule::in(['delivered', 'failed'])],
                 "createdAt" => ["required", "date"],
+                "driverId"  => ["required"],
             ],
         );
 
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
-        
-        if($request['status'] == 'delivered')
+
+        if($request['status'] == 'delivered'){
             return $this->InsertDelivery($request, $apiKey);
-        else
+        }
+        else if($request['status'] == 'failed'){
             return $this->InsertFailed($request, $apiKey);
+        }
     }
 
     public function InsertDelivery(Request $request, $apiKey)
@@ -333,7 +480,7 @@ class PackageDispatchController extends Controller
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
-                {   
+                {
                     if(count($photoUrl) == 0)
                         $photoUrl = '';
                     elseif(count($photoUrl) == 1)
@@ -400,10 +547,7 @@ class PackageDispatchController extends Controller
                 }
                 else
                 {
-                    return response()->json([
-                        'package_id' => $Reference_Number_1,
-                        'message' => "The package is not in DISPATCH."
-                    ], 400);
+                    this.InsertDispatchFromSyncWeb($request, $apiKey);
                 }
             }
             else
@@ -443,7 +587,7 @@ class PackageDispatchController extends Controller
                         'message' => "Ok."
                     ], 200);
                 }
-                
+
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
 
                 if($packageDispatch)
