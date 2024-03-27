@@ -142,6 +142,7 @@ class PackageDispatchController extends Controller
 
     public function InsertDispatch(Request $request, $apiKey)
     {
+
         try
         {
             DB::beginTransaction();
@@ -284,7 +285,7 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function InsertDispatchFromSyncWeb($request, $apiKey)
+    public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
         try
         {
@@ -296,16 +297,18 @@ class PackageDispatchController extends Controller
 
             if($company)
             {
-                $package = PackageManifest::find($request['package_id']);
-                $package = $package ? $package : PackageInbound::find($request['package_id']);
-                $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['package_id']);
-                $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['package_id']);
-                $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['package_id']);
+                $package = PackageManifest::find($request['barcode']);
+                $package = $package ? $package : PackageInbound::find($request['barcode']);
+                $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
+                $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
+                $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
 
                 if($package)
                 {
-                    $driver = User::where('idRole', 4)->find($request['driverId'])->first();
-
+                    $driver = User::where('driverId', $request['driverId'])
+                    ->where('idRole', 4)
+                    ->first();
+                    LOG::INFO($driver);
                     if($driver)
                     {
                         $team = User::where('idRole', 3)->find($driver->idTeam);
@@ -372,7 +375,7 @@ class PackageDispatchController extends Controller
                             $packageHistory->Route                        = $package->Route;
                             $packageHistory->idTeam                       = $team->id;
                             $packageHistory->idUserDispatch               = $driver->id;
-                            $packageHistory->Description                  = 'Dispatch for APP POD to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                            $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
                             $packageHistory->status                       = 'Dispatch';
                             $packageHistory->actualDate                   = $created_at;
                             $packageHistory->created_at                   = $created_at;
@@ -381,9 +384,14 @@ class PackageDispatchController extends Controller
 
                             if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                             {
-                                $package->delete();
+                                try {
+                                    $package->delete();
+                                    Log::info("Paquete borrado con éxito.");
+                                } catch (\Exception $e) {
+                                    Log::error("Error al borrar el paquete: " . $e->getMessage());
+                                }
                             }
-
+                            $this->UpdateStatusFromSyncweb($request,$apiKey);
                             DB::commit();
 
                             return response()->json([
@@ -550,8 +558,8 @@ class PackageDispatchController extends Controller
                     $this->InsertDispatchFromSyncWeb($request, $apiKey);
                     return response()->json([
                         'package_id' => $Reference_Number_1,
-                        'message' => "Not created yet."
-                    ], 200);
+                        'message' => "Creat Dispatch"
+                    ], 201);
                 }
             }
             else
@@ -678,10 +686,11 @@ class PackageDispatchController extends Controller
                 }
                 else
                 {
+                    $this->InsertDispatchFromSyncWeb($request, $apiKey);
                     return response()->json([
                         'package_id' => $request['package_id'],
-                        'message' => "The package is not in DISPATCH."
-                    ], 400);
+                        'message' => "Create Dispatch."
+                    ], 201);
                 }
             }
             else
