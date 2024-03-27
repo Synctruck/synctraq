@@ -24,7 +24,7 @@ class PackageInboundController extends Controller
     public function Insert(Request $request)
     {
         $Reference_Number_1 = $request['responses']['dimension']['info']['barcode'];
-        $packageManifest    = PackageManifest::with('blockeds')->find($Reference_Number_1);
+        $packageHistory    = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->first();
 
         Log::info("===================================");
         Log::info("============== API - INBOUND ========");
@@ -32,18 +32,13 @@ class PackageInboundController extends Controller
         Log::info("dimensions");
         Log::info($request['responses']['dimension']['info']['dimensions']);
 
-        if($packageManifest)
+        if($packageHistory)
         {
-            if($packageManifest->filter || count($packageManifest->blockeds) > 0)
+            Log::info($packageHistory);
+
+            try
             {
-                Log::info("============== BLOCKED ========");
-                Log::info("===================================");
-            }
-            else
-            {
-                $state = States::where('name', $packageManifest->Dropoff_Province)
-                                ->where('filter', 1)
-                                ->first();
+                DB::beginTransaction();
 
                 $dimensions = $request['responses']['dimension']['info']['dimensions'];
                 $weight     = $dimensions['weight']['net'];
@@ -51,16 +46,14 @@ class PackageInboundController extends Controller
                 $height     = $dimensions['height'];
                 $length     = $dimensions['length'];
 
-                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageManifest->idCompany)->first();
+                $dimFactorCompany = DimFactorCompany::where('idCompany', $packageHistory->idCompany)->first();
 
                 if($dimFactorCompany)
                 {
                     $packageWeight = PackageWeight::find($Reference_Number_1);
 
                     if(!$packageWeight)
-                    {
                         $packageWeight = new PackageWeight();
-                    }
                     
                     $packageWeight->width2  = $width;
                     $packageWeight->height2 = $height;
@@ -69,15 +62,43 @@ class PackageInboundController extends Controller
                     $packageWeight->weight4 = $weight;
                     $packageWeight->save();
                 }
-                if($state == null)
+
+                $packageManifest = PackageManifest::find($Reference_Number_1);
+
+                if($packageManifest)
                 {
+                    $packageInbound = new PackageInbound();
+
+                    $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                    $packageInbound->idCompany                    = $packageManifest->idCompany;
+                    $packageInbound->company                      = $packageManifest->company;
+                    $packageInbound->idStore                      = $packageManifest->idStore;
+                    $packageInbound->store                        = $packageManifest->store;
+                    $packageInbound->CLIENT                       = $packageManifest->company;
+                    $packageInbound->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                    $packageInbound->Dropoff_Company              = $packageManifest->Dropoff_Company;
+                    $packageInbound->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                    $packageInbound->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                    $packageInbound->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                    $packageInbound->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
+                    $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
+                    $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                    $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                    $packageInbound->Notes                        = $packageManifest->Notes;
+                    $packageInbound->Weight                       = $packageManifest->Weight;
+                    $packageInbound->Route                        = $packageManifest->Route;
+                    $packageInbound->quantity                     = $packageManifest->quantity;
+                    $packageInbound->status                       = 'Inbound';
+                    $packageInbound->save();
                     
+                    $packageManifest->delete();
                 }
-                else
-                {
-                    Log::info("============== STATE - BLOCKED ========");
-                    Log::info("===================================");
-                }
+
+                DB::commit();    
+            }
+            catch(Exception $e)
+            {
+                DB::rollback();
             }
         }
         else
