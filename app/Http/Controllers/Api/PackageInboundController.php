@@ -53,7 +53,10 @@ class PackageInboundController extends Controller
                     $packageWeight = PackageWeight::find($Reference_Number_1);
 
                     if(!$packageWeight)
+                    {
                         $packageWeight = new PackageWeight();
+                        $packageWeight->Reference_Number_1 = $Reference_Number_1;
+                    }
                     
                     $packageWeight->width2  = $width;
                     $packageWeight->height2 = $height;
@@ -68,7 +71,6 @@ class PackageInboundController extends Controller
                 if($packageManifest)
                 {
                     $packageInbound = new PackageInbound();
-
                     $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
                     $packageInbound->idCompany                    = $packageManifest->idCompany;
                     $packageInbound->company                      = $packageManifest->company;
@@ -90,15 +92,48 @@ class PackageInboundController extends Controller
                     $packageInbound->quantity                     = $packageManifest->quantity;
                     $packageInbound->status                       = 'Inbound';
                     $packageInbound->save();
-                    
+
+                    $packageHistory = new PackageHistory();
+                    $packageHistory->id                           = uniqid();
+                    $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                    $packageHistory->idCompany                    = $packageManifest->idCompany;
+                    $packageHistory->company                      = $packageManifest->company;
+                    $packageHistory->idStore                      = $packageManifest->idStore;
+                    $packageHistory->store                        = $packageManifest->store;
+                    $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                    $packageHistory->Dropoff_Company              = $packageManifest->Dropoff_Company;
+                    $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                    $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                    $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                    $packageHistory->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
+                    $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
+                    $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                    $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                    $packageHistory->Notes                        = $packageManifest->Notes;
+                    $packageHistory->Weight                       = $packageManifest->Weight;
+                    $packageHistory->Route                        = $packageManifest->Route;
+                    $packageHistory->Date_Inbound                 = date('Y-m-d H:i:s');
+                    $packageHistory->Description                  = 'Inbound - for: Cargo Spectre';
+                    $packageHistory->inbound                      = 1;
+                    $packageHistory->quantity                     = $packageManifest->quantity;
+                    $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+                    $packageHistory->created_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->updated_at                   = date('Y-m-d H:i:s');
+                    $packageHistory->status                       = 'Inbound';
+                    $packageHistory->save();
+
                     $packageManifest->delete();
                 }
 
-                DB::commit();    
+                DB::commit();
+
+                return true;
             }
             catch(Exception $e)
             {
                 DB::rollback();
+
+                return false;
             }
         }
         else
