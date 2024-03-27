@@ -284,7 +284,7 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
+    public function InsertDispatchFromSyncWeb($request, $apiKey)
     {
         try
         {
@@ -548,6 +548,10 @@ class PackageDispatchController extends Controller
                 else
                 {
                     $this->InsertDispatchFromSyncWeb($request, $apiKey);
+                    return response()->json([
+                        'package_id' => $Reference_Number_1,
+                        'message' => "Not created yet."
+                    ], 200);
                 }
             }
             else
