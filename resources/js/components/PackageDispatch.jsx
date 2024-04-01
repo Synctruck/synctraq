@@ -19,7 +19,7 @@ function PackageDispatch() {
     const [listDriverNow, setListDriverNow]             = useState([]);
     const [listDriverAssign, setListDriverAssign]       = useState([]);
     const [roleUser, setRoleUser]                       = useState([]);
-    const [listRoute, setListRoute]                     = useState([]); 
+    const [listRoute, setListRoute]                     = useState([]);
     const [listRole, setListRole]                       = useState([]);
     const [listState , setListState]                    = useState([]);
     const [listCompany , setListCompany]                = useState([]);
@@ -59,7 +59,7 @@ function PackageDispatch() {
     const [idDriverNow, setIdDriverNow] = useState(0);
     const [idDriverNew, setIdDriverNew] = useState(0);
     const [autorizationDispatch, setAutorizationDispatch] = useState(false);
-    
+
     const [latitude, setLatitude]   = useState(0);
     const [longitude, setLongitude] = useState(0);
 
@@ -189,7 +189,7 @@ function PackageDispatch() {
     }
 
     const exportAllPackageDispatch = ( StateSearch, RouteSearchList, type) => {
-        
+
         let url = url_general +'package-dispatch/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd +'/'+ idTeam +'/'+ idDriver +'/'+ StateSearch +'/'+ RouteSearchList +'/'+ idCellar +'/'+type;
 
         if(type == 'download')
@@ -789,6 +789,14 @@ function PackageDispatch() {
 
                         document.getElementById('soundPitidoError').play();
                     }
+                    else if(response.stateAction == 'errorSyncweb'){
+                        setTextMessage("There has been an error in the system #");
+                        setTextMessageDate("VERIFY ADDRESS OR PHONE NUMBER");
+                        setTypeMessageDispatch('error');
+                        setNumberPackage('');
+
+                        document.getElementById('soundPitidoError').play();
+                    }
                     else if(response.stateAction == 'notSelectTeamDriver')
                     {
                         setTextMessage("TASK NOT LOADED #"+ Reference_Number_1);
@@ -838,7 +846,7 @@ function PackageDispatch() {
                         setTextMessageDate(textDate);
                         setTypeMessageDispatch('warning');
                         setNumberPackage('');
-
+                        console.log(response);
                         document.getElementById('soundPitidoWarning').play();
                     }
                     else if(response.stateAction == 'returCompany')
@@ -913,7 +921,7 @@ function PackageDispatch() {
         }
         /*if(autorizationDispatch == true)
         {
-            
+
         }
         else
         {
@@ -1507,7 +1515,7 @@ function PackageDispatch() {
     const handlerChangeTeamNow = (id) => {
 
         setListTeamNew([]);
-        setIdTeamNow(id); 
+        setIdTeamNow(id);
         setListDriverAssign([]);
 
         //let auxListTeamNow = listTeamNow.filter( team => team.id != id);
@@ -1577,7 +1585,7 @@ function PackageDispatch() {
         formData.append('References', References);
         formData.append('idTeamNow', idTeamNow);
         formData.append('idTeamNew', idTeamNew);
-        formData.append('idDriverNew', idDriverNew); 
+        formData.append('idDriverNew', idDriverNew);
 
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -1953,7 +1961,7 @@ function PackageDispatch() {
         setForcedDispatch('YES');
         /*if(forcedDispatch == 'NO')
         {
-            
+
         }
         else
         {
@@ -1991,7 +1999,7 @@ function PackageDispatch() {
                                             <div className="col-lg-1">
                                                 <div className="form-group">
                                                     <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
-                                                </div> 
+                                                </div>
                                             </div>
                                             <div className="col-lg-2">
                                                 <div className="form-group">
@@ -2167,7 +2175,7 @@ function PackageDispatch() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>DISPATCH: { quantityDispatch }</b>

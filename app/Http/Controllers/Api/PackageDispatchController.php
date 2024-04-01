@@ -424,7 +424,7 @@ class PackageDispatchController extends Controller
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
                     }
-                    
+
                     $this->UpdateStatusFromSyncweb($request,$apiKey);
                 }
             }
@@ -522,11 +522,17 @@ class PackageDispatchController extends Controller
         $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
 
         $packageDispatch = PackageManifest::find($request['barcode']);
+        $packageFailed   = PackageFailed::find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageInbound::find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageFailed::where('status', 'Failed')->find($request['barcode']);
+        //$packageFailed   = $packageFailed ? $packageFailed : PackageFailed::where('status', 'Failed')->find($request['barcode']);
 
+        if($packageFailed){
+            $this->InsertDispatchFromSyncWeb($request, $apiKey);
+
+        }else{
         Log::info($packageDispatch);
         if($packageDispatch)
         {
@@ -603,6 +609,9 @@ class PackageDispatchController extends Controller
 
             $packageDispatch->delete();
         }
+        }
+
+
     }
 
     public function UpdatePhotos(Request $request, $apiKey)
