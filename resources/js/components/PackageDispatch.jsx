@@ -659,7 +659,7 @@ function PackageDispatch() {
             })
             .then(res => res.json()).
             then((response) => {
-
+                    console.log(response);
                     setIsLoading(false);
 
                     if(response.stateAction == 'dispatchedMoreThanTwice')
@@ -716,6 +716,13 @@ function PackageDispatch() {
                     else if(response.stateAction == 'validatedLost')
                     {
                         setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
+                        setTypeMessageDispatch('warning');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
+                    else if(response.stateAction == 'SyncWebError')
+                    {
+                        setTextMessage("There has been a mistake, please contact Support");
                         setTypeMessageDispatch('warning');
 
                         document.getElementById('soundPitidoWarning').play();

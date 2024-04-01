@@ -679,11 +679,12 @@ class PackageDispatchController extends Controller
                                 $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
                                 curl_close($curl);
+                                if($response){
+                                    $statusCode = $response['status'];
 
-                                $statusCode = $response['status'];
                                 Log::info($response);
                                 Log::info('============ SENT TO SYNCWEB ================');
-                                if($statusCode==200||$statusCode==201){
+                                if($statusCode>199 && $statusCode < 300){
                                     $team = User::find($request->get('idTeam'));
                                     $driver = User::find($request->get('idDriver'));
 
@@ -711,17 +712,36 @@ class PackageDispatchController extends Controller
                                     ));
 
 
-                                    $response = curl_exec($curl);
+                                    $res = curl_exec($curl);
                                     $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
                                     Log::info($httpcode);
                                     curl_close($curl);
+                                    Log::info($res);
+
+                                    $resArray = json_decode($res, true);
+
+                                    $status = $resArray['status'];
+
+                                    if($status<200 || $status>299){
+                                        return ['stateAction' => 'SyncWebError'];
+                                        DB::rollback();
+                                    }
+                                    else{
+                                        DB::commit();
+                                    }
+
                                 }else{
-                                    Log::info('============ PACKAGE WAS NOT CREATED ALREADY EXISTS IN SYNCWEB ================');
+                                    return ['stateAction' => 'SyncWebError'];
+                                    DB::rollback();
                                 }
 
+                            }
+                            else{
+                                return ['stateAction' => 'SyncWebError'];
+                                DB::rollback();
+                            }
 
-                                DB::commit();
 
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
@@ -863,7 +883,7 @@ class PackageDispatchController extends Controller
 
                         if(count($warnings) == 0)
                         {
-                            DB::commit();
+                            //DB::commit();
 
                             //data for INLAND
                             $packageController = new PackageController();
