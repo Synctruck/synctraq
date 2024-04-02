@@ -721,9 +721,10 @@ class PackageDispatchController extends Controller
 
                                     $resArray = json_decode($res, true);
 
-                                    $status = $resArray['status'];
 
-                                    if($status<200 || $status>299){
+
+                                    if ($httpcode < 200 || $httpcode > 299) {
+
                                         return ['stateAction' => 'SyncWebError'];
                                         DB::rollback();
                                     }
