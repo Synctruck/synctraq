@@ -814,8 +814,13 @@ class PaymentTeamController extends Controller
         {
             echo $packageDispatch->Fecha .'=>'. $packageDispatch->Dropoff_Address_Line_1 .' => '. $packageDispatch->TOTAL_PIECES .'<br>';
         }*/
-
-        $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
+        $team = User::find(46);
+        
+        if($team)
+        {
+            if($team->configurationPay == 'Route')
+            {
+                $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                             ->where('status', 'Delivery')
                                             ->where('idTeam', 46)
                                             ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam')
@@ -823,42 +828,43 @@ class PaymentTeamController extends Controller
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
 
-        $addressPackages = [];
+                $addressPackages = [];
 
-        foreach($packageDispatchList as $packageDispatch)
-        {
-            $price = 0;
-
-            $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
-
-            if(count($addressPackages) == 0)
-            {
-                $price = 3.20;
-
-                array_push($addressPackages, $stringSearch);
-            }
-            else
-            {
-                if(in_array($stringSearch, $addressPackages))
+                foreach($packageDispatchList as $packageDispatch)
                 {
-                    array_push($addressPackages, $stringSearch);
+                    $price = 0;
+                    $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
 
-                    $addressCounts = array_count_values($addressPackages);
-                    $quantity = $addressCounts[$stringSearch];
+                    if(count($addressPackages) == 0)
+                    {
+                        $price = $team->baseRate + $team->priceByPackage;
 
-                    $price = 0.15;
-                    echo $quantity .' ';
-                }
-                else
-                {
-                    $price = 3.20;
+                        array_push($addressPackages, $stringSearch);
+                    }
+                    else
+                    {
+                        if(in_array($stringSearch, $addressPackages))
+                        {
+                            array_push($addressPackages, $stringSearch);
 
-                    array_push($addressPackages, $stringSearch);
+                            $addressCounts = array_count_values($addressPackages);
+                            $quantity = $addressCounts[$stringSearch];
+
+                            $price = $team->priceByPackage / $team->splitForAddPc;
+                            echo $quantity .' ';
+                        }
+                        else
+                        {
+                            $price = $team->baseRate + $team->priceByPackage;
+
+                            array_push($addressPackages, $stringSearch);
+                        }
+                    }
+
+                    echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
+                    
                 }
             }
-
-            echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
-            
         }
     }
 }
