@@ -238,6 +238,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team', [PaymentTeamController::class, 'Index']);
 	Route::get('/payment-team/list/{dateInit}/{initDate}/{endDate}/{idteam}/{status}', [PaymentTeamController::class, 'List']);
 	Route::get('/payment-team/edit/{idPayment}', [PaymentTeamController::class, 'Edit']);
+	Route::get('/payment-team/calculate-by-route', [PaymentTeamController::class, 'CalculatePaymentByRoute']);
 
 	Route::get('/payment-team/list-by-route/{idPayment}', [PaymentTeamController::class, 'ListByRoute']);
 	Route::post('/payment-team/insert-pod-failed', [PaymentTeamController::class, 'InserPODFailed']);

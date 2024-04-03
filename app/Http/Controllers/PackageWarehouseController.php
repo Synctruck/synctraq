@@ -10,7 +10,7 @@ use \App\Service\ServicePackageTerminal;
 use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse,PackageLmCarrier, States, User, Cellar};
 
 use Illuminate\Support\Facades\Validator;
-
+use App\External\ExternalServiceInland;
 use App\Http\Controllers\Api\PackageController;
 
 use Barryvdh\DomPDF\Facade\PDF;
@@ -332,7 +332,10 @@ class PackageWarehouseController extends Controller
 
                 DB::commit();
 
-                return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse];
+                $externalServiceInland = new ExternalServiceInland();
+                $takeOverResponse = $externalServiceInland->SendToTakeOver($packageWarehouse->Reference_Number_1);
+
+                return ['stateAction' => 'packageUpdateCreatedAt', 'packageWarehouse' => $packageWarehouse, 'takeOverResponse' => $takeOverResponse];
             }
             catch(Exception $e)
             {
@@ -693,7 +696,10 @@ class PackageWarehouseController extends Controller
 
                 DB::commit();
 
-                return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse];
+                $externalServiceInland = new ExternalServiceInland();
+                $takeOverResponse = $externalServiceInland->SendToTakeOver($packageWarehouse->Reference_Number_1);
+
+                return ['stateAction' => true, 'packageWarehouse' => $packageWarehouse, 'takeOverResponse' => $takeOverResponse];
             }
             catch(Exception $e)
             {
