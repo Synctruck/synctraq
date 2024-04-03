@@ -800,7 +800,7 @@ class PaymentTeamController extends Controller
 
     public function CalculatePaymentByRoute()
     {
-        $startDate = date('2023-01-01 00:00:00');
+        $startDate = date('2023-02-01 00:00:00');
         $endDate = date('2023-12-31 23:59:59');
 
         /*$packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
@@ -817,7 +817,8 @@ class PaymentTeamController extends Controller
 
         $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                             ->where('status', 'Delivery')
-                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1')
+                                            ->where('idTeam', 46)
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam')
                                             ->orderBy('Date_Delivery', 'asc')
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
@@ -834,7 +835,6 @@ class PaymentTeamController extends Controller
             {
                 $price = 3.20;
 
-                echo 1 .' ';
                 array_push($addressPackages, $stringSearch);
             }
             else
@@ -857,7 +857,7 @@ class PaymentTeamController extends Controller
                 }
             }
 
-            echo $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
+            echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
             
         }
     }
