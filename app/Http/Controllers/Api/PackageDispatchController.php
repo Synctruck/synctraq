@@ -463,6 +463,8 @@ class PackageDispatchController extends Controller
 
             $packageDispatch->photoUrl      = $photoUrl;
             $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
+            $packageDispatch->filePhoto1    = '';
+            $packageDispatch->filePhoto2    = '';
             $packageDispatch->status        = 'Delivery';
             $packageDispatch->Date_Delivery = $created_at;
             $packageDispatch->save();
@@ -494,7 +496,7 @@ class PackageDispatchController extends Controller
             $packageHistory->Date_Delivery                = $created_at;
             $packageHistory->status                       = 'Delivery';
             $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-            $packageHistory->created_at                   = $created_at;
+            $packageHistory->created_at                   = $created_at; 
             $packageHistory->updated_at                   = $created_at;
             $packageHistory->save();
 
