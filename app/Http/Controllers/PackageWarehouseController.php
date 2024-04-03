@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use \App\Service\ServicePackageTerminal;
 
-use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse,PackageLmCarrier, States, User, Cellar};
+use App\Models\{ Configuration, PackageBlocked, PackageHistory, PackageInbound, PackageDispatch, PackageLost, PackageManifest, PackagePreDispatch, PackageReturn, PackageReturnCompany, PackageWarehouse,PackageLmCarrier, States, User, Cellar, PackageFailed};
 
 use Illuminate\Support\Facades\Validator;
 use App\External\ExternalServiceInland;
@@ -56,7 +56,7 @@ class PackageWarehouseController extends Controller
                                             ->groupBy('Dropoff_Province')
                                             ->get();
 
-        $listStateValidate  = States::orderBy('name', 'asc')->get();                                    
+        $listStateValidate  = States::orderBy('name', 'asc')->get();
 
         return ['packageList' => $packageListWarehouse, 'listState' => $listState, 'listStateValidate' => $listStateValidate, 'quantityWarehouse' => $quantityWarehouse];
     }
@@ -91,7 +91,7 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->where('idCellar', $idCellar);
         }
-        
+
         if($idValidator)
         {
             $packageListWarehouse = $packageListWarehouse->where('idUser', $idValidator);
@@ -106,7 +106,7 @@ class PackageWarehouseController extends Controller
         {
             $packageListWarehouse = $packageListWarehouse->whereIn('Dropoff_Province', $states);
         }
-        
+
         if($type == 'list')
         {
             $packageListWarehouse = $packageListWarehouse->orderBy('created_at', 'desc')
@@ -125,7 +125,7 @@ class PackageWarehouseController extends Controller
                                                             'Route',
                                                             'nameCellar'
                                                         )
-                                                        ->paginate(50); 
+                                                        ->paginate(50);
         }
         else
         {
@@ -200,14 +200,14 @@ class PackageWarehouseController extends Controller
         {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
         }
-        
+
         $package = PackagePreDispatch::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
         if($package)
         {
             return ['stateAction' => 'packageInPreDispatch'];
         }
-        
+
         $servicePackageTerminal = new ServicePackageTerminal();
         $package                = $servicePackageTerminal->Get($request->get('Reference_Number_1'));
 
@@ -215,7 +215,7 @@ class PackageWarehouseController extends Controller
         {
             return ['stateAction' => 'packageTerminal'];
         }
-        
+
         $packageLost = PackageLost::find($request->get('Reference_Number_1'));
 
         if($packageLost)
@@ -239,7 +239,7 @@ class PackageWarehouseController extends Controller
                         return ['stateAction' => 'nonValidatedState', 'packageWarehouse' => $packageWarehouse];
                     }
                 }
-                
+
                 /*$initDate = date('Y-m-d 00:00:00');
                 $endDate  = date('Y-m-d 23:59:59');
 
@@ -293,9 +293,9 @@ class PackageWarehouseController extends Controller
                 $packageHistory->created_at                   = date('Y-m-d H:i:s');
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->updated_at                   = date('Y-m-d H:i:s');
-                
+
                 $cellar = Cellar::find(Auth::user()->idCellar);
-                
+
                 if($cellar)
                 {
                     $packageHistory->idCellar    = $cellar->id;
@@ -347,6 +347,7 @@ class PackageWarehouseController extends Controller
 
         $packageInbound  = null;
         $packageDispatch = null;
+        $packageFailed   = null;
 
         $packageManifest = PackageManifest::find($request->get('Reference_Number_1'));
 
@@ -362,7 +363,12 @@ class PackageWarehouseController extends Controller
                                                 ->first();
         }
 
-        if($packageManifest || $packageInbound || $packageDispatch)
+        if($packageDispatch == null)
+        {
+            $packageFailed = PackageFailed::find($request->get('Reference_Number_1'));
+        }
+
+        if($packageManifest || $packageInbound || $packageDispatch || $packageFailed)
         {
             try
             {
@@ -379,6 +385,10 @@ class PackageWarehouseController extends Controller
                 elseif($packageDispatch)
                 {
                     $package = $packageDispatch;
+                }
+                elseif($packageFailed)
+                {
+                    $package = $packageFailed;
                 }
 
                 if(count($stateValidate) > 0)
@@ -683,7 +693,7 @@ class PackageWarehouseController extends Controller
                 {
                     $packageController->SendStatusToInland($packageWarehouse, 'Warehouse', null, date('Y-m-d H:i:s'));
                 }
-                
+
                 $packageHistory = PackageHistory::where('Reference_Number_1', $packageWarehouse->Reference_Number_1)
                                                 ->where('sendToInland', 1)
                                                 ->where('status', 'Manifest')
