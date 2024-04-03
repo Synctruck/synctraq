@@ -722,7 +722,7 @@ function PackageDispatch() {
                     }
                     else if(response.stateAction == 'SyncWebError')
                     {
-                        setTextMessage("There has been a mistake, please contact Support");
+                        setTextMessage("Internal Error, please contact Support");
                         setTypeMessageDispatch('warning');
 
                         document.getElementById('soundPitidoWarning').play();
