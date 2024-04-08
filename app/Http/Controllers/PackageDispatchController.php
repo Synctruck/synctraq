@@ -633,117 +633,120 @@ class PackageDispatchController extends Controller
 
                             if(count($warnings) >= 0)
                             {
-
-                                $curl = curl_init();
-                                $apiBaseUrl = ENV('SYNC_WEB_URL');
-                                $syncApiKey = ENV('SYNC_WEB_API_KEY');
-                                curl_setopt_array($curl, array(
-                                CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/avoid-duplicates',
-                                CURLOPT_RETURNTRANSFER => true,
-                                CURLOPT_ENCODING => '',
-                                CURLOPT_MAXREDIRS => 10,
-                                CURLOPT_TIMEOUT => 0,
-                                CURLOPT_FOLLOWLOCATION => true,
-                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                                CURLOPT_CUSTOMREQUEST => 'POST',
-                                CURLOPT_POSTFIELDS =>'{
-                                "entryPointCode": "SYPHP",
-                                "shipment": {
-                                    "trackingNumber": "'. $package->Reference_Number_1 .'",
-                                    "shipTo": {
-                                    "name": "'. $package->Dropoff_Contact_Name .'",
-                                    "phone": "'. $package->Dropoff_Contact_Phone_Number .'",
-                                    "addressLine1": "'. $package->Dropoff_Address_Line_1 .'",
-                                    "cityLocality": "'. $package->Dropoff_City .'",
-                                    "stateProvince": "'. $package->Dropoff_Province .'",
-                                    "postalCode": "'. $package->Dropoff_Postal_Code .'"
-                                    },
-                                    "shipmentDetails": {
-                                    "weight": '. $package->Weight .'
-                                    }
-                                }
-                                }
-                                ',
-                                CURLOPT_HTTPHEADER => array(
-                                    'Authorization:' . $syncApiKey,
-                                    'Content-Type: application/json'
-                                ),
-                                ));
-
-
-                                $response = curl_exec($curl);
-                                $response = json_decode($response, true);
-
-                                Log::info($apiBaseUrl . 'api/v6/shipments/avoid-duplicates');
-                                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-                                curl_close($curl);
-                                if($response){
-                                    $statusCode = $response['status'];
-
-                                Log::info($response);
-                                Log::info('============ SENT TO SYNCWEB ================');
-                                if($statusCode>199 && $statusCode < 300){
-                                    $team = User::find($request->get('idTeam'));
-                                    $driver = User::find($request->get('idDriver'));
-
-                                    Log::info('============ ASSIGN VENDOR ================');
-                                    $curl = curl_init();
-
-                                    curl_setopt_array($curl, array(
-                                    CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/'. $package->Reference_Number_1 .'/assign-vendor',
-                                    CURLOPT_RETURNTRANSFER => true,
-                                    CURLOPT_ENCODING => '',
-                                    CURLOPT_MAXREDIRS => 10,
-                                    CURLOPT_TIMEOUT => 0,
-                                    CURLOPT_FOLLOWLOCATION => true,
-                                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                                    CURLOPT_CUSTOMREQUEST => 'POST',
-                                    CURLOPT_POSTFIELDS =>'{
-                                    "vendorId": "'. $team->orgId .'",
-                                    "orgType": "internal",
-                                    "driverId": "'. $driver->driverId .'"
-                                    }',
-                                    CURLOPT_HTTPHEADER => array(
-                                        'Authorization:' . $syncApiKey,
-                                        'Content-Type: application/json'
-                                    ),
-                                    ));
+                                $orgId=$team->orgId;
+                                if($orgId){
+                                            Log::info($orgId);
+                                            $curl = curl_init();
+                                            $apiBaseUrl = ENV('SYNC_WEB_URL');
+                                            $syncApiKey = ENV('SYNC_WEB_API_KEY');
+                                            curl_setopt_array($curl, array(
+                                            CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/avoid-duplicates',
+                                            CURLOPT_RETURNTRANSFER => true,
+                                            CURLOPT_ENCODING => '',
+                                            CURLOPT_MAXREDIRS => 10,
+                                            CURLOPT_TIMEOUT => 0,
+                                            CURLOPT_FOLLOWLOCATION => true,
+                                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                            CURLOPT_CUSTOMREQUEST => 'POST',
+                                            CURLOPT_POSTFIELDS =>'{
+                                            "entryPointCode": "SYPHP",
+                                            "shipment": {
+                                                "trackingNumber": "'. $package->Reference_Number_1 .'",
+                                                "shipTo": {
+                                                "name": "'. $package->Dropoff_Contact_Name .'",
+                                                "phone": "'. $package->Dropoff_Contact_Phone_Number .'",
+                                                "addressLine1": "'. $package->Dropoff_Address_Line_1 .'",
+                                                "cityLocality": "'. $package->Dropoff_City .'",
+                                                "stateProvince": "'. $package->Dropoff_Province .'",
+                                                "postalCode": "'. $package->Dropoff_Postal_Code .'"
+                                                },
+                                                "shipmentDetails": {
+                                                "weight": '. $package->Weight .'
+                                            }
+                                        }
+                                        }
+                                        ',
+                                        CURLOPT_HTTPHEADER => array(
+                                            'Authorization:' . $syncApiKey,
+                                            'Content-Type: application/json'
+                                        ),
+                                        ));
 
 
-                                    $res = curl_exec($curl);
-                                    $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                                        $response = curl_exec($curl);
+                                        $response = json_decode($response, true);
 
-                                    Log::info($httpcode);
-                                    curl_close($curl);
-                                    Log::info($res);
+                                        Log::info($apiBaseUrl . 'api/v6/shipments/avoid-duplicates');
+                                        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                                        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-                                    $resArray = json_decode($res, true);
+                                        curl_close($curl);
+                                        if($response){
+                                            $statusCode = $response['status'];
+
+                                        Log::info($response);
+                                        Log::info('============ SENT TO SYNCWEB ================');
+                                        if($statusCode>199 && $statusCode < 300){
+                                            $team = User::find($request->get('idTeam'));
+                                            $driver = User::find($request->get('idDriver'));
+
+                                            Log::info('============ ASSIGN VENDOR ================');
+                                            $curl = curl_init();
+
+                                            curl_setopt_array($curl, array(
+                                            CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/'. $package->Reference_Number_1 .'/assign-vendor',
+                                            CURLOPT_RETURNTRANSFER => true,
+                                            CURLOPT_ENCODING => '',
+                                            CURLOPT_MAXREDIRS => 10,
+                                            CURLOPT_TIMEOUT => 0,
+                                            CURLOPT_FOLLOWLOCATION => true,
+                                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                            CURLOPT_CUSTOMREQUEST => 'POST',
+                                            CURLOPT_POSTFIELDS =>'{
+                                            "vendorId": "'. $team->orgId .'",
+                                            "orgType": "internal",
+                                            "driverId": "'. $driver->driverId .'"
+                                            }',
+                                            CURLOPT_HTTPHEADER => array(
+                                                'Authorization:' . $syncApiKey,
+                                                'Content-Type: application/json'
+                                            ),
+                                            ));
+
+
+                                            $res = curl_exec($curl);
+                                            $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                                            Log::info($httpcode);
+                                            curl_close($curl);
+                                            Log::info($res);
+
+                                            $resArray = json_decode($res, true);
 
 
 
-                                    if ($httpcode < 200 || $httpcode > 299) {
+                                            if ($httpcode < 200 || $httpcode > 299) {
 
-                                        return ['stateAction' => 'SyncWebError'];
-                                        DB::rollback();
+                                                return ['stateAction' => 'SyncWebError'];
+                                                DB::rollback();
+                                            }
+                                            else{
+                                                DB::commit();
+                                            }
+
+                                        }else{
+                                            return ['stateAction' => 'SyncWebError'];
+                                            DB::rollback();
+                                        }
+
                                     }
                                     else{
-                                        DB::commit();
-                                    }
-
+                                        return ['stateAction' => 'SyncWebError'];
+                                        DB::rollback();
+                                     }
                                 }else{
-                                    return ['stateAction' => 'SyncWebError'];
-                                    DB::rollback();
+                                     DB::commit();
                                 }
-
-                            }
-                            else{
-                                return ['stateAction' => 'SyncWebError'];
-                                DB::rollback();
-                            }
-
-
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
 
