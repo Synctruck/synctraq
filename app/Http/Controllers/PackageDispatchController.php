@@ -745,7 +745,7 @@ class PackageDispatchController extends Controller
                                         DB::rollback();
                                      }
                                 }else{
-                                DB::commit();
+                                     DB::commit();
                                 }
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
