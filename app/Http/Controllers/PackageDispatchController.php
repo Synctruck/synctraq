@@ -633,8 +633,7 @@ class PackageDispatchController extends Controller
 
                             if(count($warnings) >= 0)
                             {
-                                $orgId= $team->orgId
-                            if($orgId){
+
                                 $curl = curl_init();
                                 $apiBaseUrl = ENV('SYNC_WEB_URL');
                                 $syncApiKey = ENV('SYNC_WEB_API_KEY');
@@ -737,9 +736,14 @@ class PackageDispatchController extends Controller
                                     return ['stateAction' => 'SyncWebError'];
                                     DB::rollback();
                                 }
-                                }
+
                             }
-                                DB::commit();
+                            else{
+                                return ['stateAction' => 'SyncWebError'];
+                                DB::rollback();
+                            }
+
+
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
 
