@@ -844,6 +844,7 @@ class PaymentTeamController extends Controller
 
                 foreach($packageDispatchList as $packageDispatch)
                 {
+                    $signature = isset($packageDispatch->signature) ? $team->signature : $team->signature;
                     $price = 0;
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
 
@@ -851,7 +852,7 @@ class PaymentTeamController extends Controller
                     {
                         array_push($addressPackages, $stringSearch);
 
-                        $price = $team->priceByPackage / $team->splitForAddPc;
+                        $price = ($team->priceByPackage / $team->splitForAddPc) + $signature;
                         $quantity = $quantity + 1;
 
                         echo $quantity .' ';
@@ -862,13 +863,13 @@ class PaymentTeamController extends Controller
 
                         $quantityPackages = $stopsQuantity[$stringSearch];
                         $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
-                        $price = ($team->baseRate - $discountGap) + $team->priceByPackage;
+                        $price = ($team->baseRate - $discountGap) + $team->priceByPackage + $signature;
                         $quantity = 1;
 
                         echo $quantity .' ';
                     }
 
-                    echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
+                    echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .' + '. $signature .'<br>';
                     
                 }
             }

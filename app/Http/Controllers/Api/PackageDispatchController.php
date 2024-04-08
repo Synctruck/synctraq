@@ -546,14 +546,49 @@ class PackageDispatchController extends Controller
                 }
 
                 $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
+                $packageDispatch = $packageDispatch ? $packageDispatch : PackageWarehouse::where('status', 'Warehouse')->find($Reference_Number_1);
 
                 if($packageDispatch)
                 {
-                    $packageDispatch->photoUrl      = $photoUrl;
-                    $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
-                    $packageDispatch->status        = 'Delivery';
-                    $packageDispatch->Date_Delivery = $created_at;
-                    $packageDispatch->save();
+                    if($packageDispatch->status == 'Warehouse')
+                    {
+                        $package = $packageDispatch;
+                        
+                        $packageDispatch = new PackageDispatch();
+                        $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                        $packageDispatch->idCompany                    = $package->idCompany;
+                        $packageDispatch->company                      = $package->company;
+                        $packageDispatch->idStore                      = $package->idStore;
+                        $packageDispatch->store                        = $package->store;
+                        $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                        $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                        $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                        $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                        $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                        $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                        $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                        $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                        $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                        $packageDispatch->Notes                        = $package->Notes;
+                        $packageDispatch->Weight                       = $package->Weight;
+                        $packageDispatch->Route                        = $package->Route;
+                        $packageDispatch->idTeam                       = $team->id;
+                        $packageDispatch->idUserDispatch               = $driver->id;
+                        $packageDispatch->Date_Dispatch                = $created_at;
+                        $packageDispatch->quantity                     = $package->quantity;
+                        $packageDispatch->status                       = 'Dispatch';
+                        $packageDispatch->created_at                   = $created_at;
+                        $packageDispatch->updated_at                   = $created_at;
+                        $packageDispatch->save();
+                    }
+                    else
+                    {
+                        $packageDispatch->photoUrl      = $photoUrl;
+                        $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
+                        $packageDispatch->status        = 'Delivery';
+                        $packageDispatch->Date_Delivery = $created_at;
+                        $packageDispatch->save();
+                    }
 
                     $packageHistory = new PackageHistory();
                     $packageHistory->id                           = uniqid();
@@ -587,6 +622,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->save();
 
                     $packageController = new PackageController();
+
 
                     if($packageDispatch->idCompany == 1)
                         $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
