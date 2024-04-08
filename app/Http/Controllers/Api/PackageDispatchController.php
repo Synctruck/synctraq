@@ -308,7 +308,7 @@ class PackageDispatchController extends Controller
                 DB::beginTransaction();
 
                 if($request['status'] == 'delivered')
-                    $this->InsertDelivery($request, $apiKey);
+                    $this->InsertDeliveryFromSyncWeb($request, $apiKey);
                 else if($request['status'] == 'failed')
                     $this->InsertFailed($request, $apiKey);
                 else
@@ -433,6 +433,92 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
+    {
+        $Reference_Number_1 = $request['barcode'];
+        $photoUrl           = $request['pictures'];
+        $latitude           = $request['latitude'];
+        $longitude          = $request['longitude'];
+        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
+
+        $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
+
+        if($packageDelivery){
+            return response()->json([
+                'package_id' => $Reference_Number_1,
+                'message' => "Ok."
+            ], 200);
+        }
+
+        $packageDispatch = PackageDispatch::where('status', 'Dispatch')->find($Reference_Number_1);
+
+        if($packageDispatch)
+        {
+            if(count($photoUrl) == 0)
+                $photoUrl = '';
+            elseif(count($photoUrl) == 1)
+                $photoUrl = $photoUrl[0];
+            else
+                $photoUrl = $photoUrl[0] .','. $photoUrl[1];
+
+            $packageDispatch->photoUrl      = $photoUrl;
+            $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
+            $packageDispatch->filePhoto1    = '';
+            $packageDispatch->filePhoto2    = '';
+            $packageDispatch->status        = 'Delivery';
+            $packageDispatch->Date_Delivery = $created_at;
+            $packageDispatch->save();
+
+            $packageHistory = new PackageHistory();
+            $packageHistory->id                           = uniqid();
+            $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+            $packageHistory->idCompany                    = $packageDispatch->idCompany;
+            $packageHistory->company                      = $packageDispatch->company;
+            $packageHistory->idStore                      = $packageDispatch->idStore;
+            $packageHistory->store                        = $packageDispatch->store;
+            $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+            $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+            $packageHistory->Notes                        = $packageDispatch->Notes;
+            $packageHistory->Weight                       = $packageDispatch->Weight;
+            $packageHistory->Route                        = $packageDispatch->Route;
+            $packageHistory->idTeam                       = $packageDispatch->idTeam;
+            $packageHistory->idUserDispatch               = $packageDispatch->idUserDispatch;
+            $packageHistory->idUser                       = $packageDispatch->idUserDispatch;
+            $packageHistory->quantity                     = $packageDispatch->quantity;
+            $packageHistory->Description                  = 'From Syncweb';
+            $packageHistory->Date_Delivery                = $created_at;
+            $packageHistory->status                       = 'Delivery';
+            $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+            $packageHistory->created_at                   = $created_at; 
+            $packageHistory->updated_at                   = $created_at;
+            $packageHistory->save();
+
+            $packageController = new PackageController();
+
+            if($packageDispatch->idCompany == 1)
+                $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                        ->where('sendToInland', 1)
+                                        ->where('status', 'Manifest')
+                                        ->first();
+
+            if($packageHistory)
+                $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+        }
+        else
+        {
+            $this->InsertDispatchFromSyncWeb($request, $apiKey);
+        }
+    }
+    
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
