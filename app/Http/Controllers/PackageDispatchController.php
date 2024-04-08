@@ -738,11 +738,6 @@ class PackageDispatchController extends Controller
                                 }
 
                             }
-                            else{
-                                return ['stateAction' => 'SyncWebError'];
-                                DB::rollback();
-                            }
-
 
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
