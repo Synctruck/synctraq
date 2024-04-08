@@ -343,7 +343,7 @@ class TaskPaymentTeam extends Command
                         $paymentTeamDetail = new PaymentTeamDetail();
                         $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
                         $paymentTeamDetail->Route               = $packageDelivery->Route;
-                        $paymentTeamDetail->idPaymentTeam       = $paymentTeam->id;
+                        $paymentTeamDetail->idPaymentTeam       = $idPaymentTeam;
                         $paymentTeamDetail->dimFactor           = $dimFactor;
                         $paymentTeamDetail->weight              = $weight;
                         $paymentTeamDetail->weightRound         = $weightRound;
