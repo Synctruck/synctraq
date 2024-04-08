@@ -828,37 +828,44 @@ class PaymentTeamController extends Controller
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
 
+                $stopsQuantity = [];
                 $addressPackages = [];
+                $pricePerStop = 0;
+
+                foreach($packageDispatchList as $packageDispatch)
+                {
+                    $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
+
+                    array_push($stopsQuantity, $stringSearch);
+                }
+
+                $stopsQuantity = array_count_values($stopsQuantity);
+                $quantity = 0;
 
                 foreach($packageDispatchList as $packageDispatch)
                 {
                     $price = 0;
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
 
-                    if(count($addressPackages) == 0)
+                    if(in_array($stringSearch, $addressPackages))
                     {
-                        $price = $team->baseRate + $team->priceByPackage;
-
                         array_push($addressPackages, $stringSearch);
+
+                        $price = $team->priceByPackage / $team->splitForAddPc;
+                        $quantity = $quantity + 1;
+
+                        echo $quantity .' ';
                     }
                     else
                     {
-                        if(in_array($stringSearch, $addressPackages))
-                        {
-                            array_push($addressPackages, $stringSearch);
+                        array_push($addressPackages, $stringSearch);
 
-                            $addressCounts = array_count_values($addressPackages);
-                            $quantity = $addressCounts[$stringSearch];
+                        $quantityPackages = $stopsQuantity[$stringSearch];
+                        $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
+                        $price = ($team->baseRate - $discountGap) + $team->priceByPackage;
+                        $quantity = 1;
 
-                            $price = $team->priceByPackage / $team->splitForAddPc;
-                            echo $quantity .' ';
-                        }
-                        else
-                        {
-                            $price = $team->baseRate + $team->priceByPackage;
-
-                            array_push($addressPackages, $stringSearch);
-                        }
+                        echo $quantity .' ';
                     }
 
                     echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
@@ -866,5 +873,19 @@ class PaymentTeamController extends Controller
                 }
             }
         }
+    }
+
+    public function GetDiscountGapBetweenTiers($quantity, $gapBetweenTiers)
+    {
+        if($quantity >= 0 && $quantity <= 79)
+            $discount = 0;
+        else if($quantity >= 80 && $quantity <= 99)
+            $discount = $gapBetweenTiers * 1;
+        else if($quantity >= 100 && $quantity <= 119)
+            $discount = $gapBetweenTiers * 2;
+        else if($quantity >= 120)
+            $discount = $gapBetweenTiers * 3;
+
+        return $discount;
     }
 }
