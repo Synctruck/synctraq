@@ -273,7 +273,7 @@ class TaskPaymentTeam extends Command
         }
     }
 
-    public function SaveDetailPaymentForPackage($team, $listPackageDelivery)
+    public function SaveDetailPaymentForPackage($team, $listPackageDelivery, $idPaymentTeam)
     {
         $totalPieces = 0;
         $totalTeam   = 0;
