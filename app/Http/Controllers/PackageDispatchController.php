@@ -635,7 +635,7 @@ class PackageDispatchController extends Controller
                             {
                                 $orgId=$team->orgId;
 
-                                if($orgId){
+                                if($orgId!=null){
                                     Log::info($orgId);
                                 }
 
