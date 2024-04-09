@@ -394,50 +394,55 @@ class TaskPaymentTeam extends Command
 
         foreach($listPackageDelivery as $packageDelivery)
         {
-            $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
-            $priceBase = 0;
-            $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
+            $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
 
-            if(in_array($stringSearch, $addressPackages))
+            if(!$paymentTeamDetail)
             {
-                array_push($addressPackages, $stringSearch);
+                $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
+                $priceBase = 0;
+                $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
 
-                $priceBase = ($team->priceByPackage / $team->splitForAddPc);
-                $quantity = $quantity + 1;
+                if(in_array($stringSearch, $addressPackages))
+                {
+                    array_push($addressPackages, $stringSearch);
+
+                    $priceBase = ($team->priceByPackage / $team->splitForAddPc);
+                    $quantity = $quantity + 1;
+                }
+                else
+                {
+                    array_push($addressPackages, $stringSearch);
+
+                    $quantityPackages = $stopsQuantity[$stringSearch];
+                    $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
+                    $priceBase = ($team->baseRate - $discountGap) + $team->priceByPackage;
+                    $quantity = 1;
+                }
+
+                $paymentTeamDetail = new PaymentTeamDetail();
+                $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
+                $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
+                $paymentTeamDetail->idPaymentTeam       = $idPaymentTeam;
+                $paymentTeamDetail->dimFactor           = 0;
+                $paymentTeamDetail->weight              = $packageDelivery->Weight ? $packageDelivery->Weight : 0;
+                $paymentTeamDetail->weightRound         = ceil($paymentTeamDetail->weight);
+                $paymentTeamDetail->priceWeight         = 0;
+                $paymentTeamDetail->peakeSeasonPrice    = $signature;
+                $paymentTeamDetail->priceBase           = $priceBase;
+                $paymentTeamDetail->dieselPrice         = 0;
+                $paymentTeamDetail->surchargePercentage = 0;
+                $paymentTeamDetail->surchargePrice      = 0;
+                $paymentTeamDetail->priceByRoute        = 0;
+                $paymentTeamDetail->priceByCompany      = 0;
+                $paymentTeamDetail->priceDeduction      = 0;
+                $paymentTeamDetail->totalPrice          = $priceBase + $signature;
+                $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery ? $packageDelivery->Date_Delivery : date('Y-m-d H:i:s');
+                $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
+                $paymentTeamDetail->save();
+
+                $totalPieces = $totalPieces + 1;
+                $totalTeam   = $totalTeam + ($priceBase + $signature);
             }
-            else
-            {
-                array_push($addressPackages, $stringSearch);
-
-                $quantityPackages = $stopsQuantity[$stringSearch];
-                $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
-                $priceBase = ($team->baseRate - $discountGap) + $team->priceByPackage;
-                $quantity = 1;
-            }
-
-            $paymentTeamDetail = new PaymentTeamDetail();
-            $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
-            $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
-            $paymentTeamDetail->idPaymentTeam       = $idPaymentTeam;
-            $paymentTeamDetail->dimFactor           = 0;
-            $paymentTeamDetail->weight              = $packageDelivery->Weight ? $packageDelivery->Weight : 0;
-            $paymentTeamDetail->weightRound         = ceil($paymentTeamDetail->weight);
-            $paymentTeamDetail->priceWeight         = 0;
-            $paymentTeamDetail->peakeSeasonPrice    = $signature;
-            $paymentTeamDetail->priceBase           = $priceBase;
-            $paymentTeamDetail->dieselPrice         = 0;
-            $paymentTeamDetail->surchargePercentage = 0;
-            $paymentTeamDetail->surchargePrice      = 0;
-            $paymentTeamDetail->priceByRoute        = 0;
-            $paymentTeamDetail->priceByCompany      = 0;
-            $paymentTeamDetail->priceDeduction      = 0;
-            $paymentTeamDetail->totalPrice          = $priceBase + $signature;
-            $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery ? $packageDelivery->Date_Delivery : date('Y-m-d H:i:s');
-            $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
-            $paymentTeamDetail->save();
-
-            $totalPieces = $totalPieces + 1;
-            $totalTeam   = $totalTeam + ($priceBase + $signature);
         }
 
         return ['totalPieces' => $totalPieces, 'totalTeam' => $totalTeam, 'totalDeduction' => $totalDeduction];
