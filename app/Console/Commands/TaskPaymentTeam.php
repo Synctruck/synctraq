@@ -406,6 +406,8 @@ class TaskPaymentTeam extends Command
 
             if(!$paymentTeamDetail)
             {
+                Log::info('$paymentTeamDetail: '. $packageDelivery->Reference_Number_1);
+                
                 $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
                 $priceBase = 0;
                 $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
