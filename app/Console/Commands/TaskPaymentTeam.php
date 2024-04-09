@@ -149,10 +149,12 @@ class TaskPaymentTeam extends Command
                         if($team->configurationPay == 'Package')
                         {
                             $dataPrices = $this->SaveDetailPaymentForPackage($team, $listPackageDelivery, $paymentTeam->id);
+                            Log::info('package');
                         }
                         else
                         {
                             $dataPrices = $this->SaveDetailPaymentForRoute($team, $listPackageDelivery, $paymentTeam->id);
+                            Log::info('route');
                         }
                         
                         $totalPieces = $dataPrices['totalPieces'];
