@@ -61,8 +61,8 @@ class TaskPaymentTeam extends Command
             //$endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
-            $startDate = date('2024-01-01 00:00:00');
-            $endDate = date('2024-12-31 23:59:59');
+            $startDate = date('2024-01-01');
+            $endDate = date('2024-12-31');
 
             try
             {
