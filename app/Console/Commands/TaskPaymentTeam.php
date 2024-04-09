@@ -428,6 +428,10 @@ class TaskPaymentTeam extends Command
                     $quantity = 1;
                 }
 
+                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                $packageDelivery->paid = 1;
+                $packageDelivery->save();
+                        
                 $paymentTeamDetail = new PaymentTeamDetail();
                 $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
                 $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
