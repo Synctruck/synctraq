@@ -132,6 +132,7 @@ class PalletRtsController extends Controller
         $pallet->idUser    = Auth::user()->id;
         $pallet->idCompany = $company->id;
         $pallet->company   = $company->name;
+        $pallet->statusDispatch = 'Pending';
         $pallet->status    = 'Opened';
 
         $pallet->save();
