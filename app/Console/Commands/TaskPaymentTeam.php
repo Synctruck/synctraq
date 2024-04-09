@@ -108,7 +108,6 @@ class TaskPaymentTeam extends Command
 
                     if(count($listPackageDelivery) > 0)
                     {
-                        Log::info('Team: '. $team->id);
                         Log::info('count: '. count($listPackageDelivery));
                     }
                     
