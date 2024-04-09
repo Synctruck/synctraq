@@ -830,6 +830,7 @@ class PaymentTeamController extends Controller
 
                 $stopsQuantity = [];
                 $addressPackages = [];
+                $routesDates = [];
                 $pricePerStop = 0;
 
                 foreach($packageDispatchList as $packageDispatch)
@@ -837,13 +838,24 @@ class PaymentTeamController extends Controller
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
 
                     array_push($stopsQuantity, $stringSearch);
+
+                    if(!in_array($packageDispatch->DATE_DELIVERY, $routesDates))
+                        array_push($routesDates, $packageDispatch->DATE_DELIVERY);
                 }
 
                 $stopsQuantity = array_count_values($stopsQuantity);
                 $quantity = 0;
 
+                $quantityRoutesDates = count($routesDates);
+                $positionRoutesDates = 0;
+
+                $priceBasePay = $team->basePay;
+
                 foreach($packageDispatchList as $packageDispatch)
                 {
+                    if($routesDates[$positionRoutesDates] != $packageDispatch->DATE_DELIVERY)
+                        $priceBasePay = $team->basePay;
+
                     $signature = isset($packageDispatch->signature) ? $team->signature : $team->signature;
                     $price = 0;
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
@@ -869,8 +881,15 @@ class PaymentTeamController extends Controller
                         echo $quantity .' ';
                     }
 
-                    echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .' + '. $signature .'<br>';
-                    
+                    if($routesDates[$positionRoutesDates] == $packageDispatch->DATE_DELIVERY){
+                        $priceBasePay = $priceBasePay - $price;
+                        echo  '.... $$ '. $priceBasePay .' ==== ';
+                    }
+                    else{
+                        $positionRoutesDates = $positionRoutesDates + 1;
+                    }
+
+                    echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
                 }
             }
         }

@@ -385,7 +385,8 @@ class TaskPaymentTeam extends Command
         $totalPieces = 0;
         $totalTeam   = 0;
         $totalDeduction = 0;
-
+        $totalAdjustment = 0;
+        
         $stopsQuantity = [];
         $addressPackages = [];
         $pricePerStop = 0;
@@ -431,7 +432,7 @@ class TaskPaymentTeam extends Command
                 $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
                 $packageDelivery->paid = 1;
                 $packageDelivery->save();
-                        
+
                 $paymentTeamDetail = new PaymentTeamDetail();
                 $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
                 $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
