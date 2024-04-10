@@ -853,8 +853,11 @@ class PaymentTeamController extends Controller
 
                 foreach($packageDispatchList as $packageDispatch)
                 {
-                    if($routesDates[$positionRoutesDates] != $packageDispatch->DATE_DELIVERY)
+                    if($routesDates[$positionRoutesDates] != $packageDispatch->DATE_DELIVERY){
+                        echo  '.... priceBasePay '. $priceBasePay .'<br><br>';
                         $priceBasePay = $team->basePay;
+                        $positionRoutesDates = $positionRoutesDates + 1;
+                    }
 
                     $signature = isset($packageDispatch->signature) ? $team->signature : $team->signature;
                     $price = 0;
@@ -883,13 +886,13 @@ class PaymentTeamController extends Controller
 
                     if($routesDates[$positionRoutesDates] == $packageDispatch->DATE_DELIVERY){
                         $priceBasePay = $priceBasePay - $price;
-                        echo  '.... $$ '. $priceBasePay .' ==== ';
-                    }
-                    else{
-                        $positionRoutesDates = $positionRoutesDates + 1;
                     }
 
                     echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
+                    
+                    if(count($routesDates) - 1 == $positionRoutesDates)
+                            echo  '.... priceBasePay '. $priceBasePay .'<br><br>';
+
                 }
             }
         }
