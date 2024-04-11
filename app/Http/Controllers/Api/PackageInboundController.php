@@ -163,10 +163,10 @@ class PackageInboundController extends Controller
 
         Log::info($request);
 
-        $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get();
+        /*$packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get();
 
         if(count($packageHistory) == 0)
-            return response()->json(['message' => 'success'], 200);
+            return response()->json(['message' => 'success'], 200);*/
         
         $package = PackageManifest::find($Reference_Number_1);
         
