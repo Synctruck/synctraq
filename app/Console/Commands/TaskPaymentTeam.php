@@ -53,7 +53,7 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Thursday')
+        if($dayName == 'Friday')
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
