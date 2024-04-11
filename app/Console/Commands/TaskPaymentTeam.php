@@ -329,26 +329,25 @@ class TaskPaymentTeam extends Command
                         $packageDelivery->paid = 1;
                         $packageDelivery->save();
 
-                        if($team->sla)
-                        {
-                            $routeString = $team->slaRoutes;  // Supongamos que esto viene de la base de datos.
+                        if ($team->sla) {
+                            $routeString = $team->slaRoutes;
                             $routesArray = explode(',', $routeString);
                             $routesArray = array_map('trim', $routesArray);
 
-                            foreach ($routesArray as $route) {
-                                if ($route === $packageDelivery->Route) {
-                                    if (!empty($packageDelivery->Date_Dispatch)) {
-                                        $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
-                                        $deduction = ($hours <= 28) ? $team->slaDeduction : 0.00;
-                                    } else {
-                                        $hours = 0;
-                                    }
-                                    break;
+                            if (in_array($packageDelivery->Route, $routesArray)) {
+                                if (!empty($packageDelivery->Date_Dispatch)) {
+                                    $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                                    $deduction = ($hours <= 28) ? $team->slaDeduction : 0.00;
+                                } else {
+                                    $hours = 0;
+                                    $deduction = 0.00;
                                 }
+                            } else {
+                                $deduction = 0.00;
                             }
-                        }
-                        else
+                        } else {
                             $deduction = 0;
+                        }
 
                         $paymentTeamDetail = new PaymentTeamDetail();
                         $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
