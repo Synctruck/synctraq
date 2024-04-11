@@ -19,6 +19,8 @@ function Team() {
     const [roundWeight, setRoundWeight]               = useState(1);
     const [twoAttempts, setTwoAttempts]               = useState(1);
     const [sla, setSla]                               = useState(0);
+    const [slaRoutes, setslaRoutes]                   = useState('');
+    const [slaDeductions, setslaDeductions]           = useState(0);
     const [status, setStatus]                         = useState('');
     const [idsRoutes, setIdsRoutes]                   = useState('');
     const [permissionDispatch, setPermissionDispatch] = useState(0);
@@ -53,7 +55,7 @@ function Team() {
 
     const inputFileRef  = React.useRef();
 
-    useEffect(() => { 
+    useEffect(() => {
 
         listAllCompany();
 
@@ -183,6 +185,8 @@ function Team() {
         formData.append('roundWeight', roundWeight);
         formData.append('twoAttempts', twoAttempts);
         formData.append('sla', sla);
+        formData.append('slaRoutes', slaRoutes);
+        formData.append('slaDeductions', slaDeductions);
 
         clearValidation();
 
@@ -319,6 +323,8 @@ function Team() {
             setRoundWeight(team.roundWeight);
             setTwoAttempts(team.twoAttempts);
             setSla(team.sla);
+            setslaRoutes(team.slaRoutes);
+            setslaDeductions(team.slaDeductions);
             /*setTimeout( () => {
 
                 console.log(listPrices);
@@ -330,7 +336,7 @@ function Team() {
                     if((i % 3) == 0)
                     {
                         document.getElementById('minWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].minWeight;
-                        document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;         
+                        document.getElementById('maxWeight'+ 1 + listPrices[i].idCompany).value   = listPrices[i].maxWeight;
                         document.getElementById('priceWeight'+ 1 + listPrices[i].idCompany).value = listPrices[i].price;
 
                         document.getElementById('minWeight'+ 2 + listPrices[i].idCompany).value   = listPrices[i + 1].minWeight;
@@ -344,7 +350,7 @@ function Team() {
                 }
 
             }, 100);
-            
+
             setTimeout( () => {
 
                 team.routes_team.forEach( teamRoute => {
@@ -482,7 +488,7 @@ function Team() {
     const [configurationPay, setConfigurationPay] = useState('');
 
     const handlerOpenModalRange = (idTeam, team) => {
-        
+
         setListRange([]);
         setIdTeam(idTeam);
         setViewAddRange('none');
@@ -499,7 +505,7 @@ function Team() {
                 keyboard: false,
                 backdrop: 'static',
             });
-     
+
             myModal.show();
         });
 
@@ -524,7 +530,7 @@ function Team() {
     }
 
     const handlerOpenModalRangeByRoute = (idTeam, team) => {
-        
+
         LoadingShowMap();
 
         setListPriceByRoute([]);
@@ -545,7 +551,7 @@ function Team() {
                 keyboard: false,
                 backdrop: 'static',
             });
-     
+
             myModal.show();
         });
     }
@@ -680,7 +686,7 @@ function Team() {
 
     const getRange = (id) => {
 
-        clearValidationRange(); 
+        clearValidationRange();
 
         fetch(url_general +'range-price-base-team/get/'+ id)
         .then(response => response.json())
@@ -721,7 +727,7 @@ function Team() {
                         swal("Range deleted successfully!", {
 
                             icon: "success",
-                        }); 
+                        });
 
                         clearFormRange();
                         clearValidationRange();
@@ -731,7 +737,7 @@ function Team() {
                         listAllRangePriceBaseTeam(idTeam);
                     }
                 });
-            } 
+            }
         });
     }
 
@@ -963,7 +969,7 @@ function Team() {
 
     const getPriceByCompany = (id) => {
 
-        clearValidationPriceByCompany(); 
+        clearValidationPriceByCompany();
 
         LoadingShowMap();
 
@@ -992,7 +998,7 @@ function Team() {
             setTextButtonSaveRange('Updated');
         });
     }
-    
+
     const deletePriceByCompany = (id) => {
 
         swal({
@@ -1025,7 +1031,7 @@ function Team() {
                         listAllPriceByCompany(idTeam);
                     }
                 });
-            } 
+            }
         });
     }
 
@@ -1088,6 +1094,8 @@ function Team() {
         setPhone('');
         setEmail('');
         setEmailCC('');
+        setslaRoutes('');
+        setslaDeductions(0);
         setStatus('Active');
     }
 
@@ -1410,7 +1418,7 @@ function Team() {
                 routePricesTeams.push({label: route, value: route});
             });
         }
-        
+
         setRoutesSelect(routePricesTeams);
     }
 
@@ -1589,6 +1597,24 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
+                                                                {sla === "1" && (
+                                                                <div className="form-group">
+                                                                    <label className="form">Sla Routes</label>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ slaRoutes } className="form-control" onChange={ (e) => setslaRoutes(e.target.value) } />
+                                                                </div>
+                                                            )}
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                {sla === "1" && (
+                                                                <div className="form-group">
+                                                                    <label className="form">Sla Deductions</label>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <input type="text" value={ slaDeductions } className="form-control" onChange={ (e) => setslaDeductions(e.target.value) } />
+                                                                </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
                                                                     <label className="form">Status</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
@@ -1764,7 +1790,7 @@ function Team() {
                                                                                                             <label className="text-white">--</label>
                                                                                                             <button className="btn btn-primary form-control">{ textButtonSaveRange }</button>
                                                                                                         </div>
-                                                                                                        
+
                                                                                                         <table className="table table-condensed table-hover">
                                                                                                             <thead>
                                                                                                                 <tr>

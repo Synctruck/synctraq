@@ -44,7 +44,7 @@ class TeamController extends Controller
         $userController->UpdateDeleteUser();
 
         return view('team.index');
-    } 
+    }
 
     public function List(Request $request)
     {
@@ -150,7 +150,7 @@ class TeamController extends Controller
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->sla                = $request->get('sla');
                 $user->status             = $request->get('status');
-                
+
                 if($request->get('emailCC')!="null"){
                 $user->emailCC            = $request->get('emailCC');
                 }
@@ -278,10 +278,15 @@ class TeamController extends Controller
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->sla                = $request->get('sla');
                 $user->status             = $request->get('status');
-                
+
                 if($request->get('emailCC') != "null"){
                     $user->emailCC = $request->get('emailCC');
                 }
+
+                if($request->get('slaRoutes') != "null"){
+                    $user->slaRoutes = $request->get('slaRoutes');
+                }
+                $user->slaDeduction    = $request->get('slaDeductions');
 
                 $user->save();
 
