@@ -764,6 +764,11 @@ class PackageDispatchController extends Controller
 
         if($company)
         {
+            $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get();
+
+            if(count($packageHistory) == 0)
+                return response()->json(['message' => 'success'], 200);
+        
             $packageDispatch = PackageDispatch::find($Reference_Number_1);
 
             if($packageDispatch)
