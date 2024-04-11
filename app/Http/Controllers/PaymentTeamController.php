@@ -431,7 +431,9 @@ class PaymentTeamController extends Controller
 
         fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
-        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->orderBy('Date_Delivery', 'asc')
+                                                    ->get();
 
         $totalDelivery = 0;
 
@@ -853,8 +855,11 @@ class PaymentTeamController extends Controller
 
                 foreach($packageDispatchList as $packageDispatch)
                 {
-                    if($routesDates[$positionRoutesDates] != $packageDispatch->DATE_DELIVERY)
+                    if($routesDates[$positionRoutesDates] != $packageDispatch->DATE_DELIVERY){
+                        echo  '.... priceBasePay '. $priceBasePay .'<br><br>';
                         $priceBasePay = $team->basePay;
+                        $positionRoutesDates = $positionRoutesDates + 1;
+                    }
 
                     $signature = isset($packageDispatch->signature) ? $team->signature : $team->signature;
                     $price = 0;
@@ -883,13 +888,13 @@ class PaymentTeamController extends Controller
 
                     if($routesDates[$positionRoutesDates] == $packageDispatch->DATE_DELIVERY){
                         $priceBasePay = $priceBasePay - $price;
-                        echo  '.... $$ '. $priceBasePay .' ==== ';
-                    }
-                    else{
-                        $positionRoutesDates = $positionRoutesDates + 1;
                     }
 
                     echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
+                    
+                    if(count($routesDates) - 1 == $positionRoutesDates)
+                            echo  '.... priceBasePay '. $priceBasePay .'<br><br>';
+
                 }
             }
         }

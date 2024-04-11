@@ -53,7 +53,7 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Tuesday')
+        if($dayName == 'Wednesday')
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
@@ -61,8 +61,8 @@ class TaskPaymentTeam extends Command
             //$endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
-            $startDate = date('2024-01-01');
-            $endDate = date('2024-12-31');
+            $startDate = date('2023-02-01');
+            $endDate = date('2023-12-31');
 
             try
             {
@@ -100,7 +100,7 @@ class TaskPaymentTeam extends Command
                                             ->where('status', 'Delivery')
                                             ->where('paid', 0)
                                             ->where('idTeam', $team->id)
-                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company')
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Delivery, Date_Dispatch')
                                             ->orderBy('Date_Delivery', 'asc')
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
@@ -149,12 +149,10 @@ class TaskPaymentTeam extends Command
                         if($team->configurationPay == 'Package')
                         {
                             $dataPrices = $this->SaveDetailPaymentForPackage($team, $listPackageDelivery, $paymentTeam->id);
-                            Log::info('package');
                         }
                         else
                         {
                             $dataPrices = $this->SaveDetailPaymentForRoute($team, $listPackageDelivery, $paymentTeam->id);
-                            Log::info('route');
                         }
                         
                         $totalPieces = $dataPrices['totalPieces'];
@@ -332,7 +330,7 @@ class TaskPaymentTeam extends Command
                         if($team->sla)
                         {
                             if($packageDelivery->Date_Dispatch)
-                            $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                                $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
                             else
                                 $hours = 0;
 
@@ -389,6 +387,7 @@ class TaskPaymentTeam extends Command
         
         $stopsQuantity = [];
         $addressPackages = [];
+        $routesDates = [];
         $pricePerStop = 0;
 
         foreach($listPackageDelivery as $packageDelivery)
@@ -396,20 +395,39 @@ class TaskPaymentTeam extends Command
             $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
 
             array_push($stopsQuantity, $stringSearch);
+
+            if(!in_array($packageDelivery->DATE_DELIVERY, $routesDates))
+                array_push($routesDates, $packageDelivery->DATE_DELIVERY);
         }
+
 
         $stopsQuantity = array_count_values($stopsQuantity);
         $quantity = 0;
 
+        $quantityRoutesDates = count($routesDates);
+        $positionRoutesDates = 0;
+
+        $priceBasePay = $team->basePay;
+
+        Log::info($routesDates);
         foreach($listPackageDelivery as $packageDelivery)
         {
-            Log::info('$paymentTeamDetail: '. $packageDelivery->Reference_Number_1);
+            Log::info($packageDelivery);
             $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
 
             if(!$paymentTeamDetail)
             {
+                if($routesDates[$positionRoutesDates] != $packageDelivery->DATE_DELIVERY){
+                    if($priceBasePay > 0)
+                        $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
+
+                    $priceBasePay = $team->basePay;
+                    $positionRoutesDates = $positionRoutesDates + 1;
+                }
+
                 $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
                 $priceBase = 0;
+                $totalPrice = 0;
                 $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
 
                 if(in_array($stringSearch, $addressPackages))
@@ -417,6 +435,7 @@ class TaskPaymentTeam extends Command
                     array_push($addressPackages, $stringSearch);
 
                     $priceBase = ($team->priceByPackage / $team->splitForAddPc);
+                    $totalPrice = $priceBase + $signature;
                     $quantity = $quantity + 1;
                 }
                 else
@@ -426,12 +445,13 @@ class TaskPaymentTeam extends Command
                     $quantityPackages = $stopsQuantity[$stringSearch];
                     $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
                     $priceBase = ($team->baseRate - $discountGap) + $team->priceByPackage;
+                    $totalPrice = $priceBase + $signature;
                     $quantity = 1;
                 }
 
-                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                $packageDelivery->paid = 1;
-                $packageDelivery->save();
+                $packageDispatchDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                $packageDispatchDelivery->paid = 1;
+                $packageDispatchDelivery->save();
 
                 $paymentTeamDetail = new PaymentTeamDetail();
                 $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
@@ -449,17 +469,38 @@ class TaskPaymentTeam extends Command
                 $paymentTeamDetail->priceByRoute        = 0;
                 $paymentTeamDetail->priceByCompany      = 0;
                 $paymentTeamDetail->priceDeduction      = 0;
-                $paymentTeamDetail->totalPrice          = $priceBase + $signature;
+                $paymentTeamDetail->totalPrice          = $totalPrice;
                 $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery ? $packageDelivery->Date_Delivery : date('Y-m-d H:i:s');
                 $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
                 $paymentTeamDetail->save();
 
+                Log::info($routesDates[$positionRoutesDates] .' == '. $packageDelivery->DATE_DELIVERY);
+
+                if($routesDates[$positionRoutesDates] == $packageDelivery->DATE_DELIVERY){
+                    $priceBasePay = $priceBasePay - $totalPrice;
+                    Log::info('priceBasePay: '. $priceBasePay);
+                }
+                
+                if(count($routesDates) - 1 == $positionRoutesDates)
+                    if($priceBasePay > 0)
+                        $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
+
                 $totalPieces = $totalPieces + 1;
-                $totalTeam   = $totalTeam + ($priceBase + $signature);
+                $totalTeam   = $totalTeam + $totalPrice;
             }
         }
 
         return ['totalPieces' => $totalPieces, 'totalTeam' => $totalTeam, 'totalDeduction' => $totalDeduction];
+    }
+
+    public function SaveAdjustment($idPaymentTeam, $priceBasePay, $date)
+    {
+        $paymentTeamAdjustment = new PaymentTeamAdjustment();
+        $paymentTeamAdjustment->id            = uniqid();
+        $paymentTeamAdjustment->idPaymentTeam = $idPaymentTeam;
+        $paymentTeamAdjustment->amount        = $priceBasePay;
+        $paymentTeamAdjustment->description   = 'Adjustment - route: '. $date;
+        $paymentTeamAdjustment->save();
     }
 
     public function CalculateHours($Date_Dispatch, $Date_Delivery)
