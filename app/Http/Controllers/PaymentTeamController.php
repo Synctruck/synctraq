@@ -431,7 +431,9 @@ class PaymentTeamController extends Controller
 
         fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
-        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+        $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                    ->orderBy('Date_Delivery', 'asc')
+                                                    ->get();
 
         $totalDelivery = 0;
 

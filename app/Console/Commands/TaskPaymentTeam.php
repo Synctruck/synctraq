@@ -100,7 +100,7 @@ class TaskPaymentTeam extends Command
                                             ->where('status', 'Delivery')
                                             ->where('paid', 0)
                                             ->where('idTeam', $team->id)
-                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company')
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Delivery, Date_Dispatch')
                                             ->orderBy('Date_Delivery', 'asc')
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
@@ -330,7 +330,7 @@ class TaskPaymentTeam extends Command
                         if($team->sla)
                         {
                             if($packageDelivery->Date_Dispatch)
-                            $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                                $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
                             else
                                 $hours = 0;
 
@@ -418,7 +418,8 @@ class TaskPaymentTeam extends Command
             if(!$paymentTeamDetail)
             {
                 if($routesDates[$positionRoutesDates] != $packageDelivery->DATE_DELIVERY){
-                    $this->SaveAdjustment($idPaymentTeam, $priceBasePay);
+                    if($priceBasePay > 0)
+                        $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
 
                     $priceBasePay = $team->basePay;
                     $positionRoutesDates = $positionRoutesDates + 1;
@@ -448,9 +449,9 @@ class TaskPaymentTeam extends Command
                     $quantity = 1;
                 }
 
-                $packageDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                $packageDelivery->paid = 1;
-                $packageDelivery->save();
+                $packageDispatchDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                $packageDispatchDelivery->paid = 1;
+                $packageDispatchDelivery->save();
 
                 $paymentTeamDetail = new PaymentTeamDetail();
                 $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
@@ -476,12 +477,13 @@ class TaskPaymentTeam extends Command
                 Log::info($routesDates[$positionRoutesDates] .' == '. $packageDelivery->DATE_DELIVERY);
 
                 if($routesDates[$positionRoutesDates] == $packageDelivery->DATE_DELIVERY){
-                    $priceBasePay = $priceBasePay - $price;
+                    $priceBasePay = $priceBasePay - $totalPrice;
                     Log::info('priceBasePay: '. $priceBasePay);
                 }
                 
                 if(count($routesDates) - 1 == $positionRoutesDates)
-                    $this->SaveAdjustment($idPaymentTeam, $priceBasePay);
+                    if($priceBasePay > 0)
+                        $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
 
                 $totalPieces = $totalPieces + 1;
                 $totalTeam   = $totalTeam + $totalPrice;
@@ -491,13 +493,13 @@ class TaskPaymentTeam extends Command
         return ['totalPieces' => $totalPieces, 'totalTeam' => $totalTeam, 'totalDeduction' => $totalDeduction];
     }
 
-    public function SaveAdjustment($idPaymentTeam, $priceBasePay)
+    public function SaveAdjustment($idPaymentTeam, $priceBasePay, $date)
     {
         $paymentTeamAdjustment = new PaymentTeamAdjustment();
         $paymentTeamAdjustment->id            = uniqid();
         $paymentTeamAdjustment->idPaymentTeam = $idPaymentTeam;
         $paymentTeamAdjustment->amount        = $priceBasePay;
-        $paymentTeamAdjustment->description   = 'Adjustment by route';
+        $paymentTeamAdjustment->description   = 'Adjustment - route: '. $date;
         $paymentTeamAdjustment->save();
     }
 
