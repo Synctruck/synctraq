@@ -281,7 +281,7 @@ class PackageDispatchController extends Controller
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
                     }
-                    
+
                     $this->UpdateStatusFromSyncweb($request,$apiKey);
                 }
             }
@@ -309,13 +309,14 @@ class PackageDispatchController extends Controller
 
         if($packageDispatch)
         {
+            if($photoUrl){
             if(count($photoUrl) == 0)
                 $photoUrl = '';
             elseif(count($photoUrl) == 1)
                 $photoUrl = $photoUrl[0];
             else
                 $photoUrl = $photoUrl[0] .','. $photoUrl[1];
-
+            }
             $packageDispatch->photoUrl      = $photoUrl;
             $packageDispatch->arrivalLonLat = $longitude .','. $latitude;
             $packageDispatch->filePhoto1    = '';
@@ -351,7 +352,7 @@ class PackageDispatchController extends Controller
             $packageHistory->Date_Delivery                = $created_at;
             $packageHistory->status                       = 'Delivery';
             $packageHistory->actualDate                   = date('Y-m-d H:i:s');
-            $packageHistory->created_at                   = $created_at; 
+            $packageHistory->created_at                   = $created_at;
             $packageHistory->updated_at                   = $created_at;
             $packageHistory->save();
 
@@ -373,7 +374,7 @@ class PackageDispatchController extends Controller
             $this->InsertDispatchFromSyncWeb($request, $apiKey);
         }
     }
-    
+
     public function InsertDispatch(Request $request, $apiKey)
     {
         try
@@ -517,7 +518,7 @@ class PackageDispatchController extends Controller
             return response()->json(['message' => "There was an error while carrying out the process"], 400);
         }
     }
-    
+
     public function InsertDelivery(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
@@ -553,7 +554,7 @@ class PackageDispatchController extends Controller
                     if($packageDispatch->status == 'Warehouse')
                     {
                         $package = $packageDispatch;
-                        
+
                         $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
