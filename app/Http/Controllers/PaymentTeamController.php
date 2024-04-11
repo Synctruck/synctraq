@@ -69,7 +69,7 @@ class PaymentTeamController extends Controller
                                                 ->where('maxWeight', '>=', $weightRound)
                                                 ->first();
 
-                
+
                 $priceWeight         = $range->price;
                 $peakeSeasonPrice    = $this->GetPeakeSeasonTeam($payment);
                 $priceBase           = number_format($priceWeight + $peakeSeasonPrice, 2);
@@ -119,7 +119,7 @@ class PaymentTeamController extends Controller
                     {
                         if($packageDelivery->Date_Dispatch)
                             $Date_Dispatch = $packageDelivery->Date_Dispatch;
-                            $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+                            $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
                     }
                 }
 
@@ -392,7 +392,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fieldEndDate, $delimiter);
         fputcsv($file, $fieldIdPayment, $delimiter);
         fputcsv($file, $fieldTeam, $delimiter);
-        
+
         if($payment->surcharge)
         {
             fputcsv($file, array('SURCHARGE', 'YES'), $delimiter);
@@ -780,24 +780,29 @@ class PaymentTeamController extends Controller
         }
     }
 
-    public function CalculateDeduction($Date_Dispatch, $Date_Delivery)
+    public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $Package_Route, $sla_Routes, $sla_Deduction)
     {
+        $packageRoute = $Package_Route;
         $dateInit = strtotime($Date_Dispatch);
         $dateEnd = strtotime($Date_Delivery);
+        $slaRoutes = explode(',', $sla_Routes);
+        $slaRoutes = array_map('trim', $slaRoutes);
 
-        $diff = abs($dateEnd - $dateInit) / 3600;
-        $hours = (int)$diff;
+            $diff = abs($dateEnd - $dateInit) / 3600;
+            $hours = (int)$diff;
 
-        if($hours <= 24)
+    $deduction = 0.00;
+
+    if (in_array($packageRoute, $slaRoutes)) {
+
+        if ($hours <= 28) {
+            $deduction = $sla_Deduction;
+        }else{
             $deduction = 0.00;
-        elseif($hours > 24 && $hours <= 48)
-            $deduction = 1.00;
-        elseif($hours > 48 && $hours <= 72)
-            $deduction = 2.00;
-        elseif($hours > 72)
-            $deduction = 2.50;
-        
-        return $deduction;
+        }
+    }
+
+    return $deduction;
     }
 
     public function CalculatePaymentByRoute()
@@ -817,7 +822,7 @@ class PaymentTeamController extends Controller
             echo $packageDispatch->Fecha .'=>'. $packageDispatch->Dropoff_Address_Line_1 .' => '. $packageDispatch->TOTAL_PIECES .'<br>';
         }*/
         $team = User::find(46);
-        
+
         if($team)
         {
             if($team->configurationPay == 'Route')
@@ -891,7 +896,7 @@ class PaymentTeamController extends Controller
                     }
 
                     echo ' ====== '. $packageDispatch->Reference_Number_1 .'=>'. $packageDispatch->DATE_DELIVERY .' => '. $packageDispatch->Dropoff_Address_Line_1 .' = $'. $price .'<br>';
-                    
+
                     if(count($routesDates) - 1 == $positionRoutesDates)
                             echo  '.... priceBasePay '. $priceBasePay .'<br><br>';
 
