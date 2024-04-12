@@ -61,8 +61,8 @@ class TaskPaymentTeam extends Command
             //$endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
-            $startDate = date('2023-02-01');
-            $endDate = date('2023-12-31');
+            $startDate = date('2024-04-07');
+            $endDate = date('2024-04-13');
 
             try
             {
@@ -342,7 +342,7 @@ class TaskPaymentTeam extends Command
                             if(in_array($packageDelivery->Route, $routesList)){
                                 if(!empty($packageDelivery->Date_Dispatch)){
                                     $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
-                                    $deduction = $hours >= 28 ? $team->slaDeduction : 0.00;
+                                    $deduction = $hours <= 28 ? $team->slaDeduction : 0.00;
                                 }
                             }
                         }
