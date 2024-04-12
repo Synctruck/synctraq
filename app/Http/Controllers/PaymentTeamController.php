@@ -429,10 +429,10 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
-                                                    ->orderBy('Date_Delivery', 'asc')
+                                                    ->orderBy('Date_Dispatch', 'asc')
                                                     ->get();
 
         $totalDelivery = 0;
@@ -440,11 +440,13 @@ class PaymentTeamController extends Controller
         foreach($paymentTeamDetailList as $paymentDetail)
         {
             $date         = date('m-d-Y', strtotime($paymentDetail->created_at)) .' '. date('H:i:s', strtotime($paymentDetail->created_at));
+            $dateDispatch = date('m-d-Y', strtotime($paymentDetail->Date_Dispatch)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Dispatch));
             $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
 
             $lineData = array(
 
                 $date,
+                $dateDispatch,
                 $dateDelivery,
                 $paymentDetail->Reference_Number_1,
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
@@ -829,7 +831,7 @@ class PaymentTeamController extends Controller
             {
                 $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                             ->where('status', 'Delivery')
-                                            ->where('paid', 0)
+                                            ->where('paid', 1)
                                             ->where('idTeam', 46)
                                             ->where('Date_Dispatch', '!=', null)
                                             ->selectRaw('Reference_Number_1, DATE(Date_Dispatch) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Dispatch, Date_Delivery')
@@ -841,7 +843,7 @@ class PaymentTeamController extends Controller
                 $addressPackages = [];
                 $routesDates = [];
                 $pricePerStop = 0;
-
+                dd($packageDispatchList);
                 foreach($packageDispatchList as $packageDispatch)
                 {
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
