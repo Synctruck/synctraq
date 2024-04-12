@@ -333,24 +333,18 @@ class TaskPaymentTeam extends Command
                         $packageDelivery->paid = 1;
                         $packageDelivery->save();
 
-                        if ($team->sla) {
-                            $routeString = $team->slaRoutes;
-                            $routesArray = explode(',', $routeString);
-                            $routesArray = array_map('trim', $routesArray);
+                        $deduction = 0;
 
-                            if (in_array($packageDelivery->Route, $routesArray)) {
-                                if (!empty($packageDelivery->Date_Dispatch)) {
+                        if($team->sla){
+                            $routesList = explode(',', $team->slaRoutes);
+                            $routesList = array_map('trim', $routesList);
+
+                            if(in_array($packageDelivery->Route, $routesList)){
+                                if(!empty($packageDelivery->Date_Dispatch)){
                                     $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
-                                    $deduction = ($hours <= 28) ? $team->slaDeduction : 0.00;
-                                } else {
-                                    $hours = 0;
-                                    $deduction = 0.00;
+                                    $deduction = $hours <= 28 ? $team->slaDeduction : 0.00;
                                 }
-                            } else {
-                                $deduction = 0.00;
                             }
-                        } else {
-                            $deduction = 0;
                         }
 
                         $paymentTeamDetail = new PaymentTeamDetail();
