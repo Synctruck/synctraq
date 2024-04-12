@@ -18,7 +18,7 @@ function Team() {
     const [surcharge, setSurcharge]                   = useState(1);
     const [roundWeight, setRoundWeight]               = useState(1);
     const [twoAttempts, setTwoAttempts]               = useState(1);
-    const [sla, setSla]                               = useState(1);
+    const [sla, setSla]                               = useState(0);
     const [slaRoutes, setslaRoutes]                   = useState('');
     const [slaDeductions, setslaDeductions]           = useState(0);
     const [status, setStatus]                         = useState('');
@@ -186,7 +186,7 @@ function Team() {
         formData.append('twoAttempts', twoAttempts);
         formData.append('sla', sla);
         formData.append('slaRoutes', slaRoutes);
-        formData.append('slaDeductions', slaDeductions);
+        formData.append('slaDeduction', slaDeductions);
 
         clearValidation();
 
@@ -484,6 +484,7 @@ function Team() {
         setPriceByCompany('');
         setTextButtonSaveRange('Save');
     }
+
 
     const [configurationPay, setConfigurationPay] = useState('');
 
@@ -1095,7 +1096,7 @@ function Team() {
         setEmail('');
         setEmailCC('');
         setslaRoutes('');
-        setslaDecutions(0);
+        setslaDeductions(0);
         setStatus('Active');
     }
 
@@ -1586,7 +1587,7 @@ function Team() {
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-6" key={sla}>
+                                                            <div className="col-lg-6">
                                                                 <div className="form-group">
                                                                     <label className="form">SLA</label>
                                                                     <div id="status" className="text-danger" style={ {display: 'none'} }></div>
@@ -1597,19 +1598,19 @@ function Team() {
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
-                                                                {sla === "1" && (
+                                                                {sla !=0 && (
                                                                 <div className="form-group">
                                                                     <label className="form">Sla Routes</label>
-                                                                    <div id="slaRoutes" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <div id="name" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ slaRoutes } className="form-control" onChange={ (e) => setslaRoutes(e.target.value) } />
                                                                 </div>
                                                             )}
                                                             </div>
                                                             <div className="col-lg-6">
-                                                                {sla === "1" && (
+                                                                {sla !=0 && (
                                                                 <div className="form-group">
                                                                     <label className="form">Sla Deductions</label>
-                                                                    <div id="slaDeduction" className="text-danger" style={ {display: 'none'} }></div>
+                                                                    <div id="nameOfOwner" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ slaDeductions } className="form-control" onChange={ (e) => setslaDeductions(e.target.value) } />
                                                                 </div>
                                                                 )}
