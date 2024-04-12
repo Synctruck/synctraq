@@ -782,29 +782,21 @@ class PaymentTeamController extends Controller
         }
     }
 
-    public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $Package_Route, $sla_Routes, $sla_Deduction)
+    public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $packageRoute, $sla_Routes, $sla_Deduction)
     {
-        $packageRoute = $Package_Route;
         $dateInit = strtotime($Date_Dispatch);
         $dateEnd = strtotime($Date_Delivery);
+        $diff = abs($dateEnd - $dateInit) / 3600;
+        $hours = (int)$diff;
+
         $slaRoutes = explode(',', $sla_Routes);
         $slaRoutes = array_map('trim', $slaRoutes);
+        $deduction = 0.00;
 
-            $diff = abs($dateEnd - $dateInit) / 3600;
-            $hours = (int)$diff;
+        if(in_array($packageRoute, $slaRoutes))
+            $deduction = $hours <= 28 ? $sla_Deduction;
 
-    $deduction = 0.00;
-
-    if (in_array($packageRoute, $slaRoutes)) {
-
-        if ($hours <= 28) {
-            $deduction = $sla_Deduction;
-        }else{
-            $deduction = 0.00;
-        }
-    }
-
-    return $deduction;
+        return $deduction;
     }
 
     public function CalculatePaymentByRoute()
