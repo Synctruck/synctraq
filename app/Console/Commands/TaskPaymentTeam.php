@@ -55,7 +55,6 @@ class TaskPaymentTeam extends Command
 
         if($dayName == 'Thursday')
         {
-            dd($dayName);
             $files     = [];
             $nowDate   = date('Y-m-d');
             //$startDate = date('2023-11-01');
