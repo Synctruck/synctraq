@@ -829,9 +829,11 @@ class PaymentTeamController extends Controller
             {
                 $packageDispatchList = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                             ->where('status', 'Delivery')
+                                            ->where('paid', 0)
                                             ->where('idTeam', 46)
-                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam')
-                                            ->orderBy('Date_Delivery', 'asc')
+                                            ->where('Date_Dispatch', '!=', null)
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Dispatch) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Dispatch, Date_Delivery')
+                                            ->orderBy('Date_Dispatch', 'asc')
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
 

@@ -53,7 +53,7 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Thursday')
+        if($dayName == 'Friday')
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
@@ -61,8 +61,8 @@ class TaskPaymentTeam extends Command
             //$endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate   = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
-            $startDate = date('2024-01-01');
-            $endDate = date('2024-12-31');
+            $startDate = date('2023-02-01');
+            $endDate = date('2023-12-31');
 
             try
             {
@@ -100,8 +100,9 @@ class TaskPaymentTeam extends Command
                                             ->where('status', 'Delivery')
                                             ->where('paid', 0)
                                             ->where('idTeam', $team->id)
-                                            ->selectRaw('Reference_Number_1, DATE(Date_Delivery) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company')
-                                            ->orderBy('Date_Delivery', 'asc')
+                                            ->where('Date_Dispatch', '!=', null)
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Dispatch) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Dispatch, Date_Delivery')
+                                            ->orderBy('Date_Dispatch', 'asc')
                                             ->orderBy('Dropoff_Address_Line_1', 'asc')
                                             ->get();
                     }
