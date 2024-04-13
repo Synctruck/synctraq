@@ -343,11 +343,15 @@ class TaskPaymentTeam extends Command
 
                             Log::info('team SLA '. $team->name);
                             Log::info($routesList);
+                            Log::info('route '. $team->Route);
 
                             if(in_array($packageDelivery->Route, $routesList)){
+
                                 if(!empty($packageDelivery->Date_Dispatch)){
                                     $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
                                     $deduction = $hours > 28 ? $team->slaDeduction : 0.00;
+                                    Log::info('hours: '. $hours);
+                                    Log::info('slaDeduction: '. $deduction);
                                 }
                             }
                         }
