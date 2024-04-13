@@ -114,7 +114,6 @@ class TaskPaymentTeam extends Command
                         Log::info('count: '. count($listPackageDelivery));
                     }*/
 
-
                     $listPackageReturnCompany = PackageReturnCompany::where('idTeam', $team->id)
                                                                     ->where('paid', 1)
                                                                     ->get();
