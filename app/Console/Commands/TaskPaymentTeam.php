@@ -343,7 +343,7 @@ class TaskPaymentTeam extends Command
 
                             Log::info('team SLA '. $team->name);
                             Log::info($routesList);
-                            Log::info('route '. $team->Route);
+                            Log::info('route '. $packageDelivery->Route);
 
                             if(in_array($packageDelivery->Route, $routesList)){
 
