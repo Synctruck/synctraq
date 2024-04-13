@@ -86,6 +86,8 @@ class TaskPaymentTeam extends Command
                     $startDate = $startDate .' 00:00:00';
                     $endDate   = $endDate .' 23:59:59';
 
+                    Log::info('configurationPay => '. $team->configurationPay);
+
                     if($team->configurationPay == 'Package')
                     {
                         $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
