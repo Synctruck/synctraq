@@ -286,7 +286,7 @@ class TeamController extends Controller
                 if($request->get('slaRoutes') != "null"){
                     $user->slaRoutes = $request->get('slaRoutes');
                 }
-                $user->slaDeduction    = $request->get('slaDeductions');
+                $user->slaDeduction    = $request->get('slaDeduction');
 
                 $user->save();
 
