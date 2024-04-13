@@ -1095,6 +1095,7 @@ function Team() {
         setEmail('');
         setEmailCC('');
         setslaRoutes('');
+        setslaDeductions(0);
         setStatus('Active');
     }
 
