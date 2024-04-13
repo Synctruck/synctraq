@@ -109,10 +109,10 @@ class TaskPaymentTeam extends Command
                                             ->get();
                     }
 
-                    if(count($listPackageDelivery) > 0)
+                    /*if(count($listPackageDelivery) > 0)
                     {
                         Log::info('count: '. count($listPackageDelivery));
-                    }
+                    }*/
 
 
                     $listPackageReturnCompany = PackageReturnCompany::where('idTeam', $team->id)
