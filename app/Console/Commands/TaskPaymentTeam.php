@@ -342,6 +342,8 @@ class TaskPaymentTeam extends Command
                             $routesList = array_map('trim', $routesList);
 
                             Log::info('team SLA '. $team->name);
+                            Log::info($routesList);
+                            
                             if(in_array($packageDelivery->Route, $routesList)){
                                 if(!empty($packageDelivery->Date_Dispatch)){
                                     $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
