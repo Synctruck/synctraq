@@ -633,7 +633,9 @@ class PackageDispatchController extends Controller
 
                             if(count($warnings) >= 0)
                             {
+                                if($packageDispatch->company!="Lyons Pharmacy"){
                                 $orgId=$team->orgId;
+
                                 if($orgId){
                                             Log::info($orgId);
                                             $curl = curl_init();
@@ -687,6 +689,7 @@ class PackageDispatchController extends Controller
                                         Log::info($response);
                                         Log::info('============ SENT TO SYNCWEB ================');
                                         if($statusCode>199 && $statusCode < 300){
+
                                             $team = User::find($request->get('idTeam'));
                                             $driver = User::find($request->get('idDriver'));
 
@@ -746,6 +749,9 @@ class PackageDispatchController extends Controller
                                      }
                                 }else{
                                      DB::commit();
+                                }
+                                }else{
+                                    DB::commit();
                                 }
                                 $package['latitude']  = $request->get('latitude');
                                 $package['longitude'] = $request->get('longitude');
