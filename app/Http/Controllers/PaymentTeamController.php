@@ -559,7 +559,7 @@ class PaymentTeamController extends Controller
                             ->first();
 
             $DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
-                            ->get();
+                            ->first();
 
 
 
