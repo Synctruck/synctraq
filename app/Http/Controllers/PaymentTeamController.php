@@ -442,9 +442,12 @@ class PaymentTeamController extends Controller
             $date         = date('m-d-Y', strtotime($paymentDetail->created_at)) .' '. date('H:i:s', strtotime($paymentDetail->created_at));
             $dateDispatch = date('m-d-Y', strtotime($paymentDetail->Date_Dispatch)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Dispatch));
             $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
+            $idUser       = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)
+                            ->Where('status','delivery')
+                            ->get();
 
             $lineData = array(
-
+                $idUser,
                 $date,
                 $dateDispatch,
                 $dateDelivery,
