@@ -439,12 +439,12 @@ function PackageReturn() {
             formData.append('latitude', latitude);
             formData.append('longitude', longitude);
 
-            if(latitude == 0 || longitude == 0)
+            /*if(latitude == 0 || longitude == 0)
             {
                 swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
 
                 return 0;
-            }
+            }*/
                 
             clearValidation();
 

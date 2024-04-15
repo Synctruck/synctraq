@@ -643,12 +643,12 @@ function PackageDispatch() {
             formData.append('forcedDispatch', forcedDispatch);
             formData.append('Description_Forced_Dispatch', Description_Forced_Dispatch);
 
-            if(latitude == 0 || longitude == 0)
+            /*if(latitude == 0 || longitude == 0)
             {
                 swal('Attention!', 'You must share the location of your device and reload the window.', 'warning');
 
                 return 0;
-            }
+            }*/
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
