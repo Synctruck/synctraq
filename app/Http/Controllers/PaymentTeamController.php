@@ -540,7 +540,7 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER','DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                     ->orderBy('Date_Dispatch', 'asc')
@@ -553,12 +553,17 @@ class PaymentTeamController extends Controller
             $date         = date('m-d-Y', strtotime($paymentDetail->created_at)) .' '. date('H:i:s', strtotime($paymentDetail->created_at));
             $dateDispatch = date('m-d-Y', strtotime($paymentDetail->Date_Dispatch)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Dispatch));
             $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
-            $idUser       = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)
+
+            $GetDriver    = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)
                             ->Where('status','delivery')
                             ->get();
 
+            $DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
+                            ->get();
+
+
+
             $lineData = array(
-                $idUser,
                 $date,
                 $dateDispatch,
                 $dateDelivery,
@@ -566,6 +571,7 @@ class PaymentTeamController extends Controller
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
                 'FALSE',
                 $paymentDetail->Route,
+                $DriverDetail ->name,
                 $paymentDetail->dimFactor,
                 $paymentDetail->weight,
                 $paymentDetail->weightRound,
