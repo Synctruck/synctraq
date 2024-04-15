@@ -556,7 +556,7 @@ class PaymentTeamController extends Controller
 
             $GetDriver    = PackageHistory::where('Reference_Number_1', $paymentDetail->Reference_Number_1)
                             ->Where('status','delivery')
-                            ->get();
+                            ->first();
 
             /*$DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
                             ->get();*/
@@ -571,7 +571,7 @@ class PaymentTeamController extends Controller
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
                 'FALSE',
                 $paymentDetail->Route,
-                $GetDriver,
+                $GetDriver->idUserDispatch,
                 $paymentDetail->dimFactor,
                 $paymentDetail->weight,
                 $paymentDetail->weightRound,
