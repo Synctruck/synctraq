@@ -558,8 +558,8 @@ class PaymentTeamController extends Controller
                             ->Where('status','delivery')
                             ->get();
 
-            $DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
-                            ->get();
+            /*$DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
+                            ->get();*/
 
 
 
@@ -571,7 +571,7 @@ class PaymentTeamController extends Controller
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
                 'FALSE',
                 $paymentDetail->Route,
-                $DriverDetail ->name,
+                $GetDriver ->idUserDispatch,
                 $paymentDetail->dimFactor,
                 $paymentDetail->weight,
                 $paymentDetail->weightRound,
