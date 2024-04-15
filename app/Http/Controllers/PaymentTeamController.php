@@ -571,7 +571,7 @@ class PaymentTeamController extends Controller
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
                 'FALSE',
                 $paymentDetail->Route,
-                $GetDriver ->idUserDispatch,
+                $GetDriver,
                 $paymentDetail->dimFactor,
                 $paymentDetail->weight,
                 $paymentDetail->weightRound,
