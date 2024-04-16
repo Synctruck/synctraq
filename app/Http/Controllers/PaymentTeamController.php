@@ -540,7 +540,7 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER','DIM FACTOR', 'WEIGHT', 'DIM WEIGHT ROUND', 'PRICE WEIGHT', 'PEAKE SEASON PRICE', 'PRICE BASE', 'DIESEL PRICE', 'SURCHARGE PERCENTAGE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER', 'WEIGHT', 'PRICE BASE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                     ->orderBy('Date_Dispatch', 'asc')
@@ -558,10 +558,10 @@ class PaymentTeamController extends Controller
                             ->Where('status','delivery')
                             ->first();
 
+            if($GetDriver){
             $DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
                             ->first();
-
-
+            }
 
             $lineData = array(
                 $date,
@@ -572,14 +572,8 @@ class PaymentTeamController extends Controller
                 'FALSE',
                 $paymentDetail->Route,
                 $DriverDetail ->name,
-                $paymentDetail->dimFactor,
                 $paymentDetail->weight,
-                $paymentDetail->weightRound,
-                $paymentDetail->priceWeight,
-                $paymentDetail->peakeSeasonPrice,
                 $paymentDetail->priceBase,
-                $paymentDetail->dieselPrice,
-                $paymentDetail->surchargePercentage,
                 $paymentDetail->surchargePrice,
                 $paymentDetail->priceByRoute,
                 $paymentDetail->priceByCompany,
