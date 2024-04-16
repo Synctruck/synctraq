@@ -49,15 +49,18 @@ class PaymentTeamController extends Controller
         {
             DB::beginTransaction();
 
-            $payment           = PaymentTeam::with(['team'])->find($idPayment);
-            $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+            $payment = PaymentTeam::with(['team'])->find($idPayment);
             $totalPieces = 0;
             $totalTeam   = 0;
             $totalDeduction = 0;
+            $totalAdjustment = 0;
+
             $team = User::find($payment->idTeam);
 
             if($team->configurationPay == 'Package')
             {
+                $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+
                 foreach($paymentDetailList as $paymentDetail)
                 {
                     $dimFactor   = 200;
@@ -141,6 +144,26 @@ class PaymentTeamController extends Controller
             }
             else
             {
+                $this->DeleteAdjustment($idPayment);
+
+                $paymentDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)->get();
+
+                $packageIds = [];
+                array_push($packageIds, 'ewfwe');
+
+                foreach($paymentDetailList as $paymentDetail)
+                {
+                    array_push($packageIds, $paymentDetail->Reference_Number_1);
+                }
+
+                $listPackageDelivery = PackageDispatch::where('status', 'Delivery')
+                                            ->where('idTeam', $payment->idTeam)
+                                            ->whereIn('Reference_Number_1', $packageIds)
+                                            ->selectRaw('Reference_Number_1, DATE(Date_Dispatch) as DATE_DELIVERY, Dropoff_Address_Line_1, idTeam, company, Date_Dispatch, Date_Delivery')
+                                            ->orderBy('Date_Dispatch', 'asc')
+                                            ->orderBy('Dropoff_Address_Line_1', 'asc')
+                                            ->get();
+
                 $stopsQuantity = [];
                 $addressPackages = [];
                 $routesDates = [];
@@ -166,86 +189,82 @@ class PaymentTeamController extends Controller
 
                 foreach($listPackageDelivery as $packageDelivery)
                 {
-                    Log::info('$paymentTeamDetail: '. $packageDelivery->Reference_Number_1);
-                    $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
+                    if($routesDates[$positionRoutesDates] != $packageDelivery->DATE_DELIVERY){
+                        if($priceBasePay > 0)
+                        {
+                            $totalAdjustment = $totalAdjustment + $priceBasePay;
+                            $this->SaveAdjustment($idPayment, $priceBasePay, $routesDates[$positionRoutesDates]);
+                        }
 
-                    if(!$paymentTeamDetail)
+                        $priceBasePay = $team->basePay;
+                        $positionRoutesDates = $positionRoutesDates + 1;
+                        $quantity = 1;
+                    }
+
+                    $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
+                    $priceBase = 0;
+                    $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
+                    $stringSearch = str_replace(' ', '', $stringSearch);
+
+                    if(in_array($stringSearch, $addressPackages))
                     {
-                        if($routesDates[$positionRoutesDates] != $packageDelivery->DATE_DELIVERY){
-                            if($priceBasePay > 0)
-                            {
-                                $totalAdjustment = $totalAdjustment + $priceBasePay;
-                                $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
-                            }
+                        array_push($addressPackages, $stringSearch);
 
-                            $priceBasePay = $team->basePay;
-                            $positionRoutesDates = $positionRoutesDates + 1;
-                            $quantity = 1;
-                        }
+                        $priceBase = ($team->priceByPackage / $team->splitForAddPc);
+                        $totalPrice = $priceBase + $signature;
+                        $quantity = $quantity + 1;
+                    }
+                    else
+                    {
+                        array_push($addressPackages, $stringSearch);
+                        $quantityPackages = $stopsQuantity[$stringSearch];
+                        $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
+                        $priceBase = ($team->baseRate - $discountGap) + $team->priceByPackage;
+                        $totalPrice = $priceBase + $signature;
+                        $quantity = 1;
+                    }
 
-                        $signature = $packageDelivery->company == 'EIGHTVAPE' ? $team->signature : 0;
-                        $priceBase = 0;
-                        $stringSearch = $packageDelivery->DATE_DELIVERY . $packageDelivery->Dropoff_Address_Line_1;
-                        $stringSearch = str_replace(' ', '', $stringSearch);
+                    $packageDispatchDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
+                    $packageDispatchDelivery->paid = 1;
+                    $packageDispatchDelivery->save();
 
-                        if(in_array($stringSearch, $addressPackages))
-                        {
-                            array_push($addressPackages, $stringSearch);
+                    $paymentTeamDetail = PaymentTeamDetail::find($packageDelivery->Reference_Number_1);
+                    $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
+                    $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
+                    $paymentTeamDetail->idPaymentTeam       = $idPayment;
+                    $paymentTeamDetail->dimFactor           = 0;
+                    $paymentTeamDetail->weight              = $packageDelivery->Weight ? $packageDelivery->Weight : 0;
+                    $paymentTeamDetail->weightRound         = ceil($paymentTeamDetail->weight);
+                    $paymentTeamDetail->priceWeight         = 0;
+                    $paymentTeamDetail->peakeSeasonPrice    = $signature;
+                    $paymentTeamDetail->priceBase           = $priceBase;
+                    $paymentTeamDetail->dieselPrice         = 0;
+                    $paymentTeamDetail->surchargePercentage = 0;
+                    $paymentTeamDetail->surchargePrice      = 0;
+                    $paymentTeamDetail->priceByRoute        = 0;
+                    $paymentTeamDetail->priceByCompany      = 0;
+                    $paymentTeamDetail->priceDeduction      = 0;
+                    $paymentTeamDetail->totalPrice          = $totalPrice;
+                    $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery ? $packageDelivery->Date_Delivery : date('Y-m-d H:i:s');
+                    $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
+                    $paymentTeamDetail->save();
 
-                            $priceBase = ($team->priceByPackage / $team->splitForAddPc);
-                            $totalPrice = $priceBase + $signature;
-                            $quantity = $quantity + 1;
-                        }
-                        else
-                        {
-                            array_push($addressPackages, $stringSearch);
-                            $quantityPackages = $stopsQuantity[$stringSearch];
-                            $discountGap = $this->GetDiscountGapBetweenTiers($quantityPackages, $team->gapBetweenTiers);
-                            $priceBase = ($team->baseRate - $discountGap) + $team->priceByPackage;
-                            $totalPrice = $priceBase + $signature;
-                            $quantity = 1;
-                        }
+                    $totalPieces = $totalPieces + 1;
+                    $totalTeam   = $totalTeam + ($priceBase + $signature);
 
-                        $packageDispatchDelivery = PackageDispatch::find($packageDelivery->Reference_Number_1);
-                        $packageDispatchDelivery->paid = 1;
-                        $packageDispatchDelivery->save();
+                    if($routesDates[$positionRoutesDates] == $packageDelivery->DATE_DELIVERY){
+                        $priceBasePay = $priceBasePay - $totalPrice;
+                    }
 
-                        $paymentTeamDetail = new PaymentTeamDetail();
-                        $paymentTeamDetail->Reference_Number_1  = $packageDelivery->Reference_Number_1;
-                        $paymentTeamDetail->Route               = $packageDelivery->Route ? $packageDelivery->Route : '---';
-                        $paymentTeamDetail->idPaymentTeam       = $idPaymentTeam;
-                        $paymentTeamDetail->dimFactor           = 0;
-                        $paymentTeamDetail->weight              = $packageDelivery->Weight ? $packageDelivery->Weight : 0;
-                        $paymentTeamDetail->weightRound         = ceil($paymentTeamDetail->weight);
-                        $paymentTeamDetail->priceWeight         = 0;
-                        $paymentTeamDetail->peakeSeasonPrice    = $signature;
-                        $paymentTeamDetail->priceBase           = $priceBase;
-                        $paymentTeamDetail->dieselPrice         = 0;
-                        $paymentTeamDetail->surchargePercentage = 0;
-                        $paymentTeamDetail->surchargePrice      = 0;
-                        $paymentTeamDetail->priceByRoute        = 0;
-                        $paymentTeamDetail->priceByCompany      = 0;
-                        $paymentTeamDetail->priceDeduction      = 0;
-                        $paymentTeamDetail->totalPrice          = $totalPrice;
-                        $paymentTeamDetail->Date_Delivery       = $packageDelivery->Date_Delivery ? $packageDelivery->Date_Delivery : date('Y-m-d H:i:s');
-                        $paymentTeamDetail->Date_Dispatch       = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $packageDelivery->Date_Delivery;
-                        $paymentTeamDetail->save();
-
-                        $totalPieces = $totalPieces + 1;
-                        $totalTeam   = $totalTeam + ($priceBase + $signature);
-
-                        if($routesDates[$positionRoutesDates] == $packageDelivery->DATE_DELIVERY){
-                            $priceBasePay = $priceBasePay - $totalPrice;
-                        }
-
-                        if(count($routesDates) - 1 == $positionRoutesDates){
-                            if($priceBasePay > 0){
-                                $totalAdjustment = $totalAdjustment + $priceBasePay;
-                                $this->SaveAdjustment($idPaymentTeam, $priceBasePay, $routesDates[$positionRoutesDates]);
-                            }
+                    if(count($routesDates) - 1 == $positionRoutesDates){
+                        if($priceBasePay > 0){
+                            $totalAdjustment = $totalAdjustment + $priceBasePay;
+                            $this->SaveAdjustment($idPayment, $priceBasePay, $routesDates[$positionRoutesDates]);
                         }
                     }
                 }
+
+                $totalAdjustment = -$totalAdjustment;
             }
 
             $payment->totalPieces     = $totalPieces;
@@ -254,7 +273,6 @@ class PaymentTeamController extends Controller
             $payment->totalDeduction  = $totalDeduction;
             $payment->total           = $totalTeam + $totalAdjustment + $totalDeduction;
             $payment->averagePrice    = $totalPieces > 0 ? $totalTeam / $totalPieces : 0;
-            $payment->surcharge       = $team->surcharge;
             $payment->save();
 
             DB::commit();
@@ -267,6 +285,28 @@ class PaymentTeamController extends Controller
 
             return ['statusCode' => false];
         }
+    }
+
+    public function DeleteAdjustment($idPaymentTeam)
+    {
+        $paymentTeamAdjustmentList = PaymentTeamAdjustment::where('idPaymentTeam', $idPaymentTeam)->get();
+
+        foreach($paymentTeamAdjustmentList as $paymentTeamAdjustment)
+        {
+            $paymentTeamAdjustment = PaymentTeamAdjustment::find($paymentTeamAdjustment->id);
+            $paymentTeamAdjustment->delete();
+        }
+    }
+
+    public function SaveAdjustment($idPaymentTeam, $priceBasePay, $date)
+    {
+        $paymentTeamAdjustment = new PaymentTeamAdjustment();
+        $paymentTeamAdjustment->id            = uniqid();
+        $paymentTeamAdjustment->idPaymentTeam = $idPaymentTeam;
+        $paymentTeamAdjustment->amount        = -$priceBasePay;
+        $paymentTeamAdjustment->description   = 'Adjustment by route';
+        $paymentTeamAdjustment->description   = 'Adjustment - route: '. $date;
+        $paymentTeamAdjustment->save();
     }
 
     public function GetDieselPrice($Date_Delivery)
@@ -955,7 +995,7 @@ class PaymentTeamController extends Controller
                 $addressPackages = [];
                 $routesDates = [];
                 $pricePerStop = 0;
-                dd($packageDispatchList);
+
                 foreach($packageDispatchList as $packageDispatch)
                 {
                     $stringSearch = $packageDispatch->DATE_DELIVERY . $packageDispatch->Dropoff_Address_Line_1;
