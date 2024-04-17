@@ -264,6 +264,7 @@ class TaskPaymentTeam extends Command
                             $paymentTeam->total          = $totalTeam + $paymentTeam->totalAdjustment - $totalAdjustmentToDeduct + $totalDeduction;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
+                            $paymentTeam->invoiceType    = $team->configurationPay == 'Package' ? 'Package' : 'Route';
                             $paymentTeam->status         = 'TO APPROVE';
                             $paymentTeam->save();
                         }

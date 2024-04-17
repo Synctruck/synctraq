@@ -273,6 +273,7 @@ class PaymentTeamController extends Controller
             $payment->totalDeduction  = $totalDeduction;
             $payment->total           = $totalTeam + $totalAdjustment + $totalDeduction;
             $payment->averagePrice    = $totalPieces > 0 ? $totalTeam / $totalPieces : 0;
+            $payment->invoiceType     = $team->configurationPay == 'Package' ? 'Package' : 'Route';
             $payment->save();
 
             DB::commit();
