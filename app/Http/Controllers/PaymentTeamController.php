@@ -123,8 +123,24 @@ class PaymentTeamController extends Controller
                         if($packageDelivery)
                         {
                             if($packageDelivery->Date_Dispatch)
+                                    $dispatchEvents = PackageHistory::select('Date_Dispatch','idTeam')
+                                        ->where('Reference_Number_1',$packageDelivery->Reference_Number_1)
+                                        ->where('status','dispatch')
+                                        ->orderBy('Date_Dispatch', 'asc')
+                                        ->get();
+
+                                    $allSameTeam = $dispatchEvents->pluck('idTeam')->unique()->count() == 1;
+
+                                    if($allSameTeam)
+                                    {
+                                        $dateDispatch = $dispatchEvents->first()->Date_Dispatch;
+                                    }
+                                    else
+                                    {
+                                        $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                    }
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
-                                $deduction = $this->CalculateDeduction($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
+                                $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
                         }
                     }
 
