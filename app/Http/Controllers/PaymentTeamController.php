@@ -581,7 +581,7 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER', 'WEIGHT', 'PRICE BASE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER', 'WEIGHT','PEAKE SEASON PRICE' ,'PRICE BASE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                     ->orderBy('Date_Dispatch', 'asc')
@@ -615,6 +615,7 @@ class PaymentTeamController extends Controller
                 $DriverDetail ->name,
                 $paymentDetail->weight,
                 $paymentDetail->priceBase,
+                $paymentDetail->peakeSeasonPrice,
                 $paymentDetail->surchargePrice,
                 $paymentDetail->priceByRoute,
                 $paymentDetail->priceByCompany,
