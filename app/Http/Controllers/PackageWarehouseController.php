@@ -911,7 +911,7 @@ class PackageWarehouseController extends Controller
             $packageDispatch->idCellar                  = $package->idCellar;
             $packageDispatch->nameCellar                = $package->nameCellar;
             $packageDispatch->stateCellar               = $package->stateCellar;
-            $packageDispatch->cityCellar                = $package->Dropoff_Contact_Phone_Number;
+            $packageDispatch->cityCellar                = $package->cityCellar;
             $packageDispatch->status                    = 'Delivery';
             $packageDispatch->created_at                = $package->actualDate;
 
