@@ -25,7 +25,7 @@ class PackageFailedController extends Controller
 
         $roleUser = Auth::user()->role->name;
 
-        return ['packageFailedList' => $packageFailedList, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser]; 
+        return ['packageFailedList' => $packageFailedList, 'quantityFailed' => $quantityFailed, 'roleUser' => $roleUser];
     }
 
     private function getDataDispatch($idCompany, $dateStart, $dateEnd, $idTeam, $idDriver, $state, $routes, $type='list')
@@ -33,8 +33,7 @@ class PackageFailedController extends Controller
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
 
-        $packageDispatchList = PackageFailed::whereBetween('created_at', [$dateStart, $dateEnd])
-                                                ->where('status', 'Failed');
+        $packageDispatchList = PackageHistory::whereBetween('created_at', [$dateInit, $dateEnd])->where('status', 'Failed');
 
         if($idTeam && $idDriver)
         {
@@ -153,7 +152,7 @@ class PackageFailedController extends Controller
             {
                 $packagePreFailed = PackagePreFailed::find($packagePreFailed->taskOnfleet);
                 $packageDispatch  = PackageDispatch::where('taskOnfleet', $packagePreFailed->taskOnfleet)->first();
-                
+
                 if($packageDispatch)
                 {
                     $Description_Onfleet = $packagePreFailed->Description_Onfleet;
@@ -224,7 +223,7 @@ class PackageFailedController extends Controller
                     $packageHistory->updated_at                   = $packagePreFailed->created_at;
 
                     $packageHistory->save();
-                    
+
                     $packagePreFailed->delete();
                     $packageDispatch->delete();
                 }
