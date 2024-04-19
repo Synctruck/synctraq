@@ -878,6 +878,12 @@ class PackageWarehouseController extends Controller
                                  ->where('status','delivery')
                                  ->first();
 
+        if(!$package){
+            $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
+                                 ->where('status','failed')
+                                 ->first();
+        }
+
         try{
             DB::beginTransaction();
 
