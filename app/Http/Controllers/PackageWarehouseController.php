@@ -867,4 +867,75 @@ class PackageWarehouseController extends Controller
             return false;
         }
     }
+
+    public function CreateOnDelivery($Reference_Number_1){
+        $package= $this->InsertOnDelivery($Reference_Number_1);
+        return $package;
+    }
+
+    public function InsertOnDelivery($Reference_Number_1){
+        $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
+                                 ->where('status','delivery')
+                                 ->first();
+
+        if(!$package){
+            $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
+                                 ->where('status','failed')
+                                 ->first();
+        }
+
+        try{
+            DB::beginTransaction();
+
+            $packageDispatch = new PackageDispatch();
+
+            $packageDispatch->Reference_Number_1        = $package->Reference_Number_1;
+            $packageDispatch->idCompany                 = $package->idCompany;
+            $packageDispatch->idStore                   = $package->idStore;
+            $packageDispatch->company                   = $package->company;
+            $packageDispatch->store                     = $package->store;
+            $packageDispatch->Dropoff_Contact_Name      = $package->Dropoff_Contact_Name;
+            $packageDispatch->Dropoff_Company           = $package->Dropoff_Company;
+            $packageDispatch->Dropoff_Contact_Email     = $package->Dropoff_Contact_Email;
+            $packageDispatch->Dropoff_Address_Line_1    = $package->Dropoff_Address_Line_1;
+            $packageDispatch->Dropoff_Address_Line_2    = $package->Dropoff_Address_Line_2;
+            $packageDispatch->Dropoff_City              = $package->Dropoff_City;
+            $packageDispatch->Dropoff_Province          = $package->Dropoff_Province;
+            $packageDispatch->Dropoff_Postal_Code       = $package->Dropoff_Postal_Code;
+            $packageDispatch->Notes                     = $package->Notes;
+            $packageDispatch->Weight                    = $package->Weight;
+            $packageDispatch->Route                     = $package->Route;
+            $packageDispatch->idUser                    = $package->idUser;
+            $packageDispatch->idTeam                    = $package->idTeam ;
+            $packageDispatch->idUserDispatch            = $package->idUserDispatch;
+            $packageDispatch->Date_Dispatch             = $package->Date_Dispatch;
+            $packageDispatch->taskDetails               = $package->taskDetails;
+            $packageDispatch->workerName                = $package->workerName;
+            $packageDispatch->destinationAddress        = $package->destinationAddress;
+            $packageDispatch->recipientNotes            = $package->recipientNotes;
+            $packageDispatch->Date_Delivery             = $package->Date_Delivery;
+            $packageDispatch->idCellar                  = $package->idCellar;
+            $packageDispatch->nameCellar                = $package->nameCellar;
+            $packageDispatch->stateCellar               = $package->stateCellar;
+            $packageDispatch->cityCellar                = $package->cityCellar;
+            $packageDispatch->status                    = 'Delivery';
+            $packageDispatch->created_at                = $package->actualDate;
+
+            $packageDispatch->save();
+
+            DB::commit();
+
+
+
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
+
+
+        return $packageDispatch;
+    }
 }

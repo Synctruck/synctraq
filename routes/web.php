@@ -104,7 +104,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('/package-manifest/update/filter', [PackageManifestController::class, 'UpdateFilter']);
 	Route::post('/package-manifest/import', [PackageManifestController::class, 'Import']);
 	Route::get('/package-manifest/delete-duplicate', [PackageManifestController::class, 'DeleteDuplicate']);
-	
+
 	//============ Validation lost
 	Route::get('/package-lost', [PackageLostController::class, 'Index'])->middleware('permission:lost.index');
 	Route::get('/package-lost/list/{idCompany}/{dateStart}/{dateEnd}/{route}/{state}', [PackageLostController::class, 'List']);
@@ -253,7 +253,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/payment-team/recalculate/{idPayment}', [PaymentTeamController::class, 'Recalculate']);
 	Route::get('/payment-team-adjustment/{idPaymentTeam}', [PaymentTeamAdjustmentController::class, 'List']);
 	Route::post('/payment-team-adjustment/insert', [PaymentTeamAdjustmentController::class, 'Insert']);
-	
+
 	//=========== Payment Team Revert
 	Route::get('/payment-revert', [ToReversePackagesController::class, 'Index'])->middleware('permission:paymentTeamReverts.index');
 	Route::get('/payment-revert/{dateInit}/{dateEnd}/{idTeam}/{status}', [ToReversePackagesController::class, 'List']);
@@ -302,6 +302,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/package-warehouse/delete-in-delivery', [PackageWarehouseController::class, 'DeleteInDelivery']);
 	Route::get('/package-warehouse/export/{idCompany}/{idValidator}/{dateStart}/{dateEnd}/{route}/{state}/{idCellar}/{type}', [PackageWarehouseController::class, 'Export']);
 	Route::post('/package-warehouse/import', [PackageWarehouseController::class, 'Import']);
+    Route::get('/package-warehouse/CreateOnDelivery/{package}', [PackageWarehouseController::class, 'CreateOnDelivery']);
 
 	//============ Validation warehouse
 	Route::get('/package-mms', [PackageMiddleMileScanController::class, 'Index'])->middleware('permission:mms.index');
