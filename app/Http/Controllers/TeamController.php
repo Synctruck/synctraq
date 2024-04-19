@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Validator;
 
 use DB;
+use Log;
 use Session;
 
 class TeamController extends Controller
@@ -112,32 +113,24 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $listTeamOnfleet = $this->GetListOnfleet();
-
-        $register = true;
-
-        foreach ($listTeamOnfleet as $team)
+        try
         {
-            if($team['name'] == $request->get('name'))
+            DB::beginTransaction();
+
+            $driverLast = User::all()->last();
+
+            $request['idRole']   = 3;
+            $request['password'] = Hash::make($request->get('email'));
+
+            $idTeam = $driverLast->id + 1;
+            $registerSystemNew = $this->RegisterSystemNew($request, $idTeam);
+
+            Log::info($registerSystemNew['response']);
+
+            if($registerSystemNew['status'])
             {
-                $request['idOnfleet'] = $team['id'];
-                $register = true;
-            }
-        }
-
-        if($register)
-        {
-            try
-            {
-                DB::beginTransaction();
-
-                $driverLast = User::all()->last();
-
-                $request['idRole']   = 3;
-                $request['password'] = Hash::make($request->get('email'));
-
                 $user = new User();
-                $user->id                 = $driverLast->id + 1;
+                $user->id                 = $idTeam;
                 $user->idRole             = $request->get('idRole');
                 $user->name               = $request->get('name');
                 $user->nameOfOwner        = $request->get('nameOfOwner');
@@ -145,31 +138,141 @@ class TeamController extends Controller
                 $user->email              = $request->get('email');
                 $user->password           = $request->get('password');
                 $user->permissionDispatch = $request->get('permissionDispatch');
-                //$user->idOnfleet          = $request->get('idOnfleet');
+                $user->orgId              = $registerSystemNew['response']['data']['_id']['value'];
+                $user->apiKey              = $registerSystemNew['response']['data']['props']['apiKey'];
                 $user->surcharge          = $request->get('surcharge');
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->sla                = $request->get('sla');
                 $user->status             = $request->get('status');
 
                 if($request->get('emailCC')!="null"){
-                $user->emailCC            = $request->get('emailCC');
+                    $user->emailCC            = $request->get('emailCC');
                 }
+
                 $user->save();
 
                 DB::commit();
 
                 return ['stateAction' => true];
             }
-            catch(Exception $e)
-            {
-                DB::rollback();
 
-                return ['stateAction' => false];
+            return ['stateAction' => false];
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            return ['stateAction' => false];
+        }
+    }
+
+    public function ListSystemNew()
+    {
+        $configuration = Configuration::first();
+        $headers =  array(
+                        'Content-Type: application/json',
+                        'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjU4MWI4MTM2OGU5NTk5YTdjODhkMzVhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEiLCJsYXN0T3JnIjoiNjU3MjA4NWEyOTE1MzMzNjFjNGEwYWI4IiwicGVybWlzc2lvbnMiOiJlZGl1c2UsbGlzdXNlLHZpZXVzZSx2aWVyb2wsbGlzcm9sLGNyZXJvbCxsaWZycGUsZGVscm9sLGVkaXJvbCx2aWVzaGksbGlzc2hpcCx2aWVvcmcsY3Jlc2hpLGVkaXNoaSxsaXNvcmcsY3Jlb3JnLGNyZXVzZSxsaWFub20sc29hbm9tLGNyZWpvYixsaXNqb2IsdmVuZGFzLGxpc3JvdSxsaXNkcmlsb2MiLCJvcmdzIjpbeyJpZCI6IjY1NzIwODVhMjkxNTMzMzYxYzRhMGFiOCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDQtMjBUMDM6MDc6NTcuNTAwWiJ9LCJpYXQiOjE3MTM1MzkyNzcsImV4cCI6MTcxMzU4MjQ3NywiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.By_byEi_jqLQQ0GMv-a5lRoU6M-eR_U6s_1tP0UuRzM',
+                    );
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $configuration->podAppUrl .'/organizations',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => $headers,
+        ));
+
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($response['data'] as $organization)
+            {
+                $user = User::where('email', $organization['contact']['email'])->first();
+
+                if($user)
+                {
+                    $user->orgId = $organization['id'];
+                    $user->apiKey = $organization['apiKey'];
+                    $user->save();
+                }
             }
+
+            DB::commit();
+            echo "success";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+            echo "error";
+        }
+    }
+
+    public function RegisterSystemNew($request, $idTeam)
+    {
+        $data = [
+                    "name" => $request->name,
+                    "shortcode" => $idTeam .''. substr($request->name, 0, 1),
+                    "active" => true,
+                    "address" => [
+                        "postalCode" => "10014",
+                        "street" => "street",
+                        "city" => "city",
+                        "state" => "state",
+                        "country" => "country"
+                    ],
+                    "contact" => [
+                        "email" => $request->email,
+                        "phone" => $request->phone,
+                    ]
+                ];
+
+        $configuration = Configuration::first();
+
+        $headers =  array(
+                        'Content-Type: application/json',
+                        'Authorization: '. $configuration->podAppKey
+                    );
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $configuration->podAppUrl .'/organizations',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => $headers,
+        ));
+
+        Log::info(json_encode($data));
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        if($http_status >= 200 && $http_status <= 299)
+        {
+            return ['response' => $response, 'status' => true];
         }
         else
         {
-            return ['stateAction' => 'notTeamOnfleet'];
+            return ['response' => $response, 'status' => false];
         }
     }
 
@@ -397,7 +500,7 @@ class TeamController extends Controller
         return ['stateAction' => true];
     }
 
-    public function GetListOnfleet()
+    /*public function GetListOnfleet()
     {
         $curl = curl_init("https://onfleet.com/api/v2/teams");
 
@@ -508,5 +611,5 @@ class TeamController extends Controller
         {
             return false;
         }
-    }
+    }*/
 }

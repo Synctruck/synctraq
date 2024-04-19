@@ -53,7 +53,7 @@ class DriverController extends Controller
 
     public function List(Request $request)
     {
-        $userList = Driver::with(['role'])
+        $userList = Driver::with(['role', 'team'])
                                 ->with('package_not_exists')
                                 ->with('routes_team')
                                 ->orderBy('name', 'asc')
@@ -156,7 +156,7 @@ class DriverController extends Controller
 
                 $driver = Driver::where('email', $request->email)->first();
 
-                $this->SynchronizeNewSystem($driver->id);
+                $this->SynchronizeNewSystem($driver->id, $team->apiKey);
 
                 return ['stateAction' => true];
             }
@@ -208,7 +208,7 @@ class DriverController extends Controller
             $driver->nameTeam    = $team->name;
             $driver->save();
 
-            $this->SynchronizeNewSystem($driver->id);
+            $this->SynchronizeNewSystem($driver->id, $team->apiKey);
 
             return ['stateAction' => true];
         }
@@ -273,39 +273,12 @@ class DriverController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $listDriverOnfleet = $this->GetListOnfleet();
+        $team = User::find($request->get('idTeam'));
 
-        $updated = false;
+        $request['nameTeam'] = $team->name;
+        $user->update($request->all());
 
-        foreach ($listDriverOnfleet as $driver)
-        {
-            if($driver['phone'] == $request->get('phone'))
-            {
-                $request['idOnfleet'] = $driver['id'];
-
-                $updated = true;
-            }
-        }
-
-        if($updated)
-        {
-            $team = User::find($request->get('idTeam'));
-
-            $updatedTeam = $this->UpdatedOnfleet($team, $request);
-
-            if($updatedTeam)
-            {
-                $request['nameTeam'] = $team->name;
-
-                $user->update($request->all());
-
-                return ['stateAction' => true];
-            }
-        }
-        else
-        {
-            return ['stateAction' => 'phoneNotExists'];
-        }
+        return ['stateAction' => true];
     }
 
     public function ChangeStatus($id)
@@ -565,14 +538,15 @@ class DriverController extends Controller
         }
     }
 
-    public function SynchronizeNewSystem($id)
+    public function SynchronizeNewSystem($id, $apiKey)
     {
         $user = User::find($id);
 
-        $registerSystemNew = $this->RegisterSystemNew($user, $user->id);
+        $registerSystemNew = $this->RegisterSystemNew($user, $user->id, $apiKey);
 
         if($registerSystemNew['statusCode'])
         {
+            $user->driverId = $registerSystemNew['response']['data']['id'];
             $user->registerNewSystem = 1;
             $user->save();
 
@@ -582,7 +556,60 @@ class DriverController extends Controller
         return ['statusCode' => false];
     }
 
-    public function RegisterSystemNew($request, $idDriver)
+    public function ListSystemNew()
+    {
+        $configuration = Configuration::first();
+        $headers =  array(
+                        'Content-Type: application/json',
+                        'token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib2R5Ijp7ImlkIjoiNjU4MWI4MTM2OGU5NTk5YTdjODhkMzVhIiwiZW1haWwiOiJ3aWxjbTEyM0BnbWFpbC5jb20iLCJuYW1lIjoid2lsYmVyIGNhaHVhbmEiLCJsYXN0T3JnIjoiNjU3MjA4NWEyOTE1MzMzNjFjNGEwYWI4IiwicGVybWlzc2lvbnMiOiJlZGl1c2UsbGlzdXNlLHZpZXVzZSx2aWVyb2wsbGlzcm9sLGNyZXJvbCxsaWZycGUsZGVscm9sLGVkaXJvbCx2aWVzaGksbGlzc2hpcCx2aWVvcmcsY3Jlc2hpLGVkaXNoaSxsaXNvcmcsY3Jlb3JnLGNyZXVzZSxsaWFub20sc29hbm9tLGNyZWpvYixsaXNqb2IsdmVuZGFzLGxpc3JvdSxsaXNkcmlsb2MiLCJvcmdzIjpbeyJpZCI6IjY1NzIwODVhMjkxNTMzMzYxYzRhMGFiOCIsIm5hbWUiOiJTeW5jdHJ1Y2sifV0sImV4cCI6IjIwMjQtMDQtMjBUMDM6MDc6NTcuNTAwWiJ9LCJpYXQiOjE3MTM1MzkyNzcsImV4cCI6MTcxMzU4MjQ3NywiYXVkIjoic3luYy1zeXN0ZW0iLCJzdWIiOiJ3aWxjbTEyM0BnbWFpbC5jb20ifQ.By_byEi_jqLQQ0GMv-a5lRoU6M-eR_U6s_1tP0UuRzM',
+                    );
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $configuration->podAppUrl .'/users',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => $headers,
+        ));
+
+        $response    = curl_exec($curl);
+        $response    = json_decode($response, true);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        dd($response);
+        try
+        {
+            DB::beginTransaction();
+
+            foreach($response['data'] as $organization)
+            {
+                $user = User::where('email', $organization['contact']['email'])->first();
+
+                if($user)
+                {
+                    $user->orgId = $organization['id'];
+                    $user->apiKey = $organization['apiKey'];
+                    $user->save();
+                }
+            }
+
+            DB::commit();
+            echo "success";
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+            echo "error";
+        }
+    }
+
+    public function RegisterSystemNew($request, $idDriver, $apiKey)
     {
         $data = [
                     "firstName" => $request->name,
@@ -598,7 +625,7 @@ class DriverController extends Controller
 
         $headers =  array(
                         'Content-Type: application/json',
-                        'Authorization: '. $configuration->podAppKey
+                        'Authorization: '. $apiKey,
                     );
 
         $curl = curl_init();
@@ -622,9 +649,7 @@ class DriverController extends Controller
 
         curl_close($curl);
 
-        Log::info('response');
-        Log::info($response);
-
+        Log::info($response['message']);
         if($http_status >= 200 && $http_status <= 299)
         {
             return ['response' => $response, 'statusCode' => true];

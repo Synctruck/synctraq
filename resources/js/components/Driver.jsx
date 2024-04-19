@@ -376,11 +376,10 @@ function Driver() {
         document.getElementById('status').innerHTML     = '';
     }
 
-    const synchronize = async (id) => {
-
+    const synchronize = async (id, apiKey) => {
         LoadingShowMap();
 
-        await fetch(url_general +'driver/synchronize/'+ id)
+        await fetch(url_general +'driver/synchronize/'+ id +'/'+ apiKey)
         .then(response => response.json())
         .then(response => {
 
@@ -448,10 +447,10 @@ function Driver() {
 
                     {
                         (
-                            user.registerNewSystem == 0
+                            user.registerNewSystem == 0 && user.team && user.team.apiKey
                             ?
                                 <div>
-                                    <button className="btn btn-success btn-sm" title="Synchronize with new system" onClick={ () => synchronize(user.id) }>
+                                    <button className="btn btn-success btn-sm" title="Synchronize with new system" onClick={ () => synchronize(user.id, user.team.apiKey) }>
                                         <i className="bx bxs-user-plus"></i>
                                     </button>
                                 </div>

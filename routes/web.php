@@ -374,11 +374,12 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::post('driver/update/{id}', [DriverController::class, 'Update']);
 	Route::get('driver/changeStatus/{id}', [DriverController::class, 'ChangeStatus']);
 	Route::get('driver/delete/{id}', [DriverController::class, 'Delete']);
-	Route::get('driver/synchronize/{id}', [DriverController::class, 'SynchronizeNewSystem']);
+	Route::get('driver/synchronize/{id}/{apiKey}', [DriverController::class, 'SynchronizeNewSystem']);
 	Route::get('driver/defrief', [DriverController::class, 'IndexDebrief']);
 	Route::get('driver/defrief/list/{idTeam}', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
 	Route::get('driver/defrief/packages-change-status/{PACKAGE_ID}/{stsatus}/{comment}', [DriverController::class, 'ChangeStatusPackageDebrief']);
+	Route::get('driver/synchronize-list', [DriverController::class, 'ListSystemNew']);
 
 	//============ Maintenance of stores
 	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);
@@ -465,6 +466,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('team/change-configuration-pay/{id}', [TeamController::class, 'ChangeConfigurationPay']);
 	Route::post('team/save-configuration-pay', [TeamController::class, 'SaveConfigurationPay']);
 	Route::get('team/delete/{id}', [TeamController::class, 'Delete']);
+	Route::get('team/synchronize-list', [TeamController::class, 'ListSystemNew']);
 
 	//============ Maintenance of users
 	Route::get('user', [UserController::class, 'Index'])->middleware('permission:admin.index');
