@@ -668,7 +668,7 @@ class PackageDispatchController extends Controller
     {
         $Reference_Number_1 = $request['barcode'];
         $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
+        $created_at         = $request['createdAt'];
 
         $packageDispatch = PackageManifest::find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageInbound::find($request['barcode']);
