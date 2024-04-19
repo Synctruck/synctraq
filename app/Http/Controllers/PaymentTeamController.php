@@ -616,8 +616,14 @@ class PaymentTeamController extends Controller
                             ->first();
 
             if($GetDriver){
-            $DriverDetail   = User::where('id', $GetDriver->idUserDispatch)
+                $DriverDetail = User::where('id', $GetDriver->idUserDispatch)
                             ->first();
+                if ($DriverDetail) {
+                     $driverName = $DriverDetail->name;
+                } else {
+                     $driverName = 'Unknown'; // Default name or handle the situation appropriately
+                }
+
             }
 
             $lineData = array(
@@ -628,7 +634,7 @@ class PaymentTeamController extends Controller
                 ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
                 'FALSE',
                 $paymentDetail->Route,
-                $DriverDetail ->name,
+                $driverName,
                 $paymentDetail->weight,
                 $paymentDetail->priceBase,
                 $paymentDetail->peakeSeasonPrice,
