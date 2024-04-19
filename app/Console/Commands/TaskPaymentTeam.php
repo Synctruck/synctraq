@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\{
             Configuration, HistoryDiesel, PaymentTeam, PaymentTeamAdjustment, PaymentTeamDetail,
-            PackageDispatch, PackageReturnCompany, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,
+            PackageDispatch,PackageHistory, PackageReturnCompany, PeakeSeasonTeam, RangePriceBaseTeam, RangeDieselTeam,
             RangePriceTeamByRoute, RangePriceTeamByCompany, ToReversePackages, User, ToDeductLostPackages };
 
 use App\Http\Controllers\{ PackagePriceCompanyTeamController };
@@ -345,7 +345,25 @@ class TaskPaymentTeam extends Command
                             if(in_array($packageDelivery->Route, $routesList)){
 
                                 if(!empty($packageDelivery->Date_Dispatch)){
-                                    $hours = $this->CalculateHours($packageDelivery->Date_Dispatch, $packageDelivery->Date_Delivery);
+
+                                    $dispatchEvents = PackageHistory::select('Date_Dispatch','idTeam')
+                                            ->where('Reference_Number_1',$packageDelivery->Reference_Number_1)
+                                            ->where('status','dispatch')
+                                            ->orderBy('Date_Dispatch', 'asc')
+                                            ->get();
+
+                                    $allSameTeam = $dispatchEvents->pluck('idTeam')->unique()->count() == 1;
+
+                                    if($allSameTeam)
+                                    {
+                                        $dateDispatch = $dispatchEvents->first()->Date_Dispatch;
+                                    }
+                                    else
+                                    {
+                                        $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                    }
+
+                                    $hours = $this->CalculateHours($dateDispatch, $packageDelivery->Date_Delivery);
                                     $deduction = $hours > 28 ? $team->slaDeduction : 0.00;
                                     Log::info('hours: '. $hours);
                                     Log::info('slaDeduction: '. $deduction);
