@@ -294,7 +294,7 @@ class PackageDispatchController extends Controller
         $photoUrl           = $request['pictures'];
         $latitude           = $request['latitude'];
         $longitude          = $request['longitude'];
-        $created_at         = date('Y-m-d H:i:s', strtotime($request['createdAt']));
+        $created_at         = $request['createdAt'];
 
         $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
 
