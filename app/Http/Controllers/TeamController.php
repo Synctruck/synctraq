@@ -168,9 +168,11 @@ class TeamController extends Controller
 
     public function RegisterSystemNew($request, $idTeam)
     {
+        $shortcode = strlen($idTeam) == 3 ? $idTeam .'0'. substr($request->name, 0, 1) : $idTeam .''. substr($request->name, 0, 1);
+
         $data = [
                     "name" => $request->name,
-                    "shortcode" => $idTeam .''. substr($request->name, 0, 1),
+                    "shortcode" => $shortcode,
                     "active" => true,
                     "address" => [
                         "postalCode" => "10014",
