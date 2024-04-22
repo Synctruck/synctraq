@@ -98,102 +98,40 @@ class DriverController extends Controller
 
     public function Insert(Request $request)
     {
-        $team = User::find($request->get('idTeam'));
+        $validator = Validator::make($request->all(),
+            [
+                "idRole" => ["required"],
+                "name" => ["required", "max:100"],
+                "nameOfOwner" => ["required", "max:100"],
+                "email" => ["required", "unique:user", "max:100"],
+            ],
+            [
+                "idRole.required" => "Seleccione un rol",
 
-        if($request->usageApp == 'Onfleet')
+                "name.required" => "El campo es requerido",
+                "name.max"  => "Debe ingresar máximo 100 dígitos",
+
+                "nameOfOwner.required" => "El campo es requerido",
+                "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+
+                "email.unique" => "El correo ya existe",
+                "email.required" => "El campo es requerido",
+                "email.max"  => "Debe ingresar máximo 100 dígitos",
+            ]
+        );
+
+        if($validator->fails())
         {
-            $validator = Validator::make($request->all(),
-                [
-                    "idRole" => ["required"],
-                    "name" => ["required", "max:100"],
-                    "nameOfOwner" => ["required", "max:100"],
-                    "phone" => ["required","unique:user"],
-                    "email" => ["required", "unique:user", "max:100"],
-                ],
-                [
-                    "idRole.required" => "Seleccione un rol",
-
-                    "name.required" => "El campo es requerido",
-                    "name.max"  => "Debe ingresar máximo 100 dígitos",
-
-                    "nameOfOwner.required" => "El campo es requerido",
-                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
-
-                    "phone.required" => "El campo es requerido",
-                    "phone.unique" => "El teléfono ya existe",
-
-                    "email.unique" => "El correo ya existe",
-                    "email.required" => "El campo es requerido",
-                    "email.max"  => "Debe ingresar máximo 100 dígitos",
-                ]
-            );
-
-            if($validator->fails())
-            {
-                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-            }
-
-            $registerTeam = $this->RegisterOnfleet($team, $request);
-
-            if($registerTeam == 400)
-            {
-                return ['stateAction' => 'phoneIncorrect'];
-            }
-
-            if($registerTeam)
-            {
-                $driverLast = Driver::all()->last();
-
-                $request['id']        = $driverLast->id + 1;
-                $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
-                $request['idRole']    = 4;
-                $request['password']  = Hash::make($request->get('email'));
-                $request['idTeam']    = $team->id;
-                $request['nameTeam']  = $team->name;
-                $request['usageApp']  = 'PODApp';
-
-                Driver::create($request->all());
-
-                $driver = Driver::where('email', $request->email)->first();
-
-                $this->SynchronizeNewSystem($driver->id, $team->apiKey);
-
-                return ['stateAction' => true];
-            }
-
-            return ['stateAction' => 'notTeamOnfleet'];
+            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
-        else
+
+        $team = User::find($request->get('idTeam'));
+        $driverLast = Driver::all()->last();
+        $idDriver = $driverLast->id + 1;
+        $registerSystemNew = $this->RegisterSystemNew($request, $idDriver, $team->apiKey);
+
+        if($registerSystemNew['statusCode'])
         {
-            $validator = Validator::make($request->all(),
-                [
-                    "idRole" => ["required"],
-                    "name" => ["required", "max:100"],
-                    "nameOfOwner" => ["required", "max:100"],
-                    "email" => ["required", "unique:user", "max:100"],
-                ],
-                [
-                    "idRole.required" => "Seleccione un rol",
-
-                    "name.required" => "El campo es requerido",
-                    "name.max"  => "Debe ingresar máximo 100 dígitos",
-
-                    "nameOfOwner.required" => "El campo es requerido",
-                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
-
-                    "email.unique" => "El correo ya existe",
-                    "email.required" => "El campo es requerido",
-                    "email.max"  => "Debe ingresar máximo 100 dígitos",
-                ]
-            );
-
-            if($validator->fails())
-            {
-                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-            }
-
-            $driverLast = Driver::all()->last();
-
             $driver = new Driver();
             $driver->id          = $driverLast->id + 1;
             $driver->idRole      = 4;
@@ -206,12 +144,15 @@ class DriverController extends Controller
             $driver->status      = $request->status;
             $driver->idTeam      = $team->id;
             $driver->nameTeam    = $team->name;
+            $driver->driverId    = $registerSystemNew['response']['data']['id'];
+            $driver->registerNewSystem = 1;
             $driver->save();
-
-            $this->SynchronizeNewSystem($driver->id, $team->apiKey);
 
             return ['stateAction' => true];
         }
+        else
+            return ['stateAction' => true];
+        
     }
 
     public function Get($id)
@@ -307,30 +248,6 @@ class DriverController extends Controller
         return ['stateAction' => true];
     }
 
-    public function GetListOnfleet()
-    {
-        $curl = curl_init("https://onfleet.com/api/v2/workers");
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $output = json_decode(curl_exec($curl), 1);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        if($http_status == 200)
-        {
-            return $output;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     public function RegisterPODApp($request)
     {
         $data = [
@@ -388,175 +305,6 @@ class DriverController extends Controller
         }
     }
 
-    public function RegisterOnfleet($team, $request)
-    {
-        $data = [
-                    "name" => $request->get('name') .' '. $request->get('nameOfOwner'),
-                    "phone" => $request->get('phone'),
-                    "teams" => [$team->idOnfleet],
-                    "vehicle" => [
-                        "type" => "TRUCK",
-                        "description"=>"",
-                        "licensePlate"=>"",
-                        "color"=>""
-                    ]
-                ];
-
-        $curl = curl_init();
-
-        $apiKey = '4c52f49c1db8d158f7ff1ace1722f341';
-
-        $base64 = base64_encode($apiKey .':');
-
-        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/workers');
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERPWD, '4c52f49c1db8d158f7ff1ace1722f341:');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_HEADER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $output = curl_exec($curl);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        if($http_status == 200)
-        {
-            return $output;
-        }
-        elseif($http_status == 400)
-        {
-
-            return 400;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function UpdatedOnfleet($team, $request)
-    {
-        $data = [
-                    "name" => $request->get('name') .' '. $request->get('nameOfOwner'),
-                    "phone" => $request->get('phone'),
-                    "teams" => [$team->idOnfleet],
-                    "vehicle" => [
-                        "type" => "TRUCK",
-                        "description"=>"",
-                        "licensePlate"=>"",
-                        "color"=>""
-                    ]
-                ];
-
-        $curl = curl_init();
-
-        curl_setopt($curl, CURLOPT_URL, 'https://onfleet.com/api/v2/workers/'. $request->get('idOnfleet'));
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERPWD, '4c52f49c1db8d158f7ff1ace1722f341:');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_HEADER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $output = curl_exec($curl);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        if($http_status == 200)
-        {
-            return $output;
-        }
-        elseif($http_status == 400)
-        {
-
-            return 400;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function GetOnfleet($idOnfleet)
-    {
-        $curl = curl_init("https://onfleet.com/api/v2/workers/". $idOnfleet);
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $output = json_decode(curl_exec($curl), 1);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        if($http_status == 200)
-        {
-            return $output;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function DeleteOnfleet($idOnfleet)
-    {
-        $curl = curl_init("https://onfleet.com/api/v2/workers/". $idOnfleet);
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-
-        $output = json_decode(curl_exec($curl), 1);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        if($http_status == 200)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function SynchronizeNewSystem($id, $apiKey)
-    {
-        $user = User::find($id);
-
-        $registerSystemNew = $this->RegisterSystemNew($user, $user->id, $apiKey);
-
-        if($registerSystemNew['statusCode'])
-        {
-            $user->driverId = $registerSystemNew['response']['data']['id'];
-            $user->registerNewSystem = 1;
-            $user->save();
-
-            return ['statusCode' => true];
-        }
-
-        return ['statusCode' => false];
-    }
-
-
     public function RegisterSystemNew($request, $idDriver, $apiKey)
     {
         $data = [
@@ -578,7 +326,10 @@ class DriverController extends Controller
 
         $curl = curl_init();
 
+        Log::info($configuration->podAppUrl .'/users');
         Log::info($headers);
+        Log::info(json_encode($data));
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => $configuration->podAppUrl .'/users',
             CURLOPT_RETURNTRANSFER => true,
@@ -598,7 +349,8 @@ class DriverController extends Controller
 
         curl_close($curl);
 
-        Log::info($response['message']);
+        Log::info($response);
+        
         if($http_status >= 200 && $http_status <= 299)
         {
             return ['response' => $response, 'statusCode' => true];
