@@ -128,24 +128,30 @@ class DriverController extends Controller
         }
 
         $driverLast = Driver::all()->last();
+        $idDriver = $driverLast->id + 1;
+        $registerSystemNew = $this->SynchronizeNewSystem($idDriver, $team->apiKey);
 
-        $driver = new Driver();
-        $driver->id          = $driverLast->id + 1;
-        $driver->idRole      = 4;
-        $driver->name        = $request->name;
-        $driver->nameOfOwner = $request->nameOfOwner;
-        $driver->phone       = $request->phone;
-        $driver->email       = $request->email;
-        $driver->password    = Hash::make($request->email);
-        $driver->usageApp    = 'PODApp';
-        $driver->status      = $request->status;
-        $driver->idTeam      = $team->id;
-        $driver->nameTeam    = $team->name;
-        $driver->save();
+        if($registerSystemNew['statusCode'])
+        {
+            $driver = new Driver();
+            $driver->id          = $driverLast->id + 1;
+            $driver->idRole      = 4;
+            $driver->name        = $request->name;
+            $driver->nameOfOwner = $request->nameOfOwner;
+            $driver->phone       = $request->phone;
+            $driver->email       = $request->email;
+            $driver->password    = Hash::make($request->email);
+            $driver->usageApp    = 'PODApp';
+            $driver->status      = $request->status;
+            $driver->idTeam      = $team->id;
+            $driver->nameTeam    = $team->name;
+            $driver->save();
 
-        $this->SynchronizeNewSystem($driver->id, $team->apiKey);
-
-        return ['stateAction' => true];
+            return ['stateAction' => true];
+        }
+        else
+            return ['stateAction' => true];
+        
     }
 
     public function Get($id)
