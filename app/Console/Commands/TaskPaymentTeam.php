@@ -53,7 +53,7 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Friday' && $nowHour >= 5)
+        if($dayName == 'Monday' && $nowHour == 5)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
@@ -364,7 +364,7 @@ class TaskPaymentTeam extends Command
                                     }
 
                                     $hours = $this->CalculateHours($dateDispatch, $packageDelivery->Date_Delivery);
-                                    $deduction = $hours < 28 ? $team->slaDeduction : 0.00;
+                                    $deduction = $hours > 28 ? $team->slaDeduction : 0.00;
                                     Log::info('hours: '. $hours);
                                     Log::info('slaDeduction: '. $deduction);
                                 }
