@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{ AssignedController, CellarController, ClientController, CommentsController, CompanyController, ConfigurationController, ChargeCompanyController, ChargeCompanyAdjustmentController, DriverController, IndexController, InventoryToolController, OrderController, PackageAgeController, PackageBlockedController, PackageController, PackageCheckController, PackageDeliveryController, PackageDispatchController, PackageDispatchDriverController, PackageFailedController, PackageHighPriorityController, PackageLmCarrierController, PackageInboundController, PalletDispatchController, PackageNeedMoreInformationController, PackageMiddleMileScanController, PackageMassQueryController, PackageTerminalController, PalletRtsController, PackageLostController,  PackageManifestController, PackageNotExistsController, PackagePreDispatchController, PackageWarehouseController,  PackageReturnCompanyController, PaymentDeliveryTeamController, RangePriceCompanyController, RangePriceTeamRouteCompanyController, ReportController, RoleController, RoutesController, StateController, StoreController, TeamController, Trackcontroller, UnassignedController, UserController, ViewerController,ValidatorController, RangePaymentTeamController, ToReversePackagesController, RangePaymentTeamByRouteController, RangePaymentTeamByCompanyController, PaymentTeamController, PaymentTeamAdjustmentController, ReportInvoiceController, PackageDispatchToMiddleMileController, ToDeductLostPackagesController, TrackpackageController};
 
-/*
+/* 
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -380,7 +380,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('driver/defrief/list/{idTeam}', [DriverController::class, 'ListDebrief']);
 	Route::get('driver/defrief/list-packages/{idDriver}', [DriverController::class, 'ListPackagesDebrief']);
 	Route::get('driver/defrief/packages-change-status/{PACKAGE_ID}/{stsatus}/{comment}', [DriverController::class, 'ChangeStatusPackageDebrief']);
-	Route::get('driver/synchronize-list', [DriverController::class, 'ListSystemNew']);
 
 	//============ Maintenance of stores
 	Route::get('stores/list/{idCompany}', [StoreController::class, 'List']);
@@ -467,7 +466,6 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('team/change-configuration-pay/{id}', [TeamController::class, 'ChangeConfigurationPay']);
 	Route::post('team/save-configuration-pay', [TeamController::class, 'SaveConfigurationPay']);
 	Route::get('team/delete/{id}', [TeamController::class, 'Delete']);
-	Route::get('team/synchronize-list', [TeamController::class, 'ListSystemNew']);
 
 	//============ Maintenance of users
 	Route::get('user', [UserController::class, 'Index'])->middleware('permission:admin.index');

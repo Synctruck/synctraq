@@ -444,20 +444,6 @@ function Driver() {
                                 ''
                         )
                     }
-
-                    {
-                        (
-                            user.registerNewSystem == 0 && user.team && user.team.apiKey
-                            ?
-                                <div>
-                                    <button className="btn btn-success btn-sm" title="Synchronize with new system" onClick={ () => synchronize(user.id, user.team.apiKey) }>
-                                        <i className="bx bxs-user-plus"></i>
-                                    </button>
-                                </div>
-                            :
-                                ''
-                        )
-                    }
                 </td>
             </tr>
         );
