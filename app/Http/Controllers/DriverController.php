@@ -100,105 +100,52 @@ class DriverController extends Controller
     {
         $team = User::find($request->get('idTeam'));
 
-        if($request->usageApp == 'Onfleet')
+        $validator = Validator::make($request->all(),
+            [
+                "idRole" => ["required"],
+                "name" => ["required", "max:100"],
+                "nameOfOwner" => ["required", "max:100"],
+                "email" => ["required", "unique:user", "max:100"],
+            ],
+            [
+                "idRole.required" => "Seleccione un rol",
+
+                "name.required" => "El campo es requerido",
+                "name.max"  => "Debe ingresar máximo 100 dígitos",
+
+                "nameOfOwner.required" => "El campo es requerido",
+                "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+
+                "email.unique" => "El correo ya existe",
+                "email.required" => "El campo es requerido",
+                "email.max"  => "Debe ingresar máximo 100 dígitos",
+            ]
+        );
+
+        if($validator->fails())
         {
-            $validator = Validator::make($request->all(),
-                [
-                    "idRole" => ["required"],
-                    "name" => ["required", "max:100"],
-                    "nameOfOwner" => ["required", "max:100"],
-                    "phone" => ["required","unique:user"],
-                    "email" => ["required", "unique:user", "max:100"],
-                ],
-                [
-                    "idRole.required" => "Seleccione un rol",
-
-                    "name.required" => "El campo es requerido",
-                    "name.max"  => "Debe ingresar máximo 100 dígitos",
-
-                    "nameOfOwner.required" => "El campo es requerido",
-                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
-
-                    "phone.required" => "El campo es requerido",
-                    "phone.unique" => "El teléfono ya existe",
-
-                    "email.unique" => "El correo ya existe",
-                    "email.required" => "El campo es requerido",
-                    "email.max"  => "Debe ingresar máximo 100 dígitos",
-                ]
-            );
-
-            if($validator->fails())
-            {
-                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-            }
-
-            $driverLast = Driver::all()->last();
-
-            $request['id']        = $driverLast->id + 1;
-            $request['idRole']    = 4;
-            $request['password']  = Hash::make($request->get('email'));
-            $request['idTeam']    = $team->id;
-            $request['nameTeam']  = $team->name;
-            $request['usageApp']  = 'PODApp';
-
-            Driver::create($request->all());
-
-            $driver = Driver::where('email', $request->email)->first();
-
-            $this->SynchronizeNewSystem($driver->id, $team->apiKey);
-
-            return ['stateAction' => true];
+            return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
-        else
-        {
-            $validator = Validator::make($request->all(),
-                [
-                    "idRole" => ["required"],
-                    "name" => ["required", "max:100"],
-                    "nameOfOwner" => ["required", "max:100"],
-                    "email" => ["required", "unique:user", "max:100"],
-                ],
-                [
-                    "idRole.required" => "Seleccione un rol",
 
-                    "name.required" => "El campo es requerido",
-                    "name.max"  => "Debe ingresar máximo 100 dígitos",
+        $driverLast = Driver::all()->last();
 
-                    "nameOfOwner.required" => "El campo es requerido",
-                    "nameOfOwner.max"  => "Debe ingresar máximo 150 dígitos",
+        $driver = new Driver();
+        $driver->id          = $driverLast->id + 1;
+        $driver->idRole      = 4;
+        $driver->name        = $request->name;
+        $driver->nameOfOwner = $request->nameOfOwner;
+        $driver->phone       = $request->phone;
+        $driver->email       = $request->email;
+        $driver->password    = Hash::make($request->email);
+        $driver->usageApp    = 'PODApp';
+        $driver->status      = $request->status;
+        $driver->idTeam      = $team->id;
+        $driver->nameTeam    = $team->name;
+        $driver->save();
 
-                    "email.unique" => "El correo ya existe",
-                    "email.required" => "El campo es requerido",
-                    "email.max"  => "Debe ingresar máximo 100 dígitos",
-                ]
-            );
+        $this->SynchronizeNewSystem($driver->id, $team->apiKey);
 
-            if($validator->fails())
-            {
-                return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
-            }
-
-            $driverLast = Driver::all()->last();
-
-            $driver = new Driver();
-            $driver->id          = $driverLast->id + 1;
-            $driver->idRole      = 4;
-            $driver->name        = $request->name;
-            $driver->nameOfOwner = $request->nameOfOwner;
-            $driver->phone       = $request->phone;
-            $driver->email       = $request->email;
-            $driver->password    = Hash::make($request->email);
-            $driver->usageApp    = 'PODApp';
-            $driver->status      = $request->status;
-            $driver->idTeam      = $team->id;
-            $driver->nameTeam    = $team->name;
-            $driver->save();
-
-            $this->SynchronizeNewSystem($driver->id, $team->apiKey);
-
-            return ['stateAction' => true];
-        }
+        return ['stateAction' => true];
     }
 
     public function Get($id)
