@@ -349,6 +349,8 @@ class DriverController extends Controller
 
         curl_close($curl);
 
+        Log::info($response);
+        
         if($http_status >= 200 && $http_status <= 299)
         {
             return ['response' => $response, 'statusCode' => true];
