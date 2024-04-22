@@ -133,35 +133,23 @@ class DriverController extends Controller
                 return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
             }
 
-            $registerTeam = $this->RegisterOnfleet($team, $request);
+            $driverLast = Driver::all()->last();
 
-            if($registerTeam == 400)
-            {
-                return ['stateAction' => 'phoneIncorrect'];
-            }
+            $request['id']        = $driverLast->id + 1;
+            $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
+            $request['idRole']    = 4;
+            $request['password']  = Hash::make($request->get('email'));
+            $request['idTeam']    = $team->id;
+            $request['nameTeam']  = $team->name;
+            $request['usageApp']  = 'PODApp';
 
-            if($registerTeam)
-            {
-                $driverLast = Driver::all()->last();
+            Driver::create($request->all());
 
-                $request['id']        = $driverLast->id + 1;
-                $request['idOnfleet'] = explode('"', explode('"', explode('":', $registerTeam)[1])[1])[0];
-                $request['idRole']    = 4;
-                $request['password']  = Hash::make($request->get('email'));
-                $request['idTeam']    = $team->id;
-                $request['nameTeam']  = $team->name;
-                $request['usageApp']  = 'PODApp';
+            $driver = Driver::where('email', $request->email)->first();
 
-                Driver::create($request->all());
+            $this->SynchronizeNewSystem($driver->id, $team->apiKey);
 
-                $driver = Driver::where('email', $request->email)->first();
-
-                $this->SynchronizeNewSystem($driver->id, $team->apiKey);
-
-                return ['stateAction' => true];
-            }
-
-            return ['stateAction' => 'notTeamOnfleet'];
+            return ['stateAction' => true];
         }
         else
         {
