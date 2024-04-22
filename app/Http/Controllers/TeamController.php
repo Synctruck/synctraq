@@ -207,6 +207,7 @@ class TeamController extends Controller
             CURLOPT_HTTPHEADER => $headers,
         ));
 
+        Log::info($configuration->podAppUrl .'/organizations');
         Log::info(json_encode($data));
         $response    = curl_exec($curl);
         $response    = json_decode($response, true);
