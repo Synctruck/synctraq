@@ -518,7 +518,10 @@ class DriverController extends Controller
 
         $curl = curl_init();
 
+        Log::info($configuration->podAppUrl .'/users');
         Log::info($headers);
+        Log::info(json_encode($data));
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => $configuration->podAppUrl .'/users',
             CURLOPT_RETURNTRANSFER => true,
