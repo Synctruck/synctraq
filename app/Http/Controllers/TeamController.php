@@ -139,7 +139,7 @@ class TeamController extends Controller
                 $user->password           = $request->get('password');
                 $user->permissionDispatch = $request->get('permissionDispatch');
                 $user->orgId              = $registerSystemNew['response']['data']['_id']['value'];
-                $user->apiKey              = $registerSystemNew['response']['data']['props']['apiKey'];
+                $user->apiKey             = $registerSystemNew['response']['data']['props']['apiKey'];
                 $user->surcharge          = $request->get('surcharge');
                 $user->twoAttempts        = $request->get('twoAttempts');
                 $user->sla                = $request->get('sla');
