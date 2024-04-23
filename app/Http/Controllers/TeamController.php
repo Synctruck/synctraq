@@ -300,18 +300,7 @@ class TeamController extends Controller
             return response()->json(["status" => 422, "errors" => $validator->errors()], 422);
         }
 
-        $listTeamOnfleet = $this->GetListOnfleet();
-
         $updated = true;
-
-        foreach ($listTeamOnfleet as $team)
-        {
-            if($team['name'] == $request->get('name'))
-            {
-                $request['idOnfleet'] = $team['id'];
-                $updated = true;
-            }
-        }
 
         if($updated)
         {

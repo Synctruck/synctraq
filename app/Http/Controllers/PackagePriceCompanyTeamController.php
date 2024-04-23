@@ -100,7 +100,7 @@ class PackagePriceCompanyTeamController extends Controller
         $priceBaseCompany = number_format($priceWeightCompany + $peakeSeasonPriceCompany, 2);
 
         $companyController          = new CompanyController();
-        $surchargePercentageCompany = $companyController->GetPercentage($packageDispatch->idCompany, $dieselPriceCompany);
+        $surchargePercentageCompany = $packageDispatch->idCompany == 14 ? 0 : $companyController->GetPercentage($packageDispatch->idCompany, $dieselPriceCompany);
         $surchargePriceCompany      = number_format(($priceBaseCompany * $surchargePercentageCompany) / 100, 4);
         $totalPriceCompany          = number_format($priceBaseCompany + $surchargePriceCompany, 4);
 
