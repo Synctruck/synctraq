@@ -867,7 +867,7 @@
                 let latitudeLongitude     = response.latitudeLongitude;
                 let actualStatus          = response.actualStatus;
                 let existsInInland        = response.existsInInland;
-                let packagesweights       = response.packages_weights;
+                let packagesweights       = response.packagesweights;
 
                 console.log("MESSI",packagesweights);
 
