@@ -869,7 +869,9 @@
                 let existsInInland        = response.existsInInland;
                 let packagesweights       = response.packagesweights;
 
-                console.log("MESSI",packagesweights);
+                if(packagesweights){
+                    console.log("messi",packagesweights.length2);
+                }
 
                 if(packageHistoryList.length > 0)
                 {
@@ -922,12 +924,13 @@
 
                     tableHistoryPackage.insertRow(-1).innerHTML = tr;
                 }
-
-                document.getElementById('lengthSearch').value = '';
-                document.getElementById('heightSearch').value = '';
-                document.getElementById('widthSearch').value  = '';
+                if(packagesweights){
+                document.getElementById('lengthSearch').value = packagesweights.length2;
+                document.getElementById('heightSearch').value = packagesweights.height2;
+                document.getElementById('widthSearch').value  = packagesweights.width2;
                 document.getElementById('volumeSearch').value = '';
-
+                document.getElementById('contactWeight').value   = packagesweights.weight4;
+                }
                 packageHistoryList.forEach( package =>  {
 
 
@@ -1144,7 +1147,6 @@
                     document.getElementById('contactCity').value     = packageHistoryList[0].Dropoff_City;
                     document.getElementById('contactState').value    = packageHistoryList[0].Dropoff_Province;
                     document.getElementById('contactZipCode').value  = packageHistoryList[0].Dropoff_Postal_Code;
-                    document.getElementById('contactWeight').value   = packageHistoryList[0].Weight;
                     document.getElementById('contactRoute').value    = packageHistoryList[0].Route;
                     document.getElementById('internalComment').value = packageHistoryList[0].internal_comment;
                     document.getElementById('highPriority').value    = packageHistoryList[0].highPriority;
