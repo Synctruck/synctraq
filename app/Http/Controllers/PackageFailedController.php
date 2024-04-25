@@ -33,7 +33,7 @@ class PackageFailedController extends Controller
         $dateStart = $dateStart .' 00:00:00';
         $dateEnd   = $dateEnd .' 23:59:59';
 
-        $packageDispatchList = PackageHistory::whereBetween('created_at', [$dateStart, $dateEnd])
+        $packageDispatchList = PackageFailed::whereBetween('created_at', [$dateStart, $dateEnd])
                                                 ->where('status', 'Failed');
 
         if($idTeam && $idDriver)
