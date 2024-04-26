@@ -929,7 +929,7 @@
                 document.getElementById('heightSearch').value = packagesweights.height2;
                 document.getElementById('widthSearch').value  = packagesweights.width2;
                 document.getElementById('volumeSearch').value = '';
-                document.getElementById('contactWeight').value   = packagesweights.weight4;
+                document.getElementById('contactWeight').value = packagesweights.weight4;
                 }
                 packageHistoryList.forEach( package =>  {
 
