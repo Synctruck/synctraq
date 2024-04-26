@@ -682,7 +682,7 @@ class PaymentTeamController extends Controller
 
         $totalDeliveryRevert = $totalDelivery + $totalRevert;
 
-        fputcsv($file, array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
+        fputcsv($file, array('', '', '', '', '', '', 'TOTAL DELIVERY', $totalDeliveryRevert), $delimiter);
 
         fseek($file, 0);
 
