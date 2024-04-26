@@ -597,7 +597,7 @@ class PaymentTeamController extends Controller
             fputcsv($file, $fielBlank, $delimiter);
         }
 
-        fputcsv($file, array('DATE', 'DATE DISPATCH', 'DATE DELIVERY', 'PACKAGE ID', 'INVALID POD', 'REVERTED', 'ROUTE', 'DRIVER', 'WEIGHT','PEAKE SEASON PRICE' ,'PRICE BASE', 'SURCHAGE PRICE', 'PRICE BY ROUTE', 'PRICE BY COMPANY', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
+        fputcsv($file, array('DATE DISPATCH', 'DATE DELIVERY','DRIVER NAME', 'PACKAGE ID', 'ROUTE', 'PRICE DEDUCTION', 'TOTAL PRICE'), $delimiter);
 
         $paymentTeamDetailList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                     ->orderBy('Date_Dispatch', 'asc')
@@ -627,20 +627,11 @@ class PaymentTeamController extends Controller
             }
 
             $lineData = array(
-                $date,
                 $dateDispatch,
                 $dateDelivery,
-                $paymentDetail->Reference_Number_1,
-                ($paymentDetail->podFailed ? 'TRUE' : 'FALSE'),
-                'FALSE',
-                $paymentDetail->Route,
                 $driverName,
-                $paymentDetail->weight,
-                $paymentDetail->peakeSeasonPrice,
-                $paymentDetail->priceBase,
-                $paymentDetail->surchargePrice,
-                $paymentDetail->priceByRoute,
-                $paymentDetail->priceByCompany,
+                $paymentDetail->Reference_Number_1,
+                $paymentDetail->Route,
                 $paymentDetail->priceDeduction,
                 ($paymentDetail->podFailed ? 0.00 : $paymentDetail->totalPrice),
             );
