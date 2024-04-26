@@ -875,19 +875,11 @@ class PackageWarehouseController extends Controller
 
     public function InsertOnDelivery($Reference_Number_1){
         $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
-                                 ->where('status','warehouse')
+                                 ->where('status','dispatch')
                                  ->first();
 
-        if(!$package){
-            $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
-                                 ->where('status','failed')
-                                 ->first();
-            if(!$package){
-                $package = PackageHistory::where('Reference_Number_1',$Reference_Number_1)
-                            ->where('status','dispatch')
-                            ->first();
-                }
-        }
+
+
 
         try{
             DB::beginTransaction();
