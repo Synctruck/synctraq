@@ -57,7 +57,7 @@ class PackageInboundController extends Controller
                         $packageWeight = new PackageWeight();
                         $packageWeight->Reference_Number_1 = $Reference_Number_1;
                     }
-                    
+
                     $packageWeight->width2  = $width;
                     $packageWeight->height2 = $height;
                     $packageWeight->length2 = $length;
@@ -140,13 +140,14 @@ class PackageInboundController extends Controller
         {
             Log::info("============== PACKAGE - DOES NOT EXISTS ========");
             Log::info("===================================");
+            return response()->json(['error' => 'Package Not Found'], 400);
         }
     }
 
     public function ShipmentInland(Request $request, $keyApi)
     {
         $company = Company::where('key_api', $keyApi)->first();
-        
+
         if(!$company)
         {
             return response()->json(['message' => "Authentication Failed"], 401);
@@ -167,9 +168,9 @@ class PackageInboundController extends Controller
 
         if(count($packageHistory) == 0)
             return response()->json(['message' => 'success'], 200);*/
-        
+
         $package = PackageManifest::find($Reference_Number_1);
-        
+
         $package = $package != null ? $package : PackageInbound::find($Reference_Number_1);
         $package = $package != null ? $package : PackageDispatch::find($Reference_Number_1);
         $package = $package != null ? $package : PackageWarehouse::find($Reference_Number_1);
@@ -248,7 +249,7 @@ class PackageInboundController extends Controller
                     {
                         $packageCreate = new PackagelmCarrier();
                     }
-                    
+
                 }
                 else if($status == 'Dispatch To MiddleMile')
                 {
@@ -265,7 +266,7 @@ class PackageInboundController extends Controller
                     {
                         $packageCreate = new PackageDispatchToMiddleMile();
                     }
-                    
+
                 }
                 else if($status == 'Middle Mile Scan' || $status == 'Warehouse')
                 {
@@ -378,7 +379,7 @@ class PackageInboundController extends Controller
                     $packageCreate->store    = $package->store;
                     $packageCreate->quantity = $package->quantity;
                 }
-                
+
                 $packageCreate->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
                 $packageCreate->Dropoff_Company              = $package->Dropoff_Company;
                 $packageCreate->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
@@ -398,14 +399,14 @@ class PackageInboundController extends Controller
                 $cellar = Cellar::find($idCellar);
 
                 if($cellar)
-                {    
+                {
                     $packageCreate->idCellar    = $cellar->id;
                     $packageCreate->nameCellar  = $cellar->name;
                     $packageCreate->stateCellar = $cellar->state;
                     $packageCreate->cityCellar  = $cellar->city;
                 }
 
-                if($packageCreate->status == 'Delivery') 
+                if($packageCreate->status == 'Delivery')
                 {
                     $packageCharge = ChargeCompanyDetail::where('Reference_Number_1', $package->Reference_Number_1)->first();
 
@@ -413,7 +414,7 @@ class PackageInboundController extends Controller
                     {
                         //$packageCreate->require_invoice = 1;
                     }
-                    
+
                     //$packageCreate->require_invoice = $require_invoice === true ? 1 : 0;
                 }
 
@@ -421,7 +422,7 @@ class PackageInboundController extends Controller
                 {
                     $packageCreate->Date_Dispatch = $created_at;
                 }
-                
+
                 //$packageCreate->require_invoice = 1;
                 $packageCreate->save();
 
@@ -458,13 +459,13 @@ class PackageInboundController extends Controller
                 $packageHistory->updated_at                   = $created_at;
 
                 if($cellar)
-                {    
+                {
                     $packageHistory->idCellar    = $cellar->id;
                     $packageHistory->nameCellar  = $cellar->name;
                     $packageHistory->stateCellar = $cellar->state;
                     $packageHistory->cityCellar  = $cellar->city;
                 }
-                
+
                 $packageHistory->save();
 
                 Log::info('$package->status: '. $package->status);
@@ -495,7 +496,7 @@ class PackageInboundController extends Controller
                 else if($package->status == 'Dispatch' || $package->status == 'Delivery')
                 {
                     if($status == 'Inbound' || $status == 'ReInbound' || $status == 'Warehouse' || $status == 'Middle Mile Scan' || $status == 'ReturnCompany' || $status == 'Terminal' || $status == 'Lost' || $status == 'LM Carrier')
-                    {                        
+                    {
                         $package->delete();
                     }
                 }
