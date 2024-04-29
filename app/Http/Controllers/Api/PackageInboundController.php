@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PackageWeight, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile};
+use App\Models\{ ChargeCompanyDetail, Company, Configuration, DimFactorCompany, DimFactorTeam, PackageDispatch, Cellar, PackageHistory, PackageInbound, PackageManifest, PackageWarehouse, PackagePriceCompanyTeam, PackageReturnCompany, PackageLmCarrier, PackageLost, PackageTerminal, PackageWeight, PeakeSeasonCompany, RangePriceCompany, States, PackageDispatchToMiddleMile, PackageBlocked};
 
 use Illuminate\Support\Facades\Validator;
 
@@ -65,6 +65,13 @@ class PackageInboundController extends Controller
                     $packageWeight->weight4 = $weight;
                     $packageWeight->save();
                 }
+                $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+                if($packageBlocked){
+                    return response()->json(['error' => 'Package Blocked'], 400);
+                }
+                else
+                {
+
 
                 $packageManifest = PackageManifest::where('Reference_Number_1', $Reference_Number_1)->first();
 
@@ -134,7 +141,9 @@ class PackageInboundController extends Controller
                     return response()->json(['error' => 'Package Not Found in Manifest'], 400);
                     return false;
                 }
+                }
             }
+
             catch(Exception $e)
             {
                 DB::rollback();
