@@ -66,7 +66,7 @@ class PackageInboundController extends Controller
                     $packageWeight->save();
                 }
 
-                $packageManifest = PackageManifest::find($Reference_Number_1)->first();
+                $packageManifest = PackageManifest::where('Reference_Number_1', $Reference_Number_1)->first();
 
                 if($packageManifest)
                 {
