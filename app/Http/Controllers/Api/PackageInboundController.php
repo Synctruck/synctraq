@@ -132,13 +132,13 @@ class PackageInboundController extends Controller
                     $packageManifest->delete();
 
                     DB::commit();
-                    return response()->json(['OK' => 'Package Created'], 200);
+                    return response()->json(['OK' => 'Package Created'], 201);
                     return true;
                 }
                 else
                 {
                     DB::rollback();
-                    return response()->json(['error' => 'Package Not Found in Manifest'], 400);
+                    return response()->json(['error' => 'Package Not Found in Manifest'], 404);
                     return false;
                 }
                 }
@@ -154,7 +154,7 @@ class PackageInboundController extends Controller
         {
             Log::info("============== PACKAGE - DOES NOT EXISTS ========");
             Log::info("===================================");
-            return response()->json(['error' => 'Package Not Found'], 400);
+            return response()->json(['error' => 'Package Not Found'], 404);
         }
     }
 
