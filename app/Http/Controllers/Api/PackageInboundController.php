@@ -126,13 +126,13 @@ class PackageInboundController extends Controller
                 }
 
                 DB::commit();
-
+                return response()->json(['OK' => 'Package Created'], 200);
                 return true;
             }
             catch(Exception $e)
             {
                 DB::rollback();
-
+                return response()->json(['error' => 'Package Not Found'], 400);
                 return false;
             }
         }
