@@ -123,16 +123,21 @@ class PackageInboundController extends Controller
                     $packageHistory->save();
 
                     $packageManifest->delete();
-                }
 
-                DB::commit();
-                return response()->json(['OK' => 'Package Created'], 200);
-                return true;
+                    DB::commit();
+                    return response()->json(['OK' => 'Package Created'], 200);
+                    return true;
+                }
+                else
+                {
+                    DB::rollback();
+                    return response()->json(['error' => 'Package Not Found in Manifest'], 400);
+                    return false;
+                }
             }
             catch(Exception $e)
             {
                 DB::rollback();
-                return response()->json(['error' => 'Package Not Found in Manifest'], 400);
                 return false;
             }
         }
