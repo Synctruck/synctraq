@@ -152,7 +152,7 @@ class DriverController extends Controller
         }
         else
             return ['stateAction' => true];
-        
+
     }
 
     public function Get($id)
@@ -307,6 +307,9 @@ class DriverController extends Controller
 
     public function RegisterSystemNew($request, $idDriver, $apiKey)
     {
+        $idTeam=$request->idTeam;
+        $orgId= User::where('id',$idTeam)->first();
+        Log::info($orgId->orgId);
         $data = [
                     "firstName" => $request->name,
                     "lastName" => $request->nameOfOwner,
@@ -314,7 +317,8 @@ class DriverController extends Controller
                     "roles" => [],
                     "meta" => [
                         "syncDriverId" => $idDriver
-                    ]
+                    ],
+                    "orgId"=> $orgId->orgId
                 ];
 
         $configuration = Configuration::first();
@@ -350,7 +354,7 @@ class DriverController extends Controller
         curl_close($curl);
 
         Log::info($response);
-        
+
         if($http_status >= 200 && $http_status <= 299)
         {
             return ['response' => $response, 'statusCode' => true];
