@@ -161,8 +161,9 @@ class TaskPackageSendPreFactura extends Command
         Log::info('Quantity:'. count($listPackageDelivery));
 
         $totalCharge = 0;
-
-        if(count($listPackageDelivery) > 0 || count($packageReturnCompanyList) > 0)
+        Log::info('$listPackageDelivery');
+        Log::info($listPackageDelivery);
+        /*if(count($listPackageDelivery) > 0 || count($packageReturnCompanyList) > 0)
         {
             foreach($listPackageDelivery as $packageDelivery)
             {
@@ -287,7 +288,7 @@ class TaskPackageSendPreFactura extends Command
         $chargeCompany->save();
 
         Log::info('SEND PRE FACTURA - EMAIL - COMPANY - '. $idCompany);
-        Log::info('================');
+        Log::info('================');*/
     }
 
     public function SendPreFactura($startDate, $initDate, $endDate, $files)
