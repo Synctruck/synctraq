@@ -85,7 +85,7 @@ class TaskPackageSendPreFactura extends Command
             DB::rollback();
         }*/
 
-        if($dayName == 'Monday' && $nowHour == 9)
+        if($dayName == 'Monday' && $nowHour > 9)
         {
             try
             {
@@ -101,7 +101,7 @@ class TaskPackageSendPreFactura extends Command
 
                 foreach($companyList as $company)
                 {
-                    if($company->id == 1 || $company->id == 10 || $company->id == 11 || $company->id == 13 || $company->id == 14)
+                    if($company->id == 14)
                     {
                         $filename  = 'DRAFT INVOICE-'. $company->name .'-'. date('m-d-H-i-s') .'.csv';
                         $contents  = public_path($filename);
