@@ -681,7 +681,7 @@ class PackageDispatchController extends Controller
                                         Log::info($apiBaseUrl . 'api/v6/shipments/avoid-duplicates');
                                         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                                         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
+                                        Log::info($response);
                                         curl_close($curl);
                                         if($response){
                                             $statusCode = $response['status'];

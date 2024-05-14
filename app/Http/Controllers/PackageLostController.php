@@ -52,7 +52,7 @@ class PackageLostController extends Controller
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageLost->Reference_Number_1)
                                             ->orderBy('actualDate', 'desc')
                                             ->get();
-            
+
 
             $package = [
 
@@ -111,8 +111,8 @@ class PackageLostController extends Controller
                                                 ->paginate(50);
         }
         else{
-            
-            $packageListLost = $packageListLost->orderBy('created_at', 'desc')->get(); 
+
+            $packageListLost = $packageListLost->orderBy('created_at', 'desc')->get();
         }
 
         return $packageListLost;
@@ -227,7 +227,7 @@ class PackageLostController extends Controller
                 return ['stateAction' => 'validatedReturnCompany'];
             }
         }
-        
+
         if($packageInbound == null)
         {
             $packageInbound = PackageLost::find($request->get('Reference_Number_1'));
@@ -238,6 +238,13 @@ class PackageLostController extends Controller
             }
         }
 
+        $idTeampackage =  PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                          ->where('status', $packageInbound->status)
+                          ->get();
+
+
+        Log::info('Package From History');
+        Log::info($idTeampackage);
         if($packageInbound)
         {
             try
@@ -297,12 +304,10 @@ class PackageLostController extends Controller
                 $packageHistory->Dropoff_Province             = $packageInbound->Dropoff_Province;
                 $packageHistory->Dropoff_Postal_Code          = $packageInbound->Dropoff_Postal_Code;
                 $packageHistory->Notes                        = $packageInbound->Notes;
-               
                 $idTeam   = $packageInbound->idTeam;
                 if($idTeam){
-                    $packageHistory->idTeam                       = $packageInbound->idTeam;
+                    $packageHistory->idTeam                   = $packageInbound->idTeam;
                 }
-                
                 $packageHistory->Weight                       = $packageInbound->Weight;
                 $packageHistory->Route                        = $packageInbound->Route;
                 $packageHistory->idUser                       = Auth::user()->id;
@@ -320,7 +325,7 @@ class PackageLostController extends Controller
                     $packageHistory->stateCellar = $cellar->state;
                     $packageHistory->cityCellar  = $cellar->city;
                 }
-                
+
                 $packageHistory->save();
 
                 $packageController = new PackageController();
@@ -335,10 +340,10 @@ class PackageLostController extends Controller
                 {
                     $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
                 }
-                        
+
                 $package = $packageInbound;
                 $packageInbound->delete();
-                
+
                 $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
 
                 if(!$toDeductLostPackages)
@@ -353,13 +358,67 @@ class PackageLostController extends Controller
                     $toDeductLostPackages->save();
                 }
 
+                Log::info($idTeampackage);
+                Log::info($packageInbound);
+                if(!$idTeam)
+                {
+                    Log::info('IdTeam was not found');
+                    $orgId = ENV('SYNC_ORG_ID');
+                    Log::info($orgId);
+                }
+                else
+                {
+                    $team = User::where('id', $idTeam)->first();
+                    $orgId = $team->orgId;
+                    Log::info($orgId);
+                }
+
+                $apiBaseUrl = ENV('SYNC_WEB_URL');
+                $syncApiKey = ENV('SYNC_WEB_API_KEY');
+                $curl = curl_init();
+
+                curl_setopt_array($curl, array(
+                  CURLOPT_RETURNTRANSFER => true,
+                  CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/update-status-from-broker/' . $packageInbound->Reference_Number_1,
+                  CURLOPT_ENCODING => '',
+                  CURLOPT_MAXREDIRS => 10,
+                  CURLOPT_TIMEOUT => 0,
+                  CURLOPT_FOLLOWLOCATION => true,
+                  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                  CURLOPT_CUSTOMREQUEST => 'POST',
+                  CURLOPT_POSTFIELDS =>'{
+                    "status": "lost",
+                    "orgId": "'. $orgId .'"
+                }',
+                  CURLOPT_HTTPHEADER => array(
+                    'Authorization:' . $syncApiKey,
+                    'Content-Type: application/json'
+                  ),
+                ));
+
+                $response = curl_exec($curl);
+                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                $response = curl_exec($curl);
+                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                echo $response;
+                Log::info($response);
+                Log::info($httpcode);
+
+                if ($httpcode < 200 || $httpcode > 299) {
+                    Log::info($response);
+                }
+                curl_close($curl);
                 DB::commit();
+
+
 
                 if($package->status == 'Dispatch')
                 {
                     $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
                 }
-                
+
                 return ['stateAction' => true, 'packageInbound' => $package];
             }
             catch(Exception $e)
@@ -558,9 +617,9 @@ class PackageLostController extends Controller
             }
 
             fclose($handle);
-           
+
             DB::commit();
-            
+
             return ['stateAction' => true];
         }
         catch(Exception $e)
@@ -614,7 +673,7 @@ class PackageLostController extends Controller
 
         return $servicePackageLost->MoveToWarehouse($Reference_Number_1);
     }
-    
+
     public function sendEmailTeam($Reference_Number_1, $idTeam)
     {
         $user = User::find($idTeam);
@@ -635,10 +694,10 @@ class PackageLostController extends Controller
 
         if($company)
         {
-            $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1, 
-                but since there have been no updates on the status of the package, it will be marked as lost. 
+            $message = "Greetings\n\nOur team has been asking for information about the package #$Reference_Number_1,
+                but since there have been no updates on the status of the package, it will be marked as lost.
                 The total of the invoice will be deducted from your next payment.\n\nRegards.";
-    
+
             Mail::raw($message, function ($msg) use ($company) {
                 $msg->to($company->email)->subject('Package Lost Notification');
             });

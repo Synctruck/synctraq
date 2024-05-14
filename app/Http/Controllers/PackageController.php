@@ -8,17 +8,17 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
-        Configuration, Driver, Package, PackageBlocked, PackageTerminal, 
-        PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch, 
-        PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation, 
-        PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation, 
+        Configuration, Driver, Package, PackageBlocked, PackageTerminal,
+        PackageDelete, PackageDelivery, PackageDispatch, PackageLmCarrier, PackagePreDispatch,
+        PackageFailed, PackagePreFailed, PackageHistory, PackageHistoryNeeMoreInformation,
+        PackageHighPriority, PackageInbound, PackageManifest, PackageNeedMoreInformation,
         PackageNotExists, PackageReturn, PackageReturnCompany, PackageLost,
-        PackageWarehouse, TeamRoute, User, PackageDispatchToMiddleMile
+        PackageWarehouse, TeamRoute, User, PackageDispatchToMiddleMile, PackageWeight
     };
 
 use App\External\ExternalServiceInland;
 
-use DB; 
+use DB;
 use Session;
 
 class PackageController extends Controller
@@ -46,7 +46,7 @@ class PackageController extends Controller
     }
 
     public function List(Request $request)
-    { 
+    {
         $packageList = Package::where('status', 'Manifest')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(2000);
@@ -61,7 +61,7 @@ class PackageController extends Controller
         $package = PackageHistory::where('Reference_Number_1', $Reference_Number_1)->get()->last();
 
         $externalServiceInland = new ExternalServiceInland();
-        
+
         return $externalServiceInland->RegisterPackage($package);
     }
 
@@ -283,6 +283,7 @@ class PackageController extends Controller
         $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
 
         $packageDelivery = PackageDelivery::where('taskDetails', $Reference_Number_1)->first();
+        $packageWeight   = PackageWeight::where('Reference_Number_1', $Reference_Number_1)->first();
 
         $noteOnfleet       = '';
         $latitudeLongitude = [0, 0];
@@ -327,6 +328,7 @@ class PackageController extends Controller
             'notesOnfleet' => $noteOnfleet,
             'latitudeLongitude' => $latitudeLongitude,
             'existsInInland' => $externalServiceInland->GetPackage($Reference_Number_1),
+            'packagesweights'=>$packageWeight
         ];
     }
 
@@ -386,7 +388,7 @@ class PackageController extends Controller
         }
 
         $data = $this->GetData($request);
-        
+
         $packageHistoryList    = $data['packageHistoryList'];
 
         return [
@@ -415,7 +417,7 @@ class PackageController extends Controller
                                                 'Route'
                                             )
                                             ->where('status', 'Manifest');
-        
+
         if($request->get('Dropoff_Contact_Name'))
         {
             $packageHistoryList = $packageHistoryList->where('Dropoff_Contact_Name', 'like', '%'. $request->get('Dropoff_Contact_Name') .'%');
@@ -443,7 +445,7 @@ class PackageController extends Controller
                 $endDate  = date('Y-m-d');
 
                 $status   = $this->GetStatus($packageHistory->Reference_Number_1);
- 
+
                 $package = [
 
                     "created_at" => $packageHistory->created_at,
@@ -1170,7 +1172,7 @@ class PackageController extends Controller
         {
             $packageReturnList = $packageReturnList->where('idCompany', $idCompany);
         }
-        
+
         if($route != 'all')
         {
             $packageReturnList = $packageReturnList->whereIn('Route', $routes);
@@ -1202,7 +1204,7 @@ class PackageController extends Controller
                                                     'statusOnfleet',
                                                     'photoUrl',
                                                 )
-                                                ->paginate(50); 
+                                                ->paginate(50);
 
         $quantityReturn = $packageReturnList->total();
 
