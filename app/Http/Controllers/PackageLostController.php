@@ -405,11 +405,11 @@ class PackageLostController extends Controller
                 echo $response;
                 Log::info($response);
                 Log::info($httpcode);
-
+                curl_close($curl);
                 if ($httpcode < 200 || $httpcode > 299) {
                     Log::info($response);
                 }
-                curl_close($curl);
+
                 DB::commit();
 
 
