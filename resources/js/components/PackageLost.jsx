@@ -515,6 +515,13 @@ function PackageLost() {
 
                     document.getElementById('soundPitidoWarning').play();
                 }
+                else if(response.stateAction == 'SyncWebError')
+                    {
+                        setTextMessage("Internal Error, contact Support");
+                        setTypeMessage('warning');
+
+                        document.getElementById('soundPitidoWarning').play();
+                    }
                 else if(response.stateAction == 'validatedFilterPackage')
                 {
                     let packageBlocked  = response.packageBlocked;
@@ -530,7 +537,7 @@ function PackageLost() {
                             timer: 2000,
                         });
                     }
-                    
+
                     //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                     //setTextMessage(" LABEL #"+ Reference_Number_1);
@@ -999,7 +1006,7 @@ function PackageLost() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Lost: { totalPackage }</b>
