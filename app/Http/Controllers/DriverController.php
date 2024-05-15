@@ -310,11 +310,13 @@ class DriverController extends Controller
         $idTeam=$request->idTeam;
         $orgId= User::where('id',$idTeam)->first();
         Log::info($orgId->orgId);
+        $syncRol = env('SYNC_ROL');
         $data = [
                     "firstName" => $request->name,
                     "lastName" => $request->nameOfOwner,
                     "email" => $request->email,
-                    "roles" => [],
+                    "positions"=> ["driver"],
+                    "roles" => [$syncRol],
                     "meta" => [
                         "syncDriverId" => $idDriver
                     ],
