@@ -316,7 +316,7 @@ class DriverController extends Controller
                     "lastName" => $request->nameOfOwner,
                     "email" => $request->email,
                     "positions"=> ["driver"],
-                    "roles" => [". $syncRol. "],
+                    "roles" => [$syncRol],
                     "meta" => [
                         "syncDriverId" => $idDriver
                     ],
