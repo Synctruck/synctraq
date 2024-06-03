@@ -360,8 +360,10 @@ class TaskPaymentTeam extends Command
                                     }
                                     else
                                     {
-                                        Log::info("dispatch last: ". $packageDelivery->Reference_Number_1);
-                                        $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                        if($dispatchEvents->last())
+                                            $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                        else
+                                            $dateDispatch = $packageDelivery->Date_Delivery;
                                     }
 
                                     $hours = $this->CalculateHours($dateDispatch, $packageDelivery->Date_Delivery);
