@@ -261,7 +261,7 @@ class TaskPaymentTeam extends Command
                             $paymentTeam->totalDelivery  = $totalTeam;
                             $paymentTeam->totalDeduction = $totalDeduction;
                             $paymentTeam->totalAdjustment = ($totalAdjustment + $totalAdjustmentRoute) - $totalAdjustmentToDeduct;
-                            $paymentTeam->total          = $totalTeam + $paymentTeam->totalAdjustment + $totalDeduction;
+                            $paymentTeam->total          = $totalTeam + $paymentTeam->totalAdjustment - $totalAdjustmentToDeduct + $totalDeduction;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->invoiceType    = $team->configurationPay == 'Package' ? 'Package' : 'Route';
