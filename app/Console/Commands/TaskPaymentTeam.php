@@ -84,6 +84,8 @@ class TaskPaymentTeam extends Command
                     $endDate   = $endDate .' 23:59:59';
 
                     Log::info('configurationPay => '. $team->configurationPay);
+                    Log::info('team => '. $team->id);
+
 
                     if($team->configurationPay == 'Package')
                     {
@@ -92,6 +94,8 @@ class TaskPaymentTeam extends Command
                                                                 ->where('paid', 0)
                                                                 ->where('status', 'Delivery')
                                                                 ->get();
+
+                                            Log::info($listPackageDelivery);
                     }
                     else
                     {
