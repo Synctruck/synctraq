@@ -1259,8 +1259,8 @@ class PackageDispatchController extends Controller
                                 $packageDispatch->idUserDispatch               = $idUserDispatch;
                                 $packageDispatch->Date_Dispatch                = date('Y-m-d H:i:s');
                                 $packageDispatch->quantity                     = $package->quantity;
-                                $packageDispatch->idOnfleet                    = $idOnfleet;
-                                $packageDispatch->taskOnfleet                  = $taskOnfleet;
+                                $packageDispatch->idOnfleet                    = $package->Reference_Number_1;
+                                $packageDispatch->taskOnfleet                  = $package->Reference_Number_1;
                                 $packageDispatch->status                       = 'Dispatch';
                                 $packageDispatch->created_at                   = $created_at;
                                 $packageDispatch->updated_at                   = $created_at;
