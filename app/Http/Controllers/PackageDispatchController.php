@@ -1233,22 +1233,7 @@ class PackageDispatchController extends Controller
                             $idOnfleet    = '';
                             $taskOnfleet  = '';
                             $created_at   = date('Y-m-d H:i:s');
-
-                            if($team->name != 'Brooks Courier')
-                            {
-                                $registerTask = $this->RegisterOnfleet($package, $team, $driver);
-
-                                if($team->name != 'Brooks Courier' && $registerTask['status'] == 200)
-                                {
-                                    $idOnfleet   = explode('"', explode('"', explode('":', $registerTask['response'])[1])[1])[0];
-                                    $taskOnfleet = explode('"', explode('"', explode('":', $registerTask['response'])[5])[1])[0];
-                                }
-                                else
-                                {
-                                    $register = false;
-                                }
-                            }
-
+                            
                             if($register)
                             {
                                 $packageDispatch = new PackageDispatch();
