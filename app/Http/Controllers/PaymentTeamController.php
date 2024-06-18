@@ -869,7 +869,7 @@ class PaymentTeamController extends Controller
         fputcsv($file, $fielBlank, $delimiter);
         fputcsv($file, array('DRIVERS SUMMARY', '', '',), $delimiter);
         fputcsv($file, $fielBlank, $delimiter);
-        dd($driverList);
+
         foreach($driverList as $driver)
         {
             $paymentTeamDetailListGroup = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
