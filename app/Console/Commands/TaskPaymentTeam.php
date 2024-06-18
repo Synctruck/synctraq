@@ -53,12 +53,12 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($nowHour > 10)
+        if($dayName == 'Monday' && $nowHour == 10)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('2023-11-01');
-            $endDate   = date('Y-m-d', strtotime($nowDate .' +2 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
             $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
             try
@@ -261,7 +261,7 @@ class TaskPaymentTeam extends Command
                             $paymentTeam->totalDelivery  = $totalTeam;
                             $paymentTeam->totalDeduction = $totalDeduction;
                             $paymentTeam->totalAdjustment = ($totalAdjustment + $totalAdjustmentRoute) - $totalAdjustmentToDeduct;
-                            $paymentTeam->total          = $totalTeam + $paymentTeam->totalAdjustment - $totalAdjustmentToDeduct + $totalDeduction;
+                            $paymentTeam->total          = $totalTeam + $paymentTeam->totalAdjustment + $totalDeduction;
                             $paymentTeam->averagePrice   = $totalTeam / $totalPieces;
                             $paymentTeam->surcharge      = $team->surcharge;
                             $paymentTeam->invoiceType    = $team->configurationPay == 'Package' ? 'Package' : 'Route';
@@ -360,7 +360,10 @@ class TaskPaymentTeam extends Command
                                     }
                                     else
                                     {
-                                        $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                        if($dispatchEvents->last())
+                                            $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
+                                        else
+                                            $dateDispatch = $packageDelivery->Date_Delivery;
                                     }
 
                                     $hours = $this->CalculateHours($dateDispatch, $packageDelivery->Date_Delivery);

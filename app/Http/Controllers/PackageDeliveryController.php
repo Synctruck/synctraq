@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\{
         ChargeCompanyDetail, Configuration, PackageHistory, PackageDelivery, PackageDispatch,
         PackageFailed, PackageInbound, PackageManifest, PackageWarehouse, PackageLost, PackageLmCarrier,
-        PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, TeamRoute, User};
+        PackagePreDispatch, PackageNeedMoreInformation, PackageReturnCompany, PackageTerminal, TeamRoute, User};
 
 use App\Http\Controllers\{ PackageDispatchController, PackagePriceCompanyTeamController };
 
@@ -86,7 +86,8 @@ class PackageDeliveryController extends Controller
             $package = $package != null ? $package : PackageFailed::find($Reference_Number_1);
             $package = $package != null ? $package : PackageReturnCompany::find($Reference_Number_1);
             $package = $package != null ? $package : PackageLmCarrier::find($Reference_Number_1);
-
+            $package = $package != null ? $package : PackageTerminal::find($Reference_Number_1);
+            
             if(!$package)
             {
                 return ['stateAction' => 'notExists'];
