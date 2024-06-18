@@ -123,24 +123,35 @@ class PaymentTeamController extends Controller
                         if($packageDelivery)
                         {
                             if($packageDelivery->Date_Dispatch)
-                                    $dispatchEvents = PackageHistory::select('Date_Dispatch','idTeam')
+                            {
+                                $dispatchEvents = PackageHistory::select('Date_Dispatch','idTeam')
                                         ->where('Reference_Number_1',$packageDelivery->Reference_Number_1)
                                         ->where('status','dispatch')
                                         ->orderBy('Date_Dispatch', 'asc')
                                         ->get();
 
-                                    $allSameTeam = $dispatchEvents->pluck('idTeam')->unique()->count() == 1;
+                                $allSameTeam = $dispatchEvents->pluck('idTeam')->unique()->count() == 1;
 
+                                if(count($dispatchEvents) == 0)
+                                {
+                                    $dateDispatch = $packageDelivery->Date_Delivery;
+                                }
+                                else
+                                {
                                     if($allSameTeam)
                                     {
                                         $dateDispatch = $dispatchEvents->first()->Date_Dispatch;
                                     }
                                     else
                                     {
+                                        Log::info($packageDelivery->Reference_Number_1);
                                         $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
                                     }
+                                }
+
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
                                 $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
+                            }
                         }
                     }
 
