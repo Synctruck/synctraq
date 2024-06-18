@@ -705,7 +705,6 @@ class PaymentTeamController extends Controller
 
     public function ExportReceipt($idPayment, $type)
     {
-
         $payment = PaymentTeam::with('team')->find($idPayment);
 
         $delimiter = ",";
@@ -769,21 +768,45 @@ class PaymentTeamController extends Controller
 
         $totalDelivery = 0;
 
-        foreach($paymentTeamDetailList as $paymentDetail)
+        try
         {
-            $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
+            DB::beginTransaction();
 
-            $lineData = array(
+            foreach($paymentTeamDetailList as $paymentDetail)
+            {
+                $dateDelivery = date('m-d-Y', strtotime($paymentDetail->Date_Delivery)) .' '. date('H:i:s', strtotime($paymentDetail->Date_Delivery));
 
-                $dateDelivery,
-                $paymentDetail->Reference_Number_1,
-                $paymentDetail->Route,
-                $paymentDetail->totalPrice,
-            );
+                $lineData = array(
 
-            $totalDelivery = $totalDelivery + $paymentDetail->totalPrice;
+                    $dateDelivery,
+                    $paymentDetail->Reference_Number_1,
+                    $paymentDetail->Route,
+                    $paymentDetail->totalPrice,
+                );
 
-            fputcsv($file, $lineData, $delimiter);
+                $totalDelivery = $totalDelivery + $paymentDetail->totalPrice;
+
+                if($paymentDetail->idDriver == 0)
+                {
+                    $packageDelivery = PackageDispatch::find($paymentDetail->Reference_Number_1);
+
+                    if($packageDelivery)
+                    {
+                        $paymentDetail->idDriver = $packageDelivery->idUserDispatch;
+                        $paymentDetail->save();
+                    }
+                }
+                
+                fputcsv($file, $lineData, $delimiter);
+            }
+
+            DB::commit();
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+
+            dd("Hubo un error");
         }
 
         //LIST REVERTS
@@ -836,6 +859,54 @@ class PaymentTeamController extends Controller
                 fputcsv($file, $lineData, $delimiter);
             }
         }
+
+        $driverList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                        ->where('podFailed', 0)
+                                                        ->select('idDriver')
+                                                        ->groupBy('idDriver')
+                                                        ->get();
+
+        fputcsv($file, $fielBlank, $delimiter);
+        fputcsv($file, array('DRIVERS SUMMARY', '', '',), $delimiter);
+        fputcsv($file, $fielBlank, $delimiter);
+                                                
+        foreach($driverList as $driver)
+        {
+            $paymentTeamDetailListGroup = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                        ->where('podFailed', 0)
+                                                        ->where('idDriver', $driver->idDriver)
+                                                        ->select('totalPrice', 'idDriver', DB::raw('COUNT(totalPrice) as quantity'),  DB::raw('SUM(totalPrice) as total'))
+                                                        ->groupBy('totalPrice', 'idDriver')
+                                                        ->orderBy('totalPrice', 'asc')
+                                                        ->get();
+
+            $paymentTeamDetailTotal = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                                        ->where('podFailed', 0)
+                                                        ->where('idDriver', $driver->idDriver)
+                                                        ->select('idDriver', DB::raw('COUNT(totalPrice) as quantity'),  DB::raw('SUM(totalPrice) as total'))
+                                                        ->groupBy('idDriver')
+                                                        ->first();
+
+            $driverName = "";
+
+            if($driver->idDriver != 0)
+            {
+                $driver = User::find($driver->idDriver);    
+                $driverName = $driver ? $driver->name .' '. $driver->nameOfOwner : "";
+            }
+
+            fputcsv($file, array($driverName, $paymentTeamDetailTotal->quantity, $paymentTeamDetailTotal->total), $delimiter);
+            fputcsv($file, array('PRICE', 'COUNT', 'TOTAL'), $delimiter);
+
+            foreach($paymentTeamDetailListGroup as $paymentDetail)
+            {
+                fputcsv($file, array($paymentDetail->totalPrice, $paymentDetail->quantity, $paymentDetail->total), $delimiter);
+            }
+
+            fputcsv($file, $fielBlank, $delimiter);
+
+        }
+
         if($type == 'download')
         {
                 fseek($file, 0);
