@@ -1192,7 +1192,7 @@ class PackageDispatchController extends Controller
                     }
 
                     $packageDispatch = PackageDispatch::find($row[0]);
-
+                    Log::info($package);
                     if($package && $packageDispatch == null)
                     {
                         Log::info("=========== IMPORT DISPATCH ===========");
