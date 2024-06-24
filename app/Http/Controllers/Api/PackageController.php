@@ -772,7 +772,7 @@ class PackageController extends Controller
         Log::info($url_webhook . $package->Reference_Number_1 .'/update-status');
         Log::info($pod_url);
 
-        $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s',date("Y-m-d H:i:s"));
+        $created_at_temp = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
         $created_at      = $created_at_temp->format(DateTime::ATOM);
 
         $curl = curl_init();
