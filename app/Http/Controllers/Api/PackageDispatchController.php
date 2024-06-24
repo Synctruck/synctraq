@@ -153,7 +153,7 @@ class PackageDispatchController extends Controller
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
-        if($request['status'] == "delivered" || $request->['status'] == "inbound")
+        if($request['status'] == "delivered" || $request['status'] == "inbound")
         {
             $validator = Validator::make($request->all(),
                 [
