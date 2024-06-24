@@ -779,29 +779,29 @@ class PackageDispatchController extends Controller
         {
             if(!$packageManifest->filter && count($packageManifest->blockeds) == 0)
             {
-                $packageFailed = new PackageInbound();
-                $packageFailed->Reference_Number_1           = $packageManifest->Reference_Number_1;
-                $packageFailed->idCompany                    = $packageManifest->idCompany;
-                $packageFailed->company                      = $packageManifest->company;
-                $packageFailed->idStore                      = $packageManifest->idStore;
-                $packageFailed->store                        = $packageManifest->store;
-                $packageFailed->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
-                $packageFailed->Dropoff_Company              = $packageManifest->Dropoff_Company;
-                $packageFailed->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
-                $packageFailed->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
-                $packageFailed->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
-                $packageFailed->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
-                $packageFailed->Dropoff_City                 = $packageManifest->Dropoff_City;
-                $packageFailed->Dropoff_Province             = $packageManifest->Dropoff_Province;
-                $packageFailed->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
-                $packageFailed->Notes                        = $packageManifest->Notes;
-                $packageFailed->Weight                       = $packageManifest->Weight;
-                $packageFailed->Route                        = $packageManifest->Route;
-                $packageFailed->quantity                     = $packageManifest->quantity;
-                $packageFailed->status                       = 'Inbound';
-                $packageFailed->created_at                   = $created_at;
-                $packageFailed->updated_at                   = $created_at;
-                $packageFailed->save();
+                $packageInbound = new PackageInbound();
+                $packageInbound->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageInbound->idCompany                    = $packageManifest->idCompany;
+                $packageInbound->company                      = $packageManifest->company;
+                $packageInbound->idStore                      = $packageManifest->idStore;
+                $packageInbound->store                        = $packageManifest->store;
+                $packageInbound->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                $packageInbound->Dropoff_Company              = $packageManifest->Dropoff_Company;
+                $packageInbound->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                $packageInbound->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                $packageInbound->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                $packageInbound->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
+                $packageInbound->Dropoff_City                 = $packageManifest->Dropoff_City;
+                $packageInbound->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                $packageInbound->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                $packageInbound->Notes                        = $packageManifest->Notes;
+                $packageInbound->Weight                       = $packageManifest->Weight;
+                $packageInbound->Route                        = $packageManifest->Route;
+                $packageInbound->quantity                     = $packageManifest->quantity;
+                $packageInbound->status                       = 'Inbound';
+                $packageInbound->created_at                   = $created_at;
+                $packageInbound->updated_at                   = $created_at;
+                $packageInbound->save();
 
                 $packageHistory = new PackageHistory();
                 $packageHistory->id                           = uniqid();
