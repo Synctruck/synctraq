@@ -157,7 +157,7 @@ class PackageDispatchController extends Controller
         $company = Company::where('id', 1)->where('key_api', $apiKey)->first();
 
         if($company)
-        {
+        { 
             try
             {
                 DB::beginTransaction();
@@ -166,6 +166,8 @@ class PackageDispatchController extends Controller
                     $this->InsertDeliveryFromSyncWeb($request, $apiKey);
                 else if($request['status'] == 'failed')
                     $this->InsertFailed($request, $apiKey);
+                else if($request['status'] == 'inbound')
+                    $this->InsertInbound($request, $apiKey);
                 else
                     $this->InsertDispatchFromSyncWeb($request, $apiKey);
 
@@ -751,6 +753,94 @@ class PackageDispatchController extends Controller
                 $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, $created_at);
 
             $packageDispatch->delete();
+        }
+    }
+
+    public function InsertInbound(Request $request, $apiKey)
+    {
+        $Reference_Number_1 = $request['barcode'];
+        $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
+        $created_at         = $request['createdAt'];
+
+        $packageManifest = PackageManifest::find($request['barcode']);
+
+        if($packageManifest)
+        {
+            if(!$packageManifest->filter && count($packageManifest->blockeds) == 0)
+            {
+                $packageFailed = new PackageInbound();
+                $packageFailed->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageFailed->idCompany                    = $packageManifest->idCompany;
+                $packageFailed->company                      = $packageManifest->company;
+                $packageFailed->idStore                      = $packageManifest->idStore;
+                $packageFailed->store                        = $packageManifest->store;
+                $packageFailed->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                $packageFailed->Dropoff_Company              = $packageManifest->Dropoff_Company;
+                $packageFailed->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                $packageFailed->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                $packageFailed->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                $packageFailed->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
+                $packageFailed->Dropoff_City                 = $packageManifest->Dropoff_City;
+                $packageFailed->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                $packageFailed->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                $packageFailed->Notes                        = $packageManifest->Notes;
+                $packageFailed->Weight                       = $packageManifest->Weight;
+                $packageFailed->Route                        = $packageManifest->Route;
+                $packageFailed->idTeam                       = $packageManifest->idTeam;
+                $packageFailed->idUserDispatch               = $packageManifest->idUserDispatch;
+                $packageFailed->idUser                       = $packageManifest->idUserDispatch;
+                $packageFailed->Description_Onfleet          = $Description_POD;
+                $packageFailed->quantity                     = $packageManifest->quantity;
+                $packageFailed->status                       = 'Inbound';
+                $packageFailed->created_at                   = $created_at;
+                $packageFailed->updated_at                   = $created_at;
+                $packageFailed->save();
+
+                $packageHistory = new PackageHistory();
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $packageManifest->Reference_Number_1;
+                $packageHistory->idCompany                    = $packageManifest->idCompany;
+                $packageHistory->company                      = $packageManifest->company;
+                $packageHistory->idStore                      = $packageManifest->idStore;
+                $packageHistory->store                        = $packageManifest->store;
+                $packageHistory->Dropoff_Contact_Name         = $packageManifest->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $packageManifest->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageManifest->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $packageManifest->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $packageManifest->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $packageManifest->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $packageManifest->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $packageManifest->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $packageManifest->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $packageManifest->Notes;
+                $packageHistory->Weight                       = $packageManifest->Weight;
+                $packageHistory->Route                        = $packageManifest->Route;
+                $packageHistory->idTeam                       = $packageManifest->idTeam;
+                $packageHistory->idUserDispatch               = $packageManifest->idUserDispatch;
+                $packageHistory->idUser                       = $packageManifest->idUserDispatch;
+                $packageHistory->quantity                     = $packageManifest->quantity;
+                $packageHistory->Description_Onfleet          = $Description_POD;
+                $packageHistory->status                       = 'Inbound';
+                $packageHistory->actualDate                   = date('Y-m-d H:i:s');
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
+                $packageHistory->save();
+
+                $packageController = new PackageController();
+
+                if($packageManifest->idCompany == 1)
+                    $packageController->SendStatusToInland($packageManifest, 'Inbound', null, $created_at);
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageManifest->Reference_Number_1)
+                                            ->where('sendToInland', 1)
+                                            ->where('status', 'Manifest')
+                                            ->first();
+
+                if($packageHistory)
+                    $packageController->SendStatusToOtherCompany($packageManifest, 'Inbound', null, $created_at);
+
+                $packageManifest->delete();
+            }
         }
     }
 
