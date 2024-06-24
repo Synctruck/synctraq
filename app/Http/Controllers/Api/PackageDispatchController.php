@@ -800,7 +800,6 @@ class PackageDispatchController extends Controller
                 $packageFailed->idTeam                       = $packageManifest->idTeam;
                 $packageFailed->idUserDispatch               = $packageManifest->idUserDispatch;
                 $packageFailed->idUser                       = $packageManifest->idUserDispatch;
-                $packageFailed->Description_Onfleet          = $Description_POD;
                 $packageFailed->quantity                     = $packageManifest->quantity;
                 $packageFailed->status                       = 'Inbound';
                 $packageFailed->created_at                   = $created_at;
@@ -826,11 +825,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Notes                        = $packageManifest->Notes;
                 $packageHistory->Weight                       = $packageManifest->Weight;
                 $packageHistory->Route                        = $packageManifest->Route;
-                $packageHistory->idTeam                       = $packageManifest->idTeam;
-                $packageHistory->idUserDispatch               = $packageManifest->idUserDispatch;
-                $packageHistory->idUser                       = $packageManifest->idUserDispatch;
                 $packageHistory->quantity                     = $packageManifest->quantity;
-                $packageHistory->Description_Onfleet          = $Description_POD;
                 $packageHistory->status                       = 'Inbound';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
