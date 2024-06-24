@@ -145,7 +145,7 @@ class PackageDispatchController extends Controller
         $validator = Validator::make($request->all(),
             [
                 "barcode" => ["required"],
-                "status" => ["required", Rule::in(['delivered', 'failed'])],
+                "status" => ["required", Rule::in(['delivered', 'failed', 'inbound'])],
                 "createdAt" => ["required", "date"],
                 "driverId"  => ["required"],
             ],
