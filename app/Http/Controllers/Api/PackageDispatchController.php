@@ -797,9 +797,6 @@ class PackageDispatchController extends Controller
                 $packageFailed->Notes                        = $packageManifest->Notes;
                 $packageFailed->Weight                       = $packageManifest->Weight;
                 $packageFailed->Route                        = $packageManifest->Route;
-                $packageFailed->idTeam                       = $packageManifest->idTeam;
-                $packageFailed->idUserDispatch               = $packageManifest->idUserDispatch;
-                $packageFailed->idUser                       = $packageManifest->idUserDispatch;
                 $packageFailed->quantity                     = $packageManifest->quantity;
                 $packageFailed->status                       = 'Inbound';
                 $packageFailed->created_at                   = $created_at;
