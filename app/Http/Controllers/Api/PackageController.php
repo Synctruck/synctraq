@@ -558,7 +558,7 @@ class PackageController extends Controller
 
             $curl = curl_init();
 
-            if($package->idCompany == 1 || $package->company == 'OCHESTRO')
+            if($package->idCompany == 1 || $package->company == 'ORCHESTRO')
             {
                 $header_curl = array(
                     'Authorization: '. $key_webhook,
@@ -581,7 +581,7 @@ class PackageController extends Controller
                         "datetime" : "'. $created_at .'"
                     }';
                 }
-                else if($package->company == 'OCHESTRO')
+                else if($package->company == 'ORCHESTRO')
                 {
                     $dataSend = '{
                         "trackingNumber" : "'. $package->Reference_Number_1 .'",
