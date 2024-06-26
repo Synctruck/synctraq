@@ -689,7 +689,6 @@ class PackageDispatchController extends Controller
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageFailed::where('status', 'Failed')->find($request['barcode']);
 
-        Log::info($packageDispatch);
         if($packageDispatch)
         {
             $packageFailed = new PackageFailed();
