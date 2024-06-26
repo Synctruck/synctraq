@@ -181,7 +181,7 @@ class PackageDispatchController extends Controller
                     $this->InsertInbound($request, $apiKey);
                 else{
                     $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-
+                    Log::info($driver);
                     if($driver)
                         if(!$this->InsertDispatchFromSyncWeb($request, $apiKey))
                             return response()->json(['message' => "Data incorrect"], 400);
