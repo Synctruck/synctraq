@@ -202,7 +202,7 @@ class PackageDispatchController extends Controller
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
         Log::info("InsertDispatchFromSyncWeb");
-        
+
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
@@ -301,6 +301,8 @@ class PackageDispatchController extends Controller
                 }
             }
         }
+
+        return response()->json(['message' => "The barcode not exists in Manifest or Inbound or Warehouse or Dispatch or Failed"], 400); 
     }
 
     public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
