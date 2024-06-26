@@ -823,6 +823,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Weight                       = $packageManifest->Weight;
                 $packageHistory->Route                        = $packageManifest->Route;
                 $packageHistory->quantity                     = $packageManifest->quantity;
+                $packageHistory->Description                  = "Inbound from Syncfreight";
                 $packageHistory->status                       = 'Inbound';
                 $packageHistory->actualDate                   = date('Y-m-d H:i:s');
                 $packageHistory->created_at                   = $created_at;
