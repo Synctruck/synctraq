@@ -183,7 +183,8 @@ class PackageDispatchController extends Controller
                     $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
 
                     if($driver)
-                        return $this->InsertDispatchFromSyncWeb($request, $apiKey);
+                        if(!$this->InsertDispatchFromSyncWeb($request, $apiKey))
+                            return response()->json(['message' => "Data incorrect"], 400);
                     else
                         return response()->json(['message' => "The driver does not exists"], 400);
                 }
@@ -304,11 +305,13 @@ class PackageDispatchController extends Controller
 
                     if($request['status'] != 'dispatch')
                         $this->UpdateStatusFromSyncweb($request,$apiKey);
+
+                    return true;
                 }
             }
         }
 
-        return response()->json(['message' => "The barcode does not exists in Manifest or Inbound or Warehouse or Dispatch or Failed"], 400); 
+        return false
     }
 
     public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
