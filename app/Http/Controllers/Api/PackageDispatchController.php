@@ -201,6 +201,8 @@ class PackageDispatchController extends Controller
 
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
+        Log::info("InsertDispatchFromSyncWeb");
+        
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
