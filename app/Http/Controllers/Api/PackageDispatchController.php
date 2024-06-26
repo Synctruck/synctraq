@@ -183,7 +183,7 @@ class PackageDispatchController extends Controller
                     $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
 
                     if($driver)
-                        $this->InsertDispatchFromSyncWeb($request, $apiKey);
+                        return $this->InsertDispatchFromSyncWeb($request, $apiKey);
                     else
                         return response()->json(['message' => "The driver does not exists"], 400);
                 }
