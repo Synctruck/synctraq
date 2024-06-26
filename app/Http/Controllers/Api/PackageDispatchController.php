@@ -179,14 +179,15 @@ class PackageDispatchController extends Controller
                     $this->InsertFailed($request, $apiKey);
                 else if($request['status'] == 'inbound')
                     $this->InsertInbound($request, $apiKey);
-                else{
-                    $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-                    Log::info($driver);
-                    if($driver)
-                        if(!$this->InsertDispatchFromSyncWeb($request, $apiKey))
-                            return response()->json(['message' => "Data incorrect"], 400);
-                    else
+                else{                    
+                    $result = $this->InsertDispatchFromSyncWeb($request, $apiKey);
+
+                    if($result === false)
+                        return response()->json(['message' => "The package does not exists"], 400);
+                    else if($result === "notDriver")
                         return response()->json(['message' => "The driver does not exists"], 400);
+                    else if($result === "notTeam")
+                        return response()->json(['message' => "The team does not exists"], 400);
                 }
 
                 DB::commit();
@@ -308,7 +309,11 @@ class PackageDispatchController extends Controller
 
                     return true;
                 }
+
+                return "notTeam";
             }
+
+            return "notDriver";
         }
 
         return false;
