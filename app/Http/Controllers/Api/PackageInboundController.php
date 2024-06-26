@@ -139,7 +139,7 @@ class PackageInboundController extends Controller
                     if($packageInbound)
                         return response()->json(['error' => 'The package is in Inbound. Your data was updated successfully'], 200);
                     else
-                        return response()->json(['error' => 'Package not found in Manifest or Inbound'], 404);
+                        return response()->json(['error' => 'Package not found in Manifest or Inbound'], 400);
                 }
             }
             catch(Exception $e)
@@ -152,7 +152,7 @@ class PackageInboundController extends Controller
         {
             Log::info("============== PACKAGE - DOES NOT EXISTS ========");
             Log::info("===================================");
-            return response()->json(['error' => 'Package Not Found'], 404);
+            return response()->json(['error' => 'Package Not Found'], 400);
         }
     }
 
