@@ -134,8 +134,12 @@ class PackageInboundController extends Controller
                 }
                 else
                 {
-                    DB::rollback();
-                    return response()->json(['error' => 'Package Not Found in Manifest'], 404);
+                    $packageInbound = PackageInbound::where('Reference_Number_1', $Reference_Number_1)->first();
+
+                    if($packageInbound)
+                        return response()->json(['error' => 'The package is in Inbound. Your data was updated successfully'], 200);
+                    else
+                        return response()->json(['error' => 'Package not found in Manifest or Inbound'], 404);
                 }
             }
             catch(Exception $e)
