@@ -140,7 +140,6 @@ class PackageInboundController extends Controller
                     return response()->json(['error' => 'Package Not Found in Manifest'], 404);
                 }
             }
-
             catch(Exception $e)
             {
                 DB::rollback();
