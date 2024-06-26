@@ -300,7 +300,8 @@ class PackageDispatchController extends Controller
                         $package->delete();
                     }
 
-                    $this->UpdateStatusFromSyncweb($request,$apiKey);
+                    if($request['status'] != 'dispatch')
+                        $this->UpdateStatusFromSyncweb($request,$apiKey);
                 }
             }
         }
