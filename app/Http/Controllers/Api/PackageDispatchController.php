@@ -229,6 +229,8 @@ class PackageDispatchController extends Controller
 
                     if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                     {
+                        Log::info('PackageDispatch: ');
+
                         $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
