@@ -70,8 +70,6 @@ class PackageInboundController extends Controller
                 if($packageBlocked){
                     return response()->json(['error' => 'Package Blocked'], 400);
                 }
-                else
-                {
 
                 $packageManifest = PackageManifest::where('Reference_Number_1', $Reference_Number_1)->first();
 
