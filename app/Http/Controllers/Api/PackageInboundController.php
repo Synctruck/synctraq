@@ -75,6 +75,10 @@ class PackageInboundController extends Controller
 
                 $packageManifest = PackageManifest::where('Reference_Number_1', $Reference_Number_1)->first();
 
+                if(!$packageManifest){
+                   $packageManifest = PackageInbound::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+
                 if($packageManifest)
                 {
                     $packageInbound = new PackageInbound();
