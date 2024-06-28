@@ -145,7 +145,7 @@ class PackageDispatchController extends Controller
         $validator = Validator::make($request->all(),
             [
                 "barcode" => ["required"],
-                "status" => ["required", Rule::in(['delivered', 'failed', 'inbound'])],
+                "status" => ["required", Rule::in(['delivered', 'failed', 'inbound', 'dispatch'])],
                 "createdAt" => ["required", "date"],
             ],
         );
@@ -179,8 +179,16 @@ class PackageDispatchController extends Controller
                     $this->InsertFailed($request, $apiKey);
                 else if($request['status'] == 'inbound')
                     $this->InsertInbound($request, $apiKey);
-                else
-                    $this->InsertDispatchFromSyncWeb($request, $apiKey);
+                else{                    
+                    $result = $this->InsertDispatchFromSyncWeb($request, $apiKey);
+
+                    if($result === false)
+                        return response()->json(['message' => "The package does not exists"], 400);
+                    else if($result === "notDriver")
+                        return response()->json(['message' => "The driver does not exists"], 400);
+                    else if($result === "notTeam")
+                        return response()->json(['message' => "The team does not exists"], 400);
+                }
 
                 DB::commit();
 
@@ -201,6 +209,8 @@ class PackageDispatchController extends Controller
 
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
+        Log::info("InsertDispatchFromSyncWeb");
+
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
@@ -210,9 +220,6 @@ class PackageDispatchController extends Controller
         if($package)
         {
             $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-
-            Log::info('driver');
-            Log::info($driver);
 
             if($driver)
             {
@@ -224,6 +231,8 @@ class PackageDispatchController extends Controller
 
                     if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                     {
+                        Log::info('PackageDispatch: ');
+
                         $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
@@ -295,10 +304,19 @@ class PackageDispatchController extends Controller
                         $package->delete();
                     }
 
-                    $this->UpdateStatusFromSyncweb($request,$apiKey);
+                    if($request['status'] != 'dispatch')
+                        $this->UpdateStatusFromSyncweb($request,$apiKey);
+
+                    return true;
                 }
+
+                return "notTeam";
             }
+
+            return "notDriver";
         }
+
+        return false;
     }
 
     public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
