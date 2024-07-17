@@ -929,7 +929,7 @@ class PackageDispatchController extends Controller
                 $packageLost->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
                 $packageLost->Notes = $packageInbound->Notes;
                 $packageLost->Route = $packageInbound->Route;
-                $packageLost->comment = $request->get('comment') ? $request->get('comment') : '';
+                $packageLost->comment = $request->get('comment') ? $request->get('comment') : 'Lost from SyncFreight';
                 $packageLost->Weight = $packageInbound->Weight;
                 $packageLost->idUser = "";
                 $packageLost->created_at = date('Y-m-d H:i:s');
@@ -963,7 +963,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->Route = $packageInbound->Route;
                 $packageHistory->idUser = "";
                 $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
-                $packageHistory->Description = $request->get('comment') ? $request->get('comment') : '';
+                $packageHistory->Description = $request->get('comment') ? $request->get('comment') : 'Lost from SyncFreight';
                 $packageHistory->status = 'Lost';
                 $packageHistory->actualDate = date('Y-m-d H:i:s');
                 $packageHistory->created_at = date('Y-m-d H:i:s');
