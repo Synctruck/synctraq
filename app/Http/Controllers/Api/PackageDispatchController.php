@@ -877,7 +877,6 @@ class PackageDispatchController extends Controller
                 return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
             }
 
-            // Usar operadores ternarios para simplificar la búsqueda del paquete
             $packageInbound = PackageManifest::find($Reference_Number_1)
                 ?: PackageInbound::find($Reference_Number_1)
                 ?: PackageWarehouse::find($Reference_Number_1)
@@ -938,7 +937,6 @@ class PackageDispatchController extends Controller
 
                 $packageLost->save();
 
-                // Registrar historia
                 $packageHistory = new PackageHistory();
 
                 $packageHistory->id = uniqid();
