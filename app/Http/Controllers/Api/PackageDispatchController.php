@@ -1389,16 +1389,33 @@ public function InsertRts(Request $request, $apiKey)
         $packageInbound->status = 'ReturnCompany';
         $packageInbound->save();
 
-        // También actualizamos el historial del paquete
-        $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
-            ->where('status', 'ReturnCompany')
-            ->first();
+        // Crear un nuevo registro en PackageHistory
+        $packageHistory = new PackageHistory();
+        $packageHistory->id = uniqid();
+        $packageHistory->Reference_Number_1 = $packageInbound->Reference_Number_1;
+        $packageHistory->idCompany = $packageInbound->idCompany;
+        $packageHistory->company = $packageInbound->company;
+        $packageHistory->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+        $packageHistory->Dropoff_Company = $packageInbound->Dropoff_Company;
+        $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+        $packageHistory->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+        $packageHistory->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+        $packageHistory->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+        $packageHistory->Dropoff_City = $packageInbound->Dropoff_City;
+        $packageHistory->Dropoff_Province = $packageInbound->Dropoff_Province;
+        $packageHistory->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+        $packageHistory->Notes = $packageInbound->Notes;
+        $packageHistory->Weight = $packageInbound->Weight;
+        $packageHistory->Route = $packageInbound->Route;
+        $packageHistory->idUser = "";
+        $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
+        $packageHistory->Description = $request->get('comment') ? $request->get('comment') : 'RTS from SyncFreight';
+        $packageHistory->status = 'ReturnCompany';
+        $packageHistory->actualDate = date('Y-m-d H:i:s');
+        $packageHistory->created_at = date('Y-m-d H:i:s');
+        $packageHistory->updated_at = date('Y-m-d H:i:s');
 
-        if ($packageHistory) {
-            $packageHistory->status = 'ReturnCompany';
-            $packageHistory->updated_at = date('Y-m-d H:i:s');
-            $packageHistory->save();
-        }
+        $packageHistory->save();
 
         return ['stateAction' => 'validatedReturnCompany'];
     }
