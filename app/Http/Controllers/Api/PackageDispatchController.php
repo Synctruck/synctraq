@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch, PackageFailed, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User };
+use App\Models\{ Company, PackageDispatch,ToDeductLostPackages, PackageFailed, PackageLost, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany};
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -145,7 +145,7 @@ class PackageDispatchController extends Controller
         $validator = Validator::make($request->all(),
             [
                 "barcode" => ["required"],
-                "status" => ["required", Rule::in(['delivered', 'failed', 'inbound', 'dispatch'])],
+                "status" => ["required", Rule::in(['delivered', 'failed', 'inbound', 'dispatch','lost'])],
                 "createdAt" => ["required", "date"],
             ],
         );
@@ -153,7 +153,7 @@ class PackageDispatchController extends Controller
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
-        if($request['status'] != "delivered" && $request['status'] != "failed" && $request['status'] != "inbound")
+        if($request['status'] != "delivered" && $request['status'] != "failed" && $request['status'] != "inbound" && $request['status'] != "lost")
         {
             $validator = Validator::make($request->all(),
                 [
@@ -168,7 +168,7 @@ class PackageDispatchController extends Controller
         $company = Company::where('id', 1)->where('key_api', $apiKey)->first();
 
         if($company)
-        { 
+        {
             try
             {
                 DB::beginTransaction();
@@ -179,7 +179,9 @@ class PackageDispatchController extends Controller
                     $this->InsertFailed($request, $apiKey);
                 else if($request['status'] == 'inbound')
                     $this->InsertInbound($request, $apiKey);
-                else{                    
+                else if($request['status'] == 'lost')
+                    $this->InsertLost($request, $apiKey);
+                else{
                     $result = $this->InsertDispatchFromSyncWeb($request, $apiKey);
 
                     if($result === false)
@@ -865,6 +867,159 @@ class PackageDispatchController extends Controller
         }
     }
 
+    public function InsertLost(Request $request, $apiKey)
+        {
+            $Reference_Number_1 = $request->get('barcode');
+            $created_at = $request->get('createdAt');
+            $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+
+            if ($packageBlocked) {
+                return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+            }
+
+            $packageInbound = PackageManifest::find($Reference_Number_1)
+                ?: PackageInbound::find($Reference_Number_1)
+                ?: PackageWarehouse::find($Reference_Number_1)
+                ?: PackagePreDispatch::find($Reference_Number_1)
+                ?: PackageDispatch::find($Reference_Number_1)
+                ?: PackageFailed::find($Reference_Number_1)
+                ?: PackageReturnCompany::find($Reference_Number_1)
+                ?: PackageLost::find($Reference_Number_1);
+
+            if (!$packageInbound) {
+                return ['stateAction' => 'notExists'];
+            }
+
+            if ($packageInbound instanceof PackagePreDispatch) {
+                return ['stateAction' => 'validatedPreDispatch'];
+            }
+
+            if ($packageInbound instanceof PackageReturnCompany) {
+                return ['stateAction' => 'validatedReturnCompany'];
+            }
+
+            if ($packageInbound instanceof PackageLost) {
+                return ['stateAction' => 'validatedLost'];
+            }
+
+            $idTeampackage = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                ->where('status', $packageInbound->status)
+                ->get();
+
+            Log::info('Package From History');
+            Log::info($idTeampackage);
+
+            try {
+                DB::beginTransaction();
+
+                $packageLost = new PackageLost();
+
+                $packageLost->Reference_Number_1 = $packageInbound->Reference_Number_1;
+                $packageLost->idCompany = $packageInbound->idCompany;
+                $packageLost->company = $packageInbound->company;
+                $packageLost->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+                $packageLost->Dropoff_Company = $packageInbound->Dropoff_Company;
+                $packageLost->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageLost->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+                $packageLost->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+                $packageLost->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+                $packageLost->Dropoff_City = $packageInbound->Dropoff_City;
+                $packageLost->Dropoff_Province = $packageInbound->Dropoff_Province;
+                $packageLost->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+                $packageLost->Notes = $packageInbound->Notes;
+                $packageLost->Route = $packageInbound->Route;
+                $packageLost->comment = $request->get('comment') ? $request->get('comment') : 'Lost from SyncFreight';
+                $packageLost->Weight = $packageInbound->Weight;
+                $packageLost->idUser = "";
+                $packageLost->created_at = date('Y-m-d H:i:s');
+                $packageLost->updated_at = date('Y-m-d H:i:s');
+                $packageLost->status = 'Lost';
+
+                $packageLost->save();
+
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id = uniqid();
+                $packageHistory->Reference_Number_1 = $packageInbound->Reference_Number_1;
+                $packageHistory->idCompany = $packageInbound->idCompany;
+                $packageHistory->company = $packageInbound->company;
+                $packageHistory->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company = $packageInbound->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City = $packageInbound->Dropoff_City;
+                $packageHistory->Dropoff_Province = $packageInbound->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+                $packageHistory->Notes = $packageInbound->Notes;
+                $idTeam = $packageInbound->idTeam;
+                if ($idTeam) {
+                    $packageHistory->idTeam = $packageInbound->idTeam;
+                }
+                $packageHistory->Weight = $packageInbound->Weight;
+                $packageHistory->Route = $packageInbound->Route;
+                $packageHistory->idUser = "";
+                $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
+                $packageHistory->Description = $request->get('comment') ? $request->get('comment') : 'Lost from SyncFreight';
+                $packageHistory->status = 'Lost';
+                $packageHistory->actualDate = date('Y-m-d H:i:s');
+                $packageHistory->created_at = date('Y-m-d H:i:s');
+                $packageHistory->updated_at = date('Y-m-d H:i:s');
+
+                $packageHistory->save();
+
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                    ->where('sendToInland', 1)
+                    ->where('status', 'Manifest')
+                    ->first();
+
+                if ($packageHistory) {
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+                }
+
+                $package = $packageInbound;
+                $packageInbound->delete();
+
+                $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
+
+                if (!$toDeductLostPackages) {
+                    $toDeductLostPackages = new ToDeductLostPackages();
+                    $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
+                    $toDeductLostPackages->idTeam = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
+
+                    if ($packageInbound->company != 'EIGHTVAPE')
+                        $toDeductLostPackages->priceToDeduct = 50;
+
+                    $toDeductLostPackages->save();
+                }
+
+                Log::info($idTeampackage);
+                Log::info($packageInbound);
+                if (!$idTeam) {
+                    Log::info('IdTeam was not found');
+                    $orgId = env('SYNC_ORG_ID');
+                    Log::info($orgId);
+                } else {
+                    $team = User::where('id', $idTeam)->first();
+                    $orgId = $team->orgId;
+                    Log::info($orgId);
+                }
+
+                DB::commit();
+
+                return ['stateAction' => true, 'packageInbound' => $package];
+            } catch (Exception $e) {
+                DB::rollback();
+                Log::error('Error: ' . $e->getMessage());
+
+                return ['stateAction' => false];
+            }
+        }
+
     public function UpdatePhotos(Request $request, $apiKey)
     {
         $Reference_Number_1 = $request['barcode'];
@@ -880,7 +1035,7 @@ class PackageDispatchController extends Controller
 
             if(count($packageHistory) == 0)
                 return response()->json(['message' => 'success'], 200);
-        
+
             $packageDispatch = PackageDispatch::find($Reference_Number_1);
 
             if($packageDispatch)

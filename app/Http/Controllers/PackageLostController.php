@@ -179,231 +179,231 @@ class PackageLostController extends Controller
 
     public function Insert(Request $request)
     {
-    $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $request->get('Reference_Number_1'))->first();
 
-    if ($packageBlocked) {
-        return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
-    }
+        if ($packageBlocked) {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
 
-    $packageInbound = PackageManifest::find($request->get('Reference_Number_1'));
+        $packageInbound = PackageManifest::find($request->get('Reference_Number_1'));
 
-    if ($packageInbound == null) {
-        $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
-    }
+        if ($packageInbound == null) {
+            $packageInbound = PackageInbound::find($request->get('Reference_Number_1'));
+        }
 
-    if ($packageInbound == null) {
-        $packageInbound = PackageWarehouse::find($request->get('Reference_Number_1'));
-    }
+        if ($packageInbound == null) {
+            $packageInbound = PackageWarehouse::find($request->get('Reference_Number_1'));
+        }
 
-    if ($packageInbound == null) {
-        $packageInbound = PackagePreDispatch::find($request->get('Reference_Number_1'));
+        if ($packageInbound == null) {
+            $packageInbound = PackagePreDispatch::find($request->get('Reference_Number_1'));
 
+            if ($packageInbound) {
+                return ['stateAction' => 'validatedPreDispatch'];
+            }
+        }
+
+        if ($packageInbound == null) {
+            $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
+        }
+
+        if ($packageInbound == null) {
+            $packageInbound = PackageFailed::find($request->get('Reference_Number_1'));
+        }
+
+        if ($packageInbound == null) {
+            $packageInbound = PackageReturnCompany::find($request->get('Reference_Number_1'));
+
+            if ($packageInbound) {
+                return ['stateAction' => 'validatedReturnCompany'];
+            }
+        }
+
+        if ($packageInbound == null) {
+            $packageInbound = PackageLost::find($request->get('Reference_Number_1'));
+
+            if ($packageInbound) {
+                return ['stateAction' => 'validatedLost'];
+            }
+        }
+
+        $idTeampackage = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+            ->where('status', $packageInbound->status)
+            ->get();
+
+        Log::info('Package From History');
+        Log::info($idTeampackage);
         if ($packageInbound) {
-            return ['stateAction' => 'validatedPreDispatch'];
+            try {
+                DB::beginTransaction();
+
+                $packageLost = new PackageLost();
+
+                $packageLost->Reference_Number_1 = $packageInbound->Reference_Number_1;
+                $packageLost->idCompany = $packageInbound->idCompany;
+                $packageLost->company = $packageInbound->company;
+                $packageLost->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+                $packageLost->Dropoff_Company = $packageInbound->Dropoff_Company;
+                $packageLost->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageLost->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+                $packageLost->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+                $packageLost->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+                $packageLost->Dropoff_City = $packageInbound->Dropoff_City;
+                $packageLost->Dropoff_Province = $packageInbound->Dropoff_Province;
+                $packageLost->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+                $packageLost->Notes = $packageInbound->Notes;
+                $packageLost->Route = $packageInbound->Route;
+                $packageLost->comment = $request->get('comment') ? $request->get('comment') : '';
+                $packageLost->Weight = $packageInbound->Weight;
+                $packageLost->idUser = Auth::user()->id;
+                $packageLost->created_at = date('Y-m-d H:i:s');
+                $packageLost->updated_at = date('Y-m-d H:i:s');
+                $packageLost->status = 'Lost';
+
+                $cellar = Cellar::find(Auth::user()->idCellar);
+
+                if ($cellar) {
+                    $packageLost->idCellar = $cellar->id;
+                    $packageLost->nameCellar = $cellar->name;
+                    $packageLost->stateCellar = $cellar->state;
+                    $packageLost->cityCellar = $cellar->city;
+                }
+
+                $packageLost->save();
+
+                // Registrar historia
+                $packageHistory = new PackageHistory();
+
+                $packageHistory->id = uniqid();
+                $packageHistory->Reference_Number_1 = $packageInbound->Reference_Number_1;
+                $packageHistory->idCompany = $packageInbound->idCompany;
+                $packageHistory->company = $packageInbound->company;
+                $packageHistory->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company = $packageInbound->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City = $packageInbound->Dropoff_City;
+                $packageHistory->Dropoff_Province = $packageInbound->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+                $packageHistory->Notes = $packageInbound->Notes;
+                $idTeam = $packageInbound->idTeam;
+                if ($idTeam) {
+                    $packageHistory->idTeam = $packageInbound->idTeam;
+                }
+                $packageHistory->Weight = $packageInbound->Weight;
+                $packageHistory->Route = $packageInbound->Route;
+                $packageHistory->idUser = Auth::user()->id;
+                $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
+                $packageHistory->Description = $request->get('comment') ? $request->get('comment') : '';
+                $packageHistory->status = 'Lost';
+                $packageHistory->actualDate = date('Y-m-d H:i:s');
+                $packageHistory->created_at = date('Y-m-d H:i:s');
+                $packageHistory->updated_at = date('Y-m-d H:i:s');
+
+                if ($cellar) {
+                    $packageHistory->idCellar = $cellar->id;
+                    $packageHistory->nameCellar = $cellar->name;
+                    $packageHistory->stateCellar = $cellar->state;
+                    $packageHistory->cityCellar = $cellar->city;
+                }
+
+                $packageHistory->save();
+
+                $packageController = new PackageController();
+                $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+
+                $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                    ->where('sendToInland', 1)
+                    ->where('status', 'Manifest')
+                    ->first();
+
+                if ($packageHistory) {
+                    $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
+                }
+
+                $package = $packageInbound;
+                $packageInbound->delete();
+
+                $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
+
+                if (!$toDeductLostPackages) {
+                    $toDeductLostPackages = new ToDeductLostPackages();
+                    $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
+                    $toDeductLostPackages->idTeam = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
+
+                    if ($packageInbound->company != 'EIGHTVAPE')
+                        $toDeductLostPackages->priceToDeduct = 50;
+
+                    $toDeductLostPackages->save();
+                }
+
+                Log::info($idTeampackage);
+                Log::info($packageInbound);
+                if (!$idTeam) {
+                    Log::info('IdTeam was not found');
+                    $orgId = env('SYNC_ORG_ID');
+                    Log::info($orgId);
+                } else {
+                    $team = User::where('id', $idTeam)->first();
+                    $orgId = $team->orgId;
+                    Log::info($orgId);
+                }
+
+                $apiBaseUrl = env('SYNC_WEB_URL');
+                $syncApiKey = env('SYNC_WEB_API_KEY');
+                $curl = curl_init();
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/update-status-from-broker/' . $packageInbound->Reference_Number_1,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 5,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => json_encode([
+                        'status' => 'lost',
+                        'orgId' => $orgId
+                    ]),
+                    CURLOPT_HTTPHEADER => array(
+                        'Authorization: ' . $syncApiKey,
+                        'Content-Type: application/json'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                if (curl_errno($curl)) {
+                    Log::error('Curl error: ' . curl_error($curl));
+                }
+
+                if ($httpcode < 200 || $httpcode > 299) {
+                    Log::info($response);
+                    Log::info($httpcode);
+                }
+
+                curl_close($curl);
+
+                DB::commit();
+
+                if ($package->status == 'Dispatch') {
+                    $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
+                }
+
+                return ['stateAction' => true, 'packageInbound' => $package];
+            } catch (Exception $e) {
+                DB::rollback();
+                Log::error('Error: ' . $e->getMessage());
+
+                return ['stateAction' => false];
+            }
         }
-    }
 
-    if ($packageInbound == null) {
-        $packageInbound = PackageDispatch::find($request->get('Reference_Number_1'));
-    }
-
-    if ($packageInbound == null) {
-        $packageInbound = PackageFailed::find($request->get('Reference_Number_1'));
-    }
-
-    if ($packageInbound == null) {
-        $packageInbound = PackageReturnCompany::find($request->get('Reference_Number_1'));
-
-        if ($packageInbound) {
-            return ['stateAction' => 'validatedReturnCompany'];
-        }
-    }
-
-    if ($packageInbound == null) {
-        $packageInbound = PackageLost::find($request->get('Reference_Number_1'));
-
-        if ($packageInbound) {
-            return ['stateAction' => 'validatedLost'];
-        }
-    }
-
-    $idTeampackage = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
-        ->where('status', $packageInbound->status)
-        ->get();
-
-    Log::info('Package From History');
-    Log::info($idTeampackage);
-    if ($packageInbound) {
-        try {
-            DB::beginTransaction();
-
-            $packageLost = new PackageLost();
-
-            $packageLost->Reference_Number_1 = $packageInbound->Reference_Number_1;
-            $packageLost->idCompany = $packageInbound->idCompany;
-            $packageLost->company = $packageInbound->company;
-            $packageLost->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
-            $packageLost->Dropoff_Company = $packageInbound->Dropoff_Company;
-            $packageLost->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
-            $packageLost->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
-            $packageLost->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
-            $packageLost->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
-            $packageLost->Dropoff_City = $packageInbound->Dropoff_City;
-            $packageLost->Dropoff_Province = $packageInbound->Dropoff_Province;
-            $packageLost->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
-            $packageLost->Notes = $packageInbound->Notes;
-            $packageLost->Route = $packageInbound->Route;
-            $packageLost->comment = $request->get('comment') ? $request->get('comment') : '';
-            $packageLost->Weight = $packageInbound->Weight;
-            $packageLost->idUser = Auth::user()->id;
-            $packageLost->created_at = date('Y-m-d H:i:s');
-            $packageLost->updated_at = date('Y-m-d H:i:s');
-            $packageLost->status = 'Lost';
-
-            $cellar = Cellar::find(Auth::user()->idCellar);
-
-            if ($cellar) {
-                $packageLost->idCellar = $cellar->id;
-                $packageLost->nameCellar = $cellar->name;
-                $packageLost->stateCellar = $cellar->state;
-                $packageLost->cityCellar = $cellar->city;
-            }
-
-            $packageLost->save();
-
-            // Registrar historia
-            $packageHistory = new PackageHistory();
-
-            $packageHistory->id = uniqid();
-            $packageHistory->Reference_Number_1 = $packageInbound->Reference_Number_1;
-            $packageHistory->idCompany = $packageInbound->idCompany;
-            $packageHistory->company = $packageInbound->company;
-            $packageHistory->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
-            $packageHistory->Dropoff_Company = $packageInbound->Dropoff_Company;
-            $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
-            $packageHistory->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
-            $packageHistory->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
-            $packageHistory->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
-            $packageHistory->Dropoff_City = $packageInbound->Dropoff_City;
-            $packageHistory->Dropoff_Province = $packageInbound->Dropoff_Province;
-            $packageHistory->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
-            $packageHistory->Notes = $packageInbound->Notes;
-            $idTeam = $packageInbound->idTeam;
-            if ($idTeam) {
-                $packageHistory->idTeam = $packageInbound->idTeam;
-            }
-            $packageHistory->Weight = $packageInbound->Weight;
-            $packageHistory->Route = $packageInbound->Route;
-            $packageHistory->idUser = Auth::user()->id;
-            $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
-            $packageHistory->Description = $request->get('comment') ? $request->get('comment') : '';
-            $packageHistory->status = 'Lost';
-            $packageHistory->actualDate = date('Y-m-d H:i:s');
-            $packageHistory->created_at = date('Y-m-d H:i:s');
-            $packageHistory->updated_at = date('Y-m-d H:i:s');
-
-            if ($cellar) {
-                $packageHistory->idCellar = $cellar->id;
-                $packageHistory->nameCellar = $cellar->name;
-                $packageHistory->stateCellar = $cellar->state;
-                $packageHistory->cityCellar = $cellar->city;
-            }
-
-            $packageHistory->save();
-
-            $packageController = new PackageController();
-            $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
-
-            $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
-                ->where('sendToInland', 1)
-                ->where('status', 'Manifest')
-                ->first();
-
-            if ($packageHistory) {
-                $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
-            }
-
-            $package = $packageInbound;
-            $packageInbound->delete();
-
-            $toDeductLostPackages = ToDeductLostPackages::find($packageInbound->Reference_Number_1);
-
-            if (!$toDeductLostPackages) {
-                $toDeductLostPackages = new ToDeductLostPackages();
-                $toDeductLostPackages->shipmentId = $packageInbound->Reference_Number_1;
-                $toDeductLostPackages->idTeam = $packageInbound->status == 'Dispatch' || $packageInbound->status == 'Delivery' ? $packageInbound->idTeam : null;
-
-                if ($packageInbound->company != 'EIGHTVAPE')
-                    $toDeductLostPackages->priceToDeduct = 50;
-
-                $toDeductLostPackages->save();
-            }
-
-            Log::info($idTeampackage);
-            Log::info($packageInbound);
-            if (!$idTeam) {
-                Log::info('IdTeam was not found');
-                $orgId = env('SYNC_ORG_ID');
-                Log::info($orgId);
-            } else {
-                $team = User::where('id', $idTeam)->first();
-                $orgId = $team->orgId;
-                Log::info($orgId);
-            }
-
-            $apiBaseUrl = env('SYNC_WEB_URL');
-            $syncApiKey = env('SYNC_WEB_API_KEY');
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_URL => $apiBaseUrl . 'api/v6/shipments/update-status-from-broker/' . $packageInbound->Reference_Number_1,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 5,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => json_encode([
-                    'status' => 'lost',
-                    'orgId' => $orgId
-                ]),
-                CURLOPT_HTTPHEADER => array(
-                    'Authorization: ' . $syncApiKey,
-                    'Content-Type: application/json'
-                ),
-            ));
-
-            $response = curl_exec($curl);
-            $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-            if (curl_errno($curl)) {
-                Log::error('Curl error: ' . curl_error($curl));
-            }
-
-            if ($httpcode < 200 || $httpcode > 299) {
-                Log::info($response);
-                Log::info($httpcode);
-            }
-
-            curl_close($curl);
-
-            DB::commit();
-
-            if ($package->status == 'Dispatch') {
-                $this->sendEmailTeam($package->Reference_Number_1, $package->idTeam);
-            }
-
-            return ['stateAction' => true, 'packageInbound' => $package];
-        } catch (Exception $e) {
-            DB::rollback();
-            Log::error('Error: ' . $e->getMessage());
-
-            return ['stateAction' => false];
-        }
-    }
-
-    return ['stateAction' => 'notExists'];
+        return ['stateAction' => 'notExists'];
     }
 
 
