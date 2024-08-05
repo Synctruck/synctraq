@@ -32,7 +32,7 @@ function PackageNeedMoreInformation() {
     const [typeMessage, setTypeMessage]         = useState('');
 
     const [listInbound, setListInbound] = useState([]);
- 
+
     const [file, setFile]             = useState('');
 
     const [displayButton, setDisplayButton] = useState('none');
@@ -158,7 +158,7 @@ function PackageNeedMoreInformation() {
         }
     }
 
-    const handlerExport = (type) => { 
+    const handlerExport = (type) => {
 
         exportAllPackageNMI(RouteSearch, StateSearch, type);
     }
@@ -311,7 +311,7 @@ function PackageNeedMoreInformation() {
                     });
 
                     buttonCloseModalRef.current.click();
-                    
+
                     listAllPackageNMI(1, RouteSearch, StateSearch);
                 }
                 else if(response.stateAction == 'notUpdated')
@@ -546,7 +546,7 @@ function PackageNeedMoreInformation() {
                         else if(response.stateAction == 'validatedLost')
                         {
                             setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                            setTypeMessage('warning'); 
+                            setTypeMessage('warning');
 
                             document.getElementById('soundPitidoWarning').play();
                         }
@@ -565,7 +565,7 @@ function PackageNeedMoreInformation() {
                                     timer: 2000,
                                 });
                             }
-                            
+
                             //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                             //setTextMessage(" LABEL #"+ Reference_Number_1);
@@ -963,9 +963,8 @@ function PackageNeedMoreInformation() {
     }
 
     return (
-
         <section className="section">
-            { modalPackageEdit }
+            {modalPackageEdit}
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -975,13 +974,13 @@ function PackageNeedMoreInformation() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2">
-                                                <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
+                                                <button className="btn btn-success btn-sm form-control" onClick={() => handlerExport('download')}>
                                                     <i className="ri-file-excel-fill"></i> EXPORT
                                                 </button>
                                             </div>
                                             <div className="col-3">
                                                 <div className="form-group">
-                                                    <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerExport('send') }>
+                                                    <button className="btn btn-warning btn-sm form-control text-white" onClick={() => handlerExport('send')}>
                                                         <i className="ri-file-excel-fill"></i> EXPORT TO THE MAIL
                                                     </button>
                                                 </div>
@@ -990,41 +989,19 @@ function PackageNeedMoreInformation() {
                                     </div>
                                     <div className="col-lg-12 form-group text-center">
                                         {
-                                            typeMessage == 'success'
-                                            ?
-                                                <h2 className="text-success">{ textMessage }</h2>
-
-                                            :
-                                                ''
+                                            typeMessage === 'success' ? <h2 className="text-success">{textMessage}</h2> : ''
                                         }
                                         {
-                                            typeMessage == 'error'
-                                            ?
-                                                <h2 className="text-danger">{ textMessage }</h2>
-                                            :
-                                                ''
+                                            typeMessage === 'error' ? <h2 className="text-danger">{textMessage}</h2> : ''
                                         }
                                         {
-                                            typeMessage == 'primary'
-                                            ?
-                                                <h2 className="text-primary">{ textMessage }</h2>
-                                            :
-                                                ''
+                                            typeMessage === 'primary' ? <h2 className="text-primary">{textMessage}</h2> : ''
                                         }
                                         {
-                                            typeMessage == 'warning'
-                                            ?
-                                                <h2 className="text-warning">{ textMessage }</h2>
-                                            :
-                                                ''
+                                            typeMessage === 'warning' ? <h2 className="text-warning">{textMessage}</h2> : ''
                                         }
-
                                         {
-                                            textMessageDate != ''
-                                            ?
-                                                <h2 className="text-warning">{ textMessageDate.substring(5, 7) }-{ textMessageDate.substring(8, 10) }-{ textMessageDate.substring(0, 4) } { textMessageDate.substring(11, 19) }</h2>
-                                            :
-                                                ''
+                                            textMessageDate !== '' ? <h2 className="text-warning">{textMessageDate.substring(5, 7)}-{textMessageDate.substring(8, 10)}-{textMessageDate.substring(0, 4)} {textMessageDate.substring(11, 19)}</h2> : ''
                                         }
                                     </div>
 
@@ -1034,34 +1011,32 @@ function PackageNeedMoreInformation() {
                                     <audio id="soundPitidoBlocked" src="./sound/pitido-blocked.mp3" preload="auto"></audio>
 
                                     <div className="col-lg-6 form-group">
-                                        <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
+                                        <form onSubmit={handlerInsert} autoComplete="off">
+                                        <h3>Please use Syncfreight to do this process.</h3>
+                                        <p><a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">https://platform.syncfreight.com</a></p>
+                                            <div className="form-group" style={{ display: 'none' }}>
                                                 <label htmlFor="">PACKAGE ID - INSERT</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={Reference_Number_1} onChange={(e) => setNumberPackage(e.target.value)} readOnly={readInput} maxLength="24" required />
                                             </div>
-                                            
                                         </form>
                                     </div>
                                     <div className="col-lg-6 form-group">
-                                        <form onSubmit={ handlerSearch } autoComplete="off">
-                                            <div className="form-group">
+                                        <form onSubmit={handlerSearch} autoComplete="off">
+                                            <div className="form-group" style={{ display: 'none' }}>
                                                 <label htmlFor="" className="text-success">PACKAGE ID - SEARCH</label>
-                                                <input type="text" className="form-control" value={ Reference_Search } onChange={ (e) => setReferenceSearch(e.target.value) } readOnly={ readInput } maxLength="24"/>
+                                                <input type="text" className="form-control" value={Reference_Search} onChange={(e) => setReferenceSearch(e.target.value)} readOnly={readInput} maxLength="24" />
                                             </div>
                                         </form>
                                     </div>
                                 </div>
 
                                 <div className="row">
-                                    <div className="col-lg-2" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
+                                    <div className="col-lg-2" style={{ paddingLeft: (isLoading ? '5%' : '') }}>
                                         {
-                                            (
-                                                isLoading
-                                                ? 
-                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                            isLoading ?
+                                                <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
-                                                    <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>NMI: { totalPackage }</b>
-                                            )
+                                                <b className="alert-success" style={{ borderRadius: '10px', padding: '10px' }}>NMI: {totalPackage}</b>
                                         }
                                     </div>
 
@@ -1073,7 +1048,7 @@ function PackageNeedMoreInformation() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                                <input type="date" className='form-control' value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
                                             </div>
                                         </div>
                                     </div>
@@ -1085,7 +1060,7 @@ function PackageNeedMoreInformation() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                                <input type="date" className='form-control' value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
                                             </div>
                                         </div>
                                     </div>
@@ -1097,9 +1072,9 @@ function PackageNeedMoreInformation() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                    <option value="" style={ {display: 'none'} }>Select...</option>
-                                                    { optionCompany }
+                                                <select name="" id="" className="form-control" onChange={(e) => setCompany(e.target.value)}>
+                                                    <option value="" style={{ display: 'none' }}>Select...</option>
+                                                    {optionCompany}
                                                 </select>
                                             </div>
                                         </div>
@@ -1112,7 +1087,7 @@ function PackageNeedMoreInformation() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                                <Select isMulti onChange={(e) => handlerChangeState(e)} options={optionsStateSearch} />
                                             </div>
                                         </div>
                                     </div>
@@ -1124,7 +1099,7 @@ function PackageNeedMoreInformation() {
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRouteSearch } />
+                                                <Select isMulti onChange={(e) => handlerChangeRoute(e)} options={optionsRouteSearch} />
                                             </div>
                                         </div>
                                     </div>
@@ -1140,37 +1115,37 @@ function PackageNeedMoreInformation() {
                                             <div id="labelPrint">
                                                 <table>
                                                     <tr>
-                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)'} }>
-                                                            <h1 style={ {fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px'} }><b>{ EWR1 }</b></h1>
+                                                        <td className="verticalTextRight" style={{ transform: 'rotate(90deg)' }}>
+                                                            <h1 style={{ fontSize: '2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '40px' }}><b>{EWR1}</b></h1>
                                                         </td>
                                                         <td>
                                                             <table>
                                                                 <tr>
                                                                     <td className="text-center">
-                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                            <h1 style={ {textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ WeightLabel }</b></h1>
+                                                                        <div style={{ float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px' }}>
+                                                                            <h1 style={{ textAlign: 'left', paddingLeft: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px' }}><b>{WeightLabel}</b></h1>
                                                                         </div>
-                                                                        <div style={ {float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center'} }>
-                                                                            <img src={ 'https://synctrucknj.com/img/logo.PNG' } style={ {width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px'} }/>
+                                                                        <div style={{ float: 'left', width: '30%', fontFamily: 'Arial', marginBottom: '0px', textAlign: 'center' }}>
+                                                                            <img src={'https://synctrucknj.com/img/logo.PNG'} style={{ width: '115px', left: '-25px', top: '30px', position: 'relative', fontFamily: 'Arial', marginBottom: '0px' }} />
                                                                         </div>
-                                                                        <div style={ {float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                                            <h1 style={ {textAlign: 'right', paddingRight: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px'} }><b>{ StateLabel }</b></h1>
+                                                                        <div style={{ float: 'left', width: '35%', fontFamily: 'Arial', marginBottom: '0px' }}>
+                                                                            <h1 style={{ textAlign: 'right', paddingRight: '5px', fontSize: '1.9rem', fontFamily: 'Arial', marginBottom: '0px' }}><b>{StateLabel}</b></h1>
                                                                         </div>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td style={ {textAlign: 'center'} }>
-                                                                        <svg id="imgBarcode" style={ {width: '400', height: '250', margin: '0px'} }></svg>
+                                                                    <td style={{ textAlign: 'center' }}>
+                                                                        <svg id="imgBarcode" style={{ width: '400', height: '250', margin: '0px' }}></svg>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td className="text-center" style={ {textAlign: 'center', fontFamily: 'Arial', marginBottom: '0px'} }>
+                                                                    <td className="text-center" style={{ textAlign: 'center', fontFamily: 'Arial', marginBottom: '0px' }}>
                                                                     </td>
                                                                 </tr>
                                                             </table>
                                                         </td>
-                                                        <td className="verticalTextRight" style={ {transform: 'rotate(90deg)', fontFamily: 'Arial', marginBottom: '0px'} }>
-                                                            <h1 style={ {fontSize: '3.2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '-40px'} }><b>{ RouteLabel }</b></h1>
+                                                        <td className="verticalTextRight" style={{ transform: 'rotate(90deg)', fontFamily: 'Arial', marginBottom: '0px' }}>
+                                                            <h1 style={{ fontSize: '3.2rem', fontFamily: 'Arial', marginBottom: '0px', position: 'relative', left: '10px', bottom: '-40px' }}><b>{RouteLabel}</b></h1>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -1201,7 +1176,7 @@ function PackageNeedMoreInformation() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { listPackageTable }
+                                            {listPackageTable}
                                         </tbody>
                                     </table>
                                 </div>
@@ -1224,6 +1199,8 @@ function PackageNeedMoreInformation() {
             </div>
         </section>
     );
+
+
 }
 
 export default PackageNeedMoreInformation;
