@@ -353,109 +353,114 @@ function PackageInbound() {
         setRoute(0);
     }
 
-    const modalPackageEdit = <React.Fragment>
-                                    <div className="modal fade" id="modalPackageEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <form onSubmit={ handlerUpdatePackage }>
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Update Package</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div className="modal-body">
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>PACKAGE ID</label>
-                                                                    <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="30" readOnly={ readOnlyInput } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>CLIENT</label>
-                                                                    <div id="Dropoff_Contact_Name" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Contact_Name } className="form-control" onChange={ (e) => setDropoff_Contact_Name(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="form-group">
-                                                                    <label>CONTACT</label>
-                                                                    <div id="Dropoff_Contact_Phone_Number" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Contact_Phone_Number } className="form-control" onChange={ (e) => setDropoff_Contact_Phone_Number(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ADDRESS 1</label>
-                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_1 } className="form-control" onChange={ (e) => setDropoff_Address_Line_1(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ADDRESS 2</label>
-                                                                    <div id="Dropoff_Address_Line_1" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Address_Line_2 } className="form-control" onChange={ (e) => setDropoff_Address_Line_2(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>CITY</label>
-                                                                    <div id="Dropoff_City" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_City } className="form-control" onChange={ (e) => setDropoff_City(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>STATE</label>
-                                                                    <div id="Dropoff_Province" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Province } className="form-control" onChange={ (e) => setDropoff_Province(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ZIP C</label>
-                                                                    <div id="Dropoff_Postal_Code" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Dropoff_Postal_Code } className="form-control" onChange={ (e) => setDropoff_Postal_Code(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>WEIGHT</label>
-                                                                    <div id="Weight" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <input type="text" value={ Weight } className="form-control" onChange={ (e) => setWeight(e.target.value) } required/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <div className="form-group">
-                                                                    <label>ROUTE</label>
-                                                                    <div id="Route" className="text-danger" style={ {display: 'none'} }></div>
-                                                                    <select name="" id="" className="form-control" onChange={ (e) => setRoute(e.target.value) } required>
-                                                                        <option value="" style={ {display: 'none'} }>Seleccione una ruta</option>
-                                                                        { optionsRole }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                        <button className="btn btn-primary" disabled={ disabledButton }>Actualizar</button>
-                                                    </div>
-                                                </div>
-                                            </form>
+    const modalPackageEdit = (
+        <React.Fragment>
+            <div className="modal fade" id="modalPackageEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <form onSubmit={handlerUpdatePackage}>
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title text-primary" id="exampleModalLabel">Update Package</h5>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body text-center">
+                                <h3>Please use Syncfreight to do this process.</h3>
+                                <p><a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">https://platform.syncfreight.com</a></p>
+                                {/*
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>PACKAGE ID</label>
+                                            <div id="Reference_Number_1_Edit" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Reference_Number_1_Edit} className="form-control" onChange={(e) => setReference_Number_1(e.target.value)} maxLength="30" readOnly={readOnlyInput} required/>
                                         </div>
                                     </div>
-                                </React.Fragment>;
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>CLIENT</label>
+                                            <div id="Dropoff_Contact_Name" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Contact_Name} className="form-control" onChange={(e) => setDropoff_Contact_Name(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-12">
+                                        <div className="form-group">
+                                            <label>CONTACT</label>
+                                            <div id="Dropoff_Contact_Phone_Number" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Contact_Phone_Number} className="form-control" onChange={(e) => setDropoff_Contact_Phone_Number(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>ADDRESS 1</label>
+                                            <div id="Dropoff_Address_Line_1" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Address_Line_1} className="form-control" onChange={(e) => setDropoff_Address_Line_1(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>ADDRESS 2</label>
+                                            <div id="Dropoff_Address_Line_1" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Address_Line_2} className="form-control" onChange={(e) => setDropoff_Address_Line_2(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>CITY</label>
+                                            <div id="Dropoff_City" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_City} className="form-control" onChange={(e) => setDropoff_City(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>STATE</label>
+                                            <div id="Dropoff_Province" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Province} className="form-control" onChange={(e) => setDropoff_Province(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>ZIP C</label>
+                                            <div id="Dropoff_Postal_Code" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Dropoff_Postal_Code} className="form-control" onChange={(e) => setDropoff_Postal_Code(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>WEIGHT</label>
+                                            <div id="Weight" className="text-danger" style={{display: 'none'}}></div>
+                                            <input type="text" value={Weight} className="form-control" onChange={(e) => setWeight(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="form-group">
+                                            <label>ROUTE</label>
+                                            <div id="Route" className="text-danger" style={{display: 'none'}}></div>
+                                            <select name="" id="" className="form-control" onChange={(e) => setRoute(e.target.value)} required>
+                                                <option value="" style={{display: 'none'}}>Seleccione una ruta</option>
+                                                {optionsRole}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                */}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </React.Fragment>
+    );
 
     const [sendInbound, setSendInbound] = useState(1);
 
@@ -500,7 +505,7 @@ function PackageInbound() {
                         else if(response.stateAction == 'validatedLost')
                         {
                             setTextMessage("THE PACKAGE WAS RECORDED BEFORE AS LOST #"+ Reference_Number_1);
-                            setTypeMessage('warning'); 
+                            setTypeMessage('warning');
 
                             document.getElementById('soundPitidoWarning').play();
                         }
@@ -519,7 +524,7 @@ function PackageInbound() {
                                     timer: 2000,
                                 });
                             }
-                            
+
                             //setTextMessage(" LABEL #"+ Reference_Number_1);
 
                             //setTextMessage(" LABEL #"+ Reference_Number_1);
@@ -885,7 +890,7 @@ function PackageInbound() {
                                             <div className="col-lg-2">
                                                 <div className="form-group">
                                                     <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
-                                                </div> 
+                                                </div>
                                             </div>
                                             <div className="col-2">
                                                 <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
@@ -985,7 +990,7 @@ function PackageInbound() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Inbound: { totalPackage }</b>
