@@ -885,7 +885,7 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function InsertReInbound(Request $request, $apiKey)
+public function InsertReInbound(Request $request, $apiKey)
 {
     Log::info('========== RE-INBOUND');
     Log::info('Reference_Number_1: '. $request->get('Reference_Number_1'));
@@ -1106,9 +1106,6 @@ class PackageDispatchController extends Controller
                     $packageDispatch->delete();
 
                     DB::commit();
-
-                    $externalServiceInland = new ExternalServiceInland();
-                    $takeOverResponse = $externalServiceInland->SendToTakeOver($packageDispatch->Reference_Number_1);
 
                     return ['stateAction' => true, 'takeOverResponse' => $takeOverResponse];
                 } else {
