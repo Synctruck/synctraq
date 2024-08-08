@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch,ToDeductLostPackages, PackageFailed, PackageLost, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
+use App\Models\{ Company, PackageDispatch,ToDeductLostPackages, PackageFailed, PackageLost, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -1006,7 +1006,7 @@ class PackageDispatchController extends Controller
                 $packageReturn->save();
 
                 //update dispatch
-                $packageHistory = PackageHistory::where('Reference_Number_1', 'INLAND103845989')
+                $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
                                                 ->where('dispatch', 1)
                                                 ->first();
 
