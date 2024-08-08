@@ -1106,28 +1106,15 @@ public function InsertReInbound(Request $request, $apiKey)
                     $packageDispatch->delete();
 
                     DB::commit();
-
-                    return ['stateAction' => true, 'takeOverResponse' => $takeOverResponse];
-                } else {
-                    return ['stateAction' => 'taskWasNotDelete'];
                 }
             } catch (Exception $e) {
                 DB::rollback();
 
-                return ['stateAction' => false];
             }
         }
-
-        return ['stateAction' => 'notUser'];
     } else {
         $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $Reference_Number_1)->first();
-
-        if ($packageReturnCompany) {
-            return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
-        }
     }
-
-    return ['stateAction' => 'notDispatch'];
 }
 
 
