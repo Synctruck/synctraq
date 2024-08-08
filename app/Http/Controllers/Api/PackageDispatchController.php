@@ -796,6 +796,13 @@ class PackageDispatchController extends Controller
         $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
         $created_at         = $request['createdAt'];
 
+        // Verifica que la fecha esté en el formato correcto
+            $created_at_obj = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+            if ($created_at_obj === false) {
+                Log::error('Error creating DateTime from createdAt: ' . $created_at);
+                return response()->json(['message' => 'Invalid date format for createdAt'], 400);
+            }
+
         $packageManifest = PackageManifest::find($request['barcode']);
 
         if($packageManifest)
