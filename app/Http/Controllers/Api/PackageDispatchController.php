@@ -150,6 +150,7 @@ class PackageDispatchController extends Controller
             ],
         );
 
+
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
@@ -178,8 +179,13 @@ class PackageDispatchController extends Controller
                 else if($request['status'] == 'failed')
                     $this->InsertFailed($request, $apiKey);
                 else if($request['status'] == 'inbound')
-                    $this->InsertInbound($request, $apiKey);
-                else if($request['status'] == 'lost')
+                {
+                    if (isset($request['failureNotes']) && !empty($request['failureNotes'])) {
+                        $this->InsertReInbound($request);
+                    } else {
+                        $this->InsertInbound($request, $apiKey);
+                    }
+                }else if($request['status'] == 'lost')
                     $this->InsertLost($request, $apiKey);
                 else if($request['status'] == 'pre_rts')
                     $this->InsertPreRts($request, $apiKey);
@@ -870,6 +876,377 @@ class PackageDispatchController extends Controller
             }
         }
     }
+
+    public function InsertReInbound(Request $request)
+        {
+            Log::info('========== RE-INBOUND');
+            Log::info('Reference_Number_1: '. $request->get('Reference_Number_1'));
+
+            $Reference_Number_1 = $request['barcode'];
+            $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
+            $created_at         = $request['createdAt'];
+
+            $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+
+            if ($packageBlocked) {
+                return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+            }
+
+            $package = PackagePreDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+
+            if ($package) {
+                return ['stateAction' => 'packageInPreDispatch'];
+            }
+
+            $packageLost = PackageLost::find($Reference_Number_1);
+
+            if ($packageLost) {
+                return ['stateAction' => 'validatedLost'];
+            }
+
+            $packageDispatch = PackageFailed::where('Reference_Number_1', $Reference_Number_1)->first();
+
+            if ($packageDispatch == null) {
+                $packageDispatch = PackageDispatch::where('Reference_Number_1', $Reference_Number_1)->first();
+
+                if ($packageDispatch == null) {
+                    $packageDispatch = PackageLmCarrier::where('Reference_Number_1', $Reference_Number_1)->first();
+                }
+            }
+
+            Log::info('package: '. $packageDispatch);
+
+            if ($packageDispatch) {
+                if ($packageDispatch->idUserDispatch == Auth::user()->id || Auth::user()->role->name == 'Master') {
+                    try {
+                        DB::beginTransaction();
+
+                        $team                = User::find($packageDispatch->idTeam);
+                        $driver              = User::find($packageDispatch->idUserDispatch);
+                        $idOnfleet           = $packageDispatch->idOnfleet;
+                        $taskOnfleet         = $packageDispatch->taskOnfleet;
+                        $teamName            = $team ? $team->name : 'NOT FOUND';
+                        $workerName          = ($driver ? $driver->name .' '. $driver->nameOfOwner : '');
+                        $photoUrl            = '';
+                        $statusOnfleet       = '';
+                        $Date_Return         = date('Y-m-d H:i:s');
+                        $Category_Return     = $request->get('CategoryReturn');
+                        $Description_Return  = $request->get('Description_Return');
+                        $Description_Onfleet = '';
+
+                        $onfleet = $this->GetOnfleet($packageDispatch->idOnfleet);
+
+                        if ($onfleet) {
+                            $Description_Onfleet = $onfleet['completionDetails']['failureReason'] .': '. $onfleet['completionDetails']['failureNotes'];
+
+                            if ($onfleet['state'] == 3) {
+                                $statusOnfleet = $onfleet['completionDetails']['success'] == true ? $onfleet['state'] .' (error success)' : $onfleet['state'];
+
+                                if (count($onfleet['completionDetails']['photoUploadIds']) > 0) {
+                                    $photoUrl = implode(",", $onfleet['completionDetails']['photoUploadIds']);
+                                } else {
+                                    $photoUrl   = $onfleet['completionDetails']['photoUploadId'];
+                                }
+                            } elseif ($onfleet['state'] == 1) {
+                                $statusOnfleet = 1;
+                            }
+                        } else {
+                            $idOnfleet           = null;
+                            $taskOnfleet         = null;
+                            $Description_Onfleet = 'Task does not exist in onfleet';
+                            $statusOnfleet       = 1;
+                        }
+
+                        $nowDate              = date('Y-m-d H:i:s');
+                        $created_at_ReInbound = date('Y-m-d H:i:s', strtotime('+1 second', strtotime(date('Y-m-d H:i:s'))));
+                        $created_at_Warehouse = date('Y-m-d H:i:s', strtotime('+6 second', strtotime(date('Y-m-d H:i:s'))));
+
+                        if (date('H:i:s') > date('20:00:00')) {
+                            $created_at_ReInbound = date('Y-m-d 03:00:10', strtotime($nowDate .'+1 day'));
+                            $created_at_Warehouse = date('Y-m-d 03:00:20', strtotime($nowDate .'+1 day'));
+                        } elseif (date('H:i:s') < date('03:00:00')) {
+                            $created_at_ReInbound = date('Y-m-d 03:00:10');
+                            $created_at_Warehouse = date('Y-m-d 03:00:20');
+                        } else {
+                            $created_at_ReInbound = date('Y-m-d H:i:s');
+                            $created_at_Warehouse = date('Y-m-d H:i:s', strtotime('+6 second', strtotime(date('Y-m-d H:i:s'))));
+                        }
+
+                        $comment = Comment::where('description', $Description_Return)
+                                            ->where('category', $Category_Return)
+                                            ->first();
+
+                        if ($comment && $comment->category == 'Retry') {
+                            $statusReturn = 'ReInbound';
+                        } else {
+                            $statusReturn = 'Terminal';
+                        }
+
+                        $packageHistory = new PackageHistory();
+
+                        $packageHistory->id                           = uniqid();
+                        $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                        $packageHistory->company                      = $packageDispatch->company;
+                        $packageHistory->idStore                      = $packageDispatch->idStore;
+                        $packageHistory->store                        = $packageDispatch->store;
+                        $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageHistory->Notes                        = $packageDispatch->Notes;
+                        $packageHistory->Weight                       = $packageDispatch->Weight;
+                        $packageHistory->Route                        = $packageDispatch->Route;
+                        $packageHistory->idUser                       = Auth::user()->id;
+                        $packageHistory->idUserInbound                = Auth::user()->id;
+                        $packageHistory->Date_Inbound                 = date('Y-m-d H:i:s');
+                        $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                        $packageHistory->Description_Return           = $Description_Return;
+                        $packageHistory->Description_Onfleet          = $Description_Onfleet;
+                        $packageHistory->inbound                      = 1;
+                        $packageHistory->quantity                     = $packageDispatch->quantity;
+                        $packageHistory->status                       = $statusReturn;
+                        $packageHistory->actualDate                   = $nowDate;
+                        $packageHistory->created_at                   = $created_at_ReInbound;
+                        $packageHistory->updated_at                   = $created_at_ReInbound;
+
+                        $cellar = Cellar::find(Auth::user()->idCellar);
+
+                        if ($cellar) {
+                            $packageHistory->idCellar    = $cellar->id;
+                            $packageHistory->nameCellar  = $cellar->name;
+                            $packageHistory->stateCellar = $cellar->state;
+                            $packageHistory->cityCellar  = $cellar->city;
+                        }
+
+                        $packageHistory->save();
+
+                        $nowDate = date('Y-m-d H:i:s', strtotime($nowDate .'+6 second'));
+
+                        $deleteDispatch = true;
+
+                        if ($onfleet) {
+                            if ($onfleet['state'] == 1) {
+                                $deleteOnfleet  = $this->DeleteOnfleet($packageDispatch->idOnfleet);
+                                $deleteDispatch = $deleteOnfleet ? true : false;
+                            }
+                        }
+
+                        $packageReturn = new PackageReturn();
+
+                        $packageReturn->id                           = uniqid();
+                        $packageReturn->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                        $packageReturn->idCompany                    = $packageDispatch->idCompany;
+                        $packageReturn->company                      = $packageDispatch->company;
+                        $packageReturn->idStore                      = $packageDispatch->idStore;
+                        $packageReturn->store                        = $packageDispatch->store;
+                        $packageReturn->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                        $packageReturn->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                        $packageReturn->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                        $packageReturn->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                        $packageReturn->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                        $packageReturn->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                        $packageReturn->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                        $packageReturn->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                        $packageReturn->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                        $packageReturn->Notes                        = $packageDispatch->Notes;
+                        $packageReturn->Weight                       = $packageDispatch->Weight;
+                        $packageReturn->Route                        = $packageDispatch->Route;
+                        $packageReturn->idUser                       = Auth::user()->id;
+                        $packageReturn->idTeam                       = $packageDispatch->idTeam;
+                        $packageReturn->idUserReturn                 = $packageDispatch->idUserDispatch;
+                        $packageReturn->Date_Return                  = $Date_Return;
+                        $packageReturn->Description_Return           = $Description_Return;
+                        $packageReturn->Description_Onfleet          = $Description_Onfleet;
+                        $packageReturn->idOnfleet                    = $idOnfleet;
+                        $packageReturn->taskOnfleet                  = $taskOnfleet;
+                        $packageReturn->team                         = $teamName;
+                        $packageReturn->workerName                   = $workerName;
+                        $packageReturn->photoUrl                     = $photoUrl;
+                        $packageReturn->statusOnfleet                = $statusOnfleet;
+                        $packageReturn->quantity                     = $packageDispatch->quantity;
+                        $packageReturn->idPaymentTeam                = $packageDispatch->idPaymentTeam;
+                        $packageReturn->status                       = 'Return';
+
+                        $packageReturn->save();
+
+                        if ($packageDispatch->idPaymentTeam != '') {
+                            //update payment team company
+                            $paymentTeam = PaymentTeamReturn::find($packageDispatch->idPaymentTeam);
+
+                            $paymentTeam->totalReturn = $paymentTeam->totalReturn + $packageDispatch->pricePaymentTeam;
+
+                            $paymentTeam->save();
+
+                            //update payment and return, prices totals
+                            $team = User::find($packageDispatch->idTeam);
+
+                            $team->totalReturn = $team->totalReturn + $packageDispatch->pricePaymentTeam;
+
+                            $team->save();
+                            //===============================
+                        }
+
+                        //update dispatch
+                        $packageHistory = PackageHistory::where('Reference_Number_1', 'INLAND103845989')
+                                                        ->where('dispatch', 1)
+                                                        ->first();
+
+                        if ($packageHistory) {
+                            $packageHistory->dispatch = 0;
+
+                            $packageHistory->save();
+                        }
+
+                        //update inbound
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $Reference_Number_1)
+                                                        ->where('inbound', 1)
+                                                        ->first();
+
+                        if ($packageHistory) {
+                            $packageHistory->inbound  = 0;
+
+                            $packageHistory->save();
+                        }
+
+                        $packageWarehouse = PackageWarehouse::find($packageDispatch->Reference_Number_1);
+
+                        if ($packageWarehouse) {
+                            $packageWarehouse->delete();
+                        }
+
+                        $comment = Comment::where('description', $Description_Return)
+                                            ->where('category', $Category_Return)
+                                            ->first();
+
+                        if ($comment && $comment->category == 'Retry') {
+                            $packageWarehouse = new PackageWarehouse();
+
+                            $packageWarehouse->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                            $packageWarehouse->idCompany                    = $packageDispatch->idCompany;
+                            $packageWarehouse->company                      = $packageDispatch->company;
+                            $packageWarehouse->idStore                      = $packageDispatch->idStore;
+                            $packageWarehouse->store                        = $packageDispatch->store;
+                            $packageWarehouse->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                            $packageWarehouse->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                            $packageWarehouse->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                            $packageWarehouse->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                            $packageWarehouse->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                            $packageWarehouse->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                            $packageWarehouse->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                            $packageWarehouse->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                            $packageWarehouse->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                            $packageWarehouse->Notes                        = $packageDispatch->Notes;
+                            $packageWarehouse->Weight                       = $packageDispatch->Weight;
+                            $packageWarehouse->Route                        = $packageDispatch->Route;
+                            $packageWarehouse->idUser                       = Auth::user()->id;
+                            $packageWarehouse->quantity                     = $packageDispatch->quantity;
+                            $packageWarehouse->status                       = 'Warehouse';
+
+                            $cellar = Cellar::find(Auth::user()->idCellar);
+
+                            if ($cellar) {
+                                $packageWarehouse->idCellar    = $cellar->id;
+                                $packageWarehouse->nameCellar  = $cellar->name;
+                                $packageWarehouse->stateCellar = $cellar->state;
+                                $packageWarehouse->cityCellar  = $cellar->city;
+                            }
+
+                            $packageWarehouse->save();
+
+                            $packageHistory = new PackageHistory();
+
+                            $packageHistory->id                           = uniqid();
+                            $packageHistory->Reference_Number_1           = $packageDispatch->Reference_Number_1;
+                            $packageHistory->idCompany                    = $packageDispatch->idCompany;
+                            $packageHistory->company                      = $packageDispatch->company;
+                            $packageHistory->idStore                      = $packageDispatch->idStore;
+                            $packageHistory->store                        = $packageDispatch->store;
+                            $packageHistory->Dropoff_Contact_Name         = $packageDispatch->Dropoff_Contact_Name;
+                            $packageHistory->Dropoff_Company              = $packageDispatch->Dropoff_Company;
+                            $packageHistory->Dropoff_Contact_Phone_Number = $packageDispatch->Dropoff_Contact_Phone_Number;
+                            $packageHistory->Dropoff_Contact_Email        = $packageDispatch->Dropoff_Contact_Email;
+                            $packageHistory->Dropoff_Address_Line_1       = $packageDispatch->Dropoff_Address_Line_1;
+                            $packageHistory->Dropoff_Address_Line_2       = $packageDispatch->Dropoff_Address_Line_2;
+                            $packageHistory->Dropoff_City                 = $packageDispatch->Dropoff_City;
+                            $packageHistory->Dropoff_Province             = $packageDispatch->Dropoff_Province;
+                            $packageHistory->Dropoff_Postal_Code          = $packageDispatch->Dropoff_Postal_Code;
+                            $packageHistory->Notes                        = $packageDispatch->Notes;
+                            $packageHistory->Weight                       = $packageDispatch->Weight;
+                            $packageHistory->Route                        = $packageDispatch->Route;
+                            $packageHistory->idUser                       = Auth::user()->id;
+                            $packageHistory->Description                  = 'For: '. Auth::user()->name .' '. Auth::user()->nameOfOwner;
+                            $packageHistory->quantity                     = $packageDispatch->quantity;
+                            $packageHistory->status                       = 'Warehouse';
+                            $packageHistory->actualDate                   = $nowDate;
+                            $packageHistory->created_at                   = $created_at_Warehouse;
+                            $packageHistory->updated_at                   = $created_at_Warehouse;
+
+                            if ($cellar) {
+                                $packageHistory->idCellar    = $cellar->id;
+                                $packageHistory->nameCellar  = $cellar->name;
+                                $packageHistory->stateCellar = $cellar->state;
+                                $packageHistory->cityCellar  = $cellar->city;
+                            }
+
+                            $packageHistory->save();
+                        } else if ($comment && $comment->category == 'Terminal') {
+                            $servicePackageTerminal = new ServicePackageTerminal();
+                            $servicePackageTerminal->Insert($packageDispatch);
+                        }
+
+                        $packageDispatch['Description_Return'] = $Description_Return;
+
+                        //data for INLAND
+                        $packageController = new PackageController();
+                        $packageController->SendStatusToInland($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
+
+                        $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
+                                                    ->where('sendToInland', 1)
+                                                    ->where('status', 'Manifest')
+                                                    ->first();
+
+                        if ($packageHistory) {
+                            $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', $comment->statusCode, $created_at_ReInbound);
+                        }
+
+                        if ($deleteDispatch) {
+                            $packageDispatch->delete();
+
+                            DB::commit();
+
+                            $externalServiceInland = new ExternalServiceInland();
+                            $takeOverResponse = $externalServiceInland->SendToTakeOver($packageDispatch->Reference_Number_1);
+
+                            return ['stateAction' => true, 'takeOverResponse' => $takeOverResponse];
+                        } else {
+                            return ['stateAction' => 'taskWasNotDelete'];
+                        }
+                    } catch (Exception $e) {
+                        DB::rollback();
+
+                        return ['stateAction' => false];
+                    }
+                }
+
+                return ['stateAction' => 'notUser'];
+            } else {
+                $packageReturnCompany = PackageReturnCompany::where('Reference_Number_1', $Reference_Number_1)->first();
+
+                if ($packageReturnCompany) {
+                    return ['stateAction' => 'validatedReturnCompany', 'packageInbound' => $packageReturnCompany];
+                }
+            }
+
+            return ['stateAction' => 'notDispatch'];
+        }
+
+
 
     public function InsertLost(Request $request, $apiKey)
         {
