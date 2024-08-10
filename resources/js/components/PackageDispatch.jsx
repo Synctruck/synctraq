@@ -2062,7 +2062,7 @@ function PackageDispatch() {
                                         <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
                                             <div className="row form-group">
                                                 <div className="col-lg-6">
-                                                <h3>Please use Syncfreight to do this process.</h3>
+                                                <h3>Please use Syncfreight to do this process</h3>
                                                 <p>
                                                     <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
                                                         https://platform.syncfreight.com
@@ -2074,7 +2074,7 @@ function PackageDispatch() {
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
-                                                    <div className="form-group"  style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">TEAM </label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required  style={{ display: 'none' }}>
                                                             <option value="">All</option>
@@ -2083,7 +2083,7 @@ function PackageDispatch() {
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
-                                                    <div className="form-group"  style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">DRIVER</label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                             <option value="0">All</option>
