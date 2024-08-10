@@ -2068,7 +2068,7 @@ function PackageDispatch() {
                                                         https://platform.syncfreight.com
                                                     </a>
                                                 </p>
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">PACKAGE ID</label>
                                                         <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
