@@ -2070,7 +2070,7 @@ function PackageDispatch() {
                                                 </p>
                                                     <div className="form-group" style={{ display: 'none' }}>
                                                         <label htmlFor="">PACKAGE ID</label>
-                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly } style={{ display: 'none' }}/>
+                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
