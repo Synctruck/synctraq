@@ -137,9 +137,9 @@ function PackageReturn() {
 
         fetch(url_general +'comments/get-all-by-category/'+ category)
         .then(res => res.json())
-        .then((response) => {
+        .then((response) => { 
 
-            setListComment(response.commentList);
+            setListComment(response.commentList); 
         });
     }
 
@@ -445,7 +445,7 @@ function PackageReturn() {
 
                 return 0;
             }*/
-
+                
             clearValidation();
 
             let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -507,7 +507,7 @@ function PackageReturn() {
                             setTextMessage("#"+ returnReference_Number_1 +" was returned!.\n\nSyncWeb: "+ response.takeOverResponse.message);
                         else
                             setTextMessage("#"+ returnReference_Number_1 +" was returned!");
-
+                        
                         setTypeMessage('success');
                         setNumberPackage('');
 
@@ -680,13 +680,7 @@ function PackageReturn() {
                                         <form onSubmit={ handlerSaveReturn } autoComplete="off">
                                             <div className="row">
                                                 <div className="col-lg-3">
-                                                <h3>Please use Syncfreight to do this process.</h3>
-                                                <p>
-                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
-                                                        https://platform.syncfreight.com
-                                                    </a>
-                                                </p>
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label>PACKAGE ID</label>
                                                         <div id="returnReference_Number_1" className="text-danger" style={ {display: 'none'} }></div>
                                                         <input id="return_Reference_Number_1" type="text" className="form-control" value={ returnReference_Number_1 } onChange={ (e) => setReturnNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
@@ -694,7 +688,7 @@ function PackageReturn() {
                                                 </div>
 
                                                 <div className="col-lg-2">
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label>RETURN CATEGORY</label>
                                                         <div id="returnCategory" className="text-danger" style={ {display: 'none'} }></div>
                                                         <select value={ CategoryReturn } className="form-control" onChange={ (e) => hanlderGetComment(e.target.value) } required>
@@ -706,7 +700,7 @@ function PackageReturn() {
                                                 </div>
 
                                                 <div className="col-lg-3">
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label>RETURN COMMENT</label>
                                                         <div id="descriptionReturn" className="text-danger" style={ {display: 'none'} }></div>
                                                         <select name="" id="" className="form-control" onChange={ (e) => setDescriptionReturn(e.target.value) } required>
@@ -717,7 +711,7 @@ function PackageReturn() {
                                                     <br/>
                                                 </div>
                                                 <div className="col-lg-2">
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">TEAM</label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) }>
                                                             <option value="">All</option>
@@ -726,7 +720,7 @@ function PackageReturn() {
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-2">
-                                                    <div className="form-group" style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">DRIVER</label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) }>
                                                             <option value="0">All</option>
@@ -772,7 +766,7 @@ function PackageReturn() {
                                         {
                                             (
                                                 isLoading
-                                                ?
+                                                ? 
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Returns: { quantityReturn }</b>
