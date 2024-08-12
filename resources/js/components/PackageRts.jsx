@@ -162,7 +162,7 @@ function PackageRts() {
             listAllTeam();
             /*if(response.roleUser == 'Master')
             {
-                
+
             }
             else
             {
@@ -182,7 +182,7 @@ function PackageRts() {
     }
 
     const exportAllPackageDispatch = () => {
- 
+
         location.href = url_general +'pallet-rts/export/'+ idCompany +'/'+ dateStart +'/'+ dateEnd;
     }
 
@@ -387,7 +387,7 @@ function PackageRts() {
                             ?
                                 <button className="btn btn-secondary btn-sm form-control" onClick={ () => handlerPrint(packagePreDispatch.Reference_Number_1) }>Label</button>
                             :
-                                <b>{ packagePreDispatch.company }</b>  
+                                <b>{ packagePreDispatch.company }</b>
                         )
                     }
                 </td>
@@ -829,7 +829,7 @@ function PackageRts() {
                     setTextMessage("SUCCESSFULLY PRE RTS #"+ Reference_Number_1);
                     setTextMessageDate('');
                     setTypeMessageDispatch('success');
-                    
+
                     clearForm();
 
                     listPackagePreDispatch(PalletNumberForm);
@@ -841,7 +841,7 @@ function PackageRts() {
                 {
                     setTextMessage("A problem has occurred, please try again");
                     setTypeMessageDispatch('error');
-                    
+
                     document.getElementById('Reference_Number_1').focus();
                     document.getElementById('soundPitidoError').play();
                 }
@@ -914,7 +914,7 @@ function PackageRts() {
     const handlerValidationPallet = (e) => {
 
         e.preventDefault();
-    
+
         listPackagePreDispatch(PalletNumberForm);
         handlerOpenModalPackage();
     }
@@ -922,7 +922,7 @@ function PackageRts() {
     const handlerViewPackage = (palletNumber, company, status) => {
 
         setTextMessage('');
-        
+
         setCompanyViewPallet(company);
         setStatusPallet(status);
         setPalletNumberForm(palletNumber);
@@ -1408,9 +1408,8 @@ function PackageRts() {
     }
 
     return (
-
         <section className="section">
-            { modalPackageList }
+            {modalPackageList}
             <div className="row">
                 <div className="col-lg-12">
                     <div className="card">
@@ -1421,14 +1420,14 @@ function PackageRts() {
                                         <div className="row form-group">
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-danger btn-sm form-control" onClick={  () => handlerGotoDispatchRTS() }>
+                                                    <button className="btn btn-danger btn-sm form-control" onClick={() => handlerGotoDispatchRTS()}>
                                                         <i className="bx bx-car"></i> DISPATCH RTS
                                                     </button>
                                                 </div>
                                             </div>
                                             <div className="col-lg-2">
                                                 <div className="form-group">
-                                                    <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport() }>
+                                                    <button className="btn btn-success btn-sm form-control" onClick={() => handlerExport()}>
                                                         <i className="ri-file-excel-fill"></i> EXPORT
                                                     </button>
                                                 </div>
@@ -1439,89 +1438,83 @@ function PackageRts() {
 
                                 <div className="row">
                                     <div className="col-lg-7 mb-3">
-                                        <form onSubmit={ (e) => handlerValidationPallet(e) } autoComplete="off">
+                                        <form onSubmit={(e) => handlerValidationPallet(e)} autoComplete="off">
                                             <div className="form-group">
                                                 <label htmlFor="">PALLET ID</label>
-                                                <input id="PalletNumberForm" type="text" className="form-control" value={ PalletNumberForm } onChange={ (e) => setPalletNumberForm(e.target.value) } maxLength="30" required readOnly={ readOnlyPalet }/>
+                                                <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                                <input id="PalletNumberForm" type="text" className="form-control" value={PalletNumberForm} onChange={(e) => setPalletNumberForm(e.target.value)} maxLength="30" required readOnly={readOnlyPalet} style={{ display: 'none' }} />
                                             </div>
                                         </form>
                                     </div>
                                     <div className="col-lg-3">
                                         <div className="form-group">
                                             <label htmlFor="">COMPANY:</label>
-                                            <Select onChange={ (e) => handlerChangeCompanyPallet(e) } options={ optionsCompanySearch } />
+                                            <Select onChange={(e) => handlerChangeCompanyPallet(e)} options={optionsCompanySearch} />
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="form-group">
                                             <label htmlFor="" className="text-white">ROUTE:</label>
-                                            <button className="btn btn-primary form-control" onClick={  () => handlerCreatePallet() }>CREATE PALLET</button>
+                                           {/* <button className="btn btn-primary form-control" onClick={() => handlerCreatePallet()}>CREATE PALLET</button> */}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="row">
-                                    <div className="col-lg-4 mb-3" style={ {paddingLeft: (isLoading ? '5%' : '')} }>
-                                        {
-                                            (
-                                                isLoading
-                                                ? 
-                                                    <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
-                                                :
-                                                    <b className="alert alert-success" style={ {borderRadius: '10px', padding: '10px'} }>PALLETS: { totalPackagePallet }</b>
-                                            )
-                                        }
+                                    <div className="col-lg-4 mb-3" style={{ paddingLeft: (isLoading ? '5%' : '') }}>
+                                        {isLoading ? (
+                                            <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
+                                        ) : (
+                                            <b className="alert alert-success" style={{ borderRadius: '10px', padding: '10px' }}>PALLETS: {totalPackagePallet}</b>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-lg-2 mb-2">
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    Start date:
-                                                </div>
+                                                <div className="form-group">Start date:</div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateStart } onChange={ (e) => setDateStart(e.target.value) }/>
+                                                <input type="date" className="form-control" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-lg-2 mb-2">
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    End date :
-                                                </div>
+                                                <div className="form-group">End date :</div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <input type="date" className='form-control' value={ dateEnd } onChange={ (e) => setDateEnd(e.target.value) }/>
+                                                <input type="date" className="form-control" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2 mb-2" style={ {display: 'none'} }>
+                                    <div className="col-lg-2 mb-2" style={{ display: 'none' }}>
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    Company:
-                                                </div>
+                                                <div className="form-group" style={{ display: 'none' }} >Company:</div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <select name="" id="" className="form-control" onChange={ (e) => setCompany(e.target.value) }>
-                                                    <option value="" style={ {display: 'none'} }>Select...</option>
-                                                    { optionCompany }
+                                                <select name="" id="" className="form-control" style={{ display: 'none' }} onChange={(e) => setCompany(e.target.value)}>
+                                                    <option value="" style={{ display: 'none' }}>Select...</option>
+                                                    {optionCompany}
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-2 mb-2" style={ {display: 'none'} }>
+                                    <div className="col-lg-2 mb-2" style={{ display: 'none' }}>
                                         <div className="row">
                                             <div className="col-lg-12">
-                                                <div className="form-group">
-                                                    States :
-                                                </div>
+                                                <div className="form-group">States :</div>
                                             </div>
                                             <div className="col-lg-12">
-                                                <Select isMulti onChange={ (e) => handlerChangeState(e) } options={ optionsStateSearch } />
+                                                <Select isMulti onChange={(e) => handlerChangeState(e)} options={optionsStateSearch} />
                                             </div>
                                         </div>
                                     </div>
@@ -1543,7 +1536,7 @@ function PackageRts() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            { palletListTable }
+                                            {palletListTable}
                                         </tbody>
                                     </table>
                                 </div>
@@ -1551,8 +1544,8 @@ function PackageRts() {
                             <div className="col-lg-12">
                                 <Pagination
                                     activePage={page}
-                                    totalItemsCount={ totalPackagePallet }
-                                    itemsCountPerPage={ totalPagePallet }
+                                    totalItemsCount={totalPackagePallet}
+                                    itemsCountPerPage={totalPagePallet}
                                     onChange={(pageNumber) => handlerChangePage(pageNumber)}
                                     itemClass="page-item"
                                     linkClass="page-link"
@@ -1566,6 +1559,7 @@ function PackageRts() {
             </div>
         </section>
     );
+
 }
 
 export default PackageRts;
