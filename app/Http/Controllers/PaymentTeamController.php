@@ -213,7 +213,10 @@ class PaymentTeamController extends Controller
                 $positionRoutesDates = 0;
 
                 $priceBasePay = $team->basePay;
-
+                $totalDeduction = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
+                                        ->select(DB::raw('SUM(priceDeduction) as totalDeduction'))
+                                        ->first();
+                                        
                 foreach($listPackageDelivery as $packageDelivery)
                 {
                     if($routesDates[$positionRoutesDates] != $packageDelivery->DATE_DELIVERY){
