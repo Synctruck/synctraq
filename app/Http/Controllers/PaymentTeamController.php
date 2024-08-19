@@ -149,7 +149,7 @@ class PaymentTeamController extends Controller
                                 }
 
                                 Log::info($packageDelivery->Reference_Number_1);
-                                
+
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
                                 $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
                             }
@@ -1045,8 +1045,8 @@ class PaymentTeamController extends Controller
         $hours = (int)$diff;
 
         Log::info("hours");
-        Log::info($Date_Dispatch);
-        Log::info($Date_Delivery);
+        Log::info("Date_Dispatch: ".$Date_Dispatch);
+        Log::info("Date_Delivery: ". $Date_Delivery);
         Log::info($hours);
 
         $slaRoutes = explode(',', $sla_Routes);
