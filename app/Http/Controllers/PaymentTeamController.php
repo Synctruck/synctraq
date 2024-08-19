@@ -1039,23 +1039,20 @@ class PaymentTeamController extends Controller
 
     public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $packageRoute, $sla_Routes, $sla_Deduction)
     {
-        $dateInit = strtotime($Date_Dispatch);
-        $dateEnd = strtotime($Date_Delivery);
-        $diff = abs($dateEnd - $dateInit) / 3600;
-        $hours = (int)$diff;
-
-        Log::info("hours");
-        Log::info("Date_Dispatch: ".$Date_Dispatch);
-        Log::info("Date_Delivery: ". $Date_Delivery);
-        Log::info($hours);
-
-        $slaRoutes = explode(',', $sla_Routes);
-        $slaRoutes = array_map('trim', $slaRoutes);
         $deduction = 0.00;
 
-        if(in_array($packageRoute, $slaRoutes))
-            $deduction = $hours > 28 ? $sla_Deduction : 0.00;
+        if($Date_Dispatch && $Date_Delivery){
+            $dateInit = strtotime($Date_Dispatch);
+            $dateEnd = strtotime($Date_Delivery);
+            $diff = abs($dateEnd - $dateInit) / 3600;
+            $hours = (int)$diff;
+            $slaRoutes = explode(',', $sla_Routes);
+            $slaRoutes = array_map('trim', $slaRoutes);
 
+            if(in_array($packageRoute, $slaRoutes))
+                $deduction = $hours > 28 ? $sla_Deduction : 0.00;
+        }
+        
         return $deduction;
     }
 
