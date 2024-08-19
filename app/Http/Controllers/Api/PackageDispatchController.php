@@ -305,6 +305,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
                     $packageHistory->status                       = 'Dispatch';
+                    $packageHistory->Date_Dispatch                = $created_at;
                     $packageHistory->actualDate                   = $created_at;
                     $packageHistory->created_at                   = $created_at;
                     $packageHistory->updated_at                   = $created_at;
