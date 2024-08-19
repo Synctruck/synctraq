@@ -224,7 +224,7 @@ class PackageDispatchController extends Controller
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
         Log::info("InsertDispatchFromSyncWeb");
-
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
@@ -335,12 +335,12 @@ class PackageDispatchController extends Controller
 
     public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
     {
-        $Reference_Number_1 = $request['barcode'];
-        $photoUrl           = $request['pictures'];
-        $latitude           = $request['latitude'];
-        $longitude          = $request['longitude'];
-        $created_at         = $request['createdAt'];
-
+        $Reference_Number_1         = $request['barcode'];
+        $photoUrl                   = $request['pictures'];
+        $latitude                   = $request['latitude'];
+        $longitude                  = $request['longitude'];
+        $created_at                 = $request['createdAt'];
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
         $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
 
         if($packageDelivery){
@@ -403,9 +403,10 @@ class PackageDispatchController extends Controller
 
             $packageController = new PackageController();
 
+            if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             if($packageDispatch->idCompany == 1)
                 $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
-
+                LOG::INFO("STATUS SENT TO INLAND");
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
                                         ->where('sendToInland', 1)
                                         ->where('status', 'Manifest')
@@ -413,6 +414,7 @@ class PackageDispatchController extends Controller
 
             if($packageHistory)
                 $packageController->SendStatusToOtherCompany($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+            }
         }
         else
         {
@@ -715,6 +717,7 @@ class PackageDispatchController extends Controller
         $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
         $created_at         = $request['createdAt'];
         $photoUrl           = $request['pictures'];
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
 
         $packageDispatch = PackageManifest::find($request['barcode']);
         $packageDispatch = $packageDispatch ? $packageDispatch : PackageInbound::find($request['barcode']);
@@ -783,7 +786,7 @@ class PackageDispatchController extends Controller
             $packageHistory->save();
 
             $packageController = new PackageController();
-
+            if( $replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             if($packageDispatch->idCompany == 1)
                 $packageController->SendStatusToInland($packageDispatch, 'Failed', null, $created_at);
 
@@ -794,7 +797,7 @@ class PackageDispatchController extends Controller
 
             if($packageHistory)
                 $packageController->SendStatusToOtherCompany($packageDispatch, 'Failed', null, $created_at);
-
+            }
             $packageDispatch->delete();
         }
     }
@@ -805,6 +808,7 @@ class PackageDispatchController extends Controller
         $Description_POD    = '['. $request['failureReason'] .', '. $request['notes'] .']';
         $created_at         = $request['createdAt'];
         $photoUrl           = $request['pictures'];
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
 
 
         // Verifica que la fecha esté en el formato correcto
@@ -872,7 +876,8 @@ class PackageDispatchController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
-
+                if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
+                {
                 if($packageManifest->idCompany == 1)
                     $packageController->SendStatusToInland($packageManifest, 'Inbound', null, $created_at);
 
@@ -883,7 +888,7 @@ class PackageDispatchController extends Controller
 
                 if($packageHistory)
                     $packageController->SendStatusToOtherCompany($packageManifest, 'Inbound', null, $created_at);
-
+                }
                 $packageManifest->delete();
             }
         }
@@ -899,6 +904,7 @@ class PackageDispatchController extends Controller
         $created_at         = $request['createdAt'];
         $Description_Return = $request['failureReason'];
         $photoUrl           = $request['pictures'];
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
 
 
         //Verifica que la fecha esté en el formato correcto
@@ -1092,7 +1098,7 @@ class PackageDispatchController extends Controller
 
                         $packageHistory->save();
                     }
-
+                    if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                     //data for INLAND
                     $packageController = new PackageController();
                     $packageController->SendStatusToInland($packageDispatch, 'ReInbound', null, $created_at);
@@ -1104,6 +1110,7 @@ class PackageDispatchController extends Controller
 
                     if ($packageHistory) {
                         $packageController->SendStatusToOtherCompany($packageDispatch, 'ReInbound', null, $created_at_ReInbound);
+                        }
                     }
 
                     if ($deleteDispatch) {
@@ -1125,6 +1132,7 @@ class PackageDispatchController extends Controller
         $Reference_Number_1 = $request->get('barcode');
         $created_at = $request->get('createdAt');
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
 
         if ($packageBlocked) {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
@@ -1220,6 +1228,7 @@ class PackageDispatchController extends Controller
             $packageHistory->save();
 
             $packageController = new PackageController();
+            if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             $packageController->SendStatusToInland($packageInbound, 'scan_in_last_mile_carrier', null, date('Y-m-d H:i:s'));
 
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
@@ -1230,7 +1239,7 @@ class PackageDispatchController extends Controller
             if ($packageHistory) {
                 $packageController->SendStatusToOtherCompany($packageInbound, 'scan_in_last_mile_carrier', null, date('Y-m-d H:i:s'));
             }
-
+            }
             $package = $packageInbound;
             $packageInbound->delete();
 
@@ -1249,6 +1258,7 @@ class PackageDispatchController extends Controller
         $Reference_Number_1 = $request->get('barcode');
         $created_at = $request->get('createdAt');
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
 
         if ($packageBlocked) {
             return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
@@ -1345,6 +1355,7 @@ class PackageDispatchController extends Controller
             $packageHistory->save();
 
             $packageController = new PackageController();
+            if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             $packageController->SendStatusToInland($packageInbound, 'not_delivered', null, date('Y-m-d H:i:s'));
 
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
@@ -1355,7 +1366,7 @@ class PackageDispatchController extends Controller
             if ($packageHistory) {
                 $packageController->SendStatusToOtherCompany($packageInbound, 'not_delivered', null, date('Y-m-d H:i:s'));
             }
-
+            }
             $package = $packageInbound;
             $packageInbound->delete();
 
@@ -1375,6 +1386,7 @@ class PackageDispatchController extends Controller
         {
             $Reference_Number_1 = $request->get('barcode');
             $created_at = $request->get('createdAt');
+            $replicationChildOrgName    = $request['replicationChildOrgName'];
             $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
             if ($packageBlocked) {
@@ -1474,6 +1486,7 @@ class PackageDispatchController extends Controller
                 $packageHistory->save();
 
                 $packageController = new PackageController();
+                if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                 $packageController->SendStatusToInland($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
 
                 $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
@@ -1484,7 +1497,7 @@ class PackageDispatchController extends Controller
                 if ($packageHistory) {
                     $packageController->SendStatusToOtherCompany($packageInbound, 'Lost', null, date('Y-m-d H:i:s'));
                 }
-
+                }
                 $package = $packageInbound;
                 $packageInbound->delete();
 
@@ -1709,6 +1722,7 @@ class PackageDispatchController extends Controller
     {
         $Reference_Number_1 = $request->get('barcode');
         $created_at = $request->get('createdAt');
+        $replicationChildOrgName    = $request['replicationChildOrgName'];
         $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
     if ($packageBlocked) {
@@ -1807,6 +1821,7 @@ class PackageDispatchController extends Controller
         $packageHistory->save();
 
         $packageController = new PackageController();
+        if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
         $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
 
         $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
@@ -1817,7 +1832,7 @@ class PackageDispatchController extends Controller
         if ($packageHistory) {
             $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', 'scan_out_for_return', date('Y-m-d H:i:s'));
         }
-
+        }
         $package = $packageInbound;
         $packageInbound->delete();
 
@@ -1861,6 +1876,7 @@ public function InsertRts(Request $request, $apiKey)
 {
     $Reference_Number_1 = $request->get('barcode');
     $created_at = $request->get('createdAt');
+    $replicationChildOrgName    = $request['replicationChildOrgName'];
     $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
     if ($packageBlocked) {
@@ -1991,6 +2007,7 @@ public function InsertRts(Request $request, $apiKey)
         $packageHistory->save();
 
         $packageController = new PackageController();
+        if($replicationChildOrgName  != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
         $packageController->SendStatusToInland($packageInbound, 'ReturnCompany', 'scan_in_for_return', date('Y-m-d H:i:s'));
 
         $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
@@ -2001,7 +2018,7 @@ public function InsertRts(Request $request, $apiKey)
         if ($packageHistory) {
             $packageController->SendStatusToOtherCompany($packageInbound, 'ReturnCompany', 'scan_in_for_return', date('Y-m-d H:i:s'));
         }
-
+        }
         $package = $packageInbound;
         $packageInbound->delete();
 
