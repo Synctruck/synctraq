@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch,ToDeductLostPackages,  PackageFailed, PackageLost, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
+use App\Models\{ Company, PackageDispatch, ToDeductLostPackages, PackageTerminal, PackageFailed, PackageLost, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -192,7 +192,7 @@ class PackageDispatchController extends Controller
                 else if($request['status'] == 'scan_in_last_mile_carrier')
                     $this->InsertLMCarrierFromSyncWeb($request, $apiKey);
                 else if($request['status'] == 'not_delivered')
-                    $this->InsertTerminaFromSyncWeb($request, $apiKey);
+                    $this->InsertTerminalFromSyncWeb($request, $apiKey);
                 else{
                     $result = $this->InsertDispatchFromSyncWeb($request, $apiKey);
 
@@ -1245,8 +1245,128 @@ class PackageDispatchController extends Controller
         }
     }
 
-    public function InsertTerminaFromSyncWeb(Request $request, $apiKey){
+    public function InsertTerminalFromSyncWeb(Request $request, $apiKey){
+        $Reference_Number_1 = $request->get('barcode');
+        $created_at = $request->get('createdAt');
+        $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
+        if ($packageBlocked) {
+            return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
+        }
+
+        $packageInbound = PackageManifest::find($Reference_Number_1)
+            ?: PackageInbound::find($Reference_Number_1)
+            ?: PackageWarehouse::find($Reference_Number_1)
+            ?: PackagePreDispatch::find($Reference_Number_1)
+            ?: PackageDispatch::find($Reference_Number_1)
+            ?: PackageFailed::find($Reference_Number_1)
+            ?: PackageReturnCompany::find($Reference_Number_1)
+            ?: PackageLost::find($Reference_Number_1);
+
+        if (!$packageInbound) {
+            return ['stateAction' => 'notExists'];
+        }
+
+        if ($packageInbound instanceof PackagePreDispatch) {
+            return ['stateAction' => 'validatedPreDispatch'];
+        }
+
+        if ($packageInbound instanceof PackageReturnCompany) {
+            return ['stateAction' => 'validatedReturnCompany'];
+        }
+
+        if ($packageInbound instanceof PackageLost) {
+            return ['stateAction' => 'validatedLost'];
+        }
+
+        $idTeampackage = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+            ->where('status', $packageInbound->status)
+            ->get();
+
+        Log::info('Package From History');
+        Log::info($idTeampackage);
+
+        try {
+            DB::beginTransaction();
+
+            $packageTerminal = new PackageTerminal();
+
+            $packageTerminal->Reference_Number_1 = $packageInbound->Reference_Number_1;
+            $packageTerminal->idCompany = $packageInbound->idCompany;
+            $packageTerminal->company = $packageInbound->company;
+            $packageTerminal->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+            $packageTerminal->Dropoff_Company = $packageInbound->Dropoff_Company;
+            $packageTerminal->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+            $packageTerminal->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+            $packageTerminal->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+            $packageTerminal->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+            $packageTerminal->Dropoff_City = $packageInbound->Dropoff_City;
+            $packageTerminal->Dropoff_Province = $packageInbound->Dropoff_Province;
+            $packageTerminal->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+            $packageTerminal->Route = $packageInbound->Route;
+            $packageTerminal->Weight = $packageInbound->Weight;
+            $packageTerminal->created_at = date('Y-m-d H:i:s');
+            $packageTerminal->updated_at = date('Y-m-d H:i:s');
+            $packageTerminal->status = 'Terminal';
+
+            $packageTerminal->save();
+
+            $packageHistory = new PackageHistory();
+
+            $packageHistory->id = uniqid();
+            $packageHistory->Reference_Number_1 = $packageInbound->Reference_Number_1;
+            $packageHistory->idCompany = $packageInbound->idCompany;
+            $packageHistory->company = $packageInbound->company;
+            $packageHistory->Dropoff_Contact_Name = $packageInbound->Dropoff_Contact_Name;
+            $packageHistory->Dropoff_Company = $packageInbound->Dropoff_Company;
+            $packageHistory->Dropoff_Contact_Phone_Number = $packageInbound->Dropoff_Contact_Phone_Number;
+            $packageHistory->Dropoff_Contact_Email = $packageInbound->Dropoff_Contact_Email;
+            $packageHistory->Dropoff_Address_Line_1 = $packageInbound->Dropoff_Address_Line_1;
+            $packageHistory->Dropoff_Address_Line_2 = $packageInbound->Dropoff_Address_Line_2;
+            $packageHistory->Dropoff_City = $packageInbound->Dropoff_City;
+            $packageHistory->Dropoff_Province = $packageInbound->Dropoff_Province;
+            $packageHistory->Dropoff_Postal_Code = $packageInbound->Dropoff_Postal_Code;
+            $packageHistory->Notes = $packageInbound->Notes;
+            $idTeam = $packageInbound->idTeam;
+            if ($idTeam) {
+                $packageHistory->idTeam = $packageInbound->idTeam;
+            }
+            $packageHistory->Weight = $packageInbound->Weight;
+            $packageHistory->Route = $packageInbound->Route;
+            $packageHistory->idUser = "";
+            $packageHistory->Date_Inbound = date('Y-m-d H:s:i');
+            $packageHistory->Description = $request->get('comment') ? $request->get('comment') : 'Terminal from SyncFreight';
+            $packageHistory->status = 'Terminal';
+            $packageHistory->actualDate = date('Y-m-d H:i:s');
+            $packageHistory->created_at = date('Y-m-d H:i:s');
+            $packageHistory->updated_at = date('Y-m-d H:i:s');
+
+            $packageHistory->save();
+
+            $packageController = new PackageController();
+            $packageController->SendStatusToInland($packageInbound, 'not_delivered', null, date('Y-m-d H:i:s'));
+
+            $packageHistory = PackageHistory::where('Reference_Number_1', $packageInbound->Reference_Number_1)
+                ->where('sendToInland', 1)
+                ->where('status', 'Manifest')
+                ->first();
+
+            if ($packageHistory) {
+                $packageController->SendStatusToOtherCompany($packageInbound, 'not_delivered', null, date('Y-m-d H:i:s'));
+            }
+
+            $package = $packageInbound;
+            $packageInbound->delete();
+
+            DB::commit();
+
+            return ['stateAction' => true, 'packageInbound' => $package];
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::error('Error: ' . $e->getMessage());
+
+            return ['stateAction' => false];
+        }
     }
 
 
