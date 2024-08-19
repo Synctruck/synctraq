@@ -1043,7 +1043,9 @@ class PaymentTeamController extends Controller
         $diff = abs($dateEnd - $dateInit) / 3600;
         $hours = (int)$diff;
 
-        Log::info("$hours");
+        Log::info("hours");
+        Log::info($Date_Dispatch);
+        Log::info($Date_Delivery);
         Log::info($hours);
 
         $slaRoutes = explode(',', $sla_Routes);
