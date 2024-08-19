@@ -1261,7 +1261,8 @@ class PackageDispatchController extends Controller
             ?: PackageDispatch::find($Reference_Number_1)
             ?: PackageFailed::find($Reference_Number_1)
             ?: PackageReturnCompany::find($Reference_Number_1)
-            ?: PackageLost::find($Reference_Number_1);
+            ?: PackageLost::find($Reference_Number_1)
+            ?: PacakgeLmCarrier::find($Reference_Number_1);
 
         if (!$packageInbound) {
             return ['stateAction' => 'notExists'];
