@@ -1060,7 +1060,8 @@ class PaymentTeamController extends Controller
             if(in_array($packageRoute, $slaRoutes))
                 $deduction = $hours > 28 ? $sla_Deduction : 0.00;
         }
-        
+            
+        Log::info("deduction:". $deduction);
         return $deduction;
     }
 
