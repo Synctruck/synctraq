@@ -149,7 +149,6 @@ class PaymentTeamController extends Controller
                                 }
 
                                 Log::info($packageDelivery->Reference_Number_1);
-                                Log::info($dispatchEvents);
 
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
                                 $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
@@ -1040,29 +1039,17 @@ class PaymentTeamController extends Controller
 
     public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $packageRoute, $sla_Routes, $sla_Deduction)
     {
-        $deduction = 0.00;
-
-        Log::info("strtotime Date_Dispatch:". strtotime($Date_Dispatch));
-        Log::info("Date_Delivery:". $Date_Delivery);
-
-        if($Date_Dispatch && $Date_Delivery){
-            $dateInit = strtotime($Date_Dispatch);
-            $dateEnd = strtotime($Date_Delivery);
-            $diff = abs($dateEnd - $dateInit) / 3600;
-            $hours = (int)$diff;
-            $slaRoutes = explode(',', $sla_Routes);
-            $slaRoutes = array_map('trim', $slaRoutes);
-
-            Log::info("hours:". $hours);
-            Log::info("Date_Dispatch:". $Date_Dispatch);
-            Log::info("Date_Delivery:". $Date_Delivery);
-
-
-            if(in_array($packageRoute, $slaRoutes))
-                $deduction = $hours > 28 ? $sla_Deduction : 0.00;
-        }
-            
-        Log::info("deduction:". $deduction);
+        $dateInit = strtotime($Date_Dispatch);
+        $dateEnd = strtotime($Date_Delivery);
+        $diff = abs($dateEnd - $dateInit) / 3600;
+        $hours = (int)$diff;
+        $slaRoutes = explode(',', $sla_Routes);
+        $slaRoutes = array_map('trim', $slaRoutes);
+        $deduction = 0;
+        
+        if(in_array($packageRoute, $slaRoutes))
+            $deduction = $hours > 28 ? $sla_Deduction : 0.00;
+        
         return $deduction;
     }
 
