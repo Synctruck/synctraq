@@ -1049,6 +1049,11 @@ class PaymentTeamController extends Controller
             $slaRoutes = explode(',', $sla_Routes);
             $slaRoutes = array_map('trim', $slaRoutes);
 
+            Log::info("hours:" $hours);
+            Log::info("Date_Dispatch:" $Date_Dispatch);
+            Log::info("Date_Delivery:" $Date_Delivery);
+
+
             if(in_array($packageRoute, $slaRoutes))
                 $deduction = $hours > 28 ? $sla_Deduction : 0.00;
         }
