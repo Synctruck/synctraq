@@ -149,6 +149,7 @@ class PaymentTeamController extends Controller
                                 }
 
                                 Log::info($packageDelivery->Reference_Number_1);
+                                Log::info($dispatchEvents);
 
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
                                 $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
