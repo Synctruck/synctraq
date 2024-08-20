@@ -1054,13 +1054,6 @@ class PaymentTeamController extends Controller
             $slaRoutes = array_map('trim', $slaRoutes);
 
             Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
-            Log::info("hours:". $hours);
             Log::info("Date_Dispatch:". $Date_Dispatch);
             Log::info("Date_Delivery:". $Date_Delivery);
 
