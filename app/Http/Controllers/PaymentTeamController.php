@@ -144,10 +144,11 @@ class PaymentTeamController extends Controller
                                     }
                                     else
                                     {
-                                        Log::info($packageDelivery->Reference_Number_1);
                                         $dateDispatch = $dispatchEvents->last()->Date_Dispatch;
                                     }
                                 }
+
+                                Log::info($packageDelivery->Reference_Number_1);
 
                                 $Date_Dispatch = $packageDelivery->Date_Dispatch;
                                 $deduction = $this->CalculateDeduction($dateDispatch, $packageDelivery->Date_Delivery, $packageDelivery->Route, $team->slaRoutes, $team->slaDeduction);
@@ -1038,18 +1039,20 @@ class PaymentTeamController extends Controller
 
     public function CalculateDeduction($Date_Dispatch, $Date_Delivery, $packageRoute, $sla_Routes, $sla_Deduction)
     {
-        $dateInit = strtotime($Date_Dispatch);
-        $dateEnd = strtotime($Date_Delivery);
-        $diff = abs($dateEnd - $dateInit) / 3600;
-        $hours = (int)$diff;
-
-        $slaRoutes = explode(',', $sla_Routes);
-        $slaRoutes = array_map('trim', $slaRoutes);
         $deduction = 0.00;
 
-        if(in_array($packageRoute, $slaRoutes))
-            $deduction = $hours > 28 ? $sla_Deduction : 0.00;
+        if($Date_Dispatch && $Date_Delivery){
+            $dateInit = strtotime($Date_Dispatch);
+            $dateEnd = strtotime($Date_Delivery);
+            $diff = abs($dateEnd - $dateInit) / 3600;
+            $hours = (int)$diff;
+            $slaRoutes = explode(',', $sla_Routes);
+            $slaRoutes = array_map('trim', $slaRoutes);
 
+            if(in_array($packageRoute, $slaRoutes))
+                $deduction = $hours > 28 ? $sla_Deduction : 0.00;
+        }
+        
         return $deduction;
     }
 
