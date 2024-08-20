@@ -160,7 +160,7 @@ class PackageAgeController extends Controller
                                                 'Dropoff_Postal_Code',
                                                 'Route'
                                             )
-                                            ->whereIn('Reference_Number_1', $idsAll)
+                                            ->whereIn('Reference_Number_1', $idsAll);
         
         if($idCompany != 0)
         {
