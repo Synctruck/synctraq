@@ -161,7 +161,6 @@ class PackageAgeController extends Controller
                                                 'Route'
                                             )
                                             ->whereIn('Reference_Number_1', $idsAll)
-                                            ->where('status', 'Inbound');
         
         if($idCompany != 0)
         {
