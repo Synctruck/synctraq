@@ -1041,6 +1041,9 @@ class PaymentTeamController extends Controller
     {
         $deduction = 0.00;
 
+        Log::info("Date_Dispatch:". $Date_Dispatch);
+        Log::info("Date_Delivery:". $Date_Delivery);
+
         if($Date_Dispatch && $Date_Delivery){
             $dateInit = strtotime($Date_Dispatch);
             $dateEnd = strtotime($Date_Delivery);
