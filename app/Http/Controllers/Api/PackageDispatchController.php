@@ -973,7 +973,7 @@ class PackageDispatchController extends Controller
                     $packageHistory->Weight                       = $packageDispatch->Weight;
                     $packageHistory->Route                        = $packageDispatch->Route;
                     $packageHistory->Date_Inbound                 = date('Y-m-d H:i:s');
-                    $packageHistory->Description                  = 'For: RETUNR FROM SYNCFREIGHT ';
+                    $packageHistory->Description                  = 'For: INBOUND FROM SYNCFREIGHT ';
                     $packageHistory->Description_Return           = $Description_Return;
                     $packageHistory->inbound                      = 1;
                     $packageHistory->quantity                     = $packageDispatch->quantity;
