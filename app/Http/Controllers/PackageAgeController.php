@@ -160,9 +160,8 @@ class PackageAgeController extends Controller
                                                 'Dropoff_Postal_Code',
                                                 'Route'
                                             )
-                                            ->whereIn('Reference_Number_1', $idsAll)
-                                            ->where('status', 'Inbound');
-        
+                                            ->whereIn('Reference_Number_1', $idsAll);
+
         if($idCompany != 0)
         {
             $packageHistoryList = $packageHistoryList->where('idCompany', $idCompany);
@@ -178,7 +177,7 @@ class PackageAgeController extends Controller
             $packageHistoryList = $packageHistoryList->whereIn('Route', $routes);
         }
 
-        if($status != 0)
+        if($status != "all")
         {
             $packageHistoryList = $packageHistoryList->where('status', $status);
         }
@@ -191,6 +190,7 @@ class PackageAgeController extends Controller
         {
             $packageHistoryList = $packageHistoryList->orderBy('created_at', 'asc')->get();
         }
+
 
         $idsExists             = [];
         $packageHistoryListNew = [];
