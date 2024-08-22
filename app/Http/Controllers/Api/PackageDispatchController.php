@@ -378,7 +378,7 @@ class PackageDispatchController extends Controller
             $packageDispatch->filePhoto1    = '';
             $packageDispatch->filePhoto2    = '';
             $packageDispatch->status        = 'Delivery';
-            $packageDispatch->Date_Delivery = $created_at;
+            $packageDispatch->Date_Delivery = $created_at->format('Y-m-d H:i:s');;
             $packageDispatch->save();
 
             $packageHistory = new PackageHistory();
