@@ -340,16 +340,19 @@ class PackageDispatchController extends Controller
         $photoUrl                   = $request['pictures'];
         $latitude                   = $request['latitude'];
         $longitude                  = $request['longitude'];
-        $created_at                 = $request['createdAt'];
+        $created_at_str             = $request['createdAt'];
+        $created_at = \DateTime::createFromFormat(\DateTime::ISO8601, $created_at_str);
         $replicationChildOrgName    = $request['replicationChildOrgName'];
         $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
 
 
-        $created_at_obj = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
-        if ($created_at_obj === false) {
-            Log::error('Error creating DateTime from createdAt: ' . $created_at);
-            return response()->json(['message' => 'Invalid date format for createdAt'], 400);
+        if (!$created_at) {
+            // Manejo del error si la conversión falla
+            LOG::ERROR("Fecha proporcionada no es válida: " . $created_at_str);
+            // Puedes retornar una respuesta de error o asignar una fecha por defecto
+            $created_at = new \DateTime(); // Esto asigna la fecha y hora actuales
         }
+
 
         if($packageDelivery){
             return response()->json([
