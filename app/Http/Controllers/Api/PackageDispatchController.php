@@ -230,7 +230,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
-
+        Log::info($package);
         if($package)
         {
             $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
