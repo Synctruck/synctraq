@@ -153,7 +153,7 @@ class PackageDispatchController extends Controller
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
-        if($request['status'] != "delivered" && $request['status'] != "failed" && $request['status'] != "inbound" && $request['status'] != "lost" && $request['status'] != "pre_rts" && $request['status'] != 'rts'  && $request['status'] != 'scan_in_last_mile_carrier'  && $request['status'] != 'not_delivered')
+        if($request['status'] != "delivered" && $request['status'] != "dispatch" && $request['status'] != "failed" && $request['status'] != "inbound" && $request['status'] != "lost" && $request['status'] != "pre_rts" && $request['status'] != 'rts'  && $request['status'] != 'scan_in_last_mile_carrier'  && $request['status'] != 'not_delivered')
         {
             $validator = Validator::make($request->all(),
                 [
