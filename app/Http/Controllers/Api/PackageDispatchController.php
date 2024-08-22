@@ -344,6 +344,13 @@ class PackageDispatchController extends Controller
         $replicationChildOrgName    = $request['replicationChildOrgName'];
         $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
 
+
+        $created_at_obj = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+        if ($created_at_obj === false) {
+            Log::error('Error creating DateTime from createdAt: ' . $created_at);
+            return response()->json(['message' => 'Invalid date format for createdAt'], 400);
+        }
+
         if($packageDelivery){
             return response()->json([
                 'package_id' => $Reference_Number_1,
