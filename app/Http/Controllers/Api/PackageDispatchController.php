@@ -340,19 +340,9 @@ class PackageDispatchController extends Controller
         $photoUrl                   = $request['pictures'];
         $latitude                   = $request['latitude'];
         $longitude                  = $request['longitude'];
-        $created_at_str             = $request['createdAt'];
-        $created_at = \DateTime::createFromFormat(\DateTime::ISO8601, $created_at_str);
+        $created_at                 = $request['createdAt'];
         $replicationChildOrgName    = $request['replicationChildOrgName'];
         $packageDelivery = PackageDispatch::where('status', 'Delivery')->find($Reference_Number_1);
-
-
-        if (!$created_at) {
-            // Manejo del error si la conversión falla
-            LOG::ERROR("Fecha proporcionada no es válida: " . $created_at_str);
-            // Puedes retornar una respuesta de error o asignar una fecha por defecto
-            $created_at = new \DateTime(); // Esto asigna la fecha y hora actuales
-        }
-
 
         if($packageDelivery){
             return response()->json([
@@ -378,7 +368,7 @@ class PackageDispatchController extends Controller
             $packageDispatch->filePhoto1    = '';
             $packageDispatch->filePhoto2    = '';
             $packageDispatch->status        = 'Delivery';
-            $packageDispatch->Date_Delivery = $created_at->format('Y-m-d H:i:s');;
+            $packageDispatch->Date_Delivery = $created_at;
             $packageDispatch->save();
 
             $packageHistory = new PackageHistory();
