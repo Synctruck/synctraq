@@ -53,13 +53,13 @@ class TaskPaymentTeam extends Command
         $dayName = date("l");
         $nowHour = date('H');
 
-        if($dayName == 'Monday' && $nowHour == 10)
+        if($nowHour > 10)
         {
             $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('2023-11-01');
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
-            $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -4 day'));
+            $initDate  = date('Y-m-d', strtotime($nowDate .' -10 day'));
 
             try
             {
@@ -68,6 +68,7 @@ class TaskPaymentTeam extends Command
                 $teamsList = User::with(['drivers', 'role', 'routes_team'])
                                 ->where('idRole', 3)
                                 ->where('status', 'Active')
+                                ->where('id', 908)
                                 ->orderBy('name', 'asc')
                                 ->get();
 
@@ -89,7 +90,7 @@ class TaskPaymentTeam extends Command
                     {
                         $listPackageDelivery = PackageDispatch::whereBetween('Date_Delivery', [$startDate, $endDate])
                                                                 ->where('idTeam', $team->id)
-                                                                ->where('paid', 0)
+                                                                ->whereIn('paid', [0, 1])
                                                                 ->where('status', 'Delivery')
                                                                 ->get();
                     }
