@@ -246,11 +246,10 @@ class PackageDispatchController extends Controller
                 $team = User::where('idRole', 3)->find($driver->idTeam);
                 }else{
                     $team = $replicationChildOrgName;
-                    $teamId = User::where('idRole', 4)
+                    $teamId = User::where('idRole', 3)
                             ->where('name', $replicationChildOrgName)
                             ->first();
                 }
-
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
