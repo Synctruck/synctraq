@@ -250,6 +250,7 @@ class PackageDispatchController extends Controller
                             ->where('name', $replicationChildOrgName)
                             ->first();
                 }
+                LOG::INFO($teamId);
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
