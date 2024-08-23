@@ -254,7 +254,7 @@ class PackageDispatchController extends Controller
                     if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                     {
                         Log::info('PackageDispatch: ');
-                        if($request['replicationChildOrgName'] != "FALCON EXPRESS" && $request['replicationChildOrgName'] != "Brooks Courier"){
+                        if($request['replicationChildOrgName'] == "FALCON EXPRESS" && $request['replicationChildOrgName'] == "Brooks Courier"){
                         $teamId = User::where('idRole', 3)
                         ->where('name', $request['replicationChildOrgName'])
                         ->first();
@@ -294,7 +294,7 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
-                        if($request['replicationChildOrgName'] != "FALCON EXPRESS" && $request['replicationChildOrgName'] != "Brooks Courier"){
+                        if($request['replicationChildOrgName'] == "FALCON EXPRESS" && $request['replicationChildOrgName'] == "Brooks Courier"){
                             $teamId = User::where('idRole', 3)
                             ->where('name', $request['replicationChildOrgName'])
                             ->first();
