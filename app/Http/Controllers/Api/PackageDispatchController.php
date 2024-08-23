@@ -290,10 +290,17 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
-                        $package->idTeam         = $team->id;
-                        $package->idUserDispatch = $driver->id;
-                        $package->updated_at     = $created_at;
-                        $package->save();
+                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
+                            $package->idTeam         = $team->id;
+                            $package->idUserDispatch = $driver->id;
+                            $package->updated_at     = $created_at;
+                            $package->save();
+                        }else{
+                            $packageDispatch->idTeam                       = $team;
+                            $packageDispatch->idUserDispatch               = $driver;
+                            $package->updated_at     = $created_at;
+                            $package->save();
+                        }
                     }
 
                     $packageHistory = new PackageHistory();
