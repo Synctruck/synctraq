@@ -231,22 +231,15 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
-        LOG::info($replicationChildOrgName);
+
         if($package)
         {
-            if($request['replicationChildOrgName'] != "FALCON EXPRESS" && $request['replicationChildOrgName'] != "Brooks Courier"){
             $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-            }else {
-                $driver =  $replicationChildOrgName;
-            }
 
             if($driver)
             {
-                if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                 $team = User::where('idRole', 3)->find($driver->idTeam);
-                }else{
-                    $team = $replicationChildOrgName;
-                }
+
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
@@ -254,11 +247,6 @@ class PackageDispatchController extends Controller
                     if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                     {
                         Log::info('PackageDispatch: ');
-                        if($request['replicationChildOrgName'] == "FALCON EXPRESS" && $request['replicationChildOrgName'] == "Brooks Courier"){
-                        $teamId = User::where('idRole', 3)
-                        ->where('name', $request['replicationChildOrgName'])
-                        ->first();
-                        }
 
                         $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
@@ -278,13 +266,8 @@ class PackageDispatchController extends Controller
                         $packageDispatch->Notes                        = $package->Notes;
                         $packageDispatch->Weight                       = $package->Weight;
                         $packageDispatch->Route                        = $package->Route;
-                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                         $packageDispatch->idTeam                       = $team->id;
                         $packageDispatch->idUserDispatch               = $driver->id;
-                        }else{
-                        $packageDispatch->idTeam                       = $teamId->id;
-                        $packageDispatch->idUserDispatch               = 0;
-                        }
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
                         $packageDispatch->status                       = 'Dispatch';
@@ -294,22 +277,10 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
-                        if($request['replicationChildOrgName'] == "FALCON EXPRESS" && $request['replicationChildOrgName'] == "Brooks Courier"){
-                            $teamId = User::where('idRole', 3)
-                            ->where('name', $request['replicationChildOrgName'])
-                            ->first();
-                            }
-                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-                            $package->idTeam         = $team->id;
-                            $package->idUserDispatch = $driver->id;
-                            $package->updated_at     = $created_at;
-                            $package->save();
-                        }else{
-                            $packageDispatch->idTeam                       = $teamId->id;
-                            $packageDispatch->idUserDispatch               = 0;
-                            $package->updated_at     = $created_at;
-                            $package->save();
-                        }
+                        $package->idTeam         = $team->id;
+                        $package->idUserDispatch = $driver->id;
+                        $package->updated_at     = $created_at;
+                        $package->save();
                     }
 
                     $packageHistory = new PackageHistory();
@@ -331,15 +302,9 @@ class PackageDispatchController extends Controller
                     $packageHistory->Notes                        = $package->Notes;
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
-                    if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
-                    }else{
-                    $packageHistory->idTeam                       = $team->id;
-                    $packageHistory->idUserDispatch               = $driver->id;
-                    $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team .' / ';
-                    }
                     $packageHistory->status                       = 'Dispatch';
                     $packageHistory->Date_Dispatch                = $created_at;
                     $packageHistory->actualDate                   = $created_at;
