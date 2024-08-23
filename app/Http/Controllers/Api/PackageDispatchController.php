@@ -242,7 +242,11 @@ class PackageDispatchController extends Controller
 
             if($driver)
             {
+                if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                 $team = User::where('idRole', 3)->find($driver->idTeam);
+                }else{
+                    $team = $replicationChildOrgName;
+                }
 
                 if($team)
                 {
@@ -270,8 +274,13 @@ class PackageDispatchController extends Controller
                         $packageDispatch->Notes                        = $package->Notes;
                         $packageDispatch->Weight                       = $package->Weight;
                         $packageDispatch->Route                        = $package->Route;
+                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                         $packageDispatch->idTeam                       = $team->id;
                         $packageDispatch->idUserDispatch               = $driver->id;
+                        }else{
+                        $packageDispatch->idTeam                       = $team;
+                        $packageDispatch->idUserDispatch               = $driver;
+                        }
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
                         $packageDispatch->status                       = 'Dispatch';
@@ -306,9 +315,15 @@ class PackageDispatchController extends Controller
                     $packageHistory->Notes                        = $package->Notes;
                     $packageHistory->Weight                       = $package->Weight;
                     $packageHistory->Route                        = $package->Route;
+                    if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
                     $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                    }else{
+                    $packageHistory->idTeam                       = $team->id;
+                    $packageHistory->idUserDispatch               = $driver->id;
+                    $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team .' / ';
+                    }
                     $packageHistory->status                       = 'Dispatch';
                     $packageHistory->Date_Dispatch                = $created_at;
                     $packageHistory->actualDate                   = $created_at;
