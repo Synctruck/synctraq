@@ -294,6 +294,11 @@ class PackageDispatchController extends Controller
                     }
                     else
                     {
+                        if($request['replicationChildOrgName'] != "FALCON EXPRESS" && $request['replicationChildOrgName'] != "Brooks Courier"){
+                            $teamId = User::where('idRole', 3)
+                            ->where('name', $request['replicationChildOrgName'])
+                            ->first();
+                            }
                         if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                             $package->idTeam         = $team->id;
                             $package->idUserDispatch = $driver->id;
