@@ -246,6 +246,9 @@ class PackageDispatchController extends Controller
                 $team = User::where('idRole', 3)->find($driver->idTeam);
                 }else{
                     $team = $replicationChildOrgName;
+                    $teamId = User::where('idRole', 4)
+                            ->where('name', $replicationChildOrgName)
+                            ->first();
                 }
 
                 if($team)
@@ -278,8 +281,8 @@ class PackageDispatchController extends Controller
                         $packageDispatch->idTeam                       = $team->id;
                         $packageDispatch->idUserDispatch               = $driver->id;
                         }else{
-                        $packageDispatch->idTeam                       = $team;
-                        $packageDispatch->idUserDispatch               = $driver;
+                        $packageDispatch->idTeam                       = $teamId->id;
+                        $packageDispatch->idUserDispatch               = 0;
                         }
                         $packageDispatch->Date_Dispatch                = $created_at;
                         $packageDispatch->quantity                     = $package->quantity;
@@ -296,8 +299,8 @@ class PackageDispatchController extends Controller
                             $package->updated_at     = $created_at;
                             $package->save();
                         }else{
-                            $packageDispatch->idTeam                       = $team;
-                            $packageDispatch->idUserDispatch               = $driver;
+                            $packageDispatch->idTeam                       = $teamId->id;
+                            $packageDispatch->idUserDispatch               = 0;
                             $package->updated_at     = $created_at;
                             $package->save();
                         }
