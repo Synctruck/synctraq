@@ -246,12 +246,7 @@ class PackageDispatchController extends Controller
                 $team = User::where('idRole', 3)->find($driver->idTeam);
                 }else{
                     $team = $replicationChildOrgName;
-                    $teamId = User::where('idRole', 3)
-                            ->where('name', $replicationChildOrgName)
-                            ->first();
                 }
-                LOG::INFO($teamId);
-                LOG::INFO($teamId->id);
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
@@ -259,6 +254,11 @@ class PackageDispatchController extends Controller
                     if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
                     {
                         Log::info('PackageDispatch: ');
+                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
+                        $teamId = User::where('idRole', 3)
+                        ->where('name', $replicationChildOrgName)
+                        ->first();
+                        }
 
                         $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
