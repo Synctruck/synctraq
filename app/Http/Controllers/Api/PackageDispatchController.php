@@ -235,7 +235,7 @@ class PackageDispatchController extends Controller
         if($package)
         {
             $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-
+            LOG::INFO($driver);
             if($driver)
             {
                 $team = User::where('idRole', 3)->find($driver->idTeam);
@@ -314,7 +314,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
