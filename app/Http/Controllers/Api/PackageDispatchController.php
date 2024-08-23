@@ -311,7 +311,11 @@ class PackageDispatchController extends Controller
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
+                    if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                     $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                    }else{
+                        $packageHistory->Description              = 'Dispatch from SyncFreight to:' . $team->name ;
+                    }
                     $packageHistory->status                       = 'Dispatch';
                     $packageHistory->Date_Dispatch                = $created_at;
                     $packageHistory->actualDate                   = $created_at;
