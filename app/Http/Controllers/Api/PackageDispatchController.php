@@ -251,6 +251,7 @@ class PackageDispatchController extends Controller
                             ->first();
                 }
                 LOG::INFO($teamId);
+                LOG::INFO($teamId->id);
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
