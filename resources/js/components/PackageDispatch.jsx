@@ -442,7 +442,7 @@ function PackageDispatch() {
                                                     <div className="modal-body">
                                                         <div className="row">
                                                             <div className="col-lg-6">
-                                                                <div className="form-group">
+                                                                <div className="form-group" >
                                                                     <label>PACKAGE ID</label>
                                                                     <div id="Reference_Number_1_Edit" className="text-danger" style={ {display: 'none'} }></div>
                                                                     <input type="text" value={ Reference_Number_1_Edit } className="form-control" onChange={ (e) => setReference_Number_1(e.target.value) } maxLength="24" readOnly={ readOnlyInput } required/>
@@ -2062,13 +2062,19 @@ function PackageDispatch() {
                                         <form onSubmit={roleUser == 'Team' ? changeReference : handlerValidation} autoComplete="off">
                                             <div className="row form-group">
                                                 <div className="col-lg-6">
-                                                    <div className="form-group">
+                                                <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                                    <div className="form-group" style={{ display: 'none' }}>
                                                         <label htmlFor="">PACKAGE ID</label>
-                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly }/>
+                                                        <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } maxLength="24" required readOnly={ readOnly } style={{ display: 'none' }}/>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
-                                                    <div className="form-group">
+                                                    <div className="form-group" >
                                                         <label htmlFor="">TEAM </label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
@@ -2125,9 +2131,9 @@ function PackageDispatch() {
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="row">
-                                            <div className="col-lg-12">
+                                            <div className="col-lg-12"  style={{ display: 'none' }}>
                                                 <label htmlFor="">ROUTES</label>
-                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch } />
+                                                <Select isMulti onChange={ (e) => handlerChangeRoute(e) } options={ optionsRoleSearch }  style={{ display: 'none' }}/>
                                             </div>
                                         </div>
                                     </div>
