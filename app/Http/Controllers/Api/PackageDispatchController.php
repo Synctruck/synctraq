@@ -153,7 +153,7 @@ class PackageDispatchController extends Controller
         if($validator->fails())
             return response()->json(["errors" => $validator->errors()], 422);
 
-        if($request['status'] != "delivered" && $request['status'] != "failed" && $request['status'] != "inbound" && $request['status'] != "lost" && $request['status'] != "pre_rts" && $request['status'] != 'rts'  && $request['status'] != 'scan_in_last_mile_carrier'  && $request['status'] != 'not_delivered')
+        if($request['status'] != "delivered" && $request['status'] != "dispatch" && $request['status'] != "failed" && $request['status'] != "inbound" && $request['status'] != "lost" && $request['status'] != "pre_rts" && $request['status'] != 'rts'  && $request['status'] != 'scan_in_last_mile_carrier'  && $request['status'] != 'not_delivered')
         {
             $validator = Validator::make($request->all(),
                 [
@@ -230,20 +230,28 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
-        Log::info($package);
+        $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
+
         if($package)
         {
+            if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-
+            }else{
+             $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
+            }
+            LOG::INFO($driver);
             if($driver)
             {
+                if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                 $team = User::where('idRole', 3)->find($driver->idTeam);
-
+                }else{
+                $team = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
+                }
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
                     {
                         Log::info('PackageDispatch: ');
 
@@ -303,7 +311,11 @@ class PackageDispatchController extends Controller
                     $packageHistory->Route                        = $package->Route;
                     $packageHistory->idTeam                       = $team->id;
                     $packageHistory->idUserDispatch               = $driver->id;
+                    if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
                     $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                    }else{
+                        $packageHistory->Description              = 'Dispatch from SyncFreight to:' . $team->name ;
+                    }
                     $packageHistory->status                       = 'Dispatch';
                     $packageHistory->Date_Dispatch                = $created_at;
                     $packageHistory->actualDate                   = $created_at;
@@ -313,7 +325,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
