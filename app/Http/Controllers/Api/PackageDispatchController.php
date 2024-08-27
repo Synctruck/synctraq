@@ -231,6 +231,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
+        $package = $package ? $package : PackageTerminal::where('status', 'Terminal')->find($request['barcode']);
 
         if($package)
         {
