@@ -231,8 +231,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
-        $package = $package ? $package : PackageTerminal::where('status', 'Terminal')->find($request['barcode']);
-        Log::info($package);
+
         if($package)
         {
             if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
@@ -252,7 +251,7 @@ class PackageDispatchController extends Controller
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Terminal')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
                     {
                         Log::info('PackageDispatch: ');
 
@@ -326,7 +325,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier' || $package->status == 'Terminal' )
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
@@ -1892,13 +1891,6 @@ public function InsertRts(Request $request, $apiKey)
     $created_at = $request->get('createdAt');
     $replicationChildOrgName    = $request['replicationChildOrgName'];
     $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
-
-    //Verifica que la fecha esté en el formato correcto
-    $created_at_obj = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
-    if ($created_at_obj === false) {
-        Log::error('Error creating DateTime from createdAt: ' . $created_at);
-        return response()->json(['message' => 'Invalid date format for createdAt'], 400);
-    }
 
     if ($packageBlocked) {
         return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
