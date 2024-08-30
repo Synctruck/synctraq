@@ -224,7 +224,7 @@ class PackageDispatchController extends Controller
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
         Log::info("InsertDispatchFromSyncWeb");
-        $replicationChildOrgName    = $request['replicationChildOrgName'];
+        $replicationChildOrgName = $request['replicationChildOrgName'];
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
         $package = $package ? $package : PackageWarehouse::where('status', 'Warehouse')->find($request['barcode']);
@@ -233,119 +233,115 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
         $package = $package ? $package : PackageTerminal::where('status', 'Terminal')->find($request['barcode']);
         Log::info($package);
-        if($package)
-        {
-            if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-            $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-            }else{
-             $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
+
+        if ($package) {
+            $driver = null;
+
+            if ($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier") {
+                $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
+            } else {
+                $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
             }
-            LOG::INFO($driver);
-            if($driver)
-            {
-                if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-                $team = User::where('idRole', 3)->find($driver->idTeam);
-                }else{
+            Log::info($driver);
+
+            if ($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier") {
+                $team = User::where('idRole', 3)->find($driver ? $driver->idTeam : null);
+            } else {
                 $team = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
-                }
-                if($team)
-                {
-                    $created_at = date('Y-m-d H:i:s');
-
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
-                    {
-                        Log::info('PackageDispatch: ');
-
-                        $packageDispatch = new PackageDispatch();
-                        $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
-                        $packageDispatch->idCompany                    = $package->idCompany;
-                        $packageDispatch->company                      = $package->company;
-                        $packageDispatch->idStore                      = $package->idStore;
-                        $packageDispatch->store                        = $package->store;
-                        $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                        $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
-                        $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                        $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                        $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                        $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                        $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
-                        $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
-                        $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                        $packageDispatch->Notes                        = $package->Notes;
-                        $packageDispatch->Weight                       = $package->Weight;
-                        $packageDispatch->Route                        = $package->Route;
-                        $packageDispatch->idTeam                       = $team->id;
-                        $packageDispatch->idUserDispatch               = $driver->id;
-                        $packageDispatch->Date_Dispatch                = $created_at;
-                        $packageDispatch->quantity                     = $package->quantity;
-                        $packageDispatch->status                       = 'Dispatch';
-                        $packageDispatch->created_at                   = $created_at;
-                        $packageDispatch->updated_at                   = $created_at;
-                        $packageDispatch->save();
-                    }
-                    else
-                    {
-                        $package->idTeam         = $team->id;
-                        $package->idUserDispatch = $driver->id;
-                        $package->updated_at     = $created_at;
-                        $package->save();
-                    }
-
-                    $packageHistory = new PackageHistory();
-                    $packageHistory->id                           = uniqid();
-                    $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
-                    $packageHistory->idCompany                    = $package->idCompany;
-                    $packageHistory->company                      = $package->company;
-                    $packageHistory->idStore                      = $package->idStore;
-                    $packageHistory->store                        = $package->store;
-                    $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
-                    $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
-                    $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
-                    $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
-                    $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
-                    $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
-                    $packageHistory->Dropoff_City                 = $package->Dropoff_City;
-                    $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
-                    $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
-                    $packageHistory->Notes                        = $package->Notes;
-                    $packageHistory->Weight                       = $package->Weight;
-                    $packageHistory->Route                        = $package->Route;
-                    $packageHistory->idTeam                       = $team->id;
-                    $packageHistory->idUserDispatch               = $driver->id;
-                    if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-                    $packageHistory->Description                  = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
-                    }else{
-                        $packageHistory->Description              = 'Dispatch from SyncFreight to:' . $team->name ;
-                    }
-                    $packageHistory->status                       = 'Dispatch';
-                    $packageHistory->Date_Dispatch                = $created_at;
-                    $packageHistory->actualDate                   = $created_at;
-                    $packageHistory->created_at                   = $created_at;
-                    $packageHistory->updated_at                   = $created_at;
-                    $packageHistory->save();
-
-                    Log::info('eliminar: '. $package->status);
-
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
-                    {
-                        Log::info('eliminado: '. $package->status);
-                        $package->delete();
-                    }
-
-                    if($request['status'] != 'dispatch')
-                        $this->UpdateStatusFromSyncweb($request,$apiKey);
-
-                    return true;
-                }
-
-                return "notTeam";
             }
 
-            return "notDriver";
+            if ($team) {
+                $created_at = date('Y-m-d H:i:s');
+
+                if (in_array($package->status, ['Manifest', 'Inbound', 'Warehouse', 'Failed', 'LM Carrier'])) {
+                    Log::info('PackageDispatch: ');
+
+                    $packageDispatch = new PackageDispatch();
+                    $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
+                    $packageDispatch->idCompany                    = $package->idCompany;
+                    $packageDispatch->company                      = $package->company;
+                    $packageDispatch->idStore                      = $package->idStore;
+                    $packageDispatch->store                        = $package->store;
+                    $packageDispatch->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                    $packageDispatch->Dropoff_Company              = $package->Dropoff_Company;
+                    $packageDispatch->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                    $packageDispatch->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                    $packageDispatch->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                    $packageDispatch->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                    $packageDispatch->Dropoff_City                 = $package->Dropoff_City;
+                    $packageDispatch->Dropoff_Province             = $package->Dropoff_Province;
+                    $packageDispatch->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                    $packageDispatch->Notes                        = $package->Notes;
+                    $packageDispatch->Weight                       = $package->Weight;
+                    $packageDispatch->Route                        = $package->Route;
+                    $packageDispatch->idTeam                       = $team->id;
+                    $packageDispatch->idUserDispatch               = $driver ? $driver->id : null;
+                    $packageDispatch->Date_Dispatch                = $created_at;
+                    $packageDispatch->quantity                     = $package->quantity;
+                    $packageDispatch->status                       = 'Dispatch';
+                    $packageDispatch->created_at                   = $created_at;
+                    $packageDispatch->updated_at                   = $created_at;
+                    $packageDispatch->save();
+                } else {
+                    $package->idTeam         = $team->id;
+                    $package->idUserDispatch = $driver ? $driver->id : null;
+                    $package->updated_at     = $created_at;
+                    $package->save();
+                }
+
+                $packageHistory = new PackageHistory();
+                $packageHistory->id                           = uniqid();
+                $packageHistory->Reference_Number_1           = $package->Reference_Number_1;
+                $packageHistory->idCompany                    = $package->idCompany;
+                $packageHistory->company                      = $package->company;
+                $packageHistory->idStore                      = $package->idStore;
+                $packageHistory->store                        = $package->store;
+                $packageHistory->Dropoff_Contact_Name         = $package->Dropoff_Contact_Name;
+                $packageHistory->Dropoff_Company              = $package->Dropoff_Company;
+                $packageHistory->Dropoff_Contact_Phone_Number = $package->Dropoff_Contact_Phone_Number;
+                $packageHistory->Dropoff_Contact_Email        = $package->Dropoff_Contact_Email;
+                $packageHistory->Dropoff_Address_Line_1       = $package->Dropoff_Address_Line_1;
+                $packageHistory->Dropoff_Address_Line_2       = $package->Dropoff_Address_Line_2;
+                $packageHistory->Dropoff_City                 = $package->Dropoff_City;
+                $packageHistory->Dropoff_Province             = $package->Dropoff_Province;
+                $packageHistory->Dropoff_Postal_Code          = $package->Dropoff_Postal_Code;
+                $packageHistory->Notes                        = $package->Notes;
+                $packageHistory->Weight                       = $package->Weight;
+                $packageHistory->Route                        = $package->Route;
+                $packageHistory->idTeam                       = $team->id;
+                $packageHistory->idUserDispatch               = $driver ? $driver->id : null;
+                if ($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier") {
+                    $packageHistory->Description = 'Dispatch from SyncFreight to:' . $team->name .' / '. $driver->name .' '. $driver->nameOfOwner;
+                } else {
+                    $packageHistory->Description = 'Dispatch from SyncFreight to:' . $team->name;
+                }
+                $packageHistory->status                       = 'Dispatch';
+                $packageHistory->Date_Dispatch                = $created_at;
+                $packageHistory->actualDate                   = $created_at;
+                $packageHistory->created_at                   = $created_at;
+                $packageHistory->updated_at                   = $created_at;
+                $packageHistory->save();
+
+                Log::info('eliminar: '. $package->status);
+
+                if (in_array($package->status, ['Manifest', 'Inbound', 'Warehouse', 'Failed', 'LM Carrier'])) {
+                    Log::info('eliminado: '. $package->status);
+                    $package->delete();
+                }
+
+                if ($request['status'] != 'dispatch') {
+                    $this->UpdateStatusFromSyncweb($request, $apiKey);
+                }
+
+                return true;
+            }
+
+            return "notTeam";
         }
 
         return false;
     }
+
 
     public function InsertDeliveryFromSyncWeb(Request $request, $apiKey)
     {
