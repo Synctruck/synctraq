@@ -324,7 +324,7 @@ class PackageDispatchController extends Controller
 
                 Log::info('eliminar: '. $package->status);
 
-                if (in_array($package->status, ['Manifest', 'Inbound', 'Warehouse', 'Failed', 'LM Carrier'])) {
+                if (in_array($package->status, ['Manifest', 'Inbound', 'Warehouse', 'Failed', 'LM Carrier', 'Terminal'])) {
                     Log::info('eliminado: '. $package->status);
                     $package->delete();
                 }
