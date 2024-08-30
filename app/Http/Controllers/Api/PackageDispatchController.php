@@ -231,6 +231,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
+        $package = $package ? $package : PackageDispatch::where('status', 'Delivery')->find($request['barcode']);
 
         if($package)
         {
@@ -251,7 +252,7 @@ class PackageDispatchController extends Controller
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Delivery')
                     {
                         Log::info('PackageDispatch: ');
 
@@ -325,7 +326,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier'|| $package->status == 'Delivery')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
