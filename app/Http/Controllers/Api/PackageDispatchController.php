@@ -236,8 +236,7 @@ class PackageDispatchController extends Controller
         if($package)
         {
             if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-            //$driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
-            $driver = User::where('orgId', $request['childOrgId'])->where('idRole', 3)->first();
+            $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
             }else{
              $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
             }
