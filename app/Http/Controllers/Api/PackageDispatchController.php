@@ -252,7 +252,7 @@ class PackageDispatchController extends Controller
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Terminal')
                     {
                         Log::info('PackageDispatch: ');
 
