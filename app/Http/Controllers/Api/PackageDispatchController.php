@@ -1893,6 +1893,13 @@ public function InsertRts(Request $request, $apiKey)
     $replicationChildOrgName    = $request['replicationChildOrgName'];
     $packageBlocked = PackageBlocked::where('Reference_Number_1', $Reference_Number_1)->first();
 
+    //Verifica que la fecha esté en el formato correcto
+    $created_at_obj = DateTime::createFromFormat('Y-m-d H:i:s', $created_at);
+    if ($created_at_obj === false) {
+        Log::error('Error creating DateTime from createdAt: ' . $created_at);
+        return response()->json(['message' => 'Invalid date format for createdAt'], 400);
+    }
+
     if ($packageBlocked) {
         return ['stateAction' => 'validatedFilterPackage', 'packageBlocked' => $packageBlocked, 'packageManifest' => null];
     }
