@@ -58,8 +58,8 @@ class TaskPaymentTeam extends Command
             $files     = [];
             $nowDate   = date('Y-m-d');
             $startDate = date('2023-11-01');
-            $endDate   = date('Y-m-d', strtotime($nowDate .' -3 day'));
-            $initDate  = date('Y-m-d', strtotime($nowDate .' -9 day'));
+            $endDate   = date('Y-m-d', strtotime($nowDate .' -2 day'));
+            $initDate  = date('Y-m-d', strtotime($nowDate .' -8 day'));
 
             try
             {
@@ -68,7 +68,6 @@ class TaskPaymentTeam extends Command
                 $teamsList = User::with(['drivers', 'role', 'routes_team'])
                                 ->where('idRole', 3)
                                 ->where('status', 'Active')
-                                ->where('id', 176)
                                 ->orderBy('name', 'asc')
                                 ->get();
 
