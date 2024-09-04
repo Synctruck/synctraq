@@ -255,7 +255,7 @@ class PackageDispatchController extends Controller
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Delivery')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Delivery'  || $package->status == 'NMI')
                     {
                         Log::info('PackageDispatch: ');
 
@@ -329,7 +329,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier'|| $package->status == 'Delivery')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier'|| $package->status == 'Delivery'  || $package->status == 'NMI')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
