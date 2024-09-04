@@ -249,7 +249,7 @@ class PackageDispatchController extends Controller
                 }else{
                     $team = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
                 }
-                
+
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
@@ -1907,7 +1907,8 @@ public function InsertRts(Request $request, $apiKey)
         ?: PackageDispatch::find($Reference_Number_1)
         ?: PackageFailed::find($Reference_Number_1)
         ?: PackageReturnCompany::find($Reference_Number_1)
-        ?: PackageLost::find($Reference_Number_1);
+        ?: PackageLost::find($Reference_Number_1)
+        ?: PackageNeedMoreInformation::find($Reference_Number_1);
 
     if (!$packageInbound) {
         return ['stateAction' => 'notExists'];
