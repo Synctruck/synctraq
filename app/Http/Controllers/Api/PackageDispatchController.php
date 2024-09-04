@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch, ToDeductLostPackages, PackageTerminal, PackageFailed, PackageLost, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
+use App\Models\{ Company, PackageDispatch, ToDeductLostPackages, PackageTerminal, PackageFailed, PackageLost, PackageNeedMoreInformation, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -1414,7 +1414,8 @@ class PackageDispatchController extends Controller
                 ?: PackageDispatch::find($Reference_Number_1)
                 ?: PackageFailed::find($Reference_Number_1)
                 ?: PackageReturnCompany::find($Reference_Number_1)
-                ?: PackageLost::find($Reference_Number_1);
+                ?: PackageLost::find($Reference_Number_1)
+                ?: PackageNeedMoreInformation::find($Reference_Number_1);
 
             if (!$packageInbound) {
                 return ['stateAction' => 'notExists'];
