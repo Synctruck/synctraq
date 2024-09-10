@@ -467,8 +467,8 @@ class PaymentTeamController extends Controller
     {
         $paymentTeamDetailRouteList = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
                                                 ->where('podFailed', 0)
-                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(priceBase) as totalRoute'))
-                                                ->groupBy('Route', 'priceBase')
+                                                ->select('Route', DB::raw('COUNT(Route) as totalPieces'),  DB::raw('SUM(totalPrice) as totalRoute'))
+                                                ->groupBy('Route', 'totalPrice')
                                                 ->get();
 
         $totalDeduction = PaymentTeamDetail::where('idPaymentTeam', $idPayment)
