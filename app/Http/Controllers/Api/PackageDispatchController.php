@@ -142,6 +142,9 @@ class PackageDispatchController extends Controller
 
     public function UpdateStatusFromSyncweb(Request $request, $apiKey)
     {
+        Log::info("UpdateStatusFromSyncweb");
+        Log::info("UpdateStatusFromSyncweb");
+
         $validator = Validator::make($request->all(),
             [
                 "barcode" => ["required"],
@@ -169,6 +172,8 @@ class PackageDispatchController extends Controller
 
         if($company)
         {
+            Log::info("company");
+            Log::info($request['status']);
             try
             {
                 DB::beginTransaction();
@@ -224,6 +229,8 @@ class PackageDispatchController extends Controller
     public function InsertDispatchFromSyncWeb(Request $request, $apiKey)
     {
         Log::info("InsertDispatchFromSyncWeb");
+        Log::info("REQUEST");
+        Log::info($request);
         $replicationChildOrgName    = $request['replicationChildOrgName'];
         $package = PackageManifest::find($request['barcode']);
         $package = $package ? $package : PackageInbound::find($request['barcode']);
@@ -235,6 +242,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageNeedMoreInformation::where('status', 'NMI')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'ReturnCompany')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'PreRts')->find($request['barcode']);
+        $packageDispatch = new PackageDispatch();
         Log::info($package);
         if($package)
         {
@@ -261,7 +269,6 @@ class PackageDispatchController extends Controller
                     {
                         Log::info('PackageDispatch: ');
 
-                        $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
                         $packageDispatch->company                      = $package->company;
@@ -337,11 +344,32 @@ class PackageDispatchController extends Controller
                         $package->delete();
                     }
 
-                    if($request['status'] != 'dispatch')
+                    if($request['status'] != 'dispatch') {
                         $this->UpdateStatusFromSyncweb($request,$apiKey);
+                    }
 
+                    if($request['status'] == 'dispatch')
+                    {    $packageController = new PackageController();
+                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
+                            {
+                                $response = $packageController->SendStatusToInland($packageDispatch, 'Dispatch', null, $created_at);
+
+                                if ($response) {
+                                    // Logueamos la respuesta capturada
+                                    Log::info("STATUS SENT TO INLAND");
+                                    Log::info("Response from SendStatusToInland:", $response);
+                                } else {
+                                    Log::info("No response from SendStatusToInland.");
+                                }
+
+
+                            LOG::INFO("STATUS SENT TO INLAND");
+                            }
+                    }
                     return true;
+
                 }
+
 
                 return "notTeam";
             }
@@ -424,8 +452,8 @@ class PackageDispatchController extends Controller
 
             if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             if($packageDispatch->idCompany == 1)
-                $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
-                LOG::INFO("STATUS SENT TO INLAND");
+            $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+            LOG::INFO("STATUS SENT TO INLAND");
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
                                         ->where('sendToInland', 1)
                                         ->where('status', 'Manifest')
