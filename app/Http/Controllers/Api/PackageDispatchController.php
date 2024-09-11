@@ -169,6 +169,8 @@ class PackageDispatchController extends Controller
 
         if($company)
         {
+            Log::info("company");
+            Log::info($request['status']);
             try
             {
                 DB::beginTransaction();
