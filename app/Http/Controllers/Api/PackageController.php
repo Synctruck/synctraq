@@ -453,7 +453,7 @@ class PackageController extends Controller
         $typeServices      = "";
         $sendStatusCompany = true;
 
-        if($status == 'Return' || $status == 'ReInbound' || $status == 'Lost' ||  $status == 'Middle Mile Scan' ||  $status == 'Warehouse' || $status == 'Failed' || $status == 'NMI')
+        if($status == 'Return' || $status == 'ReInbound' ||  $status == 'Lost' ||  $status == 'Middle Mile Scan' ||  $status == 'Warehouse' || $status == 'Failed' || $status == 'NMI')
         {
             $company = Company::find($package->idCompany);
 
