@@ -346,19 +346,21 @@ class PackageDispatchController extends Controller
 
                     if($request['status'] != 'dispatch') {
                         $this->UpdateStatusFromSyncweb($request,$apiKey);
+                    }
 
+                    if($request['status'] == 'dispatch')
+                    {
+                        if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
+                            {
+                            $packageController->SendStatusToInland($packageDispatch, 'out_for_delivery', null, $created_at);
+                            LOG::INFO("STATUS SENT TO INLAND");
+                            }
+                    }
                     return true;
-                    }
+
                 }
 
-                if($request['status'] == 'dispatch')
-                {
-                   if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
-                   {
-                    $packageController->SendStatusToInland($packageDispatch, 'out_for_delivery', null, $created_at);
-                    LOG::INFO("STATUS SENT TO INLAND");
-                    }
-                }
+
                 return "notTeam";
             }
 
