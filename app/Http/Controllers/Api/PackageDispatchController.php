@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use App\Models\{ Company, PackageDispatch, ToDeductLostPackages, PackageTerminal, PackageFailed, PackageLost, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
+use App\Models\{ Company, PackageDispatch, ToDeductLostPackages, PackageTerminal, PackageFailed, PackageLost, PackageNeedMoreInformation, PackageLmCarrier, PackageInbound, PackageHistory, PackageManifest, PackageWarehouse, User, PackageBlocked, PackagePreDispatch, PackageReturnCompany, PackageReturn};
 
 use App\Http\Controllers\Api\PackageController;
 
@@ -231,27 +231,33 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageDispatch::where('status', 'Dispatch')->find($request['barcode']);
         $package = $package ? $package : PackageFailed::where('status', 'Failed')->find($request['barcode']);
         $package = $package ? $package : PackageLmCarrier::where('status', 'LM Carrier')->find($request['barcode']);
-
+        $package = $package ? $package : PackageDispatch::where('status', 'Delivery')->find($request['barcode']);
+        $package = $package ? $package : PackageNeedMoreInformation::where('status', 'NMI')->find($request['barcode']);
+        $package = $package ? $package : PackageReturnCompany::where('status', 'ReturnCompany')->find($request['barcode']);
+        $package = $package ? $package : PackageReturnCompany::where('status', 'PreRts')->find($request['barcode']);
+        Log::info($package);
         if($package)
         {
             if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-            $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
+                $driver = User::where('driverId', $request['driverId'])->where('idRole', 4)->first();
             }else{
-             $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
+                $driver = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
             }
+
             LOG::INFO($driver);
             if($driver)
             {
                 if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
-                $team = User::where('idRole', 3)->find($driver->idTeam);
+                    $team = User::where('idRole', 3)->find($driver->idTeam);
                 }else{
-                $team = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
+                    $team = User::where('name', $request['replicationChildOrgName'])->where('idRole', 3)->first();
                 }
+
                 if($team)
                 {
                     $created_at = date('Y-m-d H:i:s');
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed'  || $package->status == 'LM Carrier' || $package->status == 'Delivery'  || $package->status == 'NMI')
                     {
                         Log::info('PackageDispatch: ');
 
@@ -325,7 +331,7 @@ class PackageDispatchController extends Controller
 
                     Log::info('eliminar: '. $package->status);
 
-                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier')
+                    if($package->status == 'Manifest' || $package->status == 'Inbound' || $package->status == 'Warehouse' || $package->status == 'Failed' || $package->status == 'LM Carrier'|| $package->status == 'Delivery'  || $package->status == 'NMI')
                     {
                         Log::info('eliminado: '. $package->status);
                         $package->delete();
@@ -1413,7 +1419,8 @@ class PackageDispatchController extends Controller
                 ?: PackageDispatch::find($Reference_Number_1)
                 ?: PackageFailed::find($Reference_Number_1)
                 ?: PackageReturnCompany::find($Reference_Number_1)
-                ?: PackageLost::find($Reference_Number_1);
+                ?: PackageLost::find($Reference_Number_1)
+                ?: PackageNeedMoreInformation::find($Reference_Number_1);
 
             if (!$packageInbound) {
                 return ['stateAction' => 'notExists'];
@@ -1903,7 +1910,8 @@ public function InsertRts(Request $request, $apiKey)
         ?: PackageDispatch::find($Reference_Number_1)
         ?: PackageFailed::find($Reference_Number_1)
         ?: PackageReturnCompany::find($Reference_Number_1)
-        ?: PackageLost::find($Reference_Number_1);
+        ?: PackageLost::find($Reference_Number_1)
+        ?: PackageNeedMoreInformation::find($Reference_Number_1);
 
     if (!$packageInbound) {
         return ['stateAction' => 'notExists'];

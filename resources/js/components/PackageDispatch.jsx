@@ -2074,16 +2074,16 @@ function PackageDispatch() {
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
-                                                    <div className="form-group"  style={{ display: 'none' }}>
+                                                    <div className="form-group" >
                                                         <label htmlFor="">TEAM </label>
-                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required  style={{ display: 'none' }}>
+                                                        <select name="" id="" className="form-control" onChange={ (e) => listAllDriverByTeam(e.target.value) } required>
                                                             <option value="">All</option>
                                                             { listTeamSelect }
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg-3">
-                                                    <div className="form-group"  style={{ display: 'none' }}>
+                                                    <div className="form-group">
                                                         <label htmlFor="">DRIVER</label>
                                                         <select name="" id="" className="form-control" onChange={ (e) => setIdDriver(e.target.value) } required>
                                                             <option value="0">All</option>

@@ -320,7 +320,8 @@ class DriverController extends Controller
                     "meta" => [
                         "syncDriverId" => $idDriver
                     ],
-                    "orgId"=> $orgId->orgId
+                    "orgId"=> $orgId->orgId,
+                    "nodes" => []
                 ];
 
         $configuration = Configuration::first();

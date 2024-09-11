@@ -366,6 +366,7 @@ class TaskPaymentTeam extends Command
                                             $dateDispatch = $packageDelivery->Date_Delivery;
                                     }
 
+                                    $dateDispatch = $packageDelivery->Date_Dispatch ? $packageDelivery->Date_Dispatch : $dateDispatch;
                                     $hours = $this->CalculateHours($dateDispatch, $packageDelivery->Date_Delivery);
                                     $deduction = $hours > 28 ? $team->slaDeduction : 0.00;
                                     Log::info('hours: '. $hours);
