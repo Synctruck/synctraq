@@ -343,6 +343,14 @@ class PackageDispatchController extends Controller
                     return true;
                 }
 
+                if($request['status'] == 'dispatch')
+                {
+                   if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
+                   {
+                    $packageController->SendStatusToInland($packageDispatch, 'Dispatch', null, $created_at);
+                    LOG::INFO("STATUS SENT TO INLAND");
+                    }
+                }
                 return "notTeam";
             }
 
@@ -424,8 +432,8 @@ class PackageDispatchController extends Controller
 
             if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier"){
             if($packageDispatch->idCompany == 1)
-                $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
-                LOG::INFO("STATUS SENT TO INLAND");
+            $packageController->SendStatusToInland($packageDispatch, 'Delivery', explode(',', $photoUrl), $created_at);
+            LOG::INFO("STATUS SENT TO INLAND");
             $packageHistory = PackageHistory::where('Reference_Number_1', $packageDispatch->Reference_Number_1)
                                         ->where('sendToInland', 1)
                                         ->where('status', 'Manifest')
