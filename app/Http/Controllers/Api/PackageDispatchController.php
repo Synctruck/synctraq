@@ -242,6 +242,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageNeedMoreInformation::where('status', 'NMI')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'ReturnCompany')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'PreRts')->find($request['barcode']);
+        $packageDispatch = new PackageDispatch();
         Log::info($package);
         if($package)
         {
@@ -268,7 +269,6 @@ class PackageDispatchController extends Controller
                     {
                         Log::info('PackageDispatch: ');
 
-                        $packageDispatch = new PackageDispatch();
                         $packageDispatch->Reference_Number_1           = $package->Reference_Number_1;
                         $packageDispatch->idCompany                    = $package->idCompany;
                         $packageDispatch->company                      = $package->company;
@@ -352,7 +352,7 @@ class PackageDispatchController extends Controller
                     {    $packageController = new PackageController();
                         if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
                             {
-                            $packageController->SendStatusToInland($package, 'out_for_delivery', null, $created_at);
+                            $packageController->SendStatusToInland($packageDispatch, 'out_for_delivery', null, $created_at);
                             LOG::INFO("STATUS SENT TO INLAND");
                             }
                     }
