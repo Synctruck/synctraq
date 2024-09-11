@@ -142,6 +142,9 @@ class PackageDispatchController extends Controller
 
     public function UpdateStatusFromSyncweb(Request $request, $apiKey)
     {
+        Log::info("UpdateStatusFromSyncweb");
+        Log::info("UpdateStatusFromSyncweb");
+
         $validator = Validator::make($request->all(),
             [
                 "barcode" => ["required"],
