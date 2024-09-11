@@ -668,9 +668,6 @@ class PackageController extends Controller
                 Log::info('UPDATED STATUS: '. $statusCodeCompany .'[ '. $status .' ]');
                 //Log::info('REPONSE STATUS: '. $response['status']);
                 Log::info('============INLAND - END STATUS UPDATE');
-
-                 // Retornamos tanto el estado HTTP como la respuesta decodificada
-                return ['http_status' => $http_status, 'response' => $response_decoded];
             }
         }
     }
