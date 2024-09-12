@@ -352,7 +352,9 @@ class PackageDispatchController extends Controller
                     {    $packageController = new PackageController();
                         if($replicationChildOrgName != "FALCON EXPRESS" && $replicationChildOrgName != "Brooks Courier")
                             {
-                                $response = $packageController->SendStatusToInland($packageDispatch, 'Dispatch', null, $created_at);
+                                LOG::INFO("PACKAGE SENT TO INLAND");
+                                LOG::INFO($packageDispatch);
+                                $packageController->SendStatusToInland($packageDispatch, 'Dispatch', null, $created_at);
 
                                 if ($response) {
                                     // Logueamos la respuesta capturada
