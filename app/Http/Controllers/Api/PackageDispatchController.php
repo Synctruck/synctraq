@@ -242,6 +242,7 @@ class PackageDispatchController extends Controller
         $package = $package ? $package : PackageNeedMoreInformation::where('status', 'NMI')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'ReturnCompany')->find($request['barcode']);
         $package = $package ? $package : PackageReturnCompany::where('status', 'PreRts')->find($request['barcode']);
+        $package = $package ? $package : PackageWarehouse::where('status', 'Middle Mile Scan')->find($request['barcode']);
         $packageDispatch = new PackageDispatch();
         Log::info($package);
         if($package)
