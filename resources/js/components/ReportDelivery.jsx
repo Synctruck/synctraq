@@ -908,7 +908,7 @@ function ReportDelivery() {
                                         <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerInsertDelivery }>
                                                 <div className="modal-content">
-                                                    <div className="modal-header">
+                                                    <div className="modal-header" style={{ display: "none" }}>
                                                         <h5 className="modal-title text-primary" id="exampleModalLabel">Register Forced Delivery</h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
