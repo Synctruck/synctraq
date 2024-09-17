@@ -908,8 +908,8 @@ function ReportDelivery() {
                                         <div className="modal-dialog modal-md">
                                             <form onSubmit={ handlerInsertDelivery }>
                                                 <div className="modal-content">
-                                                    <div className="modal-header" style={{ display: "none" }}>
-                                                        <h5 className="modal-title text-primary" id="exampleModalLabel" tyle={{ display: "none" }}>Register Forced Delivery</h5>
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-primary" id="exampleModalLabel">Register Forced Delivery</h5>
                                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div className="modal-body">
@@ -1055,7 +1055,7 @@ function ReportDelivery() {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="col-lg-3 mb-3">
+                                    <div className="col-lg-3 mb-3" style={{ display: "none" }}>
                                         <button className="btn btn-info btn-sm form-control text-white" onClick={ () => handlerOpenModalInsertDelivery() }>REGISTER DELIVERY</button>
                                     </div>
                                     <div className="col-lg-2 mb-3 text-warning">
