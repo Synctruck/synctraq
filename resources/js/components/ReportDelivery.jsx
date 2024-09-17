@@ -1056,7 +1056,7 @@ function ReportDelivery() {
                                         </form>
                                     </div>
                                     <div>
-                                    <h3>Please use Syncfreight to do this process.</h3>
+                                    <h3>Please use Syncfreight to do a Force Delivery.</h3>
                                                 <p>
                                                     <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
                                                         https://platform.syncfreight.com
