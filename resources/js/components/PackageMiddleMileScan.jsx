@@ -920,7 +920,7 @@ function PackageMiddleMileScan() {
                                     <div className="col-lg-12 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
                                             <div className="form-group">
-                                                <label htmlFor="">PACKAGE ID</label>
+                                                <label htmlFor="">PACKAGE </label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
@@ -940,7 +940,7 @@ function PackageMiddleMileScan() {
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE </label>
+                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
                                                     <i className="bx bxs-file"></i> Import
                                                 </button>
