@@ -1042,7 +1042,7 @@ function ReportDelivery() {
                                     </div>
                                     <div className="col-lg-2 mb-3">
                                         <form onSubmit={ handlerImportPhotos }>
-                                            <div className="form-group">
+                                            <div className="form-group" style={{ display: "none" }}>
                                                 <button type="button" className="btn btn-primary btn-sm form-control" onClick={ () => onBtnClickFilePhotos() }>
                                                     <i className="bx bxs-file"></i> Import
                                                 </button>
