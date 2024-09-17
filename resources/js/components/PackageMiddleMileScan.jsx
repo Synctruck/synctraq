@@ -919,8 +919,8 @@ function PackageMiddleMileScan() {
                                     </div>
                                     <div className="col-lg-12 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
-                                                <label htmlFor="">PACKAGE </label>
+                                            <div className="form-group"  style={{ display: "none" }}>
+                                                <label htmlFor="">PACKAGE ID</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
                                             </div>
                                             <div className="col-lg-2 form-group">
