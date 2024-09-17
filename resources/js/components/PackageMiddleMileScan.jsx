@@ -919,6 +919,14 @@ function PackageMiddleMileScan() {
                                     </div>
                                     <div className="col-lg-12 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
+                                            <div>
+                                            <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                            </div>
                                             <div className="form-group"  style={{ display: "none" }}>
                                                 <label htmlFor="">PACKAGE ID</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
