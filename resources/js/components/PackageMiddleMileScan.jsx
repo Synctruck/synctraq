@@ -45,7 +45,7 @@ function PackageMiddleMileScan() {
     const [readInput, setReadInput]         = useState(false);
 
     var dateNow = new Date();
-    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate() 
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
     const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
 
     dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
@@ -940,7 +940,7 @@ function PackageMiddleMileScan() {
                                     <div className="col-lg-2" style={ {display: 'none'} }>
                                         <form onSubmit={ handlerImport }>
                                             <div className="form-group">
-                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE ID</label>
+                                                <label htmlFor="" style={ {color: 'white'} }>PACKAGE </label>
                                                 <button type="button" className="btn btn-primary form-control" onClick={ () => onBtnClickFile() }>
                                                     <i className="bx bxs-file"></i> Import
                                                 </button>
@@ -959,7 +959,7 @@ function PackageMiddleMileScan() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Middle Mile Scan: { totalPackage }</b>
