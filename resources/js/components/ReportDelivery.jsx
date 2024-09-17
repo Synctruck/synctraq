@@ -1055,6 +1055,14 @@ function ReportDelivery() {
                                             </div>
                                         </form>
                                     </div>
+                                    <div>
+                                    <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                    </div>
                                     <div className="col-lg-3 mb-3" style={{ display: "none" }}>
                                         <button className="btn btn-info btn-sm form-control text-white" onClick={ () => handlerOpenModalInsertDelivery() }>REGISTER DELIVERY</button>
                                     </div>
