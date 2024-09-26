@@ -959,6 +959,14 @@ function PackageWarehouse() {
                                     </div>
                                     <div className="col-lg-10 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
+                                        <div className="col-lg-6">
+                                                <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                        </div>
                                             <div className="form-group" style={{display: 'none'}}>
                                                 <label htmlFor="">PACKAGE ID</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
@@ -972,7 +980,7 @@ function PackageWarehouse() {
                                         </form>
                                     </div>
                                     <div className="col-lg-2">
-                                        <div className="form-group">
+                                        <div className="form-group" style={{display: 'none'}}>
                                             <label htmlFor="">LinaHaul Filter</label>
                                             <Select isMulti onChange={ (e) => handlerChangeStateValidate(e) } options={ optionsStateValidate } />
                                         </div>
