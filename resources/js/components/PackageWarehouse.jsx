@@ -47,7 +47,7 @@ function PackageWarehouse() {
     const [readInput, setReadInput]         = useState(false);
 
     var dateNow = new Date();
-    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate() 
+    const day = (dateNow.getDate()) < 10 ? '0'+dateNow.getDate():dateNow.getDate()
     const month = (dateNow.getMonth() +1) < 10 ? '0'+(dateNow.getMonth() +1):(dateNow.getMonth() +1)
 
     dateNow = dateNow.getFullYear()+ "-" + month + "-" + day;
@@ -679,7 +679,7 @@ function PackageWarehouse() {
         }
         else
         {
-            
+
 
             fetch(url)
             .then(res => res.json())
@@ -873,7 +873,7 @@ function PackageWarehouse() {
     const[showvalidateInventoryTool, setshowvalidateInventoryTool] = useState(validateInventoryTool)
 
     return (
-    
+
         <section className="section">
             { modalPackageEdit }
             <div className="row">
@@ -885,11 +885,11 @@ function PackageWarehouse() {
                                     <div className="col-12 mb-4">
                                         <div className="row">
                                             <div className="col-2" style={{display: showvalidateInventoryTool}}>
-                                            
+
                                                 <button className="btn btn-warning btn-sm form-control text-white" onClick={  () => handlerGoToInventory() }>
                                                     Inventory Tool
                                                 </button>
-                                            
+
                                             </div>
                                             <div className="col-lg-2">
                                                 <form onSubmit={ handlerImport }>
@@ -959,7 +959,7 @@ function PackageWarehouse() {
                                     </div>
                                     <div className="col-lg-10 form-group">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
+                                            <div className="form-group" style={{display: 'none'}}>
                                                 <label htmlFor="">PACKAGE ID</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
                                             </div>
@@ -983,7 +983,7 @@ function PackageWarehouse() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Warehouse: { totalPackage }</b>
