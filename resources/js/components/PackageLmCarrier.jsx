@@ -699,6 +699,14 @@ function PackageLmCarrier() {
                                 <div className="row form-group">
                                     <div className="col-lg-12">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
+                                        <div className="col-lg-6">
+                                                <h3>Please use Syncfreight to do this process.</h3>
+                                                <p>
+                                                    <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                                                        https://platform.syncfreight.com
+                                                    </a>
+                                                </p>
+                                        </div>
                                             <div className="form-group" style={ {display: 'none'} }>
                                                 <label htmlFor="">SCAN A PALLET</label>
                                                 <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required />
