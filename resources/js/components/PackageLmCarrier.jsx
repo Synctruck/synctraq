@@ -675,7 +675,7 @@ function PackageLmCarrier() {
                     {
                         swal('Attention!', 'You are not assigned a location', 'warning');
                     }
-                    
+
                     setReadInput(false);
                     setSendInbound(1);
                 });
@@ -699,9 +699,9 @@ function PackageLmCarrier() {
                                 <div className="row form-group">
                                     <div className="col-lg-12">
                                         <form onSubmit={ handlerInsert } autoComplete="off">
-                                            <div className="form-group">
+                                            <div className="form-group" style={ {display: 'none'} }>
                                                 <label htmlFor="">SCAN A PALLET</label>
-                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required/>
+                                                <input id="Reference_Number_1" type="text" className="form-control" value={ Reference_Number_1 } onChange={ (e) => setNumberPackage(e.target.value) } readOnly={ readInput } maxLength="24" required />
                                             </div>
                                             <div className="col-lg-2 form-group">
                                                 <audio id="soundPitidoSuccess" src="./sound/pitido-success.mp3" preload="auto"></audio>
@@ -716,7 +716,7 @@ function PackageLmCarrier() {
                                             <div className="col-lg-2">
                                                 <div className="form-group">
                                                     <button className="btn btn-danger btn-sm form-control" onClick={ () => handlerDownloadRoadWarrior() }>ROADW</button>
-                                                </div> 
+                                                </div>
                                             </div>
                                             <div className="col-2">
                                                 <button className="btn btn-success btn-sm form-control" onClick={  () => handlerExport('download') }>
@@ -779,7 +779,7 @@ function PackageLmCarrier() {
                                         {
                                             (
                                                 isLoading
-                                                ? 
+                                                ?
                                                     <ReactLoading type="bubbles" color="#A8A8A8" height={20} width={50} />
                                                 :
                                                     <b className="alert-success" style={ {borderRadius: '10px', padding: '10px'} }>Lm Carrier: { totalPackage }</b>
