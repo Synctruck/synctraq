@@ -1540,7 +1540,7 @@ class ReportController extends Controller
 
             $deliveryTime = $packageDelivery['Date_Delivery'] ? strtotime($packageDelivery['Date_Delivery']) : "";
             $inboundTime = $packageDelivery['inboundDate'] ? strtotime($packageDelivery['inboundDate']) : "";
-            $secondsDifference = $deliveryTime - $inboundTime;
+            $secondsDifference = $deliveryTime && $inboundTime ? $deliveryTime - $inboundTime : 0;
             $transitTime = $deliveryTime && $inboundTime ?  number_format($secondsDifference / 86400, 2) : "";
 
             $manifestDate = $packageDelivery['manifestDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['manifestDate'])) : "";
