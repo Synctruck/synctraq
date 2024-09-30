@@ -1538,10 +1538,10 @@ class ReportController extends Controller
                 $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
             }
 
-            $deliveryTime = strtotime($packageDelivery['Date_Delivery']);
-            $inboundTime = strtotime($packageDelivery['inboundDate']);
+            $deliveryTime = $packageDelivery['Date_Delivery'] ? strtotime($packageDelivery['Date_Delivery']) : "";
+            $inboundTime = $packageDelivery['inboundDate'] ? strtotime($packageDelivery['inboundDate']) : "";
             $secondsDifference = $deliveryTime - $inboundTime;
-            $transitTime = number_format($secondsDifference / 86400, 2);
+            $transitTime = $deliveryTime && $inboundTime ?  number_format($secondsDifference / 86400, 2) : "";
 
             $manifestDate = $packageDelivery['manifestDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['manifestDate'])) : "";
             $inboundDate = $packageDelivery['inboundDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])) : "";
