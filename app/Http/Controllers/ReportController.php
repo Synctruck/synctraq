@@ -761,7 +761,6 @@ class ReportController extends Controller
     public function ListDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state)
     {
         $Reference_Number_1s = [];
-
         $data                  = $this->getDataDelivery($idCompany, $dateInit, $dateEnd, $idTeam, $idDriver, $route, $state);
         $packageHistoryList    = $data['packageHistoryList'];
         $packageHistoryListNew = $data['listAll'];
@@ -867,16 +866,41 @@ class ReportController extends Controller
         foreach($listAll as $packageDelivery)
         {
             $packageInbound = PackageHistory::where('Reference_Number_1', $packageDelivery->Reference_Number_1)
-                                                ->where('status', 'Inbound')
-                                                ->first();
+                                                ->whereIn("status", ["Manifest", "Inbound"])
+                                                ->orderBy('created_at', 'asc')
+                                                ->get();
+
+            $manifestDate = "";
+            $inboundDate = "";
+
+            if(count($packageInbound) > 1){
+                if($packageInbound[0]->status == "Manifest"){
+                    $manifestDate = $packageInbound[0]->created_at ? $packageInbound[0]->created_at : "";
+                }
+
+                if($packageInbound[1]->status == "Inbound"){
+                    $inboundDate = $packageInbound[1]->created_at ? $packageInbound[1]->created_at : "";
+                }
+            }
+            else if(count($packageInbound) == 1){
+                if($packageInbound[0]->status == "Manifest"){
+                    $manifestDate = $packageInbound[0]->created_at ? $packageInbound[0]->created_at : "";
+                }
+
+                if($packageInbound[0]->status == "Inbound"){
+                    $inboundDate = $packageInbound[0]->created_at ? $packageInbound[0]->created_at : "";
+                }
+            }
 
             $validator = $packageDelivery->validator ? $packageDelivery->validator->name .' '. $packageDelivery->validator->nameOfOwner : '';
-
+            
             $package = [
                 "idOnfleet" => $packageDelivery->idOnfleet,
                 "photoUrl" => $packageDelivery->photoUrl,
                 "Date_Delivery" => $packageDelivery->Date_Delivery,
-                "inboundDate" => ($packageInbound ? $packageInbound->created_at : ''),
+                "manifestDate" => $manifestDate,
+                "inboundDate" => $inboundDate,
+                "dispatchDate" => $packageDelivery->Date_Dispatch > 1 ? $packageDelivery->Date_Dispatch : '',
                 "company" => $packageDelivery->company,
                 "team" => $packageDelivery->team,
                 "driver" => $packageDelivery->driver,
@@ -1491,7 +1515,7 @@ class ReportController extends Controller
         $file      = $typeExport == 'download' ? fopen('php://memory', 'w') : fopen(public_path($filename), 'w');
 
         //set column headers
-        $fields = array('DATE', 'DELIVERY DATE', 'INBOUND DATE', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
+        $fields = array('MANIFEST DATE', 'INBOUND DATE', 'DISPATCH DATE', 'COMPLETION DATE', 'TRANSIT TIME', 'COMPANY', 'TEAM', 'DRIVER', 'PACKAGE ID', 'CLIENT', 'CONTACT', 'ADDREESS', 'CITY', 'STATE', 'ZIP CODE', 'WEIGHT', 'ROUTE', 'PPPC', 'PIECES', 'URL-IMAGE-1', 'URL-IMAGE-2');
 
         fputcsv($file, $fields, $delimiter);
 
@@ -1514,10 +1538,21 @@ class ReportController extends Controller
                 $urlImage2 = count($imagesIds) > 1 ?  'https://d15p8tr8p0vffz.cloudfront.net/'. $imagesIds[1] .'/800x.png' : '';
             }
 
+            $deliveryTime = strtotime($packageDelivery['Date_Delivery']);
+            $inboundTime = strtotime($packageDelivery['inboundDate']);
+            $secondsDifference = $deliveryTime - $inboundTime;
+            $transitTime = number_format($secondsDifference / 86400, 2);
+
+            $manifestDate = $packageDelivery['manifestDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['manifestDate'])) : "";
+            $inboundDate = $packageDelivery['inboundDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])) : "";
+            $dispatchDate = $packageDelivery['dispatchDate'] ? date('m/d/Y H:i:s', strtotime($packageDelivery['dispatchDate'])) : "";
+
             $lineData = array(
+                                $manifestDate,
+                                $inboundDate,
+                                $dispatchDate,
                                 date('m/d/Y H:i:s', strtotime($packageDelivery['Date_Delivery'])),
-                                date('m/d/Y H:i:s', strtotime($packageDelivery['inboundDate'])),
-                                date('m/d/Y H:i:s', strtotime($packageDelivery['created_at'])),
+                                $transitTime .' day(s)',
                                 $packageDelivery['company'],
                                 $team,
                                 $driver,
