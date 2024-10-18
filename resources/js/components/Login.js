@@ -82,7 +82,6 @@ function Login() {
                   <img  src="/img/logo_sync_truck.png" width={200} alt="img"/>
               </div>
               <h3>Please use Syncfreight, Synctruck is no longer available.</h3>
-              <h2>2021-2024</h2>
                     <p>
                         <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
                             https://platform.syncfreight.com
