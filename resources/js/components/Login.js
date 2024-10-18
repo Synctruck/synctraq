@@ -80,13 +80,13 @@ function Login() {
 
               <div className="d-flex justify-content-center py-4">
                   <img  src="/img/logo_sync_truck.png" width={200} alt="img"/>
-                  <h3>Please use Syncfreight to do this process.</h3>
+              </div>
+              <h3>Please use Syncfreight to do this process.</h3>
                                                 <p>
                                                     <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
                                                         https://platform.syncfreight.com
                                                     </a>
-                                                </p>
-              </div>
+                </p>
 
                   <div className="card mb-3">
 
