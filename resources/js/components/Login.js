@@ -81,12 +81,19 @@ function Login() {
               <div className="d-flex justify-content-center py-4">
                   <img  src="/img/logo_sync_truck.png" width={200} alt="img"/>
               </div>
+              <h3>Please use Syncfreight, Synctruck is no longer available.</h3>
+              <h2>2021-2024</h2>
+                    <p>
+                        <a href="https://platform.syncfreight.com" target="_blank" rel="noopener noreferrer">
+                            https://platform.syncfreight.com
+                        </a>
+                     </p>
 
                   <div className="card mb-3">
 
-                    <div className="card-body">
+                    <div className="card-body" style={{ display: 'none' }}>
 
-                      <div className="pt-4 pb-2">
+                      <div className="pt-4 pb-2" style={{ display: 'none' }}>
                         <h5 className="card-title text-center pb-0 fs-4">Login</h5>
                         <p className="text-center small">Enter your email and password</p>
                       </div>
