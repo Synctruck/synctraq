@@ -177,7 +177,7 @@
             </div>
         @endif
     </div><!-- End Search Bar -->
-    <div class="alert alert-danger text-center w-100" style="margin-bottom: 0; padding: 3px 5px; font-size: 0.85rem; background-color: #c82333; color: white;">
+    <div class="alert alert-danger text-center mx-auto" style="width: 80%; font-size: 0.85rem; background-color: #c82333; color: white;">
     Remember, Synctruck will no longer be available. Use <a href="https://platform.syncfreight.com" target="_blank" style="color: white; text-decoration: underline;">https://platform.syncfreight.com</a> in the future.
     </div>
     <nav class="header-nav ms-auto">
