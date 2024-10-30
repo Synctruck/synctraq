@@ -167,9 +167,6 @@
                 </div>
                 <div class="col-lg-4">
                     <button class="btn btn-success form-control" onclick="ViewModalSearchFilters();">Search by filters</button>
-                    <div class="alert alert-danger text-center w-100" style="margin-bottom: 0; font-size: 1rem;">
-                    Remember, Synctruck will no longer be available. Use <a href="https://platform.syncfreight.com" target="_blank" style="color: white; text-decoration: underline;">https://platform.syncfreight.com</a> in the future.
-                    </div>
                 </div>
             </div>
         @else
@@ -180,6 +177,9 @@
             </div>
         @endif
     </div><!-- End Search Bar -->
+    <div class="alert alert-danger text-center w-100" style="margin-bottom: 0; font-size: 1rem;">
+                Remember, Synctruck will no longer be available. Use <a href="https://platform.syncfreight.com" target="_blank" style="color: white; text-decoration: underline;">https://platform.syncfreight.com</a> in the future.
+                </div>
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
