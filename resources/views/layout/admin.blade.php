@@ -143,6 +143,9 @@
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
+  <div class="alert alert-danger text-center w-100" style="margin-bottom: 0; font-size: 1rem;">
+        Remember, Synctruck will no longer be available. Use <a href="https://platform.syncfreight.com" target="_blank" style="color: white; text-decoration: underline;">https://platform.syncfreight.com</a> in the future.
+    </div>
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="{{url('home')}}" class="logo d-flex align-items-center">
