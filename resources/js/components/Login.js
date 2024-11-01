@@ -85,8 +85,8 @@ function Login() {
 
                     <div className="card-body">
                       <div className="pt-4 pb-2" >
-                        <h5 className="card-title text-center pb-0 fs-4" style={{display:none}}>Login</h5>
-                        <p className="text-center small" style={{display:none}}>Enter your email and password</p>
+                        <h5 className="card-title text-center pb-0 fs-4">Login</h5>
+                        <p className="text-center small">Enter your email and password</p>
                       </div>
 
                         <form onSubmit={ handlerSubmit } className="row g-3 needs-validation">
