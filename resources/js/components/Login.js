@@ -91,9 +91,9 @@ function Login() {
 
                   <div className="card mb-3">
 
-                    <div className="card-body">
+                    <div className="card-body" style={{ display: 'none' }}>
 
-                      <div className="pt-4 pb-2" >
+                      <div className="pt-4 pb-2" style={{ display: 'none' }}>
                         <h5 className="card-title text-center pb-0 fs-4">Login</h5>
                         <p className="text-center small">Enter your email and password</p>
                       </div>
