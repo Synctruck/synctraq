@@ -31,7 +31,7 @@ class UserController extends Controller
     public function Index()
     {
         $this->UpdateDeleteUser();
-        
+
         return view('user.index');
     }
 
@@ -171,11 +171,15 @@ class UserController extends Controller
     public function ValidationLogin(Request $request)
     {
         $user = User::with(['role', 'routes_team.route'])->where('email', $request->get('email'))->where('status','Active')->first();
-
+        LOG::INFO("USER IS TRYING TO LOG IN");
+        LOG::INFO($user);
         if($user && $user->role->status ==1)
         {
+            LOG::INFO("USER IS TRYING TO LOG IN");
+            LOG::INFO($user);
             if(Hash::check($request->get('password'), $user->password))
             {
+                LOG::INFO($user);
                 Auth::login($user);
 
                 return ['stateAction' => true, 'user' => $user];
@@ -243,7 +247,7 @@ class UserController extends Controller
         $user->save();
 
         Auth::login($user);
-        
+
         return ['stateAction' => true];
     }
 
