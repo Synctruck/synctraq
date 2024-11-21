@@ -1129,7 +1129,7 @@ class PackageDispatchController extends Controller
                         $packageHistory->Notes                        = $packageDispatch->Notes;
                         $packageHistory->Weight                       = $packageDispatch->Weight;
                         $packageHistory->Route                        = $packageDispatch->Route;
-                        $packageHistory->Description                  = 'For: return from SyncFreight';
+                        $packageHistory->Description                  = 'For: Reinbound from Syncfreight';
                         $packageHistory->quantity                     = $packageDispatch->quantity;
                         $packageHistory->status                       = 'Warehouse';
                         $packageHistory->actualDate                   = $nowDate;
