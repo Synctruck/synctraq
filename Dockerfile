@@ -1,6 +1,5 @@
 # Use an official PHP runtime as a parent image
-FROM php:8.1-fpm
-
+FROM --platform=$TARGETPLATFORM php:8.1-fpm
 # Set working directory
 WORKDIR /var/www/html
 
@@ -8,7 +7,7 @@ WORKDIR /var/www/html
 RUN echo "Acquire::ForceIPv4 \"true\";" > /etc/apt/apt.conf.d/99force-ipv4
 
 # Install dependencies with --fix-missing to handle missing packages
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     libonig-dev \
     libgd-dev \
@@ -18,8 +17,8 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring gd zip
-
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring gd zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 # Configure Git to avoid ownership warnings
 RUN git config --global --add safe.directory /var/www/html
 
