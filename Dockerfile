@@ -28,6 +28,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Copy project files to container
 COPY . .
 
+# Run Composer update
+RUN composer update --no-dev --optimize-autoloader
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
