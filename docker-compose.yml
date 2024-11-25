@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: synctruck_app
     volumes:
-      - .:/var/www/html
       - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      - composer_cache:/root/.composer/cache
     depends_on:
       - db
     expose:
@@ -25,15 +26,26 @@ services:
       - "3306:3306"
     volumes:
       - ./db_backup:/docker-entrypoint-initdb.d
+      - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
       - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    entrypoint: >
+       /bin/bash -c "
+       chmod 600 /etc/mysql/conf.d/my.cnf &&
+       chown mysql:mysql /etc/mysql/conf.d/my.cnf &&
+       /docker-entrypoint-initdb.d/init_db.sh &&
+       /usr/local/bin/docker-entrypoint.sh mysqld"
 
   nginx:
     image: nginx:latest
     container_name: synctruck_nginx
     ports:
-      - "8000:80"  # Puerto para acceder desde tu navegador
+      - "8000:80"  # Puerto para acceder desde el navegador
     volumes:
-      - .:/var/www/html
+      - ./public:/var/www/html/public
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
+
+volumes:
+  composer_cache:
+  mysql_data:
