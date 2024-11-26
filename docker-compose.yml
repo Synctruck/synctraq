@@ -26,14 +26,7 @@ services:
       - "3306:3306"
     volumes:
       - ./db_backup:/docker-entrypoint-initdb.d
-      - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
       - ./my.cnf:/etc/mysql/conf.d/my.cnf
-    entrypoint: >
-       /bin/bash -c "
-       chmod 600 /etc/mysql/conf.d/my.cnf &&
-       chown mysql:mysql /etc/mysql/conf.d/my.cnf &&
-       /docker-entrypoint-initdb.d/init_db.sh &&
-       /usr/local/bin/docker-entrypoint.sh mysqld"
 
   nginx:
     image: nginx:latest
