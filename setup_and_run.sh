@@ -31,6 +31,8 @@ mkdir -p db_backup
 # Descargar el archivo db_backup.sql dentro del directorio db_backup
 echo "Descargando db_backup.sql en el directorio db_backup..."
 wget -O db_backup/db_backup.sql https://storage.googleapis.com/synphp_info/db_backup.sql
+echo "Descargando env en el directorio raiz"
+wget -O .env https://storage.googleapis.com/synphp_info/env
 
 # Ejecutar docker compose up
 echo "Ejecutando docker compose up..."
