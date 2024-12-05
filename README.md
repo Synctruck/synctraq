@@ -64,3 +64,37 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Despliegue completo en docker
+
+### 1. Crear la instancia
+
+- Instancia tipo E2 de Google Cloud con 2 vCPU y 4 GB de RAM
+- OS: Debian
+- Boot Disk: 50GB
+- Firewall: Permitir tráfico HTTP y HTTPS
+
+### 2. Clonar el repositorio
+Instalar git
+```bash
+sudo apt-get update
+sudo apt-get install git
+```
+Clonar el repositorio
+```bash
+git clone https://github.com/Synctruck/synctraq.git
+```
+Pasarse a la rama master
+```bash
+cd synctraq && git checkout master
+```
+### 3. Ejecutar el script de instalación
+Asigna permisos y ejecuta
+```bash
+chmod +x setup_and_run.sh
+```
+Ejecuta el script
+```bash
+./setup_and_run.sh
+```

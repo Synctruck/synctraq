@@ -32,7 +32,7 @@ services:
     image: nginx:latest
     container_name: synctruck_nginx
     ports:
-      - "8000:80"  # Puerto para acceder desde el navegador
+      - "80:80"  # Puerto para acceder desde el navegador
     volumes:
       - ./public:/var/www/html/public
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
