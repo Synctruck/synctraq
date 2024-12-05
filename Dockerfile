@@ -30,8 +30,9 @@ COPY . .
 # Instalar dependencias de PHP
 RUN composer install
 
-# Establecer permisos correctos para Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Establecer permisos durante la construcción del contenedor
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Exponer el puerto interno de PHP-FPM
 EXPOSE 9000
