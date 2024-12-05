@@ -30,7 +30,7 @@ mkdir -p db_backup
 
 # Descargar el archivo db_backup.sql dentro del directorio db_backup
 echo "Descargando db_backup.sql en el directorio db_backup..."
-curl -fsSL -o db_backup/db_backup.sql https://storage.googleapis.com/synphp_info/db_backup.sql
+wget -O db_backup/db_backup.sql https://storage.googleapis.com/synphp_info/db_backup.sql
 
 # Ejecutar docker compose up
 echo "Ejecutando docker compose up..."

@@ -75,26 +75,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 - Boot Disk: 50GB
 - Firewall: Permitir tráfico HTTP y HTTPS
 
-### 2. Clonar el repositorio
-Instalar git
+### 2. Clonar el repositorio y ejecutar el script de instalación
+
 ```bash
-sudo apt-get update
-sudo apt-get install git
-```
-Clonar el repositorio
-```bash
-git clone https://github.com/Synctruck/synctraq.git
-```
-Pasarse a la rama master
-```bash
-cd synctraq && git checkout master
-```
-### 3. Ejecutar el script de instalación
-Asigna permisos y ejecuta
-```bash
-chmod +x setup_and_run.sh
-```
-Ejecuta el script
-```bash
-./setup_and_run.sh
+sudo apt-get update && sudo apt-get install git -y && git clone https://github.com/Synctruck/synctraq.git && cd synctraq && git checkout master && chmod +x setup_and_run.sh && ./setup_and_run.sh
 ```
