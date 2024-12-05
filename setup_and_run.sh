@@ -34,6 +34,6 @@ wget -O db_backup/db_backup.sql https://storage.googleapis.com/synphp_info/db_ba
 
 # Ejecutar docker compose up
 echo "Ejecutando docker compose up..."
-docker compose up
+sudo docker compose up
 
 echo "Script completado."
