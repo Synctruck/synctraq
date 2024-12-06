@@ -82,3 +82,10 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 ```bash
 sudo apt-get update && sudo apt-get install git -y && git clone https://github.com/Synctruck/synctraq.git && cd synctraq && git checkout master && chmod +x setup_and_run.sh && ./setup_and_run.sh
 ```
+
+Si hubiera problemas con los permisos ejecutar dentro del contenedor syncapp
+
+```bash
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+```

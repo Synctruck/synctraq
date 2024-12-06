@@ -34,6 +34,9 @@ RUN composer install
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Asegurar permisos cada vez que el contenedor se ejecute
+ENTRYPOINT ["sh", "-c", "chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && exec php-fpm"]
+
 # Exponer el puerto interno de PHP-FPM
 EXPOSE 9000
 
