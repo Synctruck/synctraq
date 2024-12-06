@@ -70,7 +70,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ### 1. Crear la instancia
 
-- Instancia tipo E2 de Google Cloud con 2 vCPU y 4 GB de RAM
+- Instancia tipo E2 de Google Cloud con 12 vCPU y 16 GB de RAM
 - OS: Debian
 - Boot Disk: 50GB
 - Firewall: Permitir tráfico HTTP y HTTPS
